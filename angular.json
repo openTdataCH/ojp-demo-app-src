@@ -125,6 +125,14 @@
               "devServerTarget": "ojp-demo-app:serve:production"
             }
           }
+        },
+        "deploy": {
+          "builder": "angular-cli-ghpages:deploy",
+          "options": {
+            "repo": "git@github.com:openTdataCH/ojp-demo-app.git",
+            "baseHref": "https://openTdataCH.github.io/ojp-demo-app/",
+            "name": "OJP Demo App"
+          }
         }
       }
     }
