@@ -22,6 +22,7 @@
     "@angular/router": "~11.2.13",
     "@sbb-esta/angular-business": "^12.0.1",
     "@sbb-esta/angular-core": "^12.0.1",
+    "bootstrap": "^5.0.1",
     "rxjs": "~6.6.0",
     "tslib": "^2.0.0",
     "zone.js": "~0.11.3"
