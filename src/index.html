@@ -2,12 +2,29 @@
 <html lang="en">
 <head>
   <meta charset="utf-8">
-  <title>OjpDemoApp</title>
-  <base href="/">
+  <title>OJP Demo</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="icon" type="image/x-icon" href="favicon.ico">
 </head>
 <body>
-  <app-root></app-root>
+  <div class="container">
+    <div class="row">
+      <div class="col bg-ojp-blue">
+        <nav class="navbar navbar-light">
+          <a class="navbar-brand title text-white p-3" href="#">
+            <img src="assets/opentransportdata.swiss.header-icons.svg" height="30" class="d-inline-block align-text-middle">
+            <br/>
+            <span class="navbar-brand mb-0 h1 text-white">OJP Demo</span>
+          </a>
+        </nav>
+      </div>
+      <div class="bg-ojp-orange w-100" style="height: 10px"></div>
+    </div>
+    <div class="row">
+      <div class="col">
+        <app-root></app-root>
+      </div>
+    </div>
+  </div>
 </body>
 </html>
