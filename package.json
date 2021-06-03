@@ -23,6 +23,7 @@
     "@sbb-esta/angular-business": "^12.0.1",
     "@sbb-esta/angular-core": "^12.0.1",
     "bootstrap": "^5.0.1",
+    "mapbox-gl": "^2.3.0",
     "rxjs": "~6.6.0",
     "tslib": "^2.0.0",
     "zone.js": "~0.11.3"
@@ -32,6 +33,7 @@
     "@angular/cli": "~11.2.12",
     "@angular/compiler-cli": "~11.2.13",
     "@types/jasmine": "~3.6.0",
+    "@types/mapbox-gl": "^2.1.2",
     "@types/node": "^12.11.1",
     "angular-cli-ghpages": "^1.0.0-rc.1",
     "codelyzer": "^6.0.0",
