@@ -1,0 +1,19 @@
+<sbb-form-field class="w-100">
+  <sbb-label *ngIf="hasValue()">{{ placeholder }}</sbb-label>
+  <input
+    sbbInput
+    type="text"
+    [placeholder]="placeholder"
+    [formControl]="inputControl"
+    [sbbAutocomplete]="journeyPoint" />
+</sbb-form-field>
+<sbb-autocomplete
+  (optionSelected)="onOptionSelected($event)"
+  (opened)="onOpenAutocomplete()"
+  #journeyPoint="sbbAutocomplete">
+  <sbb-option
+    *ngFor="let lookupLocation of lookupLocations; index as idx"
+    [value]="idx">
+    {{ computeLocationName(lookupLocation) }}
+  </sbb-option>
+</sbb-autocomplete>
