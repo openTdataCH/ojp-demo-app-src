@@ -36,7 +36,10 @@
               "node_modules/@sbb-esta/angular-business/typography.css",
               "src/styles.scss"
             ],
-            "scripts": []
+            "scripts": [],
+            "allowedCommonJsDependencies": [
+              "xmlbuilder"
+            ]
           },
           "configurations": {
             "production": {

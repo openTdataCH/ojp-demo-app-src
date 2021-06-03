@@ -26,6 +26,9 @@
     "mapbox-gl": "^2.3.0",
     "rxjs": "~6.6.0",
     "tslib": "^2.0.0",
+    "xmlbuilder": "^15.1.1",
+    "xmldom": "^0.6.0",
+    "xpath": "0.0.32",
     "zone.js": "~0.11.3"
   },
   "devDependencies": {
@@ -35,6 +38,7 @@
     "@types/jasmine": "~3.6.0",
     "@types/mapbox-gl": "^2.1.2",
     "@types/node": "^12.11.1",
+    "@types/xmldom": "^0.1.30",
     "angular-cli-ghpages": "^1.0.0-rc.1",
     "codelyzer": "^6.0.0",
     "jasmine-core": "~3.6.0",
