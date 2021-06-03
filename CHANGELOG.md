@@ -1,6 +1,8 @@
-# CHANGELOG OJP-Demo
+# CHANGELOG 
 
-URL: https://opentdatach.github.io/ojp-demo-app/
+OJP-Demo URL: https://opentdatach.github.io/ojp-demo-app/
+
+----
 
 03.Jun 2021
 - adds search form with autocomplete for `from`, `to` form fields + date/time pickers
