@@ -12,9 +12,17 @@ import { SbbTimeInputModule } from '@sbb-esta/angular-business/time-input';
 
 import { AppComponent } from './app.component';
 
+import { JourneyPointInputComponent } from './search-form/journey-point-input/journey-point-input.component';
+import { MapComponent } from './map/map.component';
+import { SearchFormComponent } from './search-form/search-form.component';
+
 @NgModule({
   declarations: [
-    AppComponent
+    AppComponent,
+
+    MapComponent,
+    JourneyPointInputComponent,
+    SearchFormComponent,
   ],
   imports: [
     BrowserModule,

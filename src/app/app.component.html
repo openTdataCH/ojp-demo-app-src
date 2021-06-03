@@ -1,7 +1,11 @@
-<div class="row">
-  <div class="col">
-    <div class="app-root p-3 h-100">
-      OJP app-root container
-    </div>
+<div class="row app-root">
+  <div class="col-4 mt-3 mb-3">
+    <app-search-form
+      (fromLocationSelected)="onLocationSelected($event, 'from')"
+      (toLocationSelected)="onLocationSelected($event, 'to')"
+    ></app-search-form>
+  </div>
+  <div class="col-8 mt-3 mb-3">
+    <app-map></app-map>
   </div>
 </div>
