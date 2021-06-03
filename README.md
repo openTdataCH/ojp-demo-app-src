@@ -15,3 +15,5 @@ We are using [Github Pages](https://pages.github.com/) to publish and host the O
 Run `ng deploy` to deploy the app. The script will bundle the app files and assets in production mode and upload them to `gh-pages` branch of https://github.com/openTdataCH/ojp-demo-app .
 
 The app/chanegs are available under https://opentdatach.github.io/ojp-demo-app/
+
+See [CHANGELOG](./CHANGELOG.md) for deployment changes.
