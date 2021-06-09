@@ -1,3 +1,4 @@
+import mapboxgl from "mapbox-gl";
 import { XPathOJP } from "../helpers/xpath-ojp";
 
 export class GeoPosition {
@@ -23,5 +24,10 @@ export class GeoPosition {
       const geoPosition = new GeoPosition(longitude, latitude)
 
       return geoPosition
+  }
+
+  public asLngLat(): mapboxgl.LngLat {
+    const lnglat = new mapboxgl.LngLat(this.longitude, this.latitude);
+    return lnglat
   }
 }
