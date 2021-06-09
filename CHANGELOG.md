@@ -4,6 +4,12 @@ OJP-Demo URL: https://opentdatach.github.io/ojp-demo-app/
 
 ----
 
+09.Jun 2021
+- adds OJP TripRequest, Trip and journey classes
+- hooks OJP TripRequest API to the search form
+- adds markers for the from/to Location
+- renders basic results via SBB's SbbAccordionModule
+
 03.Jun 2021
 - adds search form with autocomplete for `from`, `to` form fields + date/time pickers
 - hooks OJP LocationInformation request queries to the autocomplete fields
