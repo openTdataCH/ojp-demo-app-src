@@ -1,4 +1,4 @@
-import { XpathOJP } from "../helpers/xpath-ojp";
+import { XPathOJP } from "../helpers/xpath-ojp";
 import { GeoPosition } from "./geoposition";
 import { StopPlace } from "./stopplace";
 
@@ -10,8 +10,8 @@ export class Location {
   public geoPosition: GeoPosition | null
 
   constructor(contextNode: Node) {
+    this.locationName = XPathOJP.queryText('ojp:LocationName/ojp:Text', contextNode)
     this.stopPlace = StopPlace.initFromContextNode(contextNode)
-    this.locationName = XpathOJP.queryText('ojp:LocationName/ojp:Text', contextNode)
     this.geoPosition = GeoPosition.initFromContextNode(contextNode)
   }
 }

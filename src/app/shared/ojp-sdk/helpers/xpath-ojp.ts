@@ -5,7 +5,7 @@ const mapNS = {
     'ojp': 'http://www.vdv.de/ojp',
 };
 
-export class XpathOJP {
+export class XPathOJP {
     public static queryNodes(xpathExpression: string, contextNode: Node): Node[] {
         const queryNS = xpath.useNamespaces(mapNS);
         const nodes = queryNS(xpathExpression, contextNode) as Node[];
@@ -13,7 +13,7 @@ export class XpathOJP {
     }
 
     public static queryNode(xpathExpression: string, contextNode: Node): Node | null {
-        const nodes = XpathOJP.queryNodes(xpathExpression, contextNode)
+        const nodes = XPathOJP.queryNodes(xpathExpression, contextNode)
         if (nodes.length === 0) {
             return null;
         }

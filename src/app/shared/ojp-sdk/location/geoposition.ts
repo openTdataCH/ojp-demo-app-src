@@ -1,4 +1,4 @@
-import { XpathOJP } from "../helpers/xpath-ojp";
+import { XPathOJP } from "../helpers/xpath-ojp";
 
 export class GeoPosition {
   public longitude: number
@@ -10,8 +10,8 @@ export class GeoPosition {
   }
 
   public static initFromContextNode(contextNode: Node): GeoPosition | null {
-      const longitudeS = XpathOJP.queryText('ojp:GeoPosition/siri:Longitude', contextNode)
-      const latitudeS = XpathOJP.queryText('ojp:GeoPosition/siri:Latitude', contextNode)
+      const longitudeS = XPathOJP.queryText('ojp:GeoPosition/siri:Longitude', contextNode)
+      const latitudeS = XPathOJP.queryText('ojp:GeoPosition/siri:Latitude', contextNode)
 
       if (longitudeS === null || latitudeS === null) {
           return null

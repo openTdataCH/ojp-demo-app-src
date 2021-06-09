@@ -1,4 +1,4 @@
-import { XpathOJP } from '../../helpers/xpath-ojp';
+import { XPathOJP } from '../../helpers/xpath-ojp';
 import { Location } from '../../location/location';
 import { OJPBaseRequest } from '../base-request'
 import { LocationInformationRequestParams } from './request-params.interface'
@@ -25,9 +25,9 @@ export class LocationInformationRequest extends OJPBaseRequest {
     super.fetchOJPResponse(responseXML => {
       const locations: Location[] = [];
 
-      const searchLocationNodes = XpathOJP.queryNodes('//ojp:OJPLocationInformationDelivery/ojp:Location', responseXML);
+      const searchLocationNodes = XPathOJP.queryNodes('//ojp:OJPLocationInformationDelivery/ojp:Location', responseXML);
       searchLocationNodes.forEach(searchLocationNode  => {
-        const locationNode = XpathOJP.queryNode('ojp:Location', searchLocationNode);
+        const locationNode = XPathOJP.queryNode('ojp:Location', searchLocationNode);
         if (locationNode === null) {
           return;
         }

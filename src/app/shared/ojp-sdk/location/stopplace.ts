@@ -1,4 +1,4 @@
-import { XpathOJP } from "../helpers/xpath-ojp"
+import { XPathOJP } from "../helpers/xpath-ojp"
 
 export class StopPlace {
   public stopPlaceRef: string
@@ -12,14 +12,14 @@ export class StopPlace {
   }
 
   public static initFromContextNode(contextNode: Node): StopPlace | null {
-    const stopPlaceRef = XpathOJP.queryText('ojp:StopPlace/ojp:StopPlaceRef', contextNode)
-    const stopPlaceName = XpathOJP.queryText('ojp:StopPlace/ojp:StopPlaceName/ojp:Text', contextNode)
+    const stopPlaceRef = XPathOJP.queryText('ojp:StopPlace/ojp:StopPlaceRef', contextNode)
+    const stopPlaceName = XPathOJP.queryText('ojp:StopPlace/ojp:StopPlaceName/ojp:Text', contextNode)
 
     if (!(stopPlaceRef && stopPlaceName)) {
       return null;
     }
 
-    const topographicPlaceRef = XpathOJP.queryText('ojp:StopPlace/ojp:TopographicPlaceRef', contextNode)
+    const topographicPlaceRef = XPathOJP.queryText('ojp:StopPlace/ojp:TopographicPlaceRef', contextNode)
     const stopPlace = new StopPlace(stopPlaceRef, stopPlaceName, topographicPlaceRef)
 
     return stopPlace
