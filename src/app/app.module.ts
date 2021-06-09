@@ -5,6 +5,7 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
+import { SbbAccordionModule } from '@sbb-esta/angular-business/accordion';
 import { SbbAutocompleteModule } from '@sbb-esta/angular-business/autocomplete';
 import { SbbDatepickerModule } from '@sbb-esta/angular-business/datepicker';
 import { SbbFormFieldModule } from '@sbb-esta/angular-business/form-field';
@@ -35,6 +36,7 @@ import { SearchFormComponent } from './search-form/search-form.component';
     FormsModule,
     ReactiveFormsModule,
 
+    SbbAccordionModule,
     SbbAutocompleteModule,
     SbbDatepickerModule,
     SbbFormFieldModule,
