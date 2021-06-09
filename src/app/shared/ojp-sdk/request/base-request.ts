@@ -27,7 +27,7 @@ export class OJPBaseRequest {
     return serviceRequestNode;
   }
 
-  protected fetchOJPResponse(completion: (responseXML: Document) => void) {
+  protected fetchOJPResponse(completion: (responseText: string) => void) {
     const apiEndpoint = 'https://api.opentransportdata.swiss/ojp2020';
     const requestHeaders = {
         "Content-Type": "application/xml",
@@ -49,8 +49,7 @@ export class OJPBaseRequest {
 
     responsePromise.then(response => {
       response.text().then(responseText => {
-        const responseXML = new DOMParser().parseFromString(responseText, 'application/xml');
-        completion(responseXML);
+        completion(responseText);
       });
     });
   }

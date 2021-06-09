@@ -22,7 +22,9 @@ export class LocationInformationRequest extends OJPBaseRequest {
 
   public fetchResponse(completion: (locations: Location[]) => void) {
     this.buildRequestNode();
-    super.fetchOJPResponse(responseXML => {
+    super.fetchOJPResponse(responseText => {
+      const responseXML = new DOMParser().parseFromString(responseText, 'application/xml');
+
       const locations: Location[] = [];
 
       const searchLocationNodes = XPathOJP.queryNodes('//ojp:OJPLocationInformationDelivery/ojp:Location', responseXML);
