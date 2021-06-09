@@ -1,11 +1,25 @@
 <div class="row app-root">
   <div class="col-4 mt-3 mb-3">
-    <app-search-form
-      (fromLocationSelected)="onLocationSelected($event, 'from')"
-      (toLocationSelected)="onLocationSelected($event, 'to')"
-    ></app-search-form>
+    <sbb-accordion>
+      <sbb-expansion-panel [expanded]="isChoosingEndpoints()">
+        <sbb-expansion-panel-header>Search</sbb-expansion-panel-header>
+        <app-search-form
+          (fromLocationSelected)="onLocationSelected($event, 'From')"
+          (toLocationSelected)="onLocationSelected($event, 'To')"
+          (tripsResponseCompleted)="onTripsResponseCompleted($event)"
+        ></app-search-form>
+      </sbb-expansion-panel>
+      <journey-result-row
+        *ngFor="let trip of trips; index as idx"
+        [trip]="trip"
+        [idx]="idx"
+      ></journey-result-row>
+    </sbb-accordion>
   </div>
   <div class="col-8 mt-3 mb-3">
-    <app-map></app-map>
+    <app-map
+      [fromLocation]="fromLocation"
+      [toLocation]="toLocation"
+    ></app-map>
   </div>
 </div>
