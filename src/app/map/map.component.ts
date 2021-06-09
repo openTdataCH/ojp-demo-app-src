@@ -1,5 +1,7 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, Input, OnInit, SimpleChanges } from '@angular/core';
 import mapboxgl from 'mapbox-gl'
+
+import * as OJP from '../shared/ojp-sdk/index'
 
 @Component({
   selector: 'app-map',
@@ -7,16 +9,38 @@ import mapboxgl from 'mapbox-gl'
   styleUrls: ['./map.component.scss']
 })
 export class MapComponent implements OnInit {
+  @Input() fromLocation: OJP.Location | null;
+  @Input() toLocation: OJP.Location | null;
 
-  constructor() { }
+  public mapLoadingPromise: Promise<mapboxgl.Map> | null;
+
+  private fromMarker: mapboxgl.Marker;
+  private toMarker: mapboxgl.Marker;
+
+  constructor() {
+    this.fromLocation = null;
+    this.toLocation = null;
+
+    this.fromMarker = new mapboxgl.Marker();
+    this.toMarker = new mapboxgl.Marker();
+
+    this.mapLoadingPromise = null;
+  }
 
   ngOnInit() {
     this.initMap()
   }
 
-  onLocationSelected(ev: any, originType: string) {
-    console.log(originType);
-    console.log(ev);
+  ngOnChanges(changes: SimpleChanges) {
+    for (let key in changes) {
+      if (key === 'fromLocation') {
+        this.updateMarkerLocation(this.fromMarker, this.fromLocation);
+      }
+
+      if (key === 'toLocation') {
+        this.updateMarkerLocation(this.toMarker, this.toLocation);
+      }
+    }
   }
 
   private initMap() {
@@ -34,6 +58,30 @@ export class MapComponent implements OnInit {
       padding: 50,
       duration: 0,
     });
+
+    this.mapLoadingPromise = new Promise<mapboxgl.Map>((resolve, reject) => {
+      map.on('load', ev => {
+        resolve(map);
+      });
+    });
+  }
+
+  private updateMarkerLocation(marker: mapboxgl.Marker, location: OJP.Location | null) {
+    const lnglat = location?.geoPosition?.asLngLat() ?? null;
+    if (lnglat === null) {
+      marker.remove();
+      return;
+    }
+
+    const isNotOnMap = marker.getLngLat() === undefined;
+
+    marker.setLngLat(lnglat);
+
+    if (isNotOnMap) {
+      this.mapLoadingPromise?.then(map => {
+        marker.addTo(map);
+      });
+    }
   }
 
 }
