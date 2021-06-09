@@ -14,4 +14,29 @@ export class Location {
     this.stopPlace = StopPlace.initFromContextNode(contextNode)
     this.geoPosition = GeoPosition.initFromContextNode(contextNode)
   }
+
+  asGeoJSONFeature(): GeoJSON.Feature<GeoJSON.Point> | null {
+    if (this.geoPosition === null) {
+      return null
+    }
+
+    const feature: GeoJSON.Feature<GeoJSON.Point> = {
+      type: 'Feature',
+      properties: {
+        'location.locationName': this.locationName ?? '',
+        'location.stopPlace.stopPlaceRef': this.stopPlace?.stopPlaceRef ?? '',
+        'location.stopPlace.stopPlaceName': this.stopPlace?.stopPlaceName ?? '',
+        'location.stopPlace.topographicPlaceRef': this.stopPlace?.topographicPlaceRef ?? '',
+      },
+      geometry: {
+        type: 'Point',
+        coordinates: [
+          this.geoPosition.longitude,
+          this.geoPosition.latitude
+        ]
+      }
+    }
+
+    return feature
+  }
 }
