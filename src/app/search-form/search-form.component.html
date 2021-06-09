@@ -3,13 +3,13 @@
     <form [formGroup]="formGroup">
       <div>
         <journey-point-input
-          (selectedLocation)="onLocationSelected($event, 'from')"
+          (selectedLocation)="onLocationSelected($event, 'From')"
           [placeholder]="'From'">
         </journey-point-input>
       </div>
       <div>
         <journey-point-input
-          (selectedLocation)="onLocationSelected($event, 'to')"
+          (selectedLocation)="onLocationSelected($event, 'To')"
           [placeholder]="'To'">
         </journey-point-input>
       </div>
