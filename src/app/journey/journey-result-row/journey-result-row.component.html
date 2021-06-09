@@ -1,0 +1,11 @@
+
+<sbb-expansion-panel
+  [expanded]="idx == 0"
+>
+  <sbb-expansion-panel-header>{{ computeTripTitle() }}</sbb-expansion-panel-header>
+  <div>
+    <ul>
+      <li *ngFor="let leg of trip.legs">{{ computeLegTitle(leg) }}</li>
+    </ul>
+  </div>
+</sbb-expansion-panel>
