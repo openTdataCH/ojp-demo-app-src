@@ -36,7 +36,12 @@
         </div>
       </div>
       <div>
-        <button type="submit" class="btn btn-primary">Search</button>
+        <button
+          type="submit"
+          class="btn btn-primary"
+          (click)="handleTapOnSearch()"
+          [disabled]="hasInvalidSearchParams()"
+        >Search</button>
       </div>
     </form>
   </div>
