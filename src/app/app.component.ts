@@ -12,8 +12,6 @@ type SearchState = 'ChooseEndpoints' | 'DisplayTrips'
 })
 export class AppComponent {
   title = 'ojp-demo-app';
-  fromLocation: OJP.Location | null
-  toLocation: OJP.Location | null
 
   tripsResponse: OJP.TripsResponse | null
 
@@ -24,19 +22,12 @@ export class AppComponent {
   @ViewChild(SbbAccordion, { static: true }) firstAccordion: SbbAccordion | undefined;
 
   constructor() {
-    this.fromLocation = null;
-    this.toLocation = null;
     this.tripsResponse = null;
     this.trips = []
     this.firstAccordion = undefined;
   }
 
   onLocationSelected(location: OJP.Location, originType: OJP.JourneyPointType) {
-    if (originType === 'From') {
-      this.fromLocation = location
-    } else {
-      this.toLocation = location
-    }
   }
 
   onTripsResponseCompleted(response: OJP.TripsResponse) {

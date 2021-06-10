@@ -1,7 +1,8 @@
-import { Component, Input, OnInit, SimpleChanges } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import mapboxgl from 'mapbox-gl'
 
 import * as OJP from '../shared/ojp-sdk/index'
+import { UserTripService } from '../shared/services/user-trip.service';
 
 @Component({
   selector: 'app-map',
@@ -9,18 +10,12 @@ import * as OJP from '../shared/ojp-sdk/index'
   styleUrls: ['./map.component.scss']
 })
 export class MapComponent implements OnInit {
-  @Input() fromLocation: OJP.Location | null;
-  @Input() toLocation: OJP.Location | null;
-
   public mapLoadingPromise: Promise<mapboxgl.Map> | null;
 
   private fromMarker: mapboxgl.Marker;
   private toMarker: mapboxgl.Marker;
 
-  constructor() {
-    this.fromLocation = null;
-    this.toLocation = null;
-
+  constructor(private userTripService: UserTripService) {
     this.fromMarker = new mapboxgl.Marker();
     this.toMarker = new mapboxgl.Marker();
 
@@ -29,18 +24,14 @@ export class MapComponent implements OnInit {
 
   ngOnInit() {
     this.initMap()
-  }
 
-  ngOnChanges(changes: SimpleChanges) {
-    for (let key in changes) {
-      if (key === 'fromLocation') {
-        this.updateMarkerLocation(this.fromMarker, this.fromLocation);
+    this.userTripService.locationUpdated.subscribe(locationData => {
+      if (locationData.updateSource === 'SearchForm') {
+        const location = locationData.location;
+        const marker = locationData.endpointType === 'From' ? this.fromMarker : this.toMarker;
+        this.updateMarkerLocation(marker, location);
       }
-
-      if (key === 'toLocation') {
-        this.updateMarkerLocation(this.toMarker, this.toLocation);
-      }
-    }
+    });
   }
 
   private initMap() {

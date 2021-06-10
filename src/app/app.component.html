@@ -4,8 +4,6 @@
       <sbb-expansion-panel [expanded]="isChoosingEndpoints()">
         <sbb-expansion-panel-header>Search</sbb-expansion-panel-header>
         <app-search-form
-          (fromLocationSelected)="onLocationSelected($event, 'From')"
-          (toLocationSelected)="onLocationSelected($event, 'To')"
           (tripsResponseCompleted)="onTripsResponseCompleted($event)"
         ></app-search-form>
       </sbb-expansion-panel>
@@ -17,9 +15,6 @@
     </sbb-accordion>
   </div>
   <div class="col-8 mt-3 mb-3">
-    <app-map
-      [fromLocation]="fromLocation"
-      [toLocation]="toLocation"
-    ></app-map>
+    <app-map></app-map>
   </div>
 </div>

@@ -1,5 +1,6 @@
 import { Component, EventEmitter, OnInit, Output } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
+import { UserTripService } from '../shared/services/user-trip.service'
 
 import * as OJP from '../shared/ojp-sdk/index'
 
@@ -10,19 +11,14 @@ import * as OJP from '../shared/ojp-sdk/index'
 export class SearchFormComponent implements OnInit {
   formGroup: FormGroup
 
-  private fromLocation: OJP.Location | null
-  private toLocation: OJP.Location | null
-
-  @Output() fromLocationSelected = new EventEmitter<OJP.Location>();
-  @Output() toLocationSelected = new EventEmitter<OJP.Location>();
   @Output() tripsResponseCompleted = new EventEmitter<OJP.TripsResponse>();
 
   private tripRequestParams: OJP.TripsRequestParams | null
 
-  constructor() {
   public fromLocationText: string
   public toLocationText: string
 
+  constructor(private userTripService: UserTripService) {
     const nowDate = new Date()
     const timeFormatted = OJP.DateHelpers.formatTimeHHMM(nowDate);
 
@@ -32,28 +28,52 @@ export class SearchFormComponent implements OnInit {
     })
 
     this.tripRequestParams = null;
-    this.fromLocation = null;
-    this.toLocation = null;
 
     this.fromLocationText = ''
     this.toLocationText = ''
   }
 
-  ngOnInit() {}
+  ngOnInit() {
+    this.initLocations()
+
+  }
+
+  private initLocations() {
+    const defaultLocationsPlaceRef = {
+      "Bern": "8507000",
+      "Luzern": "8505000",
+      "Zurich": "8503000",
+      "Witikon": "8591107",
+    }
+    const fromPlaceRef = defaultLocationsPlaceRef.Zurich
+    const toPlaceRef = defaultLocationsPlaceRef.Bern
+
+    const promises: Promise<OJP.Location[]>[] = [];
+
+    const endpointTypes: OJP.JourneyPointType[] = ['From', 'To']
+    endpointTypes.forEach(endpointType => {
+      const isFrom = endpointType === 'From'
+
+      const stopPlaceRef = isFrom ? fromPlaceRef : toPlaceRef
+      if (isFrom) {
+        this.fromLocationText = stopPlaceRef
+      } else {
+        this.toLocationText = stopPlaceRef
+      }
+
+      const locationInformationRequest = OJP.LocationInformationRequest.initWithStopPlaceRef(stopPlaceRef)
+      const locationInformationPromise = locationInformationRequest.fetchResponse();
+      promises.push(locationInformationPromise)
+    });
+
+  }
 
   onLocationSelected(location: OJP.Location, originType: OJP.JourneyPointType) {
-    if (originType === 'From') {
-      this.fromLocationSelected.emit(location)
-      this.fromLocation = location
-    } else {
-      this.toLocationSelected.emit(location)
-      this.toLocation = location
-    }
-
+    this.userTripService.updateTripEndpoint(location, originType, 'SearchForm')
     this.updateSearchParams()
   }
 
-  updateSearchParams() {
+  private computeFormDepartureDate(): Date {
     const departureDate = this.formGroup.controls['date'].value as Date;
     const timeParts = this.formGroup.controls['time'].value.split(':');
     if (timeParts.length === 2) {
@@ -64,7 +84,16 @@ export class SearchFormComponent implements OnInit {
       departureDate.setMinutes(timeMinutes);
     }
 
-    this.tripRequestParams = OJP.TripsRequestParams.initWithLocationsAndDate(this.fromLocation, this.toLocation, departureDate);
+    return departureDate
+  }
+
+  updateSearchParams() {
+    const departureDate = this.computeFormDepartureDate();
+    this.tripRequestParams = OJP.TripsRequestParams.initWithLocationsAndDate(
+      this.userTripService.fromLocation,
+      this.userTripService.toLocation,
+      departureDate
+    );
   }
 
   hasInvalidSearchParams(): boolean {
