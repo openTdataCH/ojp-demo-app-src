@@ -30,4 +30,9 @@ export class GeoPosition {
     const lnglat = new mapboxgl.LngLat(this.longitude, this.latitude);
     return lnglat
   }
+
+  public asLatLngString(): string {
+    const s = this.latitude.toFixed(6) + ',' + this.longitude.toFixed(6);
+    return s
+  }
 }
