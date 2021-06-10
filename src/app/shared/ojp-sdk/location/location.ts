@@ -8,11 +8,22 @@ export class Location {
   public stopPlace: StopPlace | null
   public geoPosition: GeoPosition | null
 
-  constructor(contextNode: Node) {
-    this.stopPointRef = XPathOJP.queryText('siri:StopPointRef', contextNode)
-    this.locationName = XPathOJP.queryText('ojp:LocationName/ojp:Text', contextNode)
-    this.stopPlace = StopPlace.initFromContextNode(contextNode)
-    this.geoPosition = GeoPosition.initFromContextNode(contextNode)
+  constructor() {
+    this.stopPointRef = null;
+    this.locationName = null;
+    this.stopPlace = null;
+    this.geoPosition = null;
+  }
+
+  public static initWithOJPContextNode(contextNode: Node): Location {
+    const location = new Location();
+
+    location.stopPointRef = XPathOJP.queryText('siri:StopPointRef', contextNode)
+    location.locationName = XPathOJP.queryText('ojp:LocationName/ojp:Text', contextNode)
+    location.stopPlace = StopPlace.initFromContextNode(contextNode)
+    location.geoPosition = GeoPosition.initFromContextNode(contextNode)
+
+    return location
   }
 
   asGeoJSONFeature(): GeoJSON.Feature<GeoJSON.Point> | null {

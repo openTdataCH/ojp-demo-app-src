@@ -51,8 +51,8 @@ class TrackSection {
             return null;
         }
 
-        const fromLocation = new Location(trackStartNode);
-        const toLocation = new Location(trackEndNode);
+        const fromLocation = Location.initWithOJPContextNode(trackStartNode)
+        const toLocation = Location.initWithOJPContextNode(trackEndNode)
 
         const trackSection = new TrackSection(fromLocation, toLocation);
         trackSection.durationS = XPathOJP.queryText('ojp:Duration', contextNode);

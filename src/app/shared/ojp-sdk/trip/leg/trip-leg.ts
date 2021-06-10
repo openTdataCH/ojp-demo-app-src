@@ -155,8 +155,8 @@ export class TripContinousLeg extends TripLeg {
       return null
     }
 
-    const fromLocation = new Location(fromLocationNode)
-    const toLocation = new Location(toLocationNode)
+    const fromLocation = Location.initWithOJPContextNode(fromLocationNode)
+    const toLocation = Location.initWithOJPContextNode(toLocationNode)
 
     const durationS = XPathOJP.queryText('ojp:Duration', legNode)
     if (durationS === null) {

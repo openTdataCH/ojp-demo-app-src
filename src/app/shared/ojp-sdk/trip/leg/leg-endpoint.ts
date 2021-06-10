@@ -53,7 +53,7 @@ export class LegEndpoint {
       timetableStopTime.delayMinutes = Math.floor(dateDiffSeconds / 60);
     }
 
-    const location = new Location(legEndpointNode);
+    const location = Location.initWithOJPContextNode(legEndpointNode)
 
     let legEndpoint;
     if (isFrom) {

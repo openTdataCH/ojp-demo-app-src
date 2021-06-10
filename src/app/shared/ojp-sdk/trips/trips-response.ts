@@ -18,7 +18,7 @@ export class TripsResponse {
 
         const locationNodes = XPathOJP.queryNodes('//ojp:TripResponseContext/ojp:Places/ojp:Location', responseXML);
         locationNodes.forEach(locationNode => {
-            const location = new Location(locationNode);
+            const location = Location.initWithOJPContextNode(locationNode)
             locations.push(location);
         });
 
