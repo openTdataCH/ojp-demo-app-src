@@ -14,7 +14,7 @@ import * as OJP from '../../shared/ojp-sdk/index'
 export class JourneyPointInputComponent implements OnInit {
   lookupLocations: OJP.Location[];
   inputControl = new FormControl('');
-  private shouldFetch = true
+  private shouldFetchNewData = true
 
   @Input() placeholder: string = '';
   @Output() selectedLocation = new EventEmitter<OJP.Location>()
@@ -28,7 +28,7 @@ export class JourneyPointInputComponent implements OnInit {
       debounceTime(500),
       distinctUntilChanged()
     ).subscribe((searchTerm: string) => {
-      if (!this.shouldFetch) {
+      if (!this.shouldFetchNewData) {
         return
       }
 
@@ -41,11 +41,11 @@ export class JourneyPointInputComponent implements OnInit {
   }
 
   onOpenAutocomplete() {
-    this.shouldFetch = true
+    this.shouldFetchNewData = true
   }
 
   onOptionSelected(ev: SbbAutocompleteSelectedEvent) {
-    this.shouldFetch = false
+    this.shouldFetchNewData = false
 
     const optionIdx = ev.option.value;
     const location = this.lookupLocations[optionIdx];
