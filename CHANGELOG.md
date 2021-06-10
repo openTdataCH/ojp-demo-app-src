@@ -4,6 +4,11 @@ OJP-Demo URL: https://opentdatach.github.io/ojp-demo-app/
 
 ----
 
+10.Jun 2021
+- introduce UserTripJourney to share the from/to locations between map and search components
+- prefill the search with default locations
+- markers are draggable - moving them enables latlng input support
+
 09.Jun 2021
 - adds OJP TripRequest, Trip and journey classes
 - hooks OJP TripRequest API to the search form
