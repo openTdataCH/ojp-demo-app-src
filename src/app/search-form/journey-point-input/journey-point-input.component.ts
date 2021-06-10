@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { SbbAutocompleteSelectedEvent } from '@sbb-esta/angular-business/autocomplete';
 
@@ -11,12 +11,14 @@ import * as OJP from '../../shared/ojp-sdk/index'
   templateUrl: './journey-point-input.component.html',
   styleUrls: ['./journey-point-input.component.scss']
 })
-export class JourneyPointInputComponent implements OnInit {
-  lookupLocations: OJP.Location[];
-  inputControl = new FormControl('');
+export class JourneyPointInputComponent implements OnInit, OnChanges {
   private shouldFetchNewData = true
 
+  public inputControl = new FormControl('');
+  public lookupLocations: OJP.Location[];
+
   @Input() placeholder: string = '';
+  @Input() inputValue: string = '';
   @Output() selectedLocation = new EventEmitter<OJP.Location>()
 
   constructor() {
@@ -38,6 +40,13 @@ export class JourneyPointInputComponent implements OnInit {
 
       this.fetchJourneyPoints(searchTerm);
     });
+  }
+
+  ngOnChanges(changes: SimpleChanges) {
+    if ('inputValue' in changes) {
+      const newInputValue = changes['inputValue'].currentValue;
+      this.inputControl.setValue(newInputValue);
+    }
   }
 
   onOpenAutocomplete() {

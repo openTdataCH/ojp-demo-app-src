@@ -20,6 +20,9 @@ export class SearchFormComponent implements OnInit {
   private tripRequestParams: OJP.TripsRequestParams | null
 
   constructor() {
+  public fromLocationText: string
+  public toLocationText: string
+
     const nowDate = new Date()
     const timeFormatted = OJP.DateHelpers.formatTimeHHMM(nowDate);
 
@@ -31,6 +34,9 @@ export class SearchFormComponent implements OnInit {
     this.tripRequestParams = null;
     this.fromLocation = null;
     this.toLocation = null;
+
+    this.fromLocationText = ''
+    this.toLocationText = ''
   }
 
   ngOnInit() {}

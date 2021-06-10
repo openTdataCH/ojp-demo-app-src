@@ -4,12 +4,14 @@
       <div>
         <journey-point-input
           (selectedLocation)="onLocationSelected($event, 'From')"
+          [inputValue]="fromLocationText"
           [placeholder]="'From'">
         </journey-point-input>
       </div>
       <div>
         <journey-point-input
           (selectedLocation)="onLocationSelected($event, 'To')"
+          [inputValue]="toLocationText"
           [placeholder]="'To'">
         </journey-point-input>
       </div>
