@@ -66,6 +66,27 @@ export class SearchFormComponent implements OnInit {
       promises.push(locationInformationPromise)
     });
 
+    Promise.all(promises).then(locationsData => {
+      endpointTypes.forEach(endpointType => {
+        const isFrom = endpointType === 'From'
+        const locations = isFrom ? locationsData[0] : locationsData[1];
+        if (locations.length === 0) {
+          return;
+        }
+
+        const location = locations[0]
+        const locationName = location.stopPlace?.stopPlaceName ?? null;
+        if (locationName) {
+          if (isFrom) {
+            this.fromLocationText = locationName
+          } else {
+            this.toLocationText = locationName
+          }
+        }
+
+        this.onLocationSelected(location, endpointType);
+      });
+    });
   }
 
   onLocationSelected(location: OJP.Location, originType: OJP.JourneyPointType) {
