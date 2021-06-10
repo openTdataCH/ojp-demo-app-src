@@ -71,7 +71,7 @@ export class JourneyPointInputComponent implements OnInit {
   private fetchJourneyPoints(searchTerm: string) {
     const locationInformationRequest = OJP.LocationInformationRequest.initWithLocationName(searchTerm);
 
-    locationInformationRequest.fetchResponse((locations: OJP.Location[]) => {
+    locationInformationRequest.fetchResponse().then(locations => {
       this.lookupLocations = locations;
     });
   }
