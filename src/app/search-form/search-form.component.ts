@@ -36,6 +36,23 @@ export class SearchFormComponent implements OnInit {
   ngOnInit() {
     this.initLocations()
 
+    this.userTripService.locationUpdated.subscribe(locationData => {
+      if (locationData.updateSource === 'MapDragend') {
+        const geoPosition = locationData.location?.geoPosition ?? null;
+        if (geoPosition === null) {
+          return
+        }
+
+        const latlngS = geoPosition.asLatLngString();
+        if (locationData.endpointType === 'From') {
+          this.fromLocationText = latlngS
+        } else {
+          this.toLocationText = latlngS
+        }
+
+        this.updateSearchParams();
+      }
+    });
   }
 
   private initLocations() {

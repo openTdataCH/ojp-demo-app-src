@@ -1,7 +1,8 @@
-import { Component, ViewChild } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { SbbAccordion } from '@sbb-esta/angular-business/accordion';
 
 import * as OJP from './shared/ojp-sdk/index'
+import { UserTripService } from './shared/services/user-trip.service';
 
 type SearchState = 'ChooseEndpoints' | 'DisplayTrips'
 
@@ -10,7 +11,7 @@ type SearchState = 'ChooseEndpoints' | 'DisplayTrips'
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss']
 })
-export class AppComponent {
+export class AppComponent implements OnInit {
   title = 'ojp-demo-app';
 
   tripsResponse: OJP.TripsResponse | null
@@ -21,13 +22,19 @@ export class AppComponent {
 
   @ViewChild(SbbAccordion, { static: true }) firstAccordion: SbbAccordion | undefined;
 
-  constructor() {
+  constructor(private userTripService: UserTripService) {
     this.tripsResponse = null;
     this.trips = []
     this.firstAccordion = undefined;
   }
 
-  onLocationSelected(location: OJP.Location, originType: OJP.JourneyPointType) {
+  ngOnInit() {
+    this.userTripService.locationUpdated.subscribe(locationData => {
+      if (locationData.updateSource === 'MapDragend') {
+        this.trips = []
+        this.searchState = 'ChooseEndpoints'
+      }
+    });
   }
 
   onTripsResponseCompleted(response: OJP.TripsResponse) {

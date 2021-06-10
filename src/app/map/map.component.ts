@@ -19,6 +19,18 @@ export class MapComponent implements OnInit {
     this.fromMarker = new mapboxgl.Marker();
     this.toMarker = new mapboxgl.Marker();
 
+    const endpointTypes: OJP.JourneyPointType[] = ['From', 'To'];
+    endpointTypes.forEach(pointType => {
+      const marker = pointType === 'From' ? this.fromMarker : this.toMarker;
+
+      marker.setDraggable(true);
+      marker.on('dragend', ev => {
+        const lnglat = marker.getLngLat();
+        const location = OJP.Location.initWithLngLat(lnglat.lng, lnglat.lat);
+        this.userTripService.updateTripEndpoint(location, pointType, 'MapDragend');
+      })
+    })
+
     this.mapLoadingPromise = null;
   }
 
