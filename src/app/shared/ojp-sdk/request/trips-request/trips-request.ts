@@ -1,4 +1,4 @@
-import { JourneyPointType } from '../../types/journey-point-type';
+import { JourneyPointType } from '../../types/journey-points';
 import { OJPBaseRequest } from '../base-request';
 import { TripsRequestParams } from './trips-request-params';
 import { TripsResponse } from '../../trips/trips-response'

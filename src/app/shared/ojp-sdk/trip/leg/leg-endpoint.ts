@@ -1,4 +1,4 @@
-import { JourneyPointType } from '../../types/journey-point-type'
+import { JourneyPointType } from '../../types/journey-points'
 import { StopPointTime } from '../../types/stop-point-time'
 
 import { XPathOJP } from '../../helpers/xpath-ojp'
