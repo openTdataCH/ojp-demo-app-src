@@ -26,6 +26,20 @@ export class Location {
     return location
   }
 
+  public static initWithStopPlaceRef(stopPlaceRef: string, stopPlaceName: string = ''): Location {
+    const location = new Location()
+    location.stopPlace = new StopPlace(stopPlaceRef, stopPlaceName, null)
+
+    return location
+  }
+
+  public static initWithLngLat(longitude: number, latitude: number): Location {
+    const location = new Location()
+    location.geoPosition = new GeoPosition(longitude, latitude)
+
+    return location
+  }
+
   asGeoJSONFeature(): GeoJSON.Feature<GeoJSON.Point> | null {
     if (this.geoPosition === null) {
       return null
