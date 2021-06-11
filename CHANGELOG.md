@@ -7,6 +7,8 @@ OJP-Demo URL: https://opentdatach.github.io/ojp-demo-app/
 11.Jun 2021
 - updates map controls (zoom, scale, debug coordinates)
 - allow zoom/center the map on from/to input fields
+- use stages config for API requests 
+- adds GUI to change the stage (in search form for now)
 
 10.Jun 2021
 - introduce UserTripJourney to share the from/to locations between map and search components
