@@ -4,6 +4,8 @@ import mapboxgl from 'mapbox-gl'
 import * as OJP from '../shared/ojp-sdk/index'
 import { UserTripService } from '../shared/services/user-trip.service';
 
+import { MapDebugControl } from './controls/map-debug-control'
+
 @Component({
   selector: 'app-map',
   templateUrl: './map.component.html',
@@ -55,7 +57,6 @@ export class MapComponent implements OnInit {
       bounds: mapBounds,
       accessToken: 'pk.eyJ1IjoidmFzaWxlIiwiYSI6ImNra2k2dWFkeDFrbG0ycXF0Nmg0Z2tsNXAifQ.nK-i-3cpWmji7HvK1Ilynw',
     });
-    map.addControl(new mapboxgl.NavigationControl());
 
     map.fitBounds(mapBounds, {
       padding: 50,
@@ -65,8 +66,31 @@ export class MapComponent implements OnInit {
     this.mapLoadingPromise = new Promise<mapboxgl.Map>((resolve, reject) => {
       map.on('load', ev => {
         resolve(map);
+
+        this.addMapControls(map);
       });
     });
+  }
+
+  private addMapControls(map: mapboxgl.Map) {
+    const navigationControl = new mapboxgl.NavigationControl({
+      showCompass: false,
+      visualizePitch: false
+    });
+    map.addControl(navigationControl);
+
+    const scaleControl = new mapboxgl.ScaleControl({
+        maxWidth: 200,
+        unit: 'metric'
+    });
+    map.addControl(scaleControl);
+
+    const debugControl = new MapDebugControl(map);
+    map.addControl(debugControl, 'top-left');
+  }
+
+  private mapBoundsChanged(map: mapboxgl.Map) {
+    console.log(map.getBounds().toString());
   }
 
   private updateMarkerLocation(marker: mapboxgl.Marker, location: OJP.Location | null) {
