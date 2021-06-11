@@ -5,6 +5,7 @@ import { FormControl } from '@angular/forms';
 import { SbbAutocompleteSelectedEvent } from '@sbb-esta/angular-business/autocomplete';
 
 import * as OJP from '../../shared/ojp-sdk/index'
+import { MapService } from 'src/app/shared/services/map.service';
 
 @Component({
   selector: 'journey-point-input',
@@ -18,10 +19,11 @@ export class JourneyPointInputComponent implements OnInit, OnChanges {
   public lookupLocations: OJP.Location[];
 
   @Input() placeholder: string = '';
+  @Input() endpointType: OJP.JourneyPointType = 'From';
   @Input() inputValue: string = '';
   @Output() selectedLocation = new EventEmitter<OJP.Location>()
 
-  constructor() {
+  constructor(private mapService: MapService) {
     this.lookupLocations = []
   }
 
@@ -65,10 +67,6 @@ export class JourneyPointInputComponent implements OnInit, OnChanges {
     this.selectedLocation.emit(location);
   }
 
-  hasValue(): boolean {
-    return this.inputControl.value.trim() !== ''
-  }
-
   public computeLocationName(location: OJP.Location): string {
     if (location.stopPlace) {
       return location.stopPlace.stopPlaceName
@@ -83,5 +81,9 @@ export class JourneyPointInputComponent implements OnInit, OnChanges {
     locationInformationRequest.fetchResponse().then(locations => {
       this.lookupLocations = locations;
     });
+  }
+
+  public handleTapOnMapButton() {
+    this.mapService.centerAndZoomToEndpointRequested.emit(this.endpointType);
   }
 }

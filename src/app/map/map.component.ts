@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import mapboxgl from 'mapbox-gl'
 
 import * as OJP from '../shared/ojp-sdk/index'
+import { MapService } from '../shared/services/map.service';
 import { UserTripService } from '../shared/services/user-trip.service';
 
 import { MapDebugControl } from './controls/map-debug-control'
@@ -17,7 +18,7 @@ export class MapComponent implements OnInit {
   private fromMarker: mapboxgl.Marker;
   private toMarker: mapboxgl.Marker;
 
-  constructor(private userTripService: UserTripService) {
+  constructor(private userTripService: UserTripService, private mapService: MapService) {
     this.fromMarker = new mapboxgl.Marker();
     this.toMarker = new mapboxgl.Marker();
 
@@ -45,6 +46,16 @@ export class MapComponent implements OnInit {
         const marker = locationData.endpointType === 'From' ? this.fromMarker : this.toMarker;
         this.updateMarkerLocation(marker, location);
       }
+    });
+
+    this.mapService.centerAndZoomToEndpointRequested.subscribe(endpointType => {
+      const marker = endpointType === 'From' ? this.fromMarker : this.toMarker;
+      this.mapLoadingPromise?.then(map => {
+        map.jumpTo({
+          center: marker.getLngLat(),
+          zoom: 16
+        });
+      });
     });
   }
 
