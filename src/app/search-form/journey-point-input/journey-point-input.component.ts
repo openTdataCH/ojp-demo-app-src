@@ -6,6 +6,7 @@ import { SbbAutocompleteSelectedEvent } from '@sbb-esta/angular-business/autocom
 
 import * as OJP from '../../shared/ojp-sdk/index'
 import { MapService } from 'src/app/shared/services/map.service';
+import { UserSettingsService } from 'src/app/shared/services/user-settings.service';
 
 @Component({
   selector: 'journey-point-input',
@@ -23,7 +24,7 @@ export class JourneyPointInputComponent implements OnInit, OnChanges {
   @Input() inputValue: string = '';
   @Output() selectedLocation = new EventEmitter<OJP.Location>()
 
-  constructor(private mapService: MapService) {
+  constructor(private mapService: MapService, private userSettingService: UserSettingsService) {
     this.lookupLocations = []
   }
 
@@ -76,7 +77,8 @@ export class JourneyPointInputComponent implements OnInit, OnChanges {
   }
 
   private fetchJourneyPoints(searchTerm: string) {
-    const locationInformationRequest = OJP.LocationInformationRequest.initWithLocationName(searchTerm);
+    const stageConfig = this.userSettingService.getStageConfig();
+    const locationInformationRequest = OJP.LocationInformationRequest.initWithLocationName(stageConfig, searchTerm);
 
     locationInformationRequest.fetchResponse().then(locations => {
       this.lookupLocations = locations;

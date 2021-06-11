@@ -3,6 +3,7 @@ import { FormControl, FormGroup } from '@angular/forms';
 import { UserTripService } from '../shared/services/user-trip.service'
 
 import * as OJP from '../shared/ojp-sdk/index'
+import { UserSettingsService } from '../shared/services/user-settings.service';
 
 @Component({
   selector: 'app-search-form',
@@ -18,7 +19,7 @@ export class SearchFormComponent implements OnInit {
   public fromLocationText: string
   public toLocationText: string
 
-  constructor(private userTripService: UserTripService) {
+  constructor(private userTripService: UserTripService, private userSettingsService: UserSettingsService) {
     const nowDate = new Date()
     const timeFormatted = OJP.DateHelpers.formatTimeHHMM(nowDate);
 
@@ -78,7 +79,8 @@ export class SearchFormComponent implements OnInit {
         this.toLocationText = stopPlaceRef
       }
 
-      const locationInformationRequest = OJP.LocationInformationRequest.initWithStopPlaceRef(stopPlaceRef)
+      const stageConfig = this.userSettingsService.getStageConfig();
+      const locationInformationRequest = OJP.LocationInformationRequest.initWithStopPlaceRef(stageConfig, stopPlaceRef)
       const locationInformationPromise = locationInformationRequest.fetchResponse();
       promises.push(locationInformationPromise)
     });
@@ -139,11 +141,13 @@ export class SearchFormComponent implements OnInit {
   }
 
   handleTapOnSearch() {
+    const stageConfig = this.userSettingsService.getStageConfig()
+
     if (this.tripRequestParams === null) {
       return
     }
 
-    const tripRequest = new OJP.TripRequest(this.tripRequestParams);
+    const tripRequest = new OJP.TripRequest(stageConfig, this.tripRequestParams);
     tripRequest.fetchResponse(tripsResponse => {
       this.tripsResponseCompleted.emit(tripsResponse);
     });
