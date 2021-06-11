@@ -1,11 +1,12 @@
 import xmlbuilder from 'xmlbuilder';
+import { StageConfig } from '../config/config';
 
 export class OJPBaseRequest {
   protected serviceRequestNode: xmlbuilder.XMLElement;
-  protected isDebug: boolean
+  private stageConfig: StageConfig
 
-  constructor() {
-    this.isDebug = false;
+  constructor(stageConfig: StageConfig) {
+    this.stageConfig = stageConfig
     this.serviceRequestNode = this.computeServiceRequestNode();
   }
 
@@ -28,10 +29,10 @@ export class OJPBaseRequest {
   }
 
   protected fetchOJPResponse(completion: (responseText: string) => void) {
-    const apiEndpoint = 'https://api.opentransportdata.swiss/ojp2020';
+    const apiEndpoint = this.stageConfig.apiEndpoint
     const requestHeaders = {
         "Content-Type": "application/xml",
-        "Authorization": "Bearer 57c5dbbbf1fe4d000100001842c323fa9ff44fbba0b9b925f0c052d1"
+        "Authorization": "Bearer " + this.stageConfig.authBearerKey
     };
 
     const bodyXML_s = this.serviceRequestNode.end();
@@ -42,8 +43,8 @@ export class OJPBaseRequest {
         method: 'POST'
     });
 
-    if (this.isDebug) {
-      console.log('OJP Request: /POST - https://api.opentransportdata.swiss/ojp2020');
+    if (this.stageConfig.logAPIRequests) {
+      console.log('OJP Request: /POST - ' + apiEndpoint);
       console.log(bodyXML_s);
     }
 

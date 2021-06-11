@@ -2,12 +2,13 @@ import { JourneyPointType } from '../../types/journey-points';
 import { OJPBaseRequest } from '../base-request';
 import { TripsRequestParams } from './trips-request-params';
 import { TripsResponse } from '../../trips/trips-response'
+import { StageConfig } from '../../config/config';
 
 export class TripRequest extends OJPBaseRequest {
   public requestParams: TripsRequestParams
 
-  constructor(requestParams: TripsRequestParams) {
-    super();
+  constructor(stageConfig: StageConfig, requestParams: TripsRequestParams) {
+    super(stageConfig);
     this.requestParams = requestParams;
   }
 

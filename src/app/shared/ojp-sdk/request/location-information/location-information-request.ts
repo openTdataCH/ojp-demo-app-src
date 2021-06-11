@@ -1,3 +1,4 @@
+import { StageConfig } from '../../config/config'
 import { XPathOJP } from '../../helpers/xpath-ojp';
 import { Location } from '../../location/location';
 import { OJPBaseRequest } from '../base-request'
@@ -6,26 +7,26 @@ import { LocationInformationRequestParams } from './location-information-request
 export class LocationInformationRequest extends OJPBaseRequest {
   public requestParams: LocationInformationRequestParams
 
-  constructor(requestParams: LocationInformationRequestParams) {
-    super();
+  constructor(stageConfig: StageConfig, requestParams: LocationInformationRequestParams) {
+    super(stageConfig);
     this.requestParams = requestParams;
   }
 
-  public static initWithLocationName(locationName: string): LocationInformationRequest {
+  public static initWithLocationName(stageConfig: StageConfig, locationName: string): LocationInformationRequest {
     const requestParams = <LocationInformationRequestParams>{
       locationName: locationName
     }
 
-    const locationInformationRequest = new LocationInformationRequest(requestParams);
+    const locationInformationRequest = new LocationInformationRequest(stageConfig, requestParams);
     return locationInformationRequest
   }
 
-  public static initWithStopPlaceRef(stopPlaceRef: string): LocationInformationRequest {
+  public static initWithStopPlaceRef(stageConfig: StageConfig, stopPlaceRef: string): LocationInformationRequest {
     const requestParams = <LocationInformationRequestParams>{
       stopPlaceRef: stopPlaceRef
     }
 
-    const locationInformationRequest = new LocationInformationRequest(requestParams);
+    const locationInformationRequest = new LocationInformationRequest(stageConfig, requestParams);
     return locationInformationRequest
   }
 
