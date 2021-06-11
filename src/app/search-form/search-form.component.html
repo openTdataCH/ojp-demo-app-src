@@ -39,6 +39,20 @@
           />
         </div>
       </div>
+      <div class="mb-2 d-flex">
+        <div>
+          <sbb-radio-group class="sbb-radio-group-horizontal">
+            <sbb-radio-button
+              *ngFor="let appStageOption of appStageOptions"
+              [value]="appStageOption"
+              [checked]="currentAppStage == appStageOption"
+              (change)="onChangeStageAPI($event)"
+            >
+              {{ appStageOption }}
+            </sbb-radio-button>
+          </sbb-radio-group>
+        </div>
+      </div>
       <div>
         <button
           type="submit"

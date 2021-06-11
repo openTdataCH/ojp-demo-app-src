@@ -3,6 +3,7 @@ import { FormControl, FormGroup } from '@angular/forms';
 import { UserTripService } from '../shared/services/user-trip.service'
 
 import * as OJP from '../shared/ojp-sdk/index'
+import { SbbRadioChange } from '@sbb-esta/angular-core/radio-button';
 import { UserSettingsService } from '../shared/services/user-settings.service';
 
 @Component({
@@ -19,6 +20,9 @@ export class SearchFormComponent implements OnInit {
   public fromLocationText: string
   public toLocationText: string
 
+  public currentAppStage: OJP.APP_Stage = 'PROD'
+  public appStageOptions: OJP.APP_Stage[] = []
+
   constructor(private userTripService: UserTripService, private userSettingsService: UserSettingsService) {
     const nowDate = new Date()
     const timeFormatted = OJP.DateHelpers.formatTimeHHMM(nowDate);
@@ -32,6 +36,9 @@ export class SearchFormComponent implements OnInit {
 
     this.fromLocationText = ''
     this.toLocationText = ''
+
+    this.currentAppStage = this.userSettingsService.appStage
+    this.appStageOptions = Object.keys(OJP.APP_Stages) as OJP.APP_Stage[];
   }
 
   ngOnInit() {
@@ -111,6 +118,13 @@ export class SearchFormComponent implements OnInit {
   onLocationSelected(location: OJP.Location, originType: OJP.JourneyPointType) {
     this.userTripService.updateTripEndpoint(location, originType, 'SearchForm')
     this.updateSearchParams()
+  }
+
+  onChangeStageAPI(ev: SbbRadioChange) {
+    const newAppStage = ev.value as OJP.APP_Stage
+
+    this.currentAppStage = newAppStage
+    this.userSettingsService.appStage = newAppStage
   }
 
   private computeFormDepartureDate(): Date {
