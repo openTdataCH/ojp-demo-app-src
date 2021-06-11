@@ -1,8 +1,8 @@
+import { debounceTime, distinctUntilChanged } from 'rxjs/operators'
 import { Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges } from '@angular/core';
 import { FormControl } from '@angular/forms';
-import { SbbAutocompleteSelectedEvent } from '@sbb-esta/angular-business/autocomplete';
 
-import { debounceTime, distinctUntilChanged } from 'rxjs/operators'
+import { SbbAutocompleteSelectedEvent } from '@sbb-esta/angular-business/autocomplete';
 
 import * as OJP from '../../shared/ojp-sdk/index'
 
