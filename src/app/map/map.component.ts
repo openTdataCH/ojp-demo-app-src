@@ -77,10 +77,13 @@ export class MapComponent implements OnInit {
     this.mapLoadingPromise = new Promise<mapboxgl.Map>((resolve, reject) => {
       map.on('load', ev => {
         resolve(map);
-
-        this.addMapControls(map);
+        this.onMapLoad(map);
       });
     });
+  }
+
+  private onMapLoad(map: mapboxgl.Map) {
+    this.addMapControls(map);
   }
 
   private addMapControls(map: mapboxgl.Map) {
