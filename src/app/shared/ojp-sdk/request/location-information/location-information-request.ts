@@ -56,6 +56,18 @@ export class LocationInformationRequest extends OJPBaseRequest {
 
         const locations: Location[] = [];
 
+        const responseStatus = XPathOJP.queryText('//ojp:OJPLocationInformationDelivery/siri:Status', responseXML)
+        const hasErrors = responseStatus === 'false';
+        if (hasErrors) {
+          const errorNode = XPathOJP.queryNode('//ojp:OJPLocationInformationDelivery/siri:ErrorCondition', responseXML)
+
+          console.error('OJP LocationInformationRequest error');
+          console.log(errorNode);
+
+          resolve(locations);
+          return;
+        }
+
         const searchLocationNodes = XPathOJP.queryNodes('//ojp:OJPLocationInformationDelivery/ojp:Location', responseXML);
         searchLocationNodes.forEach(searchLocationNode  => {
           const locationNode = XPathOJP.queryNode('ojp:Location', searchLocationNode);
