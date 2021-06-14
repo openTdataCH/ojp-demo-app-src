@@ -76,6 +76,20 @@ export class MapComponent implements OnInit {
 
     let location = OJP.Location.initWithLngLat(lngLat.lng, lngLat.lat);
 
+    // Try to snap to the nearest stop
+    const nearbyStopFeature = this.stopsMapAppLayer?.queryNearbyFeature(lngLat) ?? null;
+    if (nearbyStopFeature) {
+      const nearbyLocation = OJP.Location.initWithFeature(nearbyStopFeature);
+      if (nearbyLocation) {
+        location = nearbyLocation
+      }
+
+      const nearbyStopLngLat = MapHelpers.computePointLngLatFromFeature(nearbyStopFeature)
+      if (nearbyStopLngLat) {
+        marker.setLngLat(nearbyStopLngLat);
+      }
+    }
+
     this.userTripService.updateTripEndpoint(location, endpointType, 'MapDragend');
   }
 
