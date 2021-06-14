@@ -5,12 +5,17 @@ import * as OJP from '../shared/ojp-sdk/index'
 import { MapService } from '../shared/services/map.service';
 import { UserSettingsService } from '../shared/services/user-settings.service';
 import { UserTripService } from '../shared/services/user-trip.service';
+
+import { MapHelpers } from './helpers/map.helpers';
+
 import { MapAppLayer } from './app-layers/map-app-layer.interface';
 import { StopsAppLayer } from './app-layers/stops/stops-app-layer';
+import { AddressAppLayer } from './app-layers/address/address-app-layer';
+import { POIAppLayer } from './app-layers/poi/poi-app-layer';
 
 import { MapDebugControl } from './controls/map-debug-control'
 import { MapLayersLegendControl } from './controls/map-layers-legend-control';
-import { MapHelpers } from './helpers/map.helpers';
+
 
 @Component({
   selector: 'app-map',
@@ -138,10 +143,13 @@ export class MapComponent implements OnInit {
   }
 
   private onMapLoad(map: mapboxgl.Map) {
-    this.addMapControls(map);
-
     this.stopsMapAppLayer = new StopsAppLayer(map, this.userSettingsService, this.userTripService);
-    this.mapAppLayers = [this.stopsMapAppLayer]
+    const addressAppLayer = new AddressAppLayer(map, this.userSettingsService, this.userTripService)
+    const poiAppLayer = new POIAppLayer(map, this.userSettingsService, this.userTripService)
+
+    this.mapAppLayers = [this.stopsMapAppLayer, addressAppLayer, poiAppLayer]
+
+    this.addMapControls(map);
 
     this.mapAppLayers.forEach(mapAppLayer => {
       mapAppLayer.addToMap();
