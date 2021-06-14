@@ -2,6 +2,7 @@ import { XPathOJP } from "../helpers/xpath-ojp";
 import { GeoPosition } from "./geoposition";
 import { StopPlace } from "./stopplace";
 import { Address } from "./address";
+import { GeoRestrictionType } from "../types/geo-restriction.type";
 
 export class Location {
   public address: Address | null
@@ -75,14 +76,40 @@ export class Location {
       return null
     }
 
+    let featureID: string | null = null;
+    let featureType: GeoRestrictionType | null = null;
+    const featureProperties: GeoJSON.GeoJsonProperties = {};
+
+    const stopPlaceRef = this.stopPlace?.stopPlaceRef ?? null;
+    if (stopPlaceRef) {
+      featureID = stopPlaceRef;
+
+      featureType = 'stop'
+      featureProperties['locationName'] = this.locationName ?? ''
+      featureProperties['stopPlace.stopPlaceRef'] = this.stopPlace?.stopPlaceRef ?? ''
+      featureProperties['stopPlace.stopPlaceName'] = this.stopPlace?.stopPlaceName ?? ''
+      featureProperties['stopPlace.topographicPlaceRef'] = this.stopPlace?.topographicPlaceRef ?? ''
+    }
+
+    if (this.address) {
+      featureID = this.address.addressCode;
+
+      featureType = 'address'
+      featureProperties['addressCode'] = this.address?.addressCode ?? ''
+      featureProperties['addressName'] = this.address?.addressName ?? ''
+      featureProperties['topographicPlaceRef'] = this.address?.topographicPlaceRef ?? ''
+    }
+
+    if (featureID === null) {
+      return null;
+    }
+
+    featureProperties['type'] = featureType;
+
     const feature: GeoJSON.Feature<GeoJSON.Point> = {
+      id: featureID,
       type: 'Feature',
-      properties: {
-        'location.locationName': this.locationName ?? '',
-        'location.stopPlace.stopPlaceRef': this.stopPlace?.stopPlaceRef ?? '',
-        'location.stopPlace.stopPlaceName': this.stopPlace?.stopPlaceName ?? '',
-        'location.stopPlace.topographicPlaceRef': this.stopPlace?.topographicPlaceRef ?? '',
-      },
+      properties: featureProperties,
       geometry: {
         type: 'Point',
         coordinates: [
