@@ -3,7 +3,10 @@ import mapboxgl from 'mapbox-gl'
 
 import * as OJP from '../shared/ojp-sdk/index'
 import { MapService } from '../shared/services/map.service';
+import { UserSettingsService } from '../shared/services/user-settings.service';
 import { UserTripService } from '../shared/services/user-trip.service';
+import { MapAppLayer } from './app-layers/map-app-layer.interface';
+import { StopsAppLayer } from './app-layers/stops/stops-app-layer';
 
 import { MapDebugControl } from './controls/map-debug-control'
 
@@ -18,7 +21,16 @@ export class MapComponent implements OnInit {
   private fromMarker: mapboxgl.Marker;
   private toMarker: mapboxgl.Marker;
 
-  constructor(private userTripService: UserTripService, private mapService: MapService) {
+  private mapAppLayers: MapAppLayer[]
+  private stopsMapAppLayer: StopsAppLayer | null
+
+  private prevMapBoundsHash: string = '';
+
+  constructor(
+    private userTripService: UserTripService,
+    private mapService: MapService,
+    private userSettingsService: UserSettingsService
+  ) {
     // Dummy initialize the markers, re-init them in the loop below
     this.fromMarker = new mapboxgl.Marker();
     this.toMarker = new mapboxgl.Marker();
@@ -45,6 +57,9 @@ export class MapComponent implements OnInit {
         this.toMarker = marker
       }
     })
+
+    this.mapAppLayers = []
+    this.stopsMapAppLayer = null
 
     this.mapLoadingPromise = null;
 
@@ -103,6 +118,26 @@ export class MapComponent implements OnInit {
 
   private onMapLoad(map: mapboxgl.Map) {
     this.addMapControls(map);
+
+    this.stopsMapAppLayer = new StopsAppLayer(map, this.userSettingsService, this.userTripService);
+    this.mapAppLayers = [this.stopsMapAppLayer]
+
+    this.mapAppLayers.forEach(mapAppLayer => {
+      mapAppLayer.addToMap();
+    });
+
+    map.on('idle', ev => {
+      const currentMapBoundsHash = map.getBounds().toString();
+      const hasSameBounds = this.prevMapBoundsHash === currentMapBoundsHash;
+      if (hasSameBounds) {
+        return;
+      }
+      this.prevMapBoundsHash = currentMapBoundsHash;
+
+      this.mapAppLayers.forEach(mapAppLayer => {
+        mapAppLayer.onMapBoundsChange();
+      })
+    });
   }
 
   private addMapControls(map: mapboxgl.Map) {
@@ -120,10 +155,6 @@ export class MapComponent implements OnInit {
 
     const debugControl = new MapDebugControl(map);
     map.addControl(debugControl, 'top-left');
-  }
-
-  private mapBoundsChanged(map: mapboxgl.Map) {
-    console.log(map.getBounds().toString());
   }
 
   private updateMarkerLocation(marker: mapboxgl.Marker, location: OJP.Location | null) {
