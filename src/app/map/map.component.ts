@@ -19,22 +19,43 @@ export class MapComponent implements OnInit {
   private toMarker: mapboxgl.Marker;
 
   constructor(private userTripService: UserTripService, private mapService: MapService) {
+    // Dummy initialize the markers, re-init them in the loop below
     this.fromMarker = new mapboxgl.Marker();
     this.toMarker = new mapboxgl.Marker();
 
     const endpointTypes: OJP.JourneyPointType[] = ['From', 'To'];
-    endpointTypes.forEach(pointType => {
-      const marker = pointType === 'From' ? this.fromMarker : this.toMarker;
+    endpointTypes.forEach(endpointType => {
+      var markerDIV = document.createElement('div');
+      markerDIV.className = 'marker-journey-endpoint marker-journey-endpoint-' + endpointType;
 
-      marker.setDraggable(true);
+      const marker = new mapboxgl.Marker({
+        element: markerDIV,
+        draggable: true,
+        anchor: 'bottom'
+      });
+
       marker.on('dragend', ev => {
-        const lnglat = marker.getLngLat();
-        const location = OJP.Location.initWithLngLat(lnglat.lng, lnglat.lat);
-        this.userTripService.updateTripEndpoint(location, pointType, 'MapDragend');
+        this.handleMarkerDrag(marker, endpointType);
       })
+
+      if (endpointType === 'From') {
+        this.fromMarker = marker
+      }
+      if (endpointType === 'To') {
+        this.toMarker = marker
+      }
     })
 
     this.mapLoadingPromise = null;
+
+  }
+
+  private handleMarkerDrag(marker: mapboxgl.Marker, endpointType: OJP.JourneyPointType) {
+    const lngLat = marker.getLngLat();
+
+    let location = OJP.Location.initWithLngLat(lngLat.lng, lngLat.lat);
+
+    this.userTripService.updateTripEndpoint(location, endpointType, 'MapDragend');
   }
 
   ngOnInit() {
