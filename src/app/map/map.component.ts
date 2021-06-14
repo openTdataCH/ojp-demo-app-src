@@ -162,6 +162,12 @@ export class MapComponent implements OnInit {
     map.on('contextmenu', (ev: mapboxgl.MapMouseEvent) => {
       this.showPickupPopup(map, ev.lngLat);
     });
+
+    map.on('click', (ev: mapboxgl.MapMouseEvent) => {
+      this.mapAppLayers.forEach(mapAppLayer => {
+        mapAppLayer.onMapClick(ev)
+      })
+    });
   }
 
   private showPickupPopup(map: mapboxgl.Map, lngLat: mapboxgl.LngLat) {
