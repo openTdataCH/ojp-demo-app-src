@@ -41,11 +41,9 @@ export class MapComponent implements OnInit {
     this.initMap()
 
     this.userTripService.locationUpdated.subscribe(locationData => {
-      if (locationData.updateSource === 'SearchForm') {
-        const location = locationData.location;
-        const marker = locationData.endpointType === 'From' ? this.fromMarker : this.toMarker;
-        this.updateMarkerLocation(marker, location);
-      }
+      const location = locationData.location;
+      const marker = locationData.endpointType === 'From' ? this.fromMarker : this.toMarker;
+      this.updateMarkerLocation(marker, location);
     });
 
     this.mapService.centerAndZoomToEndpointRequested.subscribe(endpointType => {
