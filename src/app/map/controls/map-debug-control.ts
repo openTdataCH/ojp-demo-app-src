@@ -21,7 +21,7 @@ export class MapDebugControl implements mapboxgl.IControl {
     this.container = document.createElement('div');
     this.container.className = 'mapboxgl-ctrl mapboxgl-ctrl-group map-control';
 
-    this.container.innerHTML = '<div><span class="fw-bold">Center</span>: <span id="map_debug_center">n/a</span></ div><div><span class="fw-bold">Zoom</span>: <span id="map_debug_zoom">n/a</span></div>';
+    this.container.innerHTML = (document.getElementById('map-debug-control') as HTMLElement).innerHTML
 
     map.on('move', () => {
       this.updateDebugCenter();
