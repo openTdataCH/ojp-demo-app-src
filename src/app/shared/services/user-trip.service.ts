@@ -1,7 +1,7 @@
 import { EventEmitter, Injectable } from '@angular/core'
 import * as OJP from '../ojp-sdk/index'
 
-type LocationUpdateSource = 'SearchForm' | 'MapDragend'
+type LocationUpdateSource = 'SearchForm' | 'MapDragend' | 'MapPopupClick'
 interface LocationData {
   endpointType: OJP.JourneyPointType,
   location: OJP.Location | null,

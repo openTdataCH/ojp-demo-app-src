@@ -45,17 +45,26 @@ export class SearchFormComponent implements OnInit {
     this.initLocations()
 
     this.userTripService.locationUpdated.subscribe(locationData => {
-      if (locationData.updateSource === 'MapDragend') {
+      if (
+        (locationData.updateSource === 'MapDragend')
+        || (locationData.updateSource === 'MapPopupClick')
+      ) {
         const geoPosition = locationData.location?.geoPosition ?? null;
         if (geoPosition === null) {
           return
         }
 
-        const latlngS = geoPosition.asLatLngString();
+        let locationFormText = geoPosition.asLatLngString()
+
+        const stopPlaceName = locationData.location?.stopPlace?.stopPlaceName ?? null
+        if (stopPlaceName) {
+          locationFormText = stopPlaceName
+        }
+
         if (locationData.endpointType === 'From') {
-          this.fromLocationText = latlngS
+          this.fromLocationText = locationFormText
         } else {
-          this.toLocationText = latlngS
+          this.toLocationText = locationFormText
         }
 
         this.updateSearchParams();

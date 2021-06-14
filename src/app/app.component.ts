@@ -30,7 +30,10 @@ export class AppComponent implements OnInit {
 
   ngOnInit() {
     this.userTripService.locationUpdated.subscribe(locationData => {
-      if (locationData.updateSource === 'MapDragend') {
+      if (
+        (locationData.updateSource === 'MapDragend')
+        || (locationData.updateSource === 'MapPopupClick')
+      ) {
         this.trips = []
         this.searchState = 'ChooseEndpoints'
       }

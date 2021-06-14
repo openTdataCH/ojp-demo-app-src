@@ -9,6 +9,7 @@ import { MapAppLayer } from './app-layers/map-app-layer.interface';
 import { StopsAppLayer } from './app-layers/stops/stops-app-layer';
 
 import { MapDebugControl } from './controls/map-debug-control'
+import { MapHelpers } from './helpers/map.helpers';
 
 @Component({
   selector: 'app-map',
@@ -25,6 +26,8 @@ export class MapComponent implements OnInit {
   private stopsMapAppLayer: StopsAppLayer | null
 
   private prevMapBoundsHash: string = '';
+
+  private popupContextMenu: mapboxgl.Popup
 
   constructor(
     private userTripService: UserTripService,
@@ -63,6 +66,9 @@ export class MapComponent implements OnInit {
 
     this.mapLoadingPromise = null;
 
+    this.popupContextMenu = new mapboxgl.Popup({
+      focusAfterOpen: false
+    });
   }
 
   private handleMarkerDrag(marker: mapboxgl.Marker, endpointType: OJP.JourneyPointType) {
@@ -138,6 +144,37 @@ export class MapComponent implements OnInit {
         mapAppLayer.onMapBoundsChange();
       })
     });
+
+    map.on('contextmenu', (ev: mapboxgl.MapMouseEvent) => {
+      this.showPickupPopup(map, ev.lngLat);
+    });
+  }
+
+  private showPickupPopup(map: mapboxgl.Map, lngLat: mapboxgl.LngLat) {
+    let popupHTML = (document.getElementById('map-endpoint-coords-picker-popup') as HTMLElement).innerHTML;
+    const pointLatLngS = MapHelpers.formatMapboxLngLatAsLatLng(lngLat);
+    popupHTML = popupHTML.replace('[PICKER_COORDS]', pointLatLngS);
+
+    const popupContainer = document.createElement('div');
+    popupContainer.innerHTML = popupHTML;
+
+    popupContainer.addEventListener('click', ev => {
+      const btnEl = ev.target as HTMLButtonElement;
+      const endpointType = btnEl.getAttribute('data-endpoint-type') as OJP.JourneyPointType;
+      if (endpointType === null) {
+        console.error('expected data-endpoint-type attribute');
+        return;
+      }
+
+      const location = OJP.Location.initWithLngLat(lngLat.lng, lngLat.lat);
+      this.userTripService.updateTripEndpoint(location, endpointType, 'MapPopupClick');
+
+      this.popupContextMenu.remove();
+    });
+
+    this.popupContextMenu.setLngLat(lngLat)
+      .setDOMContent(popupContainer)
+      .addTo(map);
   }
 
   private addMapControls(map: mapboxgl.Map) {
