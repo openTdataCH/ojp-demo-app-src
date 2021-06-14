@@ -69,11 +69,6 @@ export class StopsAppLayer implements MapAppLayer {
     );
 
     request.fetchResponse().then(locations => {
-      console.log('StopsAppLayer: backend returned ' + locations.length + ' locations');
-      if (locations.length > 0) {
-        console.log(locations.slice(0, 10));
-      }
-
       const features: GeoJSON.Feature[] = []
 
       locations.forEach(location => {
