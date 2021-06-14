@@ -1,14 +1,17 @@
 import { XPathOJP } from "../helpers/xpath-ojp";
 import { GeoPosition } from "./geoposition";
 import { StopPlace } from "./stopplace";
+import { Address } from "./address";
 
 export class Location {
+  public address: Address | null
   public stopPointRef: string | null
   public locationName: string | null
   public stopPlace: StopPlace | null
   public geoPosition: GeoPosition | null
 
   constructor() {
+    this.address = null
     this.stopPointRef = null;
     this.locationName = null;
     this.stopPlace = null;
@@ -18,6 +21,7 @@ export class Location {
   public static initWithOJPContextNode(contextNode: Node): Location {
     const location = new Location();
 
+    location.address = Address.initFromContextNode(contextNode)
     location.stopPointRef = XPathOJP.queryText('siri:StopPointRef', contextNode)
     location.locationName = XPathOJP.queryText('ojp:LocationName/ojp:Text', contextNode)
     location.stopPlace = StopPlace.initFromContextNode(contextNode)
