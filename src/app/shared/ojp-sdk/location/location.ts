@@ -44,6 +44,32 @@ export class Location {
     return location
   }
 
+  public static initWithFeature(feature: GeoJSON.Feature): Location | null {
+    const geoPosition = GeoPosition.initWithFeature(feature)
+    if (geoPosition === null) {
+      return null
+    }
+
+    const attrs = feature.properties
+    if (attrs === null) {
+      return null
+    }
+
+    const stopPlaceRef = attrs['stopPlace.stopPlaceRef'];
+    if (stopPlaceRef === null) {
+      return null
+    }
+
+    const stopPlaceName = attrs['stopPlace.stopPlaceName'] ?? null;
+
+    const location = new Location()
+    location.stopPlace = new StopPlace(stopPlaceRef, stopPlaceName, null)
+    location.geoPosition = geoPosition;
+    location.locationName = attrs['locationName'] ?? null;
+
+    return location
+  }
+
   asGeoJSONFeature(): GeoJSON.Feature<GeoJSON.Point> | null {
     if (this.geoPosition === null) {
       return null

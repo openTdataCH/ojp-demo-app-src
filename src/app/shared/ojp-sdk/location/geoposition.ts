@@ -26,6 +26,20 @@ export class GeoPosition {
     return geoPosition
   }
 
+  public static initWithFeature(feature: GeoJSON.Feature): GeoPosition | null {
+    if (feature.geometry.type !== 'Point') {
+      return null
+    }
+
+    const lngLatAr = (feature.geometry as GeoJSON.Point).coordinates as [number, number]
+    const longitude = lngLatAr[0]
+    const latitude = lngLatAr[1]
+
+    const geoPosition = new GeoPosition(longitude, latitude)
+
+    return geoPosition
+  }
+
   public asLngLat(): mapboxgl.LngLat {
     const lnglat = new mapboxgl.LngLat(this.longitude, this.latitude);
     return lnglat
