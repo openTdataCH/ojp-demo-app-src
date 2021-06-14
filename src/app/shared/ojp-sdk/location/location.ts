@@ -56,17 +56,22 @@ export class Location {
       return null
     }
 
-    const stopPlaceRef = attrs['stopPlace.stopPlaceRef'];
-    if (stopPlaceRef === null) {
-      return null
-    }
-
-    const stopPlaceName = attrs['stopPlace.stopPlaceName'] ?? null;
-
     const location = new Location()
-    location.stopPlace = new StopPlace(stopPlaceRef, stopPlaceName, null)
     location.geoPosition = geoPosition;
     location.locationName = attrs['locationName'] ?? null;
+
+    const stopPlaceRef = attrs['stopPlace.stopPlaceRef'];
+    if (stopPlaceRef) {
+      const stopPlaceName = attrs['stopPlace.stopPlaceName'] ?? null;
+      location.stopPlace = new StopPlace(stopPlaceRef, stopPlaceName, null)
+    }
+
+    const addressCode = attrs['addressCode'];
+    if (addressCode) {
+      const addressName = attrs['addressName'] ?? null;
+      const topographicPlaceRef = attrs['topographicPlaceRef'] ?? null;
+      location.address = new Address(addressCode, addressName, topographicPlaceRef)
+    }
 
     return location
   }
