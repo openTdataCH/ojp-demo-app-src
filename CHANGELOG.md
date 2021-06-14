@@ -4,6 +4,13 @@ OJP-Demo URL: https://opentdatach.github.io/ojp-demo-app/
 
 ----
 
+13.Jun 2021
+- quick map markers design
+- user can right-click and use coords for from/to
+- show public transport stops (above zoom level 13)
+- snap to stops when dragging markers
+- use stops for from/to when clicking
+
 11.Jun 2021
 - updates map controls (zoom, scale, debug coordinates)
 - allow zoom/center the map on from/to input fields
