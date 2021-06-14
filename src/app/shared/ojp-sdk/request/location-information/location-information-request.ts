@@ -1,6 +1,9 @@
+import xmlbuilder from 'xmlbuilder';
+
 import { StageConfig } from '../../config/config'
 import { XPathOJP } from '../../helpers/xpath-ojp';
 import { Location } from '../../location/location';
+import { GeoRestrictionType } from '../../types/geo-restriction.type';
 import { OJPBaseRequest } from '../base-request'
 import { LocationInformationRequestParams } from './location-information-request-params.interface'
 
@@ -24,6 +27,20 @@ export class LocationInformationRequest extends OJPBaseRequest {
   public static initWithStopPlaceRef(stageConfig: StageConfig, stopPlaceRef: string): LocationInformationRequest {
     const requestParams = <LocationInformationRequestParams>{
       stopPlaceRef: stopPlaceRef
+    }
+
+    const locationInformationRequest = new LocationInformationRequest(stageConfig, requestParams);
+    return locationInformationRequest
+  }
+
+  public static initWithBBOXAndType(stageConfig: StageConfig, bboxWest: number, bboxNorth: number, bboxEast: number, bboxSouth: number, type: GeoRestrictionType, limit: number = 1000): LocationInformationRequest {
+    const requestParams = <LocationInformationRequestParams>{
+      bboxWest: bboxWest,
+      bboxNorth: bboxNorth,
+      bboxEast: bboxEast,
+      bboxSouth: bboxSouth,
+      numberOfResults: limit,
+      geoRestrictionType: type,
     }
 
     const locationInformationRequest = new LocationInformationRequest(stageConfig, requestParams);
@@ -60,9 +77,12 @@ export class LocationInformationRequest extends OJPBaseRequest {
   private buildRequestNode() {
     const requestNode = this.serviceRequestNode.ele('ojp:OJPLocationInformationRequest');
 
+    let initialInputNode: xmlbuilder.XMLElement | null = null
+
     const locationName = this.requestParams.locationName ?? null;
     if (locationName) {
-      requestNode.ele('ojp:InitialInput').ele('ojp:LocationName', locationName);
+      initialInputNode = requestNode.ele('ojp:InitialInput')
+      initialInputNode.ele('ojp:LocationName', locationName);
     }
 
     const stopPlaceRef = this.requestParams.stopPlaceRef ?? null;
@@ -70,7 +90,35 @@ export class LocationInformationRequest extends OJPBaseRequest {
       requestNode.ele('ojp:PlaceRef').ele('ojp:StopPlaceRef', stopPlaceRef);
     }
 
-    requestNode.ele('ojp:Restrictions').ele('ojp:NumberOfResults', 10);
+    const bboxWest = this.requestParams.bboxWest ?? null;
+    const bboxNorth = this.requestParams.bboxNorth ?? null;
+    const bboxEast = this.requestParams.bboxEast ?? null;
+    const bboxSouth = this.requestParams.bboxSouth ?? null;
+    if (bboxWest && bboxNorth && bboxEast && bboxSouth) {
+      if (initialInputNode === null) {
+        initialInputNode = requestNode.ele('ojp:InitialInput')
+      }
+
+      const rectangleNode = initialInputNode.ele('ojp:GeoRestriction').ele('ojp:Rectangle')
+
+      const upperLeftNode = rectangleNode.ele('ojp:UpperLeft')
+      upperLeftNode.ele('Longitude', bboxWest.toFixed(6))
+      upperLeftNode.ele('Latitude', bboxNorth.toFixed(6))
+
+      const lowerRightNode = rectangleNode.ele('ojp:LowerRight')
+      lowerRightNode.ele('Longitude', bboxEast.toFixed(6))
+      lowerRightNode.ele('Latitude', bboxSouth.toFixed(6))
+    }
+
+    const restrictionsNode = requestNode.ele('ojp:Restrictions');
+
+    const numberOfResults = this.requestParams.numberOfResults ?? 10;
+    restrictionsNode.ele('ojp:NumberOfResults', numberOfResults);
+
+    const geoRestrictionType = this.requestParams.geoRestrictionType ?? null;
+    if (geoRestrictionType) {
+      restrictionsNode.ele('ojp:Type', geoRestrictionType);
+    }
   }
 
 }
