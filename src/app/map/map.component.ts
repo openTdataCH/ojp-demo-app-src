@@ -9,6 +9,7 @@ import { MapAppLayer } from './app-layers/map-app-layer.interface';
 import { StopsAppLayer } from './app-layers/stops/stops-app-layer';
 
 import { MapDebugControl } from './controls/map-debug-control'
+import { MapLayersLegendControl } from './controls/map-layers-legend-control';
 import { MapHelpers } from './helpers/map.helpers';
 
 @Component({
@@ -212,6 +213,9 @@ export class MapComponent implements OnInit {
 
     const debugControl = new MapDebugControl(map);
     map.addControl(debugControl, 'top-left');
+
+    const mapLayersLegendControl = new MapLayersLegendControl(map, this.mapAppLayers);
+    map.addControl(mapLayersLegendControl, 'bottom-right');
   }
 
   private updateMarkerLocation(marker: mapboxgl.Marker, location: OJP.Location | null) {
