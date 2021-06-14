@@ -4,6 +4,10 @@ OJP-Demo URL: https://opentdatach.github.io/ojp-demo-app/
 
 ----
 
+14.Jun 2021
+- adds 'address' and 'poi' map app layers to display the LIR Location data
+- adds a layers map legend control where we can control the layers visibility
+
 13.Jun 2021
 - quick map markers design
 - user can right-click and use coords for from/to
