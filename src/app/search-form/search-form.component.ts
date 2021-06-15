@@ -67,7 +67,7 @@ export class SearchFormComponent implements OnInit {
           this.toLocationText = locationFormText
         }
 
-        this.updateSearchParams();
+        this.updateSearchParamsDate();
       }
     });
   }
@@ -124,7 +124,7 @@ export class SearchFormComponent implements OnInit {
 
   onLocationSelected(location: OJP.Location, originType: OJP.JourneyPointType) {
     this.userTripService.updateTripEndpoint(location, originType, 'SearchForm')
-    this.updateSearchParams()
+    this.updateSearchParamsDate()
   }
 
   onChangeStageAPI(ev: SbbRadioChange) {
@@ -148,8 +148,9 @@ export class SearchFormComponent implements OnInit {
     return departureDate
   }
 
-  updateSearchParams() {
+  updateSearchParamsDate() {
     const departureDate = this.computeFormDepartureDate();
+
     this.tripRequestParams = OJP.TripsRequestParams.initWithLocationsAndDate(
       this.userTripService.fromLocation,
       this.userTripService.toLocation,
@@ -168,7 +169,7 @@ export class SearchFormComponent implements OnInit {
       return
     }
 
-    this.updateSearchParams();
+    this.updateSearchParamsDate();
 
     const tripRequest = new OJP.TripRequest(stageConfig, this.tripRequestParams);
     tripRequest.fetchResponse(tripsResponse => {
