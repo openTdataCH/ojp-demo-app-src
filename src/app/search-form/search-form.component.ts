@@ -168,6 +168,8 @@ export class SearchFormComponent implements OnInit {
       return
     }
 
+    this.updateSearchParams();
+
     const tripRequest = new OJP.TripRequest(stageConfig, this.tripRequestParams);
     tripRequest.fetchResponse(tripsResponse => {
       this.tripsResponseCompleted.emit(tripsResponse);
