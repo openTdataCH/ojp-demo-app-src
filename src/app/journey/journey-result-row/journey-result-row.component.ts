@@ -6,8 +6,8 @@ import * as OJP from '../../shared/ojp-sdk/index'
   templateUrl: './journey-result-row.component.html',
 })
 export class JourneyResultRowComponent implements OnInit {
-  @Input() trip!: OJP.Trip
-  @Input() idx!: number
+  @Input() trip: OJP.Trip | undefined
+  @Input() idx: number | undefined
 
   ngOnInit() {
 

@@ -5,7 +5,7 @@
   <sbb-expansion-panel-header>{{ computeTripTitle() }}</sbb-expansion-panel-header>
   <div>
     <ul>
-      <li *ngFor="let leg of trip.legs">{{ computeLegTitle(leg) }}</li>
+      <li *ngFor="let leg of trip?.legs">{{ computeLegTitle(leg) }}</li>
     </ul>
   </div>
 </sbb-expansion-panel>
