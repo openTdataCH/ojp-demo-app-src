@@ -6,14 +6,22 @@ export class TripsResponse {
   public contextLocations: Location[]
   public trips: Trip[]
 
-  constructor(responseXMLText: string) {
-    const responseXML = new DOMParser().parseFromString(responseXMLText, 'application/xml');
-
-    this.contextLocations = this.parseContextLocations(responseXML);
-    this.trips = this.parseTrips(responseXML);
+  constructor(contextLocations: Location[], trips: Trip[]) {
+    this.contextLocations = contextLocations
+    this.trips = trips
   }
 
-  private parseContextLocations(responseXML: Document): Location[] {
+  public static initWithXML(responseXMLText: string): TripsResponse {
+    const responseXML = new DOMParser().parseFromString(responseXMLText, 'application/xml');
+    const contextLocations = TripsResponse.parseContextLocations(responseXML);
+    const trips = TripsResponse.parseTrips(responseXML, contextLocations);
+
+    const tripResponse = new TripsResponse(contextLocations, trips)
+
+    return tripResponse
+  }
+
+  private static parseContextLocations(responseXML: Document): Location[] {
     let locations: Location[] = [];
 
     const locationNodes = XPathOJP.queryNodes('//ojp:TripResponseContext/ojp:Places/ojp:Location', responseXML);
@@ -25,11 +33,11 @@ export class TripsResponse {
     return locations;
   }
 
-  private parseTrips(responseXML: Document): Trip[] {
+  private static parseTrips(responseXML: Document, contextLocations: Location[]): Trip[] {
     let trips: Trip[] = [];
 
     const mapContextLocations: Record<string, Location> = {}
-    this.contextLocations.forEach(location => {
+    contextLocations.forEach(location => {
       const stopPlaceRef = location.stopPlace?.stopPlaceRef
       if (stopPlaceRef) {
         mapContextLocations[stopPlaceRef] = location
@@ -38,7 +46,7 @@ export class TripsResponse {
 
     const tripResultNodes = XPathOJP.queryNodes('//ojp:TripResult', responseXML);
     tripResultNodes.forEach(tripResult => {
-      const trip = Trip.initFromTripResultNode(tripResult as Node, this.contextLocations);
+      const trip = Trip.initFromTripResultNode(tripResult as Node, contextLocations);
       if (trip) {
         // Massage locations
         trip.legs.forEach(leg => {
