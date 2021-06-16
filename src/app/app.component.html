@@ -1,18 +1,6 @@
 <div class="row app-root">
   <div class="col-4 mt-3 mb-3">
-    <sbb-accordion>
-      <sbb-expansion-panel [expanded]="isChoosingEndpoints()">
-        <sbb-expansion-panel-header>Search</sbb-expansion-panel-header>
-        <app-search-form
-          (tripsResponseCompleted)="onTripsResponseCompleted($event)"
-        ></app-search-form>
-      </sbb-expansion-panel>
-      <journey-result-row
-        *ngFor="let trip of trips; index as idx"
-        [trip]="trip"
-        [idx]="idx"
-      ></journey-result-row>
-    </sbb-accordion>
+    <journey-results></journey-results>
   </div>
   <div class="col-8 mt-3 mb-3">
     <app-map></app-map>

@@ -1,0 +1,11 @@
+<sbb-accordion>
+  <sbb-expansion-panel [expanded]="isChoosingEndpoints()">
+    <sbb-expansion-panel-header>Search</sbb-expansion-panel-header>
+    <app-search-form></app-search-form>
+  </sbb-expansion-panel>
+  <journey-result-row
+    *ngFor="let trip of trips; index as idx"
+    [trip]="trip"
+    [idx]="idx"
+  ></journey-result-row>
+</sbb-accordion>
