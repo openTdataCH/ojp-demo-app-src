@@ -45,8 +45,15 @@ export class GeoPosition {
     return lnglat
   }
 
-  public asLatLngString(): string {
-    const s = this.latitude.toFixed(6) + ',' + this.longitude.toFixed(6);
+  public asLatLngString(roundCoords: boolean = true): string {
+    let s = ''
+
+    if (roundCoords) {
+      s = this.latitude.toFixed(6) + ',' + this.longitude.toFixed(6);
+    } else {
+      s = this.latitude + ',' + this.longitude;
+    }
+
     return s
   }
 }
