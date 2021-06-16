@@ -13,8 +13,6 @@ import { UserSettingsService } from '../shared/services/user-settings.service';
 export class SearchFormComponent implements OnInit {
   formGroup: FormGroup
 
-  @Output() tripsResponseCompleted = new EventEmitter<OJP.TripsResponse>();
-
   private tripRequestParams: OJP.TripsRequestParams | null
 
   public fromLocationText: string
@@ -173,7 +171,7 @@ export class SearchFormComponent implements OnInit {
 
     const tripRequest = new OJP.TripRequest(stageConfig, this.tripRequestParams);
     tripRequest.fetchResponse(tripsResponse => {
-      this.tripsResponseCompleted.emit(tripsResponse);
+      this.userTripService.updateTrips(tripsResponse.trips)
     });
   }
 }

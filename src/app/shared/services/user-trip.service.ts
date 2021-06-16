@@ -15,6 +15,7 @@ export class UserTripService {
   public viaLocations: OJP.Location[]
 
   public locationUpdated = new EventEmitter<LocationData>();
+  public tripsUpdated = new EventEmitter<OJP.Trip[]>();
 
   constructor() {
     this.fromLocation = null
@@ -36,5 +37,9 @@ export class UserTripService {
     }
 
     this.locationUpdated.emit(locationData);
+  }
+
+  updateTrips(trips: OJP.Trip[]) {
+    this.tripsUpdated.emit(trips)
   }
 }
