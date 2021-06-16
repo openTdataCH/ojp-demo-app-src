@@ -1,9 +1,12 @@
-import { Location } from '../location/location'
-import { TripStats } from '../types/trip-stats'
-import { TripLeg, TripTimedLeg } from './leg/trip-leg'
-
 import { XPathOJP } from '../helpers/xpath-ojp'
 import { DateHelpers } from '../helpers/date-helpers'
+
+import { Location } from '../location/location'
+import { TripStats } from '../types/trip-stats'
+
+import { TripLeg } from './leg/trip-leg'
+import { TripLegFactory } from './leg/trip-leg-factory'
+import { TripTimedLeg } from './leg/trip-timed-leg'
 
 export class Trip {
     public id: string
@@ -47,7 +50,7 @@ export class Trip {
 
         const tripResponseLegs = XPathOJP.queryNodes('ojp:Trip/ojp:TripLeg', tripResultNode)
         tripResponseLegs.forEach(tripLegNode => {
-            const tripLeg = TripLeg.initFromTripLegFactory(tripLegNode);
+            const tripLeg = TripLegFactory.initWithContextNode(tripLegNode);
             if (tripLeg === null) {
                 return
             }
