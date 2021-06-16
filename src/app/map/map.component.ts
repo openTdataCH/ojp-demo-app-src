@@ -77,28 +77,6 @@ export class MapComponent implements OnInit {
     });
   }
 
-  private handleMarkerDrag(marker: mapboxgl.Marker, endpointType: OJP.JourneyPointType) {
-    const lngLat = marker.getLngLat();
-
-    let location = OJP.Location.initWithLngLat(lngLat.lng, lngLat.lat);
-
-    // Try to snap to the nearest stop
-    const nearbyStopFeature = this.stopsMapAppLayer?.queryNearbyFeature(lngLat) ?? null;
-    if (nearbyStopFeature) {
-      const nearbyLocation = OJP.Location.initWithFeature(nearbyStopFeature);
-      if (nearbyLocation) {
-        location = nearbyLocation
-      }
-
-      const nearbyStopLngLat = MapHelpers.computePointLngLatFromFeature(nearbyStopFeature)
-      if (nearbyStopLngLat) {
-        marker.setLngLat(nearbyStopLngLat);
-      }
-    }
-
-    this.userTripService.updateTripEndpoint(location, endpointType, 'MapDragend');
-  }
-
   ngOnInit() {
     this.initMap()
 
@@ -140,6 +118,28 @@ export class MapComponent implements OnInit {
         this.onMapLoad(map);
       });
     });
+  }
+
+  private handleMarkerDrag(marker: mapboxgl.Marker, endpointType: OJP.JourneyPointType) {
+    const lngLat = marker.getLngLat();
+
+    let location = OJP.Location.initWithLngLat(lngLat.lng, lngLat.lat);
+
+    // Try to snap to the nearest stop
+    const nearbyStopFeature = this.stopsMapAppLayer?.queryNearbyFeature(lngLat) ?? null;
+    if (nearbyStopFeature) {
+      const nearbyLocation = OJP.Location.initWithFeature(nearbyStopFeature);
+      if (nearbyLocation) {
+        location = nearbyLocation
+      }
+
+      const nearbyStopLngLat = MapHelpers.computePointLngLatFromFeature(nearbyStopFeature)
+      if (nearbyStopLngLat) {
+        marker.setLngLat(nearbyStopLngLat);
+      }
+    }
+
+    this.userTripService.updateTripEndpoint(location, endpointType, 'MapDragend');
   }
 
   private onMapLoad(map: mapboxgl.Map) {
