@@ -41,6 +41,13 @@ export class JourneyPointInputComponent implements OnInit, OnChanges {
         return;
       }
 
+      const coordsLocation = this.matchCoordsInput(searchTerm);
+      if (coordsLocation) {
+        this.lookupLocations = []
+        this.handleCoordsPick(coordsLocation)
+        return
+      }
+
       this.fetchJourneyPoints(searchTerm);
     });
   }
@@ -87,5 +94,37 @@ export class JourneyPointInputComponent implements OnInit, OnChanges {
 
   public handleTapOnMapButton() {
     this.mapService.centerAndZoomToEndpointRequested.emit(this.endpointType);
+  }
+
+  private matchCoordsInput(inputS: string): OJP.Location | null {
+    inputS = inputS.trim().replace(/\s/g, '');
+
+    const inputMatches = inputS.match(/^([0-9\.]+?),([0-9\.]+?)$/);
+    if (inputMatches === null) {
+      return null
+    }
+
+    let longitude = parseFloat(inputMatches[1])
+    let latitude = parseFloat(inputMatches[2])
+    // In CH always long < lat
+    if (longitude > latitude) {
+      longitude = parseFloat(inputMatches[2])
+      latitude = parseFloat(inputMatches[1])
+    }
+
+    const location = OJP.Location.initWithLngLat(longitude, latitude)
+    return location
+  }
+
+  private handleCoordsPick(location: OJP.Location) {
+    const geoPosition = location.geoPosition
+    if (geoPosition === null) {
+      return
+    }
+
+    const inputValue = geoPosition.asLatLngString(false)
+    this.inputControl.setValue(inputValue);
+
+    this.selectedLocation.emit(location);
   }
 }
