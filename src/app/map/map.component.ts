@@ -15,7 +15,7 @@ import { POIAppLayer } from './app-layers/poi/poi-app-layer';
 
 import { MapDebugControl } from './controls/map-debug-control'
 import { MapLayersLegendControl } from './controls/map-layers-legend-control';
-
+import { TripRenderController } from './controllers/trip-render-controller';
 
 @Component({
   selector: 'app-map',
@@ -34,6 +34,8 @@ export class MapComponent implements OnInit {
   private prevMapBoundsHash: string = '';
 
   private popupContextMenu: mapboxgl.Popup
+
+  private tripRenderController: TripRenderController | null
 
   constructor(
     private userTripService: UserTripService,
@@ -75,6 +77,8 @@ export class MapComponent implements OnInit {
     this.popupContextMenu = new mapboxgl.Popup({
       focusAfterOpen: false
     });
+
+    this.tripRenderController = null
   }
 
   ngOnInit() {
@@ -177,6 +181,8 @@ export class MapComponent implements OnInit {
         mapAppLayer.onMapClick(ev)
       })
     });
+
+    this.tripRenderController = new TripRenderController(map);
   }
 
   private showPickupPopup(map: mapboxgl.Map, lngLat: mapboxgl.LngLat) {
