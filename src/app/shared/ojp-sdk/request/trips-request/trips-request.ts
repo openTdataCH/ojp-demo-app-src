@@ -53,5 +53,15 @@ export class TripRequest extends OJPBaseRequest {
         endPointNode.ele('obj:DepArrTime', dateF);
       }
     });
+
+    const paramsNode = tripRequestNode.ele('ojp:Params');
+
+    const numberOfResults = 5;
+    paramsNode.ele('ojp:NumberOfResults', numberOfResults);
+
+    paramsNode.ele('ojp:IncludeTrackSections', true)
+    paramsNode.ele('ojp:IncludeLegProjection', true)
+    paramsNode.ele('ojp:IncludeTurnDescription', true)
+    paramsNode.ele('ojp:IncludeIntermediateStops', true)
   }
 }
