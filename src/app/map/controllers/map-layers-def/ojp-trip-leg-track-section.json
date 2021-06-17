@@ -11,8 +11,15 @@
     "visibility": "visible"
   },
   "paint": {
-      "line-color": "#009933"
     "line-width": 2,
     "line-opacity": 1.0,
+    "line-color": [
+      "case",
+      ["==", ["get", "leg.type"], "ContinousLeg"],
+      "#009933",
+      ["==", ["get", "leg.type"], "TransferLeg"],
+      "#0000ff",
+      "#eb0000"
+    ]
   }
 }
