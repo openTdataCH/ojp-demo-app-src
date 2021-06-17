@@ -114,6 +114,15 @@ export class MapComponent implements OnInit {
         })
       });
     })
+
+    this.mapService.mapCenterAndZoomChanged.subscribe(mapData => {
+      this.mapLoadingPromise?.then(map => {
+        map.jumpTo({
+          center: mapData.lnglat,
+          zoom: mapData.zoom
+        });
+      });
+    })
   }
 
   private initMap() {
