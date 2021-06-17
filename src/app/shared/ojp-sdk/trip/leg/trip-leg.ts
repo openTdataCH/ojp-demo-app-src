@@ -40,6 +40,16 @@ export class TripLeg {
         locationFeature.properties['endpoint.type'] = isFrom ? 'from' : 'to'
         locationFeature.properties['draw.type'] = 'endpoint';
 
+        const geoPosition = endpointLocation.geoPosition
+        if (geoPosition) {
+          locationFeature.bbox = [
+            geoPosition.longitude,
+            geoPosition.latitude,
+            geoPosition.longitude,
+            geoPosition.latitude,
+          ]
+        }
+
         features.push(locationFeature);
 
         legBeelineFeature.geometry.coordinates.push(locationFeature.geometry.coordinates);
