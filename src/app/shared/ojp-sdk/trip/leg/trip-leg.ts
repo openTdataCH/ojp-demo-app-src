@@ -56,7 +56,18 @@ export class TripLeg {
       }
     });
 
-    if (legBeelineFeature.geometry.coordinates.length > 1) {
+    let hasLegTrackFeature = false
+    this.legTrack?.trackSections.forEach(trackSection => {
+      const feature = trackSection.linkProjection?.asGeoJSONFeature();
+      if (feature?.properties) {
+          feature.properties['draw.type'] = 'leg-track-section'
+          features.push(feature);
+
+          hasLegTrackFeature = true
+      }
+    })
+
+    if (!hasLegTrackFeature && legBeelineFeature.geometry.coordinates.length > 1) {
       features.push(legBeelineFeature);
     }
 
