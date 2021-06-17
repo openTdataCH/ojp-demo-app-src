@@ -99,6 +99,12 @@ export class MapComponent implements OnInit {
         });
       });
     });
+
+    this.userTripService.activeTripSelected.subscribe(trip => {
+      this.mapLoadingPromise?.then(map => {
+        this.tripRenderController?.renderTrip(trip)
+      });
+    })
   }
 
   private initMap() {

@@ -16,6 +16,7 @@ export class UserTripService {
 
   public locationUpdated = new EventEmitter<LocationData>();
   public tripsUpdated = new EventEmitter<OJP.Trip[]>();
+  public activeTripSelected = new EventEmitter<OJP.Trip | null>();
 
   constructor() {
     this.fromLocation = null
@@ -41,5 +42,10 @@ export class UserTripService {
 
   updateTrips(trips: OJP.Trip[]) {
     this.tripsUpdated.emit(trips)
+    if (trips.length > 0) {
+      this.activeTripSelected.emit(trips[0]);
+    } else {
+      this.activeTripSelected.emit(null);
+    }
   }
 }
