@@ -3,13 +3,13 @@
   "type": "circle",
   "source": "[SOURCE]",
   "filter": [
-      "==", ["get", "draw.type"], "endpoint"
+    "==", ["get", "draw.type"], "endpoint"
   ],
   "layout": {},
   "paint": {
-      "circle-radius": 3.0,
-      "circle-color": "rgba(255, 255, 255, 1)",
-      "circle-stroke-color": "#eb0000",
-      "circle-stroke-width": 2
+    "circle-radius": 3.0,
+    "circle-color": "rgba(255, 255, 255, 1)",
+    "circle-stroke-color": "#eb0000",
+    "circle-stroke-width": 2
   }
 }

@@ -3,23 +3,23 @@
   "type": "line",
   "source": "[SOURCE]",
   "filter": [
-      "==", ["get", "draw.type"], "leg-beeline"
+    "==", ["get", "draw.type"], "leg-beeline"
   ],
   "layout": {
-      "line-join": "round",
-      "line-cap": "round",
-      "visibility": "visible"
+    "line-join": "round",
+    "line-cap": "round",
+    "visibility": "visible"
   },
   "paint": {
-      "line-width": 4,
-      "line-opacity": 0.2,
-      "line-color": [
-          "case",
-          ["==", ["get", "leg.type"], "ContinousLeg"],
-          "#009933",
-          ["==", ["get", "leg.type"], "TransferLeg"],
-          "#0000ff",
-          "#eb0000"
-      ]
+    "line-width": 4,
+    "line-opacity": 0.2,
+    "line-color": [
+      "case",
+      ["==", ["get", "leg.type"], "ContinousLeg"],
+      "#009933",
+      ["==", ["get", "leg.type"], "TransferLeg"],
+      "#0000ff",
+      "#eb0000"
+    ]
   }
 }
