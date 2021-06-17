@@ -1,5 +1,6 @@
 import { JourneyService } from '../../journey/journey-service'
 import { LegEndpoint, LegFromEndpoint, LegToEndpoint } from './leg-endpoint'
+import { LegTrack } from './leg-track'
 
 import { TripLeg, LegType } from "./trip-leg"
 
@@ -27,6 +28,8 @@ export class TripTimedLeg extends TripLeg {
 
     if (service && fromEndpoint && toEndpoint) {
       const tripLeg = new TripTimedLeg(legIDx, service, fromEndpoint, toEndpoint);
+      tripLeg.legTrack = LegTrack.initFromLegNode(legNode);
+
       return tripLeg;
     }
 

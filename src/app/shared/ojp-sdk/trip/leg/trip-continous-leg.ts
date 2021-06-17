@@ -78,14 +78,6 @@ export class TripContinousLeg extends TripLeg {
       }
     });
 
-    this.legTrack?.trackSections.forEach(trackSection => {
-      const feature = trackSection.linkProjection?.asGeoJSONFeature();
-      if (feature?.properties) {
-          feature.properties['draw.type'] = 'leg-track-section'
-          features.push(feature);
-      }
-    })
-
     return features;
   }
 }
