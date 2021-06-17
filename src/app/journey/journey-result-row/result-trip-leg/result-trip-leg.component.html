@@ -3,5 +3,6 @@
   <span
     class="badge rounded-pill leg-pill"
     [ngClass]="computeLegPillClassName()"
+    (click)="handleTapOnPill()"
   >{{ leg?.legType }}</span> {{ computeLegInfo() }}
 </div>

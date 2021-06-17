@@ -105,6 +105,15 @@ export class MapComponent implements OnInit {
         this.tripRenderController?.renderTrip(trip)
       });
     })
+
+    this.mapService.mapBoundsChanged.subscribe(newBounds => {
+      this.mapLoadingPromise?.then(map => {
+        map.fitBounds(newBounds, {
+          padding: 100,
+          duration: 0
+        })
+      });
+    })
   }
 
   private initMap() {

@@ -73,4 +73,27 @@ export class ResultTripLegComponent implements OnInit {
 
     return ''
   }
+
+  handleTapOnPill() {
+    if (!this.leg) {
+      return
+    }
+
+    const legFeatures = this.leg.computeGeoJSONFeatures();
+
+    const bbox = new GeoPositionBBOX([])
+    legFeatures.forEach(feature => {
+      const featureBBOX = feature.bbox;
+      if (featureBBOX) {
+        const bboxSW = new GeoPosition(featureBBOX[0], featureBBOX[1])
+        bbox.extend(bboxSW)
+
+        const bboxNE = new GeoPosition(featureBBOX[2], featureBBOX[3])
+        bbox.extend(bboxNE)
+      }
+    })
+
+    const bounds = bbox.asLngLatBounds();
+    this.mapService.mapBoundsChanged.emit(bounds);
+  }
 }
