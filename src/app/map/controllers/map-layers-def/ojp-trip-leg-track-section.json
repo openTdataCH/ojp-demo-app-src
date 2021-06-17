@@ -1,0 +1,18 @@
+{
+  "id": "ojp-trip-leg-track-section",
+  "type": "line",
+  "source": "[SOURCE]",
+  "filter": [
+      "==", ["get", "draw.type"], "leg-track-section"
+  ],
+  "layout": {
+      "line-join": "round",
+      "line-cap": "round",
+      "visibility": "visible"
+  },
+  "paint": {
+      "line-width": 2,
+      "line-opacity": 1.0,
+      "line-color": "#009933"
+  }
+}
