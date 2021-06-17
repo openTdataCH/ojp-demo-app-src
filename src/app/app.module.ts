@@ -17,6 +17,7 @@ import { AppComponent } from './app.component';
 import { JourneyPointInputComponent } from './search-form/journey-point-input/journey-point-input.component';
 import { JourneyResultsComponent } from './journey/journey-results/journey-results.component';
 import { JourneyResultRowComponent } from './journey/journey-result-row/journey-result-row.component'
+import { ResultTripLegComponent } from './journey/journey-result-row/result-trip-leg/result-trip-leg.component';
 import { MapComponent } from './map/map.component';
 import { SearchFormComponent } from './search-form/search-form.component';
 
@@ -28,6 +29,7 @@ import { SearchFormComponent } from './search-form/search-form.component';
     JourneyPointInputComponent,
     JourneyResultsComponent,
     JourneyResultRowComponent,
+    ResultTripLegComponent,
     SearchFormComponent,
   ],
   imports: [

@@ -1,0 +1,7 @@
+<div
+  [ngClass]="{'mb-2': !isLastLeg}">
+  <span
+    class="badge rounded-pill leg-pill"
+    [ngClass]="computeLegPillClassName()"
+  >{{ leg?.legType }}</span> {{ computeLegInfo() }}
+</div>
