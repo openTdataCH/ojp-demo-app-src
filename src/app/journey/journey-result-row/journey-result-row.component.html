@@ -1,11 +1,13 @@
-
 <sbb-expansion-panel
   [expanded]="idx == 0"
 >
   <sbb-expansion-panel-header>{{ computeTripTitle() }}</sbb-expansion-panel-header>
   <div>
-    <ul>
-      <li *ngFor="let leg of trip?.legs">{{ computeLegTitle(leg) }}</li>
-    </ul>
+    <result-trip-leg
+      *ngFor="let leg of trip?.legs; index as idx"
+      [leg]="leg"
+      [isLastLeg]="isLastLeg(idx)"
+    >
+    </result-trip-leg>
   </div>
 </sbb-expansion-panel>

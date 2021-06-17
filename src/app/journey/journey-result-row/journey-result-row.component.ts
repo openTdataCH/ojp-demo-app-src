@@ -1,4 +1,6 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnInit, ViewChild } from '@angular/core';
+import { SbbExpansionPanel } from '@sbb-esta/angular-business/accordion';
+import { UserTripService } from 'src/app/shared/services/user-trip.service';
 import * as OJP from '../../shared/ojp-sdk/index'
 
 @Component({
@@ -9,39 +11,28 @@ export class JourneyResultRowComponent implements OnInit {
   @Input() trip: OJP.Trip | undefined
   @Input() idx: number | undefined
 
-  ngOnInit() {
+  @ViewChild(SbbExpansionPanel, { static: true }) tripPanel: SbbExpansionPanel | undefined;
 
+  constructor(private userTripService: UserTripService) {
+
+  }
+
+  ngOnInit() {
+    this.tripPanel?.expanded
+
+    this.tripPanel?.afterExpand.subscribe(ev => {
+      if (this.trip) {
+        this.userTripService.activeTripSelected.emit(this.trip);
+      }
+    })
   }
 
   computeTripTitle(): string {
     return 'Trip ' + ((this.idx ?? 0) + 1);
   }
 
-  computeLegTitle(leg: OJP.TripLeg): string {
-    const titleParts: string[] = [leg.legType + ': ']
-
-    if (leg.legType === 'TimedLeg') {
-      const timedLeg = leg as OJP.TripTimedLeg
-
-      titleParts.push(leg.fromLocation.locationName ?? '')
-      const depTime = timedLeg.fromEndpoint.departureData.timetabledTime
-      if (depTime) {
-        titleParts.push('(' + OJP.DateHelpers.formatTimeHHMM(depTime) + ')');
-      }
-
-      titleParts.push(' - ')
-
-      titleParts.push(leg.toLocation.locationName ?? '')
-      const arrTime = timedLeg.toEndpoint.arrivalData.timetabledTime;
-      if (arrTime) {
-        titleParts.push('(' + OJP.DateHelpers.formatTimeHHMM(arrTime) + ')');
-      }
-    } else {
-      titleParts.push(leg.fromLocation.locationName ?? '')
-      titleParts.push(' - ')
-      titleParts.push(leg.toLocation.locationName ?? '')
-    }
-
-    return titleParts.join('')
+  isLastLeg(legIdx: number): boolean {
+    const tripLegsNo = this.trip?.legs.length ?? 0
+    return legIdx === tripLegsNo - 1
   }
 }

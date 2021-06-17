@@ -1,5 +1,4 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
-import { SbbAccordion } from '@sbb-esta/angular-business/accordion';
 import { SbbExpansionPanel } from '@sbb-esta/angular-business/accordion';
 import { UserTripService } from 'src/app/shared/services/user-trip.service';
 
@@ -16,12 +15,10 @@ export class JourneyResultsComponent implements OnInit {
 
   searchState: SearchState = 'ChooseEndpoints'
 
-  @ViewChild(SbbAccordion, { static: true }) firstAccordion: SbbAccordion | undefined;
   @ViewChild(SbbExpansionPanel, { static: true }) searchPanel: SbbExpansionPanel | undefined;
 
   constructor(private userTripService: UserTripService) {
     this.trips = []
-    this.firstAccordion = undefined;
     this.searchPanel = undefined;
   }
 
