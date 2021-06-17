@@ -94,6 +94,17 @@ export class ResultTripLegComponent implements OnInit {
     })
 
     const bounds = bbox.asLngLatBounds();
-    this.mapService.mapBoundsChanged.emit(bounds);
+
+    const minDistanceM = 20
+    const hasSmallBBOX = bounds.getSouthWest().distanceTo(bounds.getNorthEast()) < minDistanceM
+    if (hasSmallBBOX) {
+      const mapData = {
+        lnglat: bounds.getCenter(),
+        zoom: 16
+      }
+      this.mapService.mapCenterAndZoomChanged.emit(mapData);
+    } else {
+      this.mapService.mapBoundsChanged.emit(bounds);
+    }
   }
 }
