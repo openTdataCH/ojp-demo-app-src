@@ -7,6 +7,7 @@ OJP-Demo URL: https://opentdatach.github.io/ojp-demo-app/
 17.Jun 2021
 - draw trip legs (beelines, endpoints and legTrack where available)
 - changed the trip/legs result, add support to center the map for each leg
+- draw also timedlegs when available
 
 15.Jun 2021
 - fix isse that different dates than now() were discareded
