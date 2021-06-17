@@ -1,5 +1,6 @@
 import { XPathOJP } from "../../helpers/xpath-ojp"
 import { Location } from "../../location/location"
+import { LinkProjection } from "../link-projection";
 
 export class LegTrack {
   public trackSections: TrackSection[]
@@ -35,12 +36,14 @@ class TrackSection {
   public toLocation: Location
   public durationS: string | null
   public length: number | null
+  public linkProjection: LinkProjection | null;
 
   constructor(fromLocation: Location, toLocation: Location) {
     this.fromLocation = fromLocation
     this.toLocation = toLocation
     this.durationS = null
     this.length = null
+    this.linkProjection = null
   }
 
   public static initFromContextNode(contextNode: Node): TrackSection | null {
@@ -61,6 +64,8 @@ class TrackSection {
     if (lengthS) {
       trackSection.length = parseInt(lengthS, 10);
     }
+
+    trackSection.linkProjection = LinkProjection.initFromTrackSectionNode(contextNode);
 
     return trackSection
   }
