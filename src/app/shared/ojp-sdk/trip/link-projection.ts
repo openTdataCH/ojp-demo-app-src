@@ -1,20 +1,18 @@
-import mapboxgl from "mapbox-gl";
-
 import { XPathOJP } from "../helpers/xpath-ojp";
 import { GeoPosition } from "../location/geoposition";
+import { GeoPositionBBOX } from "../location/geoposition-bbox";
 
 export class LinkProjection {
   public coordinates: GeoPosition[];
-  public bbox: mapboxgl.LngLatBounds;
+  public bbox: GeoPositionBBOX;
 
-  constructor(coordinates: GeoPosition[], bbox: mapboxgl.LngLatBounds) {
+  constructor(coordinates: GeoPosition[], bbox: GeoPositionBBOX) {
     this.coordinates = coordinates;
     this.bbox = bbox;
   }
 
   public static initFromTrackSectionNode(trackSectionNode: Node): LinkProjection | null {
     const coordinates: GeoPosition[] = [];
-    const bbox = new mapboxgl.LngLatBounds();
 
     const positionNodes = XPathOJP.queryNodes('ojp:LinkProjection/ojp:Position', trackSectionNode);
     positionNodes.forEach(locationNode => {
@@ -27,13 +25,14 @@ export class LinkProjection {
           parseFloat(latitudeS),
         )
         coordinates.push(position);
-        bbox.extend(position.asLngLat());
       }
     });
 
     if (coordinates.length < 2) {
       return null;
     }
+
+    const bbox = new GeoPositionBBOX(coordinates)
 
     const linkProjection = new LinkProjection(coordinates, bbox);
     return linkProjection;
@@ -42,6 +41,7 @@ export class LinkProjection {
   asGeoJSONFeature(): GeoJSON.Feature<GeoJSON.LineString> {
     const feature: GeoJSON.Feature<GeoJSON.LineString> = {
       type: 'Feature',
+      bbox: this.bbox.asFeatureBBOX(),
       properties: {
         'draw.type': 'guidance'
       },
