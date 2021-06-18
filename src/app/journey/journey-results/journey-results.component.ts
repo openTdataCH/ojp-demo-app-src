@@ -39,7 +39,9 @@ export class JourneyResultsComponent implements OnInit {
 
     this.userTripService.tripsUpdated.subscribe(trips => {
       this.trips = trips
-      this.searchState = 'DisplayTrips'
+      if (trips.length > 0) {
+        this.searchState = 'DisplayTrips'
+      }
     });
   }
 
