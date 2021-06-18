@@ -55,11 +55,19 @@
       </div>
       <div>
         <button
-          type="submit"
           class="btn btn-primary"
+          type="button"
           (click)="handleTapOnSearch()"
-          [disabled]="hasInvalidSearchParams()"
-        >Search</button>
+          [disabled]="shouldDisableSearchButton()"
+        >
+          <span
+            class="spinner-border spinner-border-sm"
+            role="status"
+            aria-hidden="true"
+            *ngIf="isSearching"
+          ></span>
+          Search
+        </button>
       </div>
     </form>
   </div>

@@ -21,6 +21,8 @@ export class SearchFormComponent implements OnInit {
   public currentAppStage: OJP.APP_Stage = 'PROD'
   public appStageOptions: OJP.APP_Stage[] = []
 
+  public isSearching: boolean
+
   constructor(private userTripService: UserTripService, private userSettingsService: UserSettingsService) {
     const nowDate = new Date()
     const timeFormatted = OJP.DateHelpers.formatTimeHHMM(nowDate);
@@ -37,6 +39,8 @@ export class SearchFormComponent implements OnInit {
 
     this.currentAppStage = this.userSettingsService.appStage
     this.appStageOptions = Object.keys(OJP.APP_Stages) as OJP.APP_Stage[];
+
+    this.isSearching = false
   }
 
   ngOnInit() {
@@ -156,7 +160,7 @@ export class SearchFormComponent implements OnInit {
     );
   }
 
-  hasInvalidSearchParams(): boolean {
+  shouldDisableSearchButton(): boolean {
     return this.tripRequestParams === null
   }
 
@@ -168,9 +172,11 @@ export class SearchFormComponent implements OnInit {
     }
 
     this.updateSearchParamsDate();
+    this.isSearching = true
 
     const tripRequest = new OJP.TripRequest(stageConfig, this.tripRequestParams);
     tripRequest.fetchResponse(tripsResponse => {
+      this.isSearching = false
       this.userTripService.updateTrips(tripsResponse.trips)
     });
   }
