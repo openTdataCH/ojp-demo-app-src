@@ -33,7 +33,7 @@ export class ResultTripLegComponent implements OnInit {
       const timedLeg = leg as OJP.TripTimedLeg
 
       titleParts.push(leg.fromLocation.locationName ?? '')
-      const depTime = timedLeg.fromEndpoint.departureData.timetabledTime
+      const depTime = timedLeg.fromStopPoint.departureData?.timetableTime
       if (depTime) {
         titleParts.push('(' + OJP.DateHelpers.formatTimeHHMM(depTime) + ')');
       }
@@ -41,7 +41,7 @@ export class ResultTripLegComponent implements OnInit {
       titleParts.push(' - ')
 
       titleParts.push(leg.toLocation.locationName ?? '')
-      const arrTime = timedLeg.toEndpoint.arrivalData.timetabledTime;
+      const arrTime = timedLeg.toStopPoint.arrivalData?.timetableTime;
       if (arrTime) {
         titleParts.push('(' + OJP.DateHelpers.formatTimeHHMM(arrTime) + ')');
       }
