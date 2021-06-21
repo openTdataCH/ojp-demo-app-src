@@ -1,5 +1,6 @@
 import { Location } from '../location/location'
 import { Trip } from '../trip/trip'
+import { TripTimedLeg } from '../trip/leg/trip-timed-leg'
 import { XPathOJP } from '../helpers/xpath-ojp'
 
 export class TripsResponse {
@@ -51,17 +52,15 @@ export class TripsResponse {
         // Massage locations
         trip.legs.forEach(leg => {
           [leg.fromLocation, leg.toLocation].forEach(location => {
-            if (location.geoPosition === null) {
-              const stopPointRef = location.stopPointRef
-              if (stopPointRef && (stopPointRef in mapContextLocations)) {
-                const contextLocation = mapContextLocations[stopPointRef]
-
-                location.locationName = contextLocation.locationName
-                location.stopPlace = contextLocation.stopPlace
-                location.geoPosition = contextLocation.geoPosition
-              }
-            }
+            TripsResponse.patchLocation(location, mapContextLocations);
           })
+
+          if (leg.legType === 'TimedLeg') {
+            const timedLeg = leg as TripTimedLeg
+            timedLeg.intermediateStopPoints.forEach(stopPoint => {
+              TripsResponse.patchLocation(stopPoint.location, mapContextLocations);
+            });
+          }
         });
 
         trips.push(trip);
@@ -69,5 +68,20 @@ export class TripsResponse {
     });
 
     return trips
+  }
+
+  private static patchLocation(location: Location, mapContextLocations: Record<string, Location>) {
+    if (location.geoPosition) {
+      return
+    }
+
+    const stopPointRef = location.stopPointRef
+    if (stopPointRef && (stopPointRef in mapContextLocations)) {
+      const contextLocation = mapContextLocations[stopPointRef]
+
+      location.locationName = contextLocation.locationName
+      location.stopPlace = contextLocation.stopPlace
+      location.geoPosition = contextLocation.geoPosition
+    }
   }
 }
