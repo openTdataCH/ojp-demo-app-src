@@ -55,4 +55,12 @@ export class GeoPositionBBOX {
 
     return bounds
   }
+
+  isValid(): boolean {
+    if (this.southWest.longitude === Infinity) {
+      return false
+    }
+
+    return true;
+  }
 }
