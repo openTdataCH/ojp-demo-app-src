@@ -4,6 +4,7 @@ import { GeoPositionBBOX } from 'src/app/shared/ojp-sdk/location/geoposition-bbo
 import { MapService } from 'src/app/shared/services/map.service';
 
 import * as OJP from '../../../shared/ojp-sdk/index'
+import { MapLegTypeColor } from '../../../shared/ojp-sdk/index';
 
 @Component({
   selector: 'result-trip-leg',
@@ -112,5 +113,9 @@ export class ResultTripLegComponent implements OnInit {
     } else {
       this.mapService.mapBoundsChanged.emit(bounds);
     }
+  }
+
+  computeLegColor(): string {
+    return this.leg?.computeLegColor() ?? MapLegTypeColor.TimedLeg
   }
 }
