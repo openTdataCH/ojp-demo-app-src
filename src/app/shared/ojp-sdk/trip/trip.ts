@@ -75,8 +75,12 @@ export class Trip {
     }
 
     const firstTimedLeg = timedLegs[0] as TripTimedLeg;
-    const stopPointTime = firstTimedLeg.fromEndpoint.departureData;
-    const stopPointDate = stopPointTime.estimatedTime ?? stopPointTime.timetabledTime;
+    const timeData = firstTimedLeg.fromStopPoint.departureData;
+    if (timeData === null) {
+      return null
+    }
+
+    const stopPointDate = timeData.estimatedTime ?? timeData.timetableTime;
 
     return stopPointDate;
   }
@@ -93,8 +97,12 @@ export class Trip {
     }
 
     const lastTimedLeg = timedLegs[timedLegs.length - 1] as TripTimedLeg;
-    const stopPointTime = lastTimedLeg.toEndpoint.arrivalData;
-    const stopPointDate = stopPointTime.estimatedTime ?? stopPointTime.timetabledTime;
+    const timeData = lastTimedLeg.toStopPoint.arrivalData;
+    if (timeData === null) {
+      return null
+    }
+
+    const stopPointDate = timeData.estimatedTime ?? timeData.timetableTime;
 
     return stopPointDate;
   }
