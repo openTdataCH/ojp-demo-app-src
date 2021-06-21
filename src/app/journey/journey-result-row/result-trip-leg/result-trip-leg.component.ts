@@ -93,6 +93,12 @@ export class ResultTripLegComponent implements OnInit {
       }
     })
 
+    if (!bbox.isValid()) {
+      console.error('Invalid BBOX for leg');
+      console.log(this.leg);
+      return
+    }
+
     const bounds = bbox.asLngLatBounds();
 
     const minDistanceM = 20
