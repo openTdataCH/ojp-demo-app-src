@@ -1,4 +1,6 @@
 import { PublicTransportMode } from './public-transport-mode'
+import { TripLegLineType } from "../types/map-geometry-types";
+
 import { XPathOJP } from '../helpers/xpath-ojp'
 
 export class JourneyService {
@@ -38,5 +40,18 @@ export class JourneyService {
     legService.journeyNumber = XPathOJP.queryText('ojp:Extension/ojp:PublishedJourneyNumber/ojp:Text', tripLegNode);
 
     return legService
+  }
+
+  public computeLegLineType(): TripLegLineType {
+    const isPostAuto = this.agencyID === '801'
+    if (isPostAuto) {
+      return 'PostAuto'
+    }
+
+    if (this.ptMode.isRail()) {
+      return 'LongDistanceRail'
+    }
+
+    return 'Bus'
   }
 }
