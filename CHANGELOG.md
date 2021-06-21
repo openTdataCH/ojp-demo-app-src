@@ -4,6 +4,11 @@ OJP-Demo URL: https://opentdatach.github.io/ojp-demo-app/
 
 ----
 
+21.Jun 2021
+- refactor map trip renderer, use config for colors, types
+- new style for leg endpoints, detailed tracks and walking legs
+- show TimedLeg intermediary points (stops)
+
 18.Jun 2021
 - add visual indicator for search
 
