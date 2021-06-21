@@ -4,9 +4,17 @@ import { LinkProjection } from "../link-projection";
 
 export class LegTrack {
   public trackSections: TrackSection[]
+  public hasGeoData: boolean
 
   constructor(trackSections: TrackSection[]) {
     this.trackSections = trackSections;
+
+    this.hasGeoData = false
+    trackSections.forEach(trackSection => {
+      if (trackSection.linkProjection) {
+        this.hasGeoData = true
+      }
+    })
   }
 
   public static initFromLegNode(contextNode: Node): LegTrack | null {
