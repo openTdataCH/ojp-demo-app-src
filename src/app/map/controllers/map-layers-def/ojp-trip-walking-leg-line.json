@@ -1,0 +1,19 @@
+{
+  "id": "ojp-trip-walking-leg-line",
+  "type": "line",
+  "source": "[SOURCE]",
+  "filter": [
+    "all",
+    "[FILTER BY DRAW_TYPE == ContinousLegLine]",
+    "[FILTER BY LINE_TYPE == Walk]"
+  ],
+  "layout": {
+    "line-cap": "round",
+    "line-join": "round"
+  },
+  "paint": {
+    "line-color": "#009933",
+    "line-width": 4.0,
+    "line-dasharray": [0.2, 2]
+  }
+}

@@ -1,9 +1,9 @@
 {
-  "id": "ojp-trip-leg-beeline",
+  "id": "ojp-trip-timed-leg-track",
   "type": "line",
   "source": "[SOURCE]",
   "filter": [
-    "[CASE_FILTER_BY_DRAW_TYPE]"
+    "[FILTER BY DRAW_TYPE == TimedLegLine]"
   ],
   "layout": {
     "line-join": "round",
@@ -12,9 +12,9 @@
   },
   "paint": {
     "line-width": 4,
-    "line-opacity": 0.2,
+    "line-opacity": 1.0,
     "line-color": [
-      "[CASE_COLOR_BY_LEG_TYPE]"
+      "[CASE COLOR BY TIMED_LEG"
     ]
   }
 }
