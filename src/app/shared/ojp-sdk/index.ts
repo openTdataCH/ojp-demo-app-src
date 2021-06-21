@@ -1,4 +1,5 @@
 export * from './config/config'
+export * from './config/map-colors'
 export * from './helpers/date-helpers'
 export * from './location/location'
 export * from './request/index'
