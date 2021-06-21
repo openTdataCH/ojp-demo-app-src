@@ -7,7 +7,8 @@ import { DateHelpers } from '../../helpers/date-helpers'
 
 import { LegTrack } from './leg-track'
 
-import { TripLeg, LegType } from "./trip-leg"
+import { TripLeg, LegType, LinePointData } from "./trip-leg"
+import { TripLegPropertiesEnum, TripLegDrawType, TripLegLineType } from '../../types/map-geometry-types'
 
 export class TripContinousLeg extends TripLeg {
   public legModeS: string | null
@@ -67,6 +68,12 @@ export class TripContinousLeg extends TripLeg {
     this.pathGuidance?.sections.forEach((pathGuidanceSection, guidanceIDx) => {
       const feature = pathGuidanceSection.trackSection?.linkProjection?.asGeoJSONFeature();
       if (feature?.properties) {
+        const drawType: TripLegDrawType = 'LegLine'
+        feature.properties[TripLegPropertiesEnum.DrawType] = drawType
+
+        const lineType: TripLegLineType = 'Guidance'
+        feature.properties[TripLegPropertiesEnum.LineType] = lineType
+
         feature.properties['PathGuidanceSection.idx'] = guidanceIDx;
         feature.properties['PathGuidanceSection.TrackSection.RoadName'] = pathGuidanceSection.trackSection?.roadName ?? '';
         feature.properties['PathGuidanceSection.TrackSection.Duration'] = pathGuidanceSection.trackSection?.duration ?? '';
@@ -78,6 +85,32 @@ export class TripContinousLeg extends TripLeg {
       }
     });
 
+    this.legTrack?.trackSections.forEach(trackSection => {
+      const feature = trackSection.linkProjection?.asGeoJSONFeature()
+      if (feature?.properties) {
+        const drawType: TripLegDrawType = 'LegLine'
+        feature.properties[TripLegPropertiesEnum.DrawType] = drawType
+
+        const lineType: TripLegLineType = 'Walk'
+        feature.properties[TripLegPropertiesEnum.LineType] = lineType
+
+        features.push(feature);
+      }
+    });
+
     return features;
+  }
+
+  protected computeLegLineType(): TripLegLineType {
+    return this.legType === 'ContinousLeg' ? 'Walk' : 'Transfer'
+  }
+
+  protected computeLinePointsData(): LinePointData[] {
+    // Don't show endpoints for TransferLeg
+    if (this.legType === 'TransferLeg') {
+      return []
+    }
+
+    return super.computeLinePointsData();
   }
 }

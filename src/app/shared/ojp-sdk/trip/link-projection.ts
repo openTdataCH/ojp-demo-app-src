@@ -42,9 +42,7 @@ export class LinkProjection {
     const feature: GeoJSON.Feature<GeoJSON.LineString> = {
       type: 'Feature',
       bbox: this.bbox.asFeatureBBOX(),
-      properties: {
-        'draw.type': 'guidance'
-      },
+      properties: {},
       geometry: {
         type: 'LineString',
         coordinates: []

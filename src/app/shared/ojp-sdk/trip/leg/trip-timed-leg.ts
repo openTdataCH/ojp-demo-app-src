@@ -4,10 +4,13 @@ import { LegTrack } from './leg-track'
 
 import { TripLeg, LegType, LinePointData } from "./trip-leg"
 
+import { TripLegPropertiesEnum, TripLegDrawType, TripLegLineType } from "../../types/map-geometry-types";
 import { StopPointType } from '../../types/stop-point-type';
 
 import { StopPointTime } from './timed-leg/stop-point-time'
 import { XPathOJP } from '../../helpers/xpath-ojp'
+import { MapLegLineTypeColor } from '../../config/map-colors';
+
 export class TripTimedLeg extends TripLeg {
   public service: JourneyService
 
@@ -84,6 +87,55 @@ export class TripTimedLeg extends TripLeg {
     const stopPointDate = timeData.estimatedTime ?? timeData.timetableTime;
     return stopPointDate
   }
+
+  protected computeSpecificJSONFeatures(): GeoJSON.Feature[] {
+    let features: GeoJSON.Feature[] = [];
+
+    const lineType: TripLegLineType = this.service.computeLegLineType()
+
+    this.legTrack?.trackSections.forEach(trackSection => {
+      const feature = trackSection.linkProjection?.asGeoJSONFeature()
+      if (feature?.properties) {
+        const drawType: TripLegDrawType = 'LegLine'
+        feature.properties[TripLegPropertiesEnum.DrawType] = drawType
+
+        feature.properties[TripLegPropertiesEnum.LineType] = lineType
+
+        features.push(feature);
+      }
+    });
+
+    return features
+  }
+
+  protected computeLegLineType(): TripLegLineType {
+    return this.service.computeLegLineType()
+  }
+
+  protected computeLinePointsData(): LinePointData[] {
+    const linePointsData = super.computeLinePointsData()
+
+    // Intermediate points
+    this.intermediateStopPoints.forEach(stopPoint => {
+      const locationFeature = stopPoint.location.asGeoJSONFeature();
+      if (locationFeature?.properties) {
+        linePointsData.push({
+          type: 'Intermediate',
+          feature: locationFeature
+        })
+      }
+    });
+
+    return linePointsData
+  }
+
+  public computeLegColor(): string {
+    const defaultColor = super.computeLegColor();
+
+    const timedLegLineType = this.service.computeLegLineType()
+    const color = MapLegLineTypeColor[timedLegLineType] ?? defaultColor
+
+    return color
+  }
+
 }
-
-
