@@ -58,4 +58,27 @@ export class JourneyService {
 
     return 'Bus'
   }
+
+  public formatServiceName(): string {
+    if (this.ptMode.isDemandMode) {
+      return this.serviceLineNumber ?? 'OnDemand';
+    }
+
+    const nameParts: string[] = []
+
+    if (this.serviceLineNumber) {
+      if (!this.ptMode.isRail()) {
+        nameParts.push(this.ptMode.shortName ?? this.ptMode.ptMode)
+      }
+
+      nameParts.push(this.serviceLineNumber)
+      nameParts.push(this.journeyNumber ?? '')
+    } else {
+      nameParts.push(this.ptMode.shortName ?? this.ptMode.ptMode)
+    }
+
+    nameParts.push('(' + this.agencyID + ')')
+
+    return nameParts.join(' ')
+  }
 }
