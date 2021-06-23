@@ -35,6 +35,8 @@ export class SearchFormComponent implements OnInit {
   public tripResponseFormattedXML: string
   public requestDuration: string | null
 
+  private useMocks: boolean
+
   @ViewChild('debugXMLPopoverTemplate', { static: true }) debugXMLPopoverTemplate: TemplateRef<any> | undefined;
 
   constructor(private userTripService: UserTripService, private userSettingsService: UserSettingsService, public dialog: SbbDialog) {
@@ -59,10 +61,17 @@ export class SearchFormComponent implements OnInit {
     this.tripRequestFormattedXML = 'RequestXML'
     this.tripResponseFormattedXML = 'ResponseXML'
     this.requestDuration = null
+
+    this.useMocks = false
   }
 
   ngOnInit() {
-    this.initLocations()
+    if (this.useMocks) {
+      this.initLocationsFromMocks()
+    } else {
+      this.initLocations()
+    }
+
     this.userTripService.tripsUpdated.subscribe(trips => {
       if (trips.length > 0) {
         this.searchState = 'DisplayTrips'
@@ -96,6 +105,26 @@ export class SearchFormComponent implements OnInit {
 
         this.updateSearchParamsDate();
       }
+    });
+  }
+
+  private initLocationsFromMocks() {
+    const mockURL = 'assets/mocks/on-demand-response.xml'
+    const responsePromise = fetch(mockURL);
+
+    console.log('USE MOCKS: ' + mockURL);
+
+    responsePromise.then(response => {
+      response.text().then(responseText => {
+        const tripsResponse = OJP.TripsResponse.initWithXML(responseText);
+        this.requestDuration = 'LOCAL MOCK';
+
+        console.log('MOCK RESPONSE');
+        console.log(tripsResponse);
+
+        this.userTripService.updateTrips(tripsResponse.trips)
+        this.tripResponseFormattedXML = tripsResponse.responseXMLText
+      });
     });
   }
 
