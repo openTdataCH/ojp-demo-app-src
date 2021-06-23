@@ -135,12 +135,16 @@ export class SearchFormComponent implements OnInit {
   private initLocations() {
     const defaultLocationsPlaceRef = {
       "Bern": "8507000",
+      "Geneva": "8501008",
+      "Gurten": "8507099",
+      "St. Gallen": "8506302",
+      "Uetliberg": "8503057",
       "Zurich": "8503000",
       "DemandLegFrom": "46.674360,6.460966",
       "DemandLegTo": "46.310963,7.977509",
     }
-    const fromPlaceRef = defaultLocationsPlaceRef.Bern
-    const toPlaceRef = defaultLocationsPlaceRef.Zurich
+    const fromPlaceRef = defaultLocationsPlaceRef.Gurten
+    const toPlaceRef = defaultLocationsPlaceRef.Uetliberg
 
     const promises: Promise<OJP.Location[]>[] = [];
 
