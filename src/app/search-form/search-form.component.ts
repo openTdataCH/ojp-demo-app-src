@@ -189,7 +189,7 @@ export class SearchFormComponent implements OnInit {
     return departureDate
   }
 
-  updateSearchParamsDate() {
+  private updateSearchParamsDate() {
     const departureDate = this.computeFormDepartureDate();
 
     this.tripRequestParams = OJP.TripsRequestParams.initWithLocationsAndDate(
