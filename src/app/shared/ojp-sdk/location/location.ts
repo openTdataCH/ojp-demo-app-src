@@ -76,6 +76,26 @@ export class Location {
     return location
   }
 
+  public static initFromLiteralCoords(inputS: string): Location | null {
+    inputS = inputS.trim().replace(/\s/g, '');
+
+    const inputMatches = inputS.match(/^([0-9\.]+?),([0-9\.]+?)$/);
+    if (inputMatches === null) {
+      return null
+    }
+
+    let longitude = parseFloat(inputMatches[1])
+    let latitude = parseFloat(inputMatches[2])
+    // In CH always long < lat
+    if (longitude > latitude) {
+      longitude = parseFloat(inputMatches[2])
+      latitude = parseFloat(inputMatches[1])
+    }
+
+    const location = Location.initWithLngLat(longitude, latitude)
+    return location
+  }
+
   asGeoJSONFeature(): GeoJSON.Feature<GeoJSON.Point> | null {
     if (this.geoPosition === null) {
       return null
