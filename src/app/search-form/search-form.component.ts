@@ -107,6 +107,8 @@ export class SearchFormComponent implements OnInit {
     const defaultLocationsPlaceRef = {
       "Bern": "8507000",
       "Zurich": "8503000",
+      "DemandLegFrom": "46.674360,6.460966",
+      "DemandLegTo": "46.310963,7.977509",
     }
     const fromPlaceRef = defaultLocationsPlaceRef.Bern
     const toPlaceRef = defaultLocationsPlaceRef.Zurich
@@ -124,10 +126,18 @@ export class SearchFormComponent implements OnInit {
         this.toLocationText = stopPlaceRef
       }
 
-      const stageConfig = this.userSettingsService.getStageConfig();
-      const locationInformationRequest = OJP.LocationInformationRequest.initWithStopPlaceRef(stageConfig, stopPlaceRef)
-      const locationInformationPromise = locationInformationRequest.fetchResponse();
-      promises.push(locationInformationPromise)
+      const coordsLocation = OJP.Location.initFromLiteralCoords(stopPlaceRef);
+      if (coordsLocation) {
+        const coordsPromise = new Promise<OJP.Location[]>((resolve, reject) => {
+          resolve([coordsLocation]);
+        });
+        promises.push(coordsPromise);
+      } else {
+        const stageConfig = this.userSettingsService.getStageConfig();
+        const locationInformationRequest = OJP.LocationInformationRequest.initWithStopPlaceRef(stageConfig, stopPlaceRef)
+        const locationInformationPromise = locationInformationRequest.fetchResponse();
+        promises.push(locationInformationPromise)
+      }
     });
 
     Promise.all(promises).then(locationsData => {
