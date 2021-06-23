@@ -49,4 +49,16 @@ export class DateHelpers {
 
     return duration
   }
+
+  public static formatDuration(duration: Duration): string {
+    const durationParts: string[] = []
+
+    if (duration.hours > 0) {
+      durationParts.push(duration.hours + 'hrs')
+    }
+
+    durationParts.push(duration.minutes + 'min')
+
+    return durationParts.join('')
+  }
 }
