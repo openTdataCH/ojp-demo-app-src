@@ -1,10 +1,7 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
-import { SbbExpansionPanel } from '@sbb-esta/angular-business/accordion';
+import { Component, OnInit } from '@angular/core';
 import { UserTripService } from 'src/app/shared/services/user-trip.service';
 
 import * as OJP from '../../shared/ojp-sdk/index'
-
-type SearchState = 'ChooseEndpoints' | 'DisplayTrips'
 
 @Component({
   selector: 'journey-results',
@@ -13,39 +10,22 @@ type SearchState = 'ChooseEndpoints' | 'DisplayTrips'
 export class JourneyResultsComponent implements OnInit {
   trips: OJP.Trip[]
 
-  searchState: SearchState = 'ChooseEndpoints'
-
-  @ViewChild(SbbExpansionPanel, { static: true }) searchPanel: SbbExpansionPanel | undefined;
-
   constructor(private userTripService: UserTripService) {
     this.trips = []
-    this.searchPanel = undefined;
   }
 
   ngOnInit() {
-    this.searchPanel?.afterExpand.subscribe(ev => {
-      this.userTripService.activeTripSelected.emit(null);
-    })
-
     this.userTripService.locationUpdated.subscribe(locationData => {
       if (
         (locationData.updateSource === 'MapDragend')
         || (locationData.updateSource === 'MapPopupClick')
       ) {
         this.trips = []
-        this.searchState = 'ChooseEndpoints'
       }
     });
 
     this.userTripService.tripsUpdated.subscribe(trips => {
       this.trips = trips
-      if (trips.length > 0) {
-        this.searchState = 'DisplayTrips'
-      }
     });
-  }
-
-  isChoosingEndpoints(): boolean {
-    return this.searchState === 'ChooseEndpoints'
   }
 }

@@ -1,75 +1,126 @@
-<div class="row">
+<div class="row mb-1">
   <div class="col">
-    <form [formGroup]="formGroup">
-      <div>
-        <journey-point-input
-          (selectedLocation)="onLocationSelected($event, 'From')"
-          [endpointType]="'From'"
-          [inputValue]="fromLocationText"
-          [placeholder]="'From'">
-        </journey-point-input>
-      </div>
-      <div>
-        <journey-point-input
-          (selectedLocation)="onLocationSelected($event, 'To')"
-          [endpointType]="'To'"
-          [inputValue]="toLocationText"
-          [placeholder]="'To'">
-        </journey-point-input>
-      </div>
-      <div class="d-flex align-items-center justify-content-start">
-        <div>
-          <sbb-form-field label="Choose Date and Time">
-            <sbb-datepicker arrows>
+    <sbb-accordion>
+      <sbb-expansion-panel [expanded]="isChoosingEndpoints()">
+        <sbb-expansion-panel-header>Search</sbb-expansion-panel-header>
+        <form [formGroup]="formGroup">
+          <div>
+            <journey-point-input
+              (selectedLocation)="onLocationSelected($event, 'From')"
+              [endpointType]="'From'"
+              [inputValue]="fromLocationText"
+              [placeholder]="'From'">
+            </journey-point-input>
+          </div>
+          <div>
+            <journey-point-input
+              (selectedLocation)="onLocationSelected($event, 'To')"
+              [endpointType]="'To'"
+              [inputValue]="toLocationText"
+              [placeholder]="'To'">
+            </journey-point-input>
+          </div>
+          <div class="d-flex align-items-center justify-content-start">
+            <div>
+              <sbb-form-field label="Choose Date and Time">
+                <sbb-datepicker arrows>
+                  <input
+                    type="text"
+                    sbbDateInput
+                    sbbInput
+                    formControlName="date"
+                    placeholder="Choose a date"
+                  />
+                </sbb-datepicker>
+              </sbb-form-field>
+            </div>
+            <div style="width: 10px"></div>
+            <div>
               <input
-                type="text"
-                sbbDateInput
-                sbbInput
-                formControlName="date"
-                placeholder="Choose a date"
+                sbbTimeInput
+                formControlName="time"
               />
-            </sbb-datepicker>
-          </sbb-form-field>
-        </div>
-        <div style="width: 10px"></div>
-        <div>
-          <input
-            sbbTimeInput
-            formControlName="time"
-          />
-        </div>
-      </div>
-      <div class="mb-2 d-flex">
-        <div>
-          <sbb-radio-group class="sbb-radio-group-horizontal">
-            <sbb-radio-button
-              *ngFor="let appStageOption of appStageOptions"
-              [value]="appStageOption"
-              [checked]="currentAppStage == appStageOption"
-              (change)="onChangeStageAPI($event)"
-            >
-              {{ appStageOption }}
-            </sbb-radio-button>
-          </sbb-radio-group>
-        </div>
-      </div>
-      <div>
-        <button
-          class="btn btn-primary"
-          type="button"
-          (click)="handleTapOnSearch()"
-          [disabled]="shouldDisableSearchButton()"
-        >
-          <span
-            class="spinner-border spinner-border-sm"
-            role="status"
-            aria-hidden="true"
-            *ngIf="isSearching"
-          ></span>
-          Search
-        </button>
-      </div>
-    </form>
+            </div>
+          </div>
+          <div class="mb-2 d-flex">
+            <div>
+              <sbb-radio-group class="sbb-radio-group-horizontal">
+                <sbb-radio-button
+                  *ngFor="let appStageOption of appStageOptions"
+                  [value]="appStageOption"
+                  [checked]="currentAppStage == appStageOption"
+                  (change)="onChangeStageAPI($event)"
+                >
+                  {{ appStageOption }}
+                </sbb-radio-button>
+              </sbb-radio-group>
+            </div>
+          </div>
+          <div class="d-flex justify-content-between">
+            <button
+              class="btn btn-primary"
+              type="button"
+              (click)="handleTapOnSearch()"
+              [disabled]="shouldDisableSearchButton()">
+              <span
+                class="spinner-border spinner-border-sm"
+                role="status"
+                aria-hidden="true"
+                *ngIf="isSearching"
+              ></span>
+              Search
+            </button>
+          </div>
+        </form>
+      </sbb-expansion-panel>
+    </sbb-accordion>
   </div>
 </div>
 
+<div class="row mb-2">
+  <div class="col">
+    <div class="d-flex flex-row-reverse">
+      <div>
+        <span
+          class="badge bg-info text-dark debug-xml"
+          (click)="openRequestLogDialog()"
+        >Debug XML</span>
+      </div>
+      <div style="width: 2px"></div>
+      <div
+        *ngIf="requestDuration !== null"
+      >
+        <span
+          class="badge bg-success debug-xml"
+          (click)="openRequestLogDialog()"
+        >{{ this.requestDuration }}</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<ng-template #debugXMLPopoverTemplate>
+  <div>
+    <div sbbDialogHeader>Debug XML</div>
+    <div sbbDialogContent>
+      <div style="width: 500px">
+        <div>
+          Request XML
+          <textarea class="w-100" rows="7">{{ tripRequestFormattedXML }}</textarea>
+        </div>
+        <div>
+          Response XML
+          <textarea class="w-100" rows="7">{{ tripResponseFormattedXML }}</textarea>
+        </div>
+      </div>
+    </div>
+    <div sbbDialogFooter>
+      <button
+        type="button"
+        class="btn btn-secondary"
+        sbbDialogClose>
+        Close
+      </button>
+    </div>
+  </div>
+</ng-template>

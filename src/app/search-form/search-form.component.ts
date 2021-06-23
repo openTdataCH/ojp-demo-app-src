@@ -1,10 +1,15 @@
-import { Component, EventEmitter, OnInit, Output } from '@angular/core';
+import { Component, OnInit, TemplateRef, ViewChild } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
 import { UserTripService } from '../shared/services/user-trip.service'
 
-import * as OJP from '../shared/ojp-sdk/index'
 import { SbbRadioChange } from '@sbb-esta/angular-core/radio-button';
+import { SbbDialog } from '@sbb-esta/angular-business/dialog';
+
+import * as OJP from '../shared/ojp-sdk/index'
+
 import { UserSettingsService } from '../shared/services/user-settings.service';
+
+type SearchState = 'ChooseEndpoints' | 'DisplayTrips'
 
 @Component({
   selector: 'app-search-form',
@@ -13,6 +18,8 @@ import { UserSettingsService } from '../shared/services/user-settings.service';
 })
 export class SearchFormComponent implements OnInit {
   formGroup: FormGroup
+
+  searchState: SearchState = 'ChooseEndpoints'
 
   private tripRequestParams: OJP.TripsRequestParams | null
 
@@ -24,7 +31,13 @@ export class SearchFormComponent implements OnInit {
 
   public isSearching: boolean
 
-  constructor(private userTripService: UserTripService, private userSettingsService: UserSettingsService) {
+  public tripRequestFormattedXML: string
+  public tripResponseFormattedXML: string
+  public requestDuration: string | null
+
+  @ViewChild('debugXMLPopoverTemplate', { static: true }) debugXMLPopoverTemplate: TemplateRef<any> | undefined;
+
+  constructor(private userTripService: UserTripService, private userSettingsService: UserSettingsService, public dialog: SbbDialog) {
     const nowDate = new Date()
     const timeFormatted = OJP.DateHelpers.formatTimeHHMM(nowDate);
 
@@ -42,10 +55,19 @@ export class SearchFormComponent implements OnInit {
     this.appStageOptions = Object.keys(OJP.APP_Stages) as OJP.APP_Stage[];
 
     this.isSearching = false
+
+    this.tripRequestFormattedXML = 'RequestXML'
+    this.tripResponseFormattedXML = 'ResponseXML'
+    this.requestDuration = null
   }
 
   ngOnInit() {
     this.initLocations()
+    this.userTripService.tripsUpdated.subscribe(trips => {
+      if (trips.length > 0) {
+        this.searchState = 'DisplayTrips'
+      }
+    });
 
     this.userTripService.locationUpdated.subscribe(locationData => {
       if (
@@ -56,6 +78,8 @@ export class SearchFormComponent implements OnInit {
         if (geoPosition === null) {
           return
         }
+
+        this.searchState = 'ChooseEndpoints'
 
         let locationFormText = geoPosition.asLatLngString()
 
@@ -73,6 +97,10 @@ export class SearchFormComponent implements OnInit {
         this.updateSearchParamsDate();
       }
     });
+  }
+
+  isChoosingEndpoints(): boolean {
+    return this.searchState === 'ChooseEndpoints'
   }
 
   private initLocations() {
@@ -159,9 +187,28 @@ export class SearchFormComponent implements OnInit {
       this.userTripService.toLocation,
       departureDate
     );
+
+    this.updateDebugXML();
+  }
+
+  private updateDebugXML() {
+    if (this.tripRequestParams === null) {
+      return
+    }
+
+    const stageConfig = this.userSettingsService.getStageConfig()
+    const tripRequest = new OJP.TripRequest(stageConfig, this.tripRequestParams);
+
+    this.tripRequestFormattedXML = tripRequest.computeRequestXML();
+    this.tripResponseFormattedXML = ''
+    this.requestDuration = null
   }
 
   shouldDisableSearchButton(): boolean {
+    if (this.isSearching) {
+      return true
+    }
+
     return this.tripRequestParams === null
   }
 
@@ -180,5 +227,11 @@ export class SearchFormComponent implements OnInit {
       this.isSearching = false
       this.userTripService.updateTrips(tripsResponse.trips)
     });
+  }
+
+  openRequestLogDialog() {
+    if (this.debugXMLPopoverTemplate) {
+      const dialogRef = this.dialog.open(this.debugXMLPopoverTemplate);
+    }
   }
 }

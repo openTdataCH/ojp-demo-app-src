@@ -8,6 +8,7 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { SbbAccordionModule } from '@sbb-esta/angular-business/accordion';
 import { SbbAutocompleteModule } from '@sbb-esta/angular-business/autocomplete';
 import { SbbDatepickerModule } from '@sbb-esta/angular-business/datepicker';
+import { SbbDialogModule } from '@sbb-esta/angular-business/dialog';
 import { SbbFormFieldModule } from '@sbb-esta/angular-business/form-field';
 import { SbbRadioButtonModule } from '@sbb-esta/angular-business/radio-button';
 import { SbbTimeInputModule } from '@sbb-esta/angular-business/time-input';
@@ -44,6 +45,7 @@ import { SearchFormComponent } from './search-form/search-form.component';
     SbbAccordionModule,
     SbbAutocompleteModule,
     SbbDatepickerModule,
+    SbbDialogModule,
     SbbFormFieldModule,
     SbbRadioButtonModule,
     SbbTimeInputModule,
