@@ -4,6 +4,13 @@ OJP-Demo URL: https://opentdatach.github.io/ojp-demo-app/
 
 ----
 
+23.Jun 2021
+- add support for OnDemand timed legs
+- format leg leading texts (types, service numbers)
+- GUI: separate search/results components
+- add debug XML info dialogs and search duration result
+- (dev) add mocks support (to check ondemand calls when test is down)
+
 21.Jun 2021
 - refactor map trip renderer, use config for colors, types
 - new style for leg endpoints, detailed tracks and walking legs
