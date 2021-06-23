@@ -38,6 +38,7 @@ export class UserTripService {
     }
 
     this.locationUpdated.emit(locationData);
+    this.activeTripSelected.emit(null);
   }
 
   updateTrips(trips: OJP.Trip[]) {
