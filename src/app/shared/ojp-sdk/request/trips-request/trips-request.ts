@@ -3,6 +3,7 @@ import { OJPBaseRequest } from '../base-request';
 import { TripsRequestParams } from './trips-request-params';
 import { TripsResponse } from '../../trips/trips-response'
 import { StageConfig } from '../../config/config';
+import { XML_Helpers } from '../../helpers/xml-helpers';
 
 export class TripRequest extends OJPBaseRequest {
   public requestParams: TripsRequestParams
@@ -17,6 +18,15 @@ export class TripRequest extends OJPBaseRequest {
     super.fetchOJPResponse(responseText => {
       this.handleResponse(responseText, completion);
     });
+  }
+
+  public computeRequestXML(): string {
+    this.buildTripRequestNode();
+
+    let bodyXML_s = this.serviceRequestNode.end();
+    bodyXML_s = XML_Helpers.prettyPrintXML(bodyXML_s);
+
+    return bodyXML_s;
   }
 
   private handleResponse(responseText: string, completion: (response: TripsResponse) => void) {

@@ -2,12 +2,15 @@ import { Location } from '../location/location'
 import { Trip } from '../trip/trip'
 import { TripTimedLeg } from '../trip/leg/trip-timed-leg'
 import { XPathOJP } from '../helpers/xpath-ojp'
+import { XML_Helpers } from '../helpers/xml-helpers'
 
 export class TripsResponse {
+  public responseXMLText: string
   public contextLocations: Location[]
   public trips: Trip[]
 
-  constructor(contextLocations: Location[], trips: Trip[]) {
+  constructor(responseXMLText: string, contextLocations: Location[], trips: Trip[]) {
+    this.responseXMLText = XML_Helpers.prettyPrintXML(responseXMLText)
     this.contextLocations = contextLocations
     this.trips = trips
   }
@@ -17,7 +20,7 @@ export class TripsResponse {
     const contextLocations = TripsResponse.parseContextLocations(responseXML);
     const trips = TripsResponse.parseTrips(responseXML, contextLocations);
 
-    const tripResponse = new TripsResponse(contextLocations, trips)
+    const tripResponse = new TripsResponse(responseXMLText, contextLocations, trips)
 
     return tripResponse
   }
