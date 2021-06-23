@@ -55,6 +55,28 @@ export class ResultTripLegComponent implements OnInit {
     return titleParts.join('')
   }
 
+  computeLegPill(): string {
+    if (this.leg === undefined) {
+      return 'n/a'
+    }
+
+    if (this.leg.legType === 'TransferLeg') {
+      return 'Transfer'
+    }
+
+    if (this.leg.legType === 'ContinousLeg') {
+      const continuousLeg = this.leg as OJP.TripContinousLeg
+      return 'Walk ' + OJP.DateHelpers.formatDuration(continuousLeg.legDuration)
+    }
+
+    if (this.leg.legType === 'TimedLeg') {
+      const timedLeg = this.leg as OJP.TripTimedLeg
+      return timedLeg.service.formatServiceName()
+    }
+
+    return this.leg.legType
+  }
+
   computeLegPillClassName(): string {
     if (!this.leg) {
       return ''

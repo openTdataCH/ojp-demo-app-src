@@ -2,7 +2,7 @@
   [ngClass]="{'mb-2': !isLastLeg}">
   <span
     class="badge rounded-pill leg-pill"
-    [ngStyle]="{'background-color': computeLegColor()}"
+    [ngStyle]="{'background-color': this.computeLegColor()}"
     (click)="handleTapOnPill()"
-  >{{ leg?.legType }}</span> {{ computeLegInfo() }}
+  >{{ this.computeLegPill() }}</span> {{ this.computeLegInfo() }}
 </div>
