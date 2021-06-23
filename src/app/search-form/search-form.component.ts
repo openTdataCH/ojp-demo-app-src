@@ -9,6 +9,7 @@ import { UserSettingsService } from '../shared/services/user-settings.service';
 @Component({
   selector: 'app-search-form',
   templateUrl: './search-form.component.html',
+  styleUrls: ['./search-form.component.scss']
 })
 export class SearchFormComponent implements OnInit {
   formGroup: FormGroup
