@@ -232,10 +232,18 @@ export class SearchFormComponent implements OnInit {
     this.updateSearchParamsDate();
     this.isSearching = true
 
+    const startRequestDate = new Date();
+
     const tripRequest = new OJP.TripRequest(stageConfig, this.tripRequestParams);
     tripRequest.fetchResponse(tripsResponse => {
+      const endRequestDate = new Date();
+      const requestDuration = ((endRequestDate.getTime() - startRequestDate.getTime()) / 1000).toFixed(2);
+      this.requestDuration = requestDuration + ' sec';
+
       this.isSearching = false
       this.userTripService.updateTrips(tripsResponse.trips)
+
+      this.tripResponseFormattedXML = tripsResponse.responseXMLText
     });
   }
 
