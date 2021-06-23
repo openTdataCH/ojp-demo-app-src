@@ -50,7 +50,7 @@ export class TripRequest extends OJPBaseRequest {
 
       if (isFrom) {
         const dateF = this.requestParams.departureDate.toISOString();
-        endPointNode.ele('obj:DepArrTime', dateF);
+        endPointNode.ele('ojp:DepArrTime', dateF);
       }
     });
 
