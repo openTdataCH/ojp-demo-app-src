@@ -52,6 +52,10 @@ export class JourneyService {
       return 'LongDistanceRail'
     }
 
+    if (this.ptMode.isDemandMode) {
+      return 'OnDemand'
+    }
+
     return 'Bus'
   }
 }
