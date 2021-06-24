@@ -3,6 +3,7 @@ import { MapAppLayer } from "../app-layers/map-app-layer.interface";
 
 interface LayerData {
   inputEl: HTMLInputElement | null
+  textEl: HTMLSpanElement | null
   layer: MapAppLayer
 }
 
@@ -17,6 +18,7 @@ export class MapLayersLegendControl implements mapboxgl.IControl {
     mapAppLayers.forEach(mapAppLayer => {
       const layerData = <LayerData>{
         inputEl: null,
+        textEl: null,
         layer: mapAppLayer
       }
       this.layersData.push(layerData);
@@ -35,16 +37,22 @@ export class MapLayersLegendControl implements mapboxgl.IControl {
 
     container.innerHTML = (document.getElementById('map-layers-legend-control') as HTMLElement).innerHTML;
 
-    const inputElements = Array.from(container.getElementsByTagName('input')) as HTMLInputElement[];
-    inputElements.forEach(inputEl => {
-      const layerKey = inputEl.getAttribute('data-map-layer-key')
+    container.querySelectorAll('.map-layer-data').forEach(divEl => {
+      const layerKey = divEl.getAttribute('data-map-layer-key');
       if (layerKey === null) {
+        return
+      }
+
+      const inputEl = divEl.querySelector('.map-layer-checkbox') as HTMLInputElement
+      const layerTextEl = divEl.querySelector('.layer-text') as HTMLElement
+
+      if (inputEl === null || layerTextEl === null) {
         return
       }
 
       const layerData = this.layersData.find(layer => {
         return layer.layer.layerKey === layerKey;
-      }) ??  null;
+      }) ?? null;
       if (layerData === null) {
         inputEl.disabled = true
         return
@@ -59,8 +67,8 @@ export class MapLayersLegendControl implements mapboxgl.IControl {
       });
 
       layerData.layer.isEnabled = inputEl.checked
-
       layerData.inputEl = inputEl
+      layerData.textEl = layerTextEl
     });
 
     this.onZoomChanged(map);
@@ -75,12 +83,12 @@ export class MapLayersLegendControl implements mapboxgl.IControl {
   private onZoomChanged(map: mapboxgl.Map) {
     this.layersData.forEach(layerData => {
       const layerMinZoomLevel = layerData.layer.minZoomLevel
-      const inputEl = layerData.inputEl
-      if (inputEl === null) {
-        return
-      }
+      const shouldDisableLayer = map.getZoom() < layerMinZoomLevel
 
-      inputEl.disabled = map.getZoom() < layerMinZoomLevel
+      const inputEl = layerData.inputEl
+      if (inputEl) {
+        inputEl.disabled = shouldDisableLayer
+      }
     });
   }
 }
