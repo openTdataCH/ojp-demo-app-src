@@ -187,7 +187,13 @@ export class LocationMapAppLayer {
     if (featureProperties) {
       const tableTRs: string[] = []
       for (let key in featureProperties){
-        const value = featureProperties[key];
+        let value = featureProperties[key];
+        if (typeof value === 'string') {
+          const valueS = new String(value)
+          if (valueS.startsWith('http')) {
+            value = '<a href="' + valueS + '" target="_blank">' + valueS + '</a>';
+          }
+        }
         const tableTR = '<tr><td>' + key + '</td><td>' + value + '</td></tr>';
         tableTRs.push(tableTR)
       }
