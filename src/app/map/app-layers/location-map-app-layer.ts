@@ -13,7 +13,7 @@ export class LocationMapAppLayer {
   public layerKey: string
   public minZoomLevel: number
   public sourceId: string
-  public features: GeoJSON.Feature[]
+  public currentFeatures: GeoJSON.Feature[]
   public isEnabled: boolean
 
   private userSettingsService: UserSettingsService
@@ -26,7 +26,7 @@ export class LocationMapAppLayer {
     this.layerKey = layerKey
     this.minZoomLevel = minZoomLevel
     this.sourceId = sourceId
-    this.features = []
+    this.currentFeatures = []
 
     this.isEnabled = true
 
@@ -104,7 +104,7 @@ export class LocationMapAppLayer {
   protected removeAllFeatures() {
     // Prevent firing again the 'idle' event when setting empty features
     //    on a already empty source
-    const hasNoFeatures = this.features.length === 0;
+    const hasNoFeatures = this.currentFeatures.length === 0;
     if (hasNoFeatures) {
       return;
     }
@@ -113,7 +113,7 @@ export class LocationMapAppLayer {
   }
 
   protected setSourceFeatures(features: GeoJSON.Feature[]) {
-    this.features = features;
+    this.currentFeatures = features
 
     const source = this.map.getSource(this.sourceId) as mapboxgl.GeoJSONSource
     const featureCollection = <GeoJSON.FeatureCollection>{

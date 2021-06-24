@@ -6,7 +6,7 @@ export interface MapAppLayer {
   layerKey: string
   minZoomLevel: number
   sourceId: string
-  features: GeoJSON.Feature[]
+  currentFeatures: GeoJSON.Feature[]
   isEnabled: boolean
 
   addToMap(): void
