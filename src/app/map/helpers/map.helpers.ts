@@ -16,4 +16,24 @@ export class MapHelpers {
 
     return featureLngLat
   }
+
+  public static bboxPxFromLngLatWidthPx(map: mapboxgl.Map, lngLat: mapboxgl.LngLat, width: number, height: number | null = null): [mapboxgl.PointLike, mapboxgl.PointLike] {
+    if (height === null) {
+      height = width
+    }
+
+    const pointPx = map.project(lngLat);
+    const bboxPx: [mapboxgl.PointLike, mapboxgl.PointLike] = [
+      [
+        pointPx.x - width / 2,
+        pointPx.y + height * 1.2,
+      ],
+      [
+        pointPx.x + width / 2,
+        pointPx.y + height * 0.2,
+      ]
+    ]
+
+    return bboxPx
+  }
 }
