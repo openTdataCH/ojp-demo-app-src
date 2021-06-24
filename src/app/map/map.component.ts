@@ -192,7 +192,7 @@ export class MapComponent implements OnInit {
       this.prevMapBoundsHash = currentMapBoundsHash;
 
       this.mapAppLayers.forEach(mapAppLayer => {
-        mapAppLayer.onMapBoundsChange();
+        mapAppLayer.refreshFeatures();
       })
     });
 

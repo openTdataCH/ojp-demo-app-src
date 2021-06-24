@@ -10,7 +10,7 @@ export interface MapAppLayer {
   isEnabled: boolean
 
   addToMap(): void
-  onMapBoundsChange(): void
+  refreshFeatures(): void
   onMapClick(ev: mapboxgl.MapMouseEvent): boolean
   enable(): void
   disable(): void

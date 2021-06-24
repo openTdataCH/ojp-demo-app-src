@@ -38,14 +38,22 @@ export class LocationMapAppLayer {
     // override
   }
 
-  public onMapBoundsChange() {
+  protected shouldIgnoreRefreshingFeatures(): boolean {
     if (!this.isEnabled) {
-      return
+      return true
     }
 
     if (this.map.getZoom() < this.minZoomLevel) {
       this.removeAllFeatures();
-      return;
+      return true
+    }
+
+    return false
+  }
+
+  public refreshFeatures() {
+    if (this.shouldIgnoreRefreshingFeatures()) {
+      return
     }
 
     const mapBounds = this.map.getBounds();
@@ -78,7 +86,7 @@ export class LocationMapAppLayer {
 
   enable() {
     this.isEnabled = true;
-    this.onMapBoundsChange();
+    this.refreshFeatures();
   }
 
   disable() {
