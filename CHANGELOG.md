@@ -4,6 +4,11 @@ OJP-Demo URL: https://opentdatach.github.io/ojp-demo-app/
 
 ----
 
+24.Jun 2021
+- add P+Rail POI layer from https://www.sbb.ch/en/station-services/at-the-station/parking-station/park-and-rail.html
+- add DonkeyRepublic POI layer from https://sharedmobility.ch/gbfs.json
+- better handling of the click feature and prevent showing multiple popups
+
 23.Jun 2021
 - add support for OnDemand timed legs
 - format leg leading texts (types, service numbers)
