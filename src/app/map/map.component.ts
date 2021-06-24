@@ -203,8 +203,16 @@ export class MapComponent implements OnInit {
     });
 
     map.on('click', (ev: mapboxgl.MapMouseEvent) => {
+      let foundClickResponder = false;
       this.mapAppLayers.forEach(mapAppLayer => {
-        mapAppLayer.onMapClick(ev)
+        if (foundClickResponder) {
+          return
+        }
+
+        const layerHasClickResponder = mapAppLayer.onMapClick(ev)
+        if (layerHasClickResponder) {
+          foundClickResponder = true
+        }
       })
     });
 
