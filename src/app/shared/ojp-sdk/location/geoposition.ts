@@ -4,10 +4,12 @@ import { XPathOJP } from "../helpers/xpath-ojp";
 export class GeoPosition {
   public longitude: number
   public latitude: number
+  public properties: GeoJSON.GeoJsonProperties | null
 
   constructor(longitude: number, latitude: number) {
     this.longitude = longitude
     this.latitude = latitude
+    this.properties = null
   }
 
   public static initFromContextNode(contextNode: Node): GeoPosition | null {
@@ -36,6 +38,7 @@ export class GeoPosition {
     const latitude = lngLatAr[1]
 
     const geoPosition = new GeoPosition(longitude, latitude)
+    geoPosition.properties = feature.properties
 
     return geoPosition
   }
