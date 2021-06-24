@@ -72,7 +72,7 @@ export class ParkAndRailLayer extends LocationMapAppLayer implements MapAppLayer
           const featureProperties: GeoJSON.GeoJsonProperties = {
             "id": markerData.id,
             "label": markerData.label,
-            "path": markerData.url,
+            "url": 'https://www.sbb.ch/' + markerData.url,
           }
 
           const featureGeometry: GeoJSON.Point = {
