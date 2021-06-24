@@ -128,19 +128,7 @@ export class LocationMapAppLayer {
       return null;
     }
 
-    const pointPx = this.map.project(lngLat);
-    const bboxWidth = 50;
-    const bboxPx: [mapboxgl.PointLike, mapboxgl.PointLike] = [
-      [
-        pointPx.x - bboxWidth / 2,
-        pointPx.y - bboxWidth / 2,
-      ],
-      [
-        pointPx.x + bboxWidth / 2,
-        pointPx.y + bboxWidth / 2,
-      ]
-    ]
-
+    const bboxPx = MapHelpers.bboxPxFromLngLatWidthPx(this.map, lngLat, 30);
     const features = this.map.queryRenderedFeatures(bboxPx, {
       layers: layerIDs
     });
