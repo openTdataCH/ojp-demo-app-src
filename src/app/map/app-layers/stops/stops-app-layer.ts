@@ -18,8 +18,6 @@ export class StopsAppLayer extends LocationMapAppLayer implements MapAppLayer {
   private stopsCircleLayerID = 'stops-circle'
   private stopsLabelLayerID = 'stops-label'
 
-  public isEnabled = true
-
   constructor(map: mapboxgl.Map, userSettingsService: UserSettingsService, userTripService: UserTripService) {
     super(
       map,
@@ -35,6 +33,8 @@ export class StopsAppLayer extends LocationMapAppLayer implements MapAppLayer {
   public addToMap() {
     const mapLayers = [stopsCircleLayer, stopsLabelLayer]
     stopsCircleLayer.id = this.stopsCircleLayerID;
+    stopsCircleLayer.minzoom = this.minZoomLevel
+
     stopsLabelLayer.id = this.stopsLabelLayerID;
 
     this.createSourceAddMapLayers(mapLayers as mapboxgl.Layer[])

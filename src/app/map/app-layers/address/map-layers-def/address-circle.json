@@ -2,6 +2,7 @@
   "id": "[LAYER_ID]",
   "source": "[SOURCE_ID]",
   "type": "circle",
+  "minzoom": 0.0,
   "paint": {
       "circle-color": "#eb0000",
       "circle-radius": 4,

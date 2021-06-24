@@ -17,8 +17,6 @@ export class AddressAppLayer extends LocationMapAppLayer implements MapAppLayer 
 
   private addressCircleLayerID = 'address-circle'
 
-  public isEnabled = true
-
   constructor(map: mapboxgl.Map, userSettingsService: UserSettingsService, userTripService: UserTripService) {
     super(
       map, AddressAppLayer.geoRestrictionType,
@@ -31,9 +29,10 @@ export class AddressAppLayer extends LocationMapAppLayer implements MapAppLayer 
   }
 
   public addToMap() {
-    const mapLayers = [addressCircleLayer]
     addressCircleLayer.id = this.addressCircleLayerID;
+    addressCircleLayer.minzoom = this.minZoomLevel
 
+    const mapLayers = [addressCircleLayer]
     this.createSourceAddMapLayers(mapLayers as mapboxgl.Layer[])
   }
 
