@@ -199,8 +199,8 @@ export class LocationMapAppLayer {
     return popupHTML
   }
 
-  public showPickupPopup(location: OJP.Location) {
-    const locationLngLat = location.geoPosition?.asLngLat() ??  null;
+  protected showPickupPopup(location: OJP.Location) {
+    const locationLngLat = location.geoPosition?.asLngLat() ?? null;
     if (locationLngLat === null) { return }
 
     const popupHTML = this.computePopupHTML(location)
