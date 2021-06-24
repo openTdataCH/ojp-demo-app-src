@@ -183,7 +183,7 @@ export class LocationMapAppLayer {
     const stopPlaceName = location.stopPlace?.stopPlaceName ?? '';
     popupHTML = popupHTML.replace('[GEO_RESTRICTION_TYPE]', this.geoRestrictionType);
 
-    const featureProperties = location.asGeoJSONFeature()?.properties ?? null
+    const featureProperties = location.geoPosition?.properties ?? location.asGeoJSONFeature()?.properties ?? null
     if (featureProperties) {
       const tableTRs: string[] = []
       for (let key in featureProperties){
