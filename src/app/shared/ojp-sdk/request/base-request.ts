@@ -3,7 +3,7 @@ import { StageConfig } from '../config/config';
 
 export class OJPBaseRequest {
   protected serviceRequestNode: xmlbuilder.XMLElement;
-  private stageConfig: StageConfig
+  protected stageConfig: StageConfig
 
   constructor(stageConfig: StageConfig) {
     this.stageConfig = stageConfig
