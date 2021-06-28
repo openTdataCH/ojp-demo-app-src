@@ -8,6 +8,7 @@ import { LocationMapAppLayer } from '../../location-map-app-layer'
 import { MapAppLayer } from "../../map-app-layer.interface";
 
 import bikeSharingStationSymbolLayer from './map-layers-def/bike-sharing-stations-icon.json';
+import { MapPoiPropertiesEnum, MapPoiTypeEnum } from "../../map-poi-type-enum";
 
 export class BikeSharingStationsLayer extends LocationMapAppLayer implements MapAppLayer {
   public static layerKey = 'bike-sharing-stations'
@@ -64,6 +65,8 @@ export class BikeSharingStationsLayer extends LocationMapAppLayer implements Map
             "region_id": stationData.region_id,
             "station_id": stationData.station_id,
           }
+
+          featureProperties[MapPoiPropertiesEnum.PoiType] = MapPoiTypeEnum.BikeSharing
 
           const featureGeometry: GeoJSON.Point = {
             "type": "Point",

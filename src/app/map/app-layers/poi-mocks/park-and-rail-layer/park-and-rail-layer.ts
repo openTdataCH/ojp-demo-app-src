@@ -9,6 +9,7 @@ import { MapAppLayer } from "../../map-app-layer.interface";
 
 import parkAndRailSymbolLayer from './map-layers-def/poi-park-and-rail-icon.json';
 import parkAndRailLabelLayer from './map-layers-def/poi-park-and-rail-label.json';
+import { MapPoiPropertiesEnum, MapPoiTypeEnum } from "../../map-poi-type-enum";
 
 export class ParkAndRailLayer extends LocationMapAppLayer implements MapAppLayer {
   public static layerKey = 'park-and-rail'
@@ -74,6 +75,8 @@ export class ParkAndRailLayer extends LocationMapAppLayer implements MapAppLayer
             "label": markerData.label,
             "url": 'https://www.sbb.ch/' + markerData.url,
           }
+
+          featureProperties[MapPoiPropertiesEnum.PoiType] = MapPoiTypeEnum.ParkAndRail
 
           const featureGeometry: GeoJSON.Point = {
             "type": "Point",
