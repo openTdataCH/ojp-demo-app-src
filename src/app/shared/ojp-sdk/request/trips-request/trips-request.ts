@@ -73,5 +73,13 @@ export class TripRequest extends OJPBaseRequest {
     paramsNode.ele('ojp:IncludeLegProjection', true)
     paramsNode.ele('ojp:IncludeTurnDescription', true)
     paramsNode.ele('ojp:IncludeIntermediateStops', true)
+
+    const motType = this.requestParams.motType
+    if (motType === 'Self-Driving Car') {
+      paramsNode.ele('ojp:ItModesToCover', 'self-drive-car');
+    }
+    if (motType === 'Walking') {
+      paramsNode.ele('ojp:ItModesToCover', 'walk');
+    }
   }
 }
