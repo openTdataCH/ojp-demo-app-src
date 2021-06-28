@@ -2,7 +2,6 @@ import { XPathOJP } from "../helpers/xpath-ojp";
 import { GeoPosition } from "./geoposition";
 import { StopPlace } from "./stopplace";
 import { Address } from "./address";
-import { GeoRestrictionType } from "../types/geo-restriction.type";
 import { MapPoiPropertiesEnum, MapPoiTypeEnum } from "src/app/map/app-layers/map-poi-type-enum";
 
 export class Location {
