@@ -28,7 +28,7 @@ export class ResultTripLegComponent implements OnInit {
 
     const leg = this.leg
 
-    const titleParts: string[] = [leg.legType + ': ']
+    const titleParts: string[] = []
 
     if (leg.legType === 'TimedLeg') {
       const timedLeg = leg as OJP.TripTimedLeg
