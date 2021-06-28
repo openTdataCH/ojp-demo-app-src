@@ -3,6 +3,7 @@ import { GeoPosition } from "./geoposition";
 import { StopPlace } from "./stopplace";
 import { Address } from "./address";
 import { GeoRestrictionType } from "../types/geo-restriction.type";
+import { MapPoiPropertiesEnum, MapPoiTypeEnum } from "src/app/map/app-layers/map-poi-type-enum";
 
 export class Location {
   public address: Address | null
@@ -101,14 +102,15 @@ export class Location {
       return null
     }
 
-    let featureType: GeoRestrictionType | 'geoPosition' = 'geoPosition';
+    let featureType = MapPoiTypeEnum.Coordinates
+
     const featureProperties: GeoJSON.GeoJsonProperties = {
       'locationName': this.locationName ?? ''
     };
 
     const stopPlaceRef = this.stopPlace?.stopPlaceRef ?? null;
     if (stopPlaceRef) {
-      featureType = 'stop'
+      featureType = MapPoiTypeEnum.PublicTransportStop
 
       featureProperties['stopPlace.stopPlaceRef'] = this.stopPlace?.stopPlaceRef ?? ''
       featureProperties['stopPlace.stopPlaceName'] = this.stopPlace?.stopPlaceName ?? ''
@@ -116,14 +118,14 @@ export class Location {
     }
 
     if (this.address) {
-      featureType = 'address'
+      featureType = MapPoiTypeEnum.Address
 
       featureProperties['addressCode'] = this.address?.addressCode ?? ''
       featureProperties['addressName'] = this.address?.addressName ?? ''
       featureProperties['topographicPlaceRef'] = this.address?.topographicPlaceRef ?? ''
     }
 
-    featureProperties['type'] = featureType;
+    featureProperties[MapPoiPropertiesEnum.PoiType] = featureType;
 
     const feature: GeoJSON.Feature<GeoJSON.Point> = {
       type: 'Feature',
