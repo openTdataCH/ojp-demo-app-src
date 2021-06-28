@@ -1,14 +1,17 @@
 import { Location } from "../../location/location";
+import { TripMotType } from "../../types/trip-mot-type";
 
 export class TripsRequestParams {
   fromLocation: Location
   toLocation: Location
   departureDate: Date
+  motType: TripMotType
 
   constructor(fromLocation: Location, toLocation: Location, departureDate: Date) {
     this.fromLocation = fromLocation
     this.toLocation = toLocation
     this.departureDate = departureDate
+    this.motType = 'Default'
   }
 
   public static initWithLocationsAndDate(
