@@ -27,5 +27,9 @@ export class JourneyResultsComponent implements OnInit {
     this.userTripService.tripsUpdated.subscribe(trips => {
       this.trips = trips
     });
+
+    this.userTripService.viaAtIndexRemoved.subscribe(idx => {
+      this.trips = []
+    });
   }
 }

@@ -151,6 +151,17 @@ export class MapComponent implements OnInit {
         });
       });
     })
+
+    this.userTripService.viaAtIndexRemoved.subscribe(viaIdx => {
+      if (viaIdx > (this.viaMarkers.length - 1)) {
+        return
+      }
+
+      const marker = this.viaMarkers[viaIdx]
+      marker.remove()
+
+      this.viaMarkers.splice(viaIdx, 1)
+    })
   }
 
   private initMap() {

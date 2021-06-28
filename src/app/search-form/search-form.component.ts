@@ -108,6 +108,10 @@ export class SearchFormComponent implements OnInit {
         this.updateSearchParamsDate();
       }
     });
+
+    this.userTripService.viaAtIndexRemoved.subscribe(idx => {
+      this.searchState = 'ChooseEndpoints'
+    })
   }
 
   private initLocationsFromMocks() {
