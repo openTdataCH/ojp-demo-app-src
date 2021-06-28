@@ -28,6 +28,7 @@ export class MapComponent implements OnInit {
 
   private fromMarker: mapboxgl.Marker;
   private toMarker: mapboxgl.Marker;
+  private viaMarkers: mapboxgl.Marker[]
 
   private mapAppLayers: MapAppLayer[]
   private stopsMapAppLayer: StopsAppLayer | null
@@ -70,6 +71,8 @@ export class MapComponent implements OnInit {
       }
     })
 
+    this.viaMarkers = []
+
     this.mapAppLayers = []
     this.stopsMapAppLayer = null
 
@@ -96,6 +99,18 @@ export class MapComponent implements OnInit {
 
       if (locationData.endpointType === 'To') {
         marker = this.toMarker
+      }
+
+      if (locationData.endpointType === 'Via') {
+        const markerDIV = document.createElement('div');
+        markerDIV.className = 'marker-journey-endpoint marker-journey-endpoint-' + locationData.endpointType;
+
+        marker = new mapboxgl.Marker({
+          element: markerDIV,
+          anchor: 'bottom',
+        });
+
+        this.viaMarkers.push(marker)
       }
 
       if (marker) {
