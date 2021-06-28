@@ -1,0 +1,51 @@
+<div class="via-container">
+  <div class="d-flex align-items-center via-mot">
+    <div>MOT</div>
+    <div style="width: 5px"></div>
+    <select
+      (change)="this.onOptionChange($event, 'prev')"
+    >
+      <option
+        *ngFor="let motType of this.motTypes"
+        [selected]="motType === this.prevMotType"
+      >{{ motType }}</option>
+    </select>
+  </div>
+
+  <div class="via-content">
+    <div class="via-label">
+      <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="currentColor" class="bi bi-map" viewBox="0 0 16 16">
+        <path fill-rule="evenodd" d="M15.817.113A.5.5 0 0 1 16 .5v14a.5.5 0 0 1-.402.49l-5 1a.502.502 0 0 1-.196 0L5.5 15.01l-4.902.98A.5.5 0 0 1 0 15.5v-14a.5.5 0 0 1 .402-.49l5-1a.5.5 0 0 1 .196 0L10.5.99l4.902-.98a.5.5 0 0 1 .415.103zM10 1.91l-4-.8v12.98l4 .8V1.91zm1 12.98 4-.8V1.11l-4 .8v12.98zm-6-.8V1.11l-4 .8v12.98l4-.8z"></path>
+      </svg> Via
+    </div>
+    <div class="d-flex align-items-center">
+      <div>{{ computeViaName() }}</div>
+      <div style="width: 8px"></div>
+      <button
+        type="button"
+        class="btn btn-sm btn-outline-danger"
+        (click)="this.handleClickOnRemove()">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-x-circle" viewBox="0 0 16 16">
+          <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"></path>
+          <path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708z"></path>
+        </svg>
+        Remove
+      </button>
+    </div>
+  </div>
+
+  <div *ngIf="this.computeIsLast()">
+    <div class="d-flex align-items-center via-mot">
+      <div>MOT</div>
+      <div style="width: 5px"></div>
+      <select
+        (change)="this.onOptionChange($event, 'next')"
+      >
+        <option
+          *ngFor="let motType of this.motTypes"
+          [selected]="motType === this.nextMotType"
+        >{{ motType }}</option>
+      </select>
+    </div>
+  </div>
+</div>
