@@ -87,8 +87,20 @@ export class MapComponent implements OnInit {
 
     this.userTripService.locationUpdated.subscribe(locationData => {
       const location = locationData.location;
-      const marker = locationData.endpointType === 'From' ? this.fromMarker : this.toMarker;
-      this.updateMarkerLocation(marker, location);
+
+      let marker: mapboxgl.Marker | null = null
+
+      if (locationData.endpointType === 'From') {
+        marker = this.fromMarker
+      }
+
+      if (locationData.endpointType === 'To') {
+        marker = this.toMarker
+      }
+
+      if (marker) {
+        this.updateMarkerLocation(marker, location);
+      }
     });
 
     this.mapService.centerAndZoomToEndpointRequested.subscribe(endpointType => {
