@@ -40,10 +40,22 @@ export class Trip {
       return null;
     }
 
+    const tripStartTimeS = XPathOJP.queryText('ojp:Trip/ojp:StartTime', tripResultNode);
+    const tripEndTimeS = XPathOJP.queryText('ojp:Trip/ojp:EndTime', tripResultNode);
+
+    if (tripStartTimeS === null || tripEndTimeS === null) {
+      return null;
+    }
+
+    const tripStartTime = new Date(Date.parse(tripStartTimeS));
+    const tripEndTime = new Date(Date.parse(tripEndTimeS));
+
     const tripStats = <TripStats>{
       duration: DateHelpers.computeDuration(durationS),
       distanceMeters: parseInt(distanceS),
-      transferNo: parseInt(transfersNoS)
+      transferNo: parseInt(transfersNoS),
+      startDatetime: tripStartTime,
+      endDatetime: tripEndTime,
     }
 
     let legs: TripLeg[] = [];
