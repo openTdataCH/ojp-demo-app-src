@@ -87,13 +87,15 @@
 <div class="row mb-2">
   <div class="col">
     <div class="d-flex flex-row-reverse">
-      <div>
+      <!-- TEMPORARELY DISABLE
+        <div>
         <span
           class="badge bg-info text-dark debug-xml"
           (click)="openRequestLogDialog()"
         >Debug XML</span>
       </div>
       <div style="width: 2px"></div>
+      -->
       <div
         *ngIf="requestDuration !== null"
       >
