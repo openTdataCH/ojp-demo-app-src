@@ -39,7 +39,7 @@ export class SearchFormComponent implements OnInit {
 
   @ViewChild('debugXMLPopoverTemplate', { static: true }) debugXMLPopoverTemplate: TemplateRef<any> | undefined;
 
-  constructor(private userTripService: UserTripService, private userSettingsService: UserSettingsService, public dialog: SbbDialog) {
+  constructor(public userTripService: UserTripService, private userSettingsService: UserSettingsService, public dialog: SbbDialog) {
     const nowDate = new Date()
     const timeFormatted = OJP.DateHelpers.formatTimeHHMM(nowDate);
 
@@ -99,7 +99,9 @@ export class SearchFormComponent implements OnInit {
 
         if (locationData.endpointType === 'From') {
           this.fromLocationText = locationFormText
-        } else {
+        }
+
+        if (locationData.endpointType === 'To') {
           this.toLocationText = locationFormText
         }
 
@@ -256,28 +258,26 @@ export class SearchFormComponent implements OnInit {
   }
 
   handleTapOnSearch() {
-    const stageConfig = this.userSettingsService.getStageConfig()
-
-    if (this.tripRequestParams === null) {
+    const departureDate = this.computeFormDepartureDate();
+    const journeyRequestParams = this.userTripService.computeJourneyRequestParams(departureDate)
+    if (journeyRequestParams === null) {
+      console.error('Whooops, JourneyRequestParams cant be null');
       return
     }
 
-    this.updateSearchParamsDate();
+    const stageConfig = this.userSettingsService.getStageConfig()
+    const journeyRequest = new OJP.JourneyRequest(stageConfig, journeyRequestParams)
+
     this.isSearching = true
-
     const startRequestDate = new Date();
-
-    const tripRequest = new OJP.TripRequest(stageConfig, this.tripRequestParams);
-    tripRequest.fetchResponse(tripsResponse => {
+    journeyRequest.fetchResponse(trips => {
       const endRequestDate = new Date();
       const requestDuration = ((endRequestDate.getTime() - startRequestDate.getTime()) / 1000).toFixed(2);
       this.requestDuration = requestDuration + ' sec';
 
       this.isSearching = false
-      this.userTripService.updateTrips(tripsResponse.trips)
-
-      this.tripResponseFormattedXML = tripsResponse.responseXMLText
-    });
+      this.userTripService.updateTrips(trips)
+    })
   }
 
   openRequestLogDialog() {

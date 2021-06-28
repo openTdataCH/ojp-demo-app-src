@@ -12,6 +12,13 @@
               [placeholder]="'From'">
             </journey-point-input>
           </div>
+
+          <trip-via-point
+            *ngFor="let viaLocation of this.userTripService.viaLocations; index as idx"
+            [location]="viaLocation"
+            [viaIDx]="idx">
+          </trip-via-point>
+
           <div>
             <journey-point-input
               (selectedLocation)="onLocationSelected($event, 'To')"
