@@ -5,6 +5,9 @@ OJP-Demo URL: https://opentdatach.github.io/ojp-demo-app/
 ----
 
 29.Jun 2021
+- via endpoints are draggable
+
+28.Jun 2021
 - adds via markers (right click for coords or from stops/P+Rail/DonkeyRep popups)
 - add support for multi-modal journeys - i.e. self-driving + OV
 - disabled XML debug (will be re-introduced after journey/trip response refactor)
