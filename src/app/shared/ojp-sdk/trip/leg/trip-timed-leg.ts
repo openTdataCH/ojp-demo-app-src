@@ -10,6 +10,7 @@ import { StopPointType } from '../../types/stop-point-type';
 import { StopPointTime } from './timed-leg/stop-point-time'
 import { XPathOJP } from '../../helpers/xpath-ojp'
 import { MapLegLineTypeColor } from '../../config/map-colors';
+import { GeoPosition } from '../../location/geoposition';
 
 export class TripTimedLeg extends TripLeg {
   public service: JourneyService
@@ -136,6 +137,25 @@ export class TripTimedLeg extends TripLeg {
     const color = MapLegLineTypeColor[timedLegLineType] ?? defaultColor
 
     return color
+  }
+
+  protected computeBeelineGeoPositions(): GeoPosition[] {
+    const geoPositions: GeoPosition[] = []
+
+    const stopPoints: StopPoint[] = []
+    stopPoints.push(this.fromStopPoint)
+    this.intermediateStopPoints.forEach(stopPoint => {
+      stopPoints.push(stopPoint)
+    })
+    stopPoints.push(this.toStopPoint)
+
+    stopPoints.forEach(stopPoint => {
+      if (stopPoint.location.geoPosition) {
+        geoPositions.push(stopPoint.location.geoPosition)
+      }
+    })
+
+    return geoPositions
   }
 
 }
