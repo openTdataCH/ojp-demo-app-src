@@ -19,7 +19,9 @@ export class UserTripService {
   public locationUpdated = new EventEmitter<LocationData>();
   public tripsUpdated = new EventEmitter<OJP.Trip[]>();
   public activeTripSelected = new EventEmitter<OJP.Trip | null>();
+
   public viaAtIndexRemoved = new EventEmitter<number>();
+  public viaAtIndexUpdated = new EventEmitter<{location: OJP.Location, idx: number}>();
 
   constructor() {
     this.fromLocation = null
@@ -66,6 +68,15 @@ export class UserTripService {
     }
 
     this.locationUpdated.emit(locationData);
+    this.activeTripSelected.emit(null);
+  }
+
+  updateViaPoint(location: OJP.Location, viaIDx: number) {
+    this.viaLocations[viaIDx] = location
+    this.viaAtIndexUpdated.emit({
+      location: location,
+      idx: viaIDx
+    })
     this.activeTripSelected.emit(null);
   }
 

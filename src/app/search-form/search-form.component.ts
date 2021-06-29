@@ -113,6 +113,11 @@ export class SearchFormComponent implements OnInit {
       this.searchState = 'ChooseEndpoints'
       this.requestDuration = null
     })
+
+    this.userTripService.viaAtIndexUpdated.subscribe(viaData => {
+      this.searchState = 'ChooseEndpoints'
+      this.requestDuration = null
+    })
   }
 
   private initLocationsFromMocks() {

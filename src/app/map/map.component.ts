@@ -324,6 +324,11 @@ export class MapComponent implements OnInit {
     markerDIV.className = 'marker-journey-endpoint marker-journey-endpoint-Via';
 
     let isDraggable = false
+    if (location.geoPosition?.properties === null) {
+      // Only markers from coordinates-pickers are draggable
+      isDraggable = true
+    }
+
     const marker = new mapboxgl.Marker({
       element: markerDIV,
       anchor: 'bottom',
