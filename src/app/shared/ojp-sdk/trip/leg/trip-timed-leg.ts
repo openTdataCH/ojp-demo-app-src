@@ -67,7 +67,9 @@ export class TripTimedLeg extends TripLeg {
 
     const timedLeg = new TripTimedLeg(legIDx, service, fromStopPoint, toStopPoint, intermediateStopPoints);
 
-    timedLeg.legTrack = LegTrack.initFromLegNode(legNode);
+    if (service.ptMode.isRail()) {
+      timedLeg.legTrack = LegTrack.initFromLegNode(legNode);
+    }
 
     return timedLeg
   }
