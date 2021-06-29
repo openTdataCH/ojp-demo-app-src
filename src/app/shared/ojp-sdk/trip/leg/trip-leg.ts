@@ -32,44 +32,12 @@ export class TripLeg {
   public computeGeoJSONFeatures(): GeoJSON.Feature[] {
     let features: GeoJSON.Feature[] = [];
 
-    const legBeelineFeature: GeoJSON.Feature<GeoJSON.LineString> = {
-      type: 'Feature',
-      properties: {},
-      geometry: {
-        type: 'LineString',
-        coordinates: []
+    const hasLegTrackFeature = this.legTrack?.hasGeoData ?? false
+    if (!hasLegTrackFeature) {
+      const beelineFeature = this.computeBeelineFeature()
+      if (beelineFeature) {
+        features.push(beelineFeature);
       }
-    };
-
-    if (legBeelineFeature.properties) {
-      const drawType: TripLegDrawType = 'Beeline'
-      legBeelineFeature.properties[TripLegPropertiesEnum.DrawType] = drawType;
-    }
-
-    [this.fromLocation, this.toLocation].forEach(endpointLocation => {
-      const locationFeature = endpointLocation.asGeoJSONFeature();
-      if (locationFeature?.properties) {
-        legBeelineFeature.geometry.coordinates.push(locationFeature.geometry.coordinates);
-      }
-    });
-
-    let hasLegTrackFeature = this.legTrack?.hasGeoData ?? false
-    if (!hasLegTrackFeature && legBeelineFeature.geometry.coordinates.length > 1) {
-      if (legBeelineFeature.properties) {
-        const drawType: TripLegDrawType = 'Beeline'
-        legBeelineFeature.properties[TripLegPropertiesEnum.DrawType] = drawType;
-
-        const beelineGeoPositions: GeoPosition[] = [];
-        [this.fromLocation, this.toLocation].forEach(endpointLocation => {
-          if (endpointLocation.geoPosition) {
-            beelineGeoPositions.push(endpointLocation.geoPosition)
-          }
-        });
-        const bbox = new GeoPositionBBOX(beelineGeoPositions);
-        legBeelineFeature.bbox = bbox.asFeatureBBOX()
-      }
-
-      features.push(legBeelineFeature);
     }
 
     const linePointFeatures = this.computeLinePointFeatures()
@@ -175,6 +143,54 @@ export class TripLeg {
 
   protected computeLegLineType(): TripLegLineType {
     return 'Unknown'
+  }
+
+  private computeBeelineFeature(): GeoJSON.Feature | null {
+    const beelineGeoPositions = this.computeBeelineGeoPositions()
+
+    if (beelineGeoPositions.length < 2) {
+      return null
+    }
+
+    const coordinates: GeoJSON.Position[] = []
+    beelineGeoPositions.forEach(geoPosition => {
+      coordinates.push(geoPosition.asPosition())
+    })
+
+    const beelineProperties: GeoJSON.GeoJsonProperties = {}
+
+    const drawType: TripLegDrawType = 'Beeline'
+    beelineProperties[TripLegPropertiesEnum.DrawType] = drawType
+
+    const lineType: TripLegLineType = this.computeLegLineType()
+    beelineProperties[TripLegPropertiesEnum.LineType] = lineType
+
+    const bbox = new GeoPositionBBOX(beelineGeoPositions);
+
+    const beelineFeature: GeoJSON.Feature<GeoJSON.LineString> = {
+      type: 'Feature',
+      properties: beelineProperties,
+      geometry: {
+        type: 'LineString',
+        coordinates: coordinates
+      },
+      bbox: bbox.asFeatureBBOX()
+    };
+
+    return beelineFeature
+  }
+
+  protected computeBeelineGeoPositions(): GeoPosition[] {
+    const geoPositions: GeoPosition[] = []
+
+    const locations: Location[] = [this.fromLocation, this.toLocation]
+    locations.forEach(location => {
+      if (location.geoPosition) {
+        geoPositions.push(location.geoPosition)
+      }
+    });
+
+    return geoPositions
   }
 
 }
