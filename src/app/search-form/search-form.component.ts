@@ -111,6 +111,7 @@ export class SearchFormComponent implements OnInit {
 
     this.userTripService.viaAtIndexRemoved.subscribe(idx => {
       this.searchState = 'ChooseEndpoints'
+      this.requestDuration = null
     })
   }
 
