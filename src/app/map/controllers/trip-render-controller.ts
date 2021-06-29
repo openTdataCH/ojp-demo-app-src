@@ -39,7 +39,7 @@ export class TripRenderController {
     const tripLegBeelineLayer = tripLegBeelineLayerJSON as mapboxgl.LineLayer
     tripLegBeelineLayer.filter = OJP.MapboxLayerHelpers.FilterBeelines()
     if (tripLegBeelineLayer.paint) {
-      tripLegBeelineLayer.paint["line-color"] = OJP.MapboxLayerHelpers.ColorCaseByLegType()
+      tripLegBeelineLayer.paint["line-color"] = OJP.MapboxLayerHelpers.ColorCaseByLegLineType()
     }
 
     const caseTimedLegColors = OJP.MapboxLayerHelpers.ColorCaseByLegLineType()

@@ -12,7 +12,7 @@
   },
   "paint": {
     "line-width": 4,
-    "line-opacity": 0.2,
+    "line-opacity": 0.4,
     "line-color": [
       "[CASE_COLOR_BY_LEG_TYPE]"
     ]
