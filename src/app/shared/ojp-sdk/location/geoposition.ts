@@ -59,4 +59,8 @@ export class GeoPosition {
 
     return s
   }
+
+  public asPosition(): GeoJSON.Position {
+    return [this.longitude, this.latitude]
+  }
 }
