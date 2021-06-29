@@ -102,15 +102,12 @@ export class MapComponent implements OnInit {
       }
 
       if (locationData.endpointType === 'Via') {
-        const markerDIV = document.createElement('div');
-        markerDIV.className = 'marker-journey-endpoint marker-journey-endpoint-' + locationData.endpointType;
+        if (locationData.location) {
+          const viaMarker = this.createViaMarker(locationData.location)
 
-        marker = new mapboxgl.Marker({
-          element: markerDIV,
-          anchor: 'bottom',
-        });
-
-        this.viaMarkers.push(marker)
+          this.viaMarkers.push(viaMarker)
+          marker = viaMarker
+        }
       }
 
       if (marker) {
@@ -320,6 +317,28 @@ export class MapComponent implements OnInit {
         marker.addTo(map);
       });
     }
+  }
+
+  private createViaMarker(location: OJP.Location): mapboxgl.Marker {
+    const markerDIV = document.createElement('div');
+    markerDIV.className = 'marker-journey-endpoint marker-journey-endpoint-Via';
+
+    let isDraggable = false
+    const marker = new mapboxgl.Marker({
+      element: markerDIV,
+      anchor: 'bottom',
+      draggable: isDraggable,
+    });
+
+    const markerIDx = this.viaMarkers.length
+
+    marker.on('dragend', ev => {
+      const lngLat = marker.getLngLat();
+      let location = OJP.Location.initWithLngLat(lngLat.lng, lngLat.lat);
+      this.userTripService.updateViaPoint(location, markerIDx)
+    })
+
+    return marker
   }
 
 }
