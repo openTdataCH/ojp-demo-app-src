@@ -29,6 +29,31 @@ export class TripLeg {
     this.legTrack = null
   }
 
+  public patchLocations(mapContextLocations: Record<string, Location>) {
+    [this.fromLocation, this.toLocation].forEach(location => {
+      this.patchLocation(location, mapContextLocations);
+
+      if (location.geoPosition) {
+        return
+      }
+    })
+  }
+
+  protected patchLocation(location: Location, mapContextLocations: Record<string, Location>) {
+    if (location.geoPosition) {
+      return
+    }
+
+    const stopPointRef = location.stopPointRef
+    if (stopPointRef && (stopPointRef in mapContextLocations)) {
+      const contextLocation = mapContextLocations[stopPointRef]
+
+      location.locationName = contextLocation.locationName
+      location.stopPlace = contextLocation.stopPlace
+      location.geoPosition = contextLocation.geoPosition
+    }
+  }
+
   public computeGeoJSONFeatures(): GeoJSON.Feature[] {
     let features: GeoJSON.Feature[] = [];
 

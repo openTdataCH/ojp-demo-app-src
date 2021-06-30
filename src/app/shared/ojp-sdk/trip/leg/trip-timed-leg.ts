@@ -74,6 +74,14 @@ export class TripTimedLeg extends TripLeg {
     return timedLeg
   }
 
+  public patchLocations(mapContextLocations: Record<string, Location>) {
+    super.patchLocations(mapContextLocations)
+
+    this.intermediateStopPoints.forEach(stopPoint => {
+      this.patchLocation(stopPoint.location, mapContextLocations);
+    });
+  }
+
   public computeDepartureTime(): Date | null {
     return this.computeStopPointTime(this.fromStopPoint.departureData)
   }

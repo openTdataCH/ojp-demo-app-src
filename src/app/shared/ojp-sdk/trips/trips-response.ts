@@ -52,39 +52,13 @@ export class TripsResponse {
     tripResultNodes.forEach(tripResult => {
       const trip = Trip.initFromTripResultNode(tripResult as Node, contextLocations);
       if (trip) {
-        // Massage locations
         trip.legs.forEach(leg => {
-          [leg.fromLocation, leg.toLocation].forEach(location => {
-            TripsResponse.patchLocation(location, mapContextLocations);
-          })
-
-          if (leg.legType === 'TimedLeg') {
-            const timedLeg = leg as TripTimedLeg
-            timedLeg.intermediateStopPoints.forEach(stopPoint => {
-              TripsResponse.patchLocation(stopPoint.location, mapContextLocations);
-            });
-          }
-        });
-
+          leg.patchLocations(mapContextLocations)
+        })
         trips.push(trip);
       }
     });
 
     return trips
-  }
-
-  private static patchLocation(location: Location, mapContextLocations: Record<string, Location>) {
-    if (location.geoPosition) {
-      return
-    }
-
-    const stopPointRef = location.stopPointRef
-    if (stopPointRef && (stopPointRef in mapContextLocations)) {
-      const contextLocation = mapContextLocations[stopPointRef]
-
-      location.locationName = contextLocation.locationName
-      location.stopPlace = contextLocation.stopPlace
-      location.geoPosition = contextLocation.geoPosition
-    }
   }
 }
