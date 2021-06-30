@@ -1,4 +1,5 @@
 import { XPathOJP } from "../../helpers/xpath-ojp"
+import { GeoPosition } from "../../location/geoposition";
 import { Location } from "../../location/location"
 import { LinkProjection } from "../link-projection";
 
@@ -36,6 +37,34 @@ export class LegTrack {
     const legTrack = new LegTrack(trackSections);
 
     return legTrack
+  }
+
+  public fromGeoPosition(): GeoPosition | null {
+    const hasSections = this.trackSections.length === 0
+    if (hasSections) {
+      return null
+    }
+
+    const firstLinkProjection = this.trackSections[0].linkProjection
+    if (firstLinkProjection === null) {
+      return null
+    }
+
+    return firstLinkProjection.coordinates[0]
+  }
+
+  public toGeoPosition(): GeoPosition | null {
+    const hasSections = this.trackSections.length === 0
+    if (hasSections) {
+      return null
+    }
+
+    const lastLinkProjection = this.trackSections[this.trackSections.length - 1].linkProjection
+    if (lastLinkProjection === null) {
+      return null
+    }
+
+    return lastLinkProjection.coordinates[lastLinkProjection.coordinates.length - 1]
   }
 }
 
