@@ -36,6 +36,15 @@ export class TripLeg {
       if (location.geoPosition) {
         return
       }
+
+      if (this.legTrack?.hasGeoData) {
+        const isFrom = location === this.fromLocation
+        if (isFrom) {
+          this.fromLocation.geoPosition = this.legTrack.fromGeoPosition()
+        } else {
+          this.toLocation.geoPosition = this.legTrack.toGeoPosition()
+        }
+      }
     })
   }
 
@@ -57,8 +66,7 @@ export class TripLeg {
   public computeGeoJSONFeatures(): GeoJSON.Feature[] {
     let features: GeoJSON.Feature[] = [];
 
-    const hasLegTrackFeature = this.legTrack?.hasGeoData ?? false
-    if (!hasLegTrackFeature) {
+    if (this.useBeeline()) {
       const beelineFeature = this.computeBeelineFeature()
       if (beelineFeature) {
         features.push(beelineFeature);
@@ -82,6 +90,14 @@ export class TripLeg {
     });
 
     return features;
+  }
+
+  protected useBeeline(): boolean {
+    if (this.legTrack?.hasGeoData) {
+      return false
+    }
+
+    return true
   }
 
   private computeLegType(): string {

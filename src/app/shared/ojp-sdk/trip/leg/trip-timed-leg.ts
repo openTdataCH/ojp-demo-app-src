@@ -5,12 +5,13 @@ import { LegTrack } from './leg-track'
 import { TripLeg, LegType, LinePointData } from "./trip-leg"
 
 import { TripLegPropertiesEnum, TripLegDrawType, TripLegLineType } from "../../types/map-geometry-types";
-import { StopPointType } from '../../types/stop-point-type';
 
 import { StopPointTime } from './timed-leg/stop-point-time'
 import { XPathOJP } from '../../helpers/xpath-ojp'
 import { MapLegLineTypeColor } from '../../config/map-colors';
+
 import { GeoPosition } from '../../location/geoposition';
+import { Location } from '../../location/location';
 
 export class TripTimedLeg extends TripLeg {
   public service: JourneyService
@@ -66,10 +67,7 @@ export class TripTimedLeg extends TripLeg {
     })
 
     const timedLeg = new TripTimedLeg(legIDx, service, fromStopPoint, toStopPoint, intermediateStopPoints);
-
-    if (service.ptMode.isRail()) {
-      timedLeg.legTrack = LegTrack.initFromLegNode(legNode);
-    }
+    timedLeg.legTrack = LegTrack.initFromLegNode(legNode)
 
     return timedLeg
   }
@@ -104,17 +102,20 @@ export class TripTimedLeg extends TripLeg {
 
     const lineType: TripLegLineType = this.service.computeLegLineType()
 
-    this.legTrack?.trackSections.forEach(trackSection => {
-      const feature = trackSection.linkProjection?.asGeoJSONFeature()
-      if (feature?.properties) {
-        const drawType: TripLegDrawType = 'LegLine'
-        feature.properties[TripLegPropertiesEnum.DrawType] = drawType
+    const useDetailedTrack = !this.useBeeline()
+    if (useDetailedTrack) {
+      this.legTrack?.trackSections.forEach(trackSection => {
+        const feature = trackSection.linkProjection?.asGeoJSONFeature()
+        if (feature?.properties) {
+          const drawType: TripLegDrawType = 'LegLine'
+          feature.properties[TripLegPropertiesEnum.DrawType] = drawType
 
-        feature.properties[TripLegPropertiesEnum.LineType] = lineType
+          feature.properties[TripLegPropertiesEnum.LineType] = lineType
 
-        features.push(feature);
-      }
-    });
+          features.push(feature);
+        }
+      });
+    }
 
     return features
   }
@@ -166,6 +167,11 @@ export class TripTimedLeg extends TripLeg {
     })
 
     return geoPositions
+  }
+
+  protected useBeeline(): boolean {
+    const useBeeline = super.useBeeline() || !this.service.ptMode.isRail()
+    return useBeeline
   }
 
 }
