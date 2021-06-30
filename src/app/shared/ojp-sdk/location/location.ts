@@ -24,9 +24,14 @@ export class Location {
 
     location.address = Address.initFromContextNode(contextNode)
     location.stopPointRef = XPathOJP.queryText('siri:StopPointRef', contextNode)
-    location.locationName = XPathOJP.queryText('ojp:LocationName/ojp:Text', contextNode)
     location.stopPlace = StopPlace.initFromContextNode(contextNode)
     location.geoPosition = GeoPosition.initFromContextNode(contextNode)
+
+    let locationName = XPathOJP.queryText('ojp:LocationName/ojp:Text', contextNode)
+    if (locationName === null) {
+      locationName = XPathOJP.queryText('ojp:StopPointName/ojp:Text', contextNode)
+    }
+    location.locationName = locationName
 
     return location
   }
