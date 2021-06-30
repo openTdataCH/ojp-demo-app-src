@@ -4,6 +4,9 @@ OJP-Demo URL: https://opentdatach.github.io/ojp-demo-app/
 
 ----
 
+30.Jun 2021
+- patch leg locations with LegTrack end coordinates (when available)
+
 29.Jun 2021
 - via endpoints are draggable
 - use LegTrack (detailed routes) only for Rail timed legs. Otherwise default to beeline (with intermediary points)
