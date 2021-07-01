@@ -10,6 +10,7 @@ import * as OJP from '../shared/ojp-sdk/index'
 import { UserSettingsService } from '../shared/services/user-settings.service';
 
 import 'url-search-params-polyfill';
+import { MapService } from '../shared/services/map.service';
 
 type SearchState = 'ChooseEndpoints' | 'DisplayTrips'
 
@@ -41,9 +42,12 @@ export class SearchFormComponent implements OnInit {
 
   @ViewChild('debugXMLPopoverTemplate', { static: true }) debugXMLPopoverTemplate: TemplateRef<any> | undefined;
 
-  constructor(public userTripService: UserTripService, private userSettingsService: UserSettingsService, public dialog: SbbDialog) {
-    const nowDate = new Date()
-    const timeFormatted = OJP.DateHelpers.formatTimeHHMM(nowDate);
+  constructor(
+    public userTripService: UserTripService,
+    private userSettingsService: UserSettingsService,
+    private mapService: MapService,
+    public dialog: SbbDialog,
+  ) {
     this.queryParams = new URLSearchParams(location.search)
 
     const searchDate = this.computeInitialDate()
@@ -199,6 +203,8 @@ export class SearchFormComponent implements OnInit {
     });
 
     Promise.all(promises).then(locationsData => {
+      const bbox = new OJP.GeoPositionBBOX([])
+
       endpointTypes.forEach(endpointType => {
         const isFrom = endpointType === 'From'
         const locations = isFrom ? locationsData[0] : locationsData[1];
@@ -216,8 +222,20 @@ export class SearchFormComponent implements OnInit {
           }
         }
 
+        if (location.geoPosition) {
+          bbox.extend(location.geoPosition)
+        }
+
         this.onLocationSelected(location, endpointType);
       });
+
+      if (bbox.isValid()) {
+        const newBounds = bbox.asLngLatBounds()
+        this.mapService.newMapBoundsRequested.emit({
+          bounds: newBounds,
+          onlyIfOutside: true
+        });
+      }
     });
   }
 
