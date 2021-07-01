@@ -27,6 +27,7 @@
     "mapbox-gl": "^2.3.0",
     "rxjs": "~6.6.0",
     "tslib": "^2.0.0",
+    "url-search-params-polyfill": "^8.1.1",
     "xmlbuilder": "^15.1.1",
     "xmldom": "^0.6.0",
     "xpath": "0.0.32",
