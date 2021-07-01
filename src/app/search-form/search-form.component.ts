@@ -72,6 +72,8 @@ export class SearchFormComponent implements OnInit {
 
     this.useMocks = false
 
+  }
+
   private computeInitialDate(): Date {
     const defaultDate = new Date()
 
