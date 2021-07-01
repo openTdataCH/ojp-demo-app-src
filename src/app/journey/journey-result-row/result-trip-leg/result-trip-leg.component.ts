@@ -132,7 +132,10 @@ export class ResultTripLegComponent implements OnInit {
       }
       this.mapService.mapCenterAndZoomChanged.emit(mapData);
     } else {
-      this.mapService.mapBoundsChanged.emit(bounds);
+      const mapData = {
+        bounds: bounds
+      }
+      this.mapService.newMapBoundsRequested.emit(mapData);
     }
   }
 

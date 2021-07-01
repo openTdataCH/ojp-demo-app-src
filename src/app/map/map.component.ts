@@ -131,10 +131,21 @@ export class MapComponent implements OnInit {
       });
     })
 
-    this.mapService.mapBoundsChanged.subscribe(newBounds => {
+    this.mapService.newMapBoundsRequested.subscribe(mapData => {
       this.mapLoadingPromise?.then(map => {
+        const newBounds = mapData.bounds
+        const padding = mapData.padding ?? 100
+        const onlyIfOutside = mapData.onlyIfOutside ?? false
+
+        if (onlyIfOutside) {
+          const isInside = MapHelpers.areBoundsInsideOtherBounds(newBounds, map.getBounds())
+          if (isInside) {
+            return
+          }
+        }
+
         map.fitBounds(newBounds, {
-          padding: 100,
+          padding: padding,
           duration: 0
         })
       });
