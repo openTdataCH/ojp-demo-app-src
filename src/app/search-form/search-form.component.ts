@@ -168,8 +168,8 @@ export class SearchFormComponent implements OnInit {
       "DemandLegFrom": "46.674360,6.460966",
       "DemandLegTo": "46.310963,7.977509",
     }
-    const fromPlaceRef = defaultLocationsPlaceRef.Bern
-    const toPlaceRef = defaultLocationsPlaceRef.Zurich
+    const fromPlaceRef = this.queryParams.get('from') ?? defaultLocationsPlaceRef.Bern
+    const toPlaceRef = this.queryParams.get('to') ?? defaultLocationsPlaceRef.Zurich
 
     const promises: Promise<OJP.Location[]>[] = [];
 
