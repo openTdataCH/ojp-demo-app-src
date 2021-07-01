@@ -36,4 +36,24 @@ export class MapHelpers {
 
     return bboxPx
   }
+
+  public static areBoundsInsideOtherBounds(bounds: mapboxgl.LngLatBounds, otherBounds: mapboxgl.LngLatBounds): boolean {
+    if (bounds.getWest() < otherBounds.getWest()) {
+      return false
+    }
+
+    if (bounds.getNorth() > otherBounds.getNorth()) {
+      return false
+    }
+
+    if (bounds.getEast() > otherBounds.getEast()) {
+      return false
+    }
+
+    if (bounds.getSouth() < otherBounds.getSouth()) {
+      return false
+    }
+
+    return true
+  }
 }
