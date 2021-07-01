@@ -1,6 +1,5 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { GeoPosition } from 'src/app/shared/ojp-sdk/location/geoposition';
-import { GeoPositionBBOX } from 'src/app/shared/ojp-sdk/location/geoposition-bbox';
 import { MapService } from 'src/app/shared/services/map.service';
 
 import * as OJP from '../../../shared/ojp-sdk/index'
@@ -104,7 +103,7 @@ export class ResultTripLegComponent implements OnInit {
 
     const legFeatures = this.leg.computeGeoJSONFeatures();
 
-    const bbox = new GeoPositionBBOX([])
+    const bbox = new OJP.GeoPositionBBOX([])
     legFeatures.forEach(feature => {
       const featureBBOX = feature.bbox;
       if (featureBBOX) {
