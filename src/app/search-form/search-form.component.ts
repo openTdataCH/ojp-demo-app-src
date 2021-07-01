@@ -9,6 +9,8 @@ import * as OJP from '../shared/ojp-sdk/index'
 
 import { UserSettingsService } from '../shared/services/user-settings.service';
 
+import 'url-search-params-polyfill';
+
 type SearchState = 'ChooseEndpoints' | 'DisplayTrips'
 
 @Component({
@@ -17,6 +19,8 @@ type SearchState = 'ChooseEndpoints' | 'DisplayTrips'
   styleUrls: ['./search-form.component.scss']
 })
 export class SearchFormComponent implements OnInit {
+  private queryParams: URLSearchParams
+
   formGroup: FormGroup
 
   searchState: SearchState = 'ChooseEndpoints'
@@ -42,9 +46,13 @@ export class SearchFormComponent implements OnInit {
   constructor(public userTripService: UserTripService, private userSettingsService: UserSettingsService, public dialog: SbbDialog) {
     const nowDate = new Date()
     const timeFormatted = OJP.DateHelpers.formatTimeHHMM(nowDate);
+    this.queryParams = new URLSearchParams(location.search)
+
+    const searchDate = this.computeInitialDate()
+    const timeFormatted = OJP.DateHelpers.formatTimeHHMM(searchDate);
 
     this.formGroup = new FormGroup({
-      date: new FormControl(nowDate),
+      date: new FormControl(searchDate),
       time: new FormControl(timeFormatted)
     })
 
@@ -63,6 +71,17 @@ export class SearchFormComponent implements OnInit {
     this.requestDuration = null
 
     this.useMocks = false
+
+  private computeInitialDate(): Date {
+    const defaultDate = new Date()
+
+    const tripDateTimeS = this.queryParams.get('trip_datetime') ?? null
+    if (tripDateTimeS === null) {
+      return defaultDate
+    }
+
+    const tripDateTime = new Date(Date.parse(tripDateTimeS))
+    return tripDateTime
   }
 
   ngOnInit() {
