@@ -25,8 +25,6 @@ export class SearchFormComponent implements OnInit {
 
   searchState: SearchState = 'ChooseEndpoints'
 
-  private tripRequestParams: OJP.TripsRequestParams | null
-
   public fromLocationText: string
   public toLocationText: string
 
@@ -55,8 +53,6 @@ export class SearchFormComponent implements OnInit {
       date: new FormControl(searchDate),
       time: new FormControl(timeFormatted)
     })
-
-    this.tripRequestParams = null;
 
     this.fromLocationText = ''
     this.toLocationText = ''
@@ -123,8 +119,6 @@ export class SearchFormComponent implements OnInit {
         if (locationData.endpointType === 'To') {
           this.toLocationText = locationFormText
         }
-
-        this.updateSearchParamsDate();
       }
     });
 
@@ -229,7 +223,6 @@ export class SearchFormComponent implements OnInit {
 
   onLocationSelected(location: OJP.Location, originType: OJP.JourneyPointType) {
     this.userTripService.updateTripEndpoint(location, originType, 'SearchForm')
-    this.updateSearchParamsDate()
   }
 
   onChangeStageAPI(ev: SbbRadioChange) {
@@ -253,37 +246,12 @@ export class SearchFormComponent implements OnInit {
     return departureDate
   }
 
-  private updateSearchParamsDate() {
-    const departureDate = this.computeFormDepartureDate();
-
-    this.tripRequestParams = OJP.TripsRequestParams.initWithLocationsAndDate(
-      this.userTripService.fromLocation,
-      this.userTripService.toLocation,
-      departureDate
-    );
-
-    this.updateDebugXML();
-  }
-
-  private updateDebugXML() {
-    if (this.tripRequestParams === null) {
-      return
-    }
-
-    const stageConfig = this.userSettingsService.getStageConfig()
-    const tripRequest = new OJP.TripRequest(stageConfig, this.tripRequestParams);
-
-    this.tripRequestFormattedXML = tripRequest.computeRequestXML();
-    this.tripResponseFormattedXML = ''
-    this.requestDuration = null
-  }
-
   shouldDisableSearchButton(): boolean {
     if (this.isSearching) {
       return true
     }
 
-    return this.tripRequestParams === null
+    return false
   }
 
   handleTapOnSearch() {
