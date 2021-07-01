@@ -63,4 +63,24 @@ export class GeoPositionBBOX {
 
     return true;
   }
+
+  containsGeoPosition(geoPosition: GeoPosition): boolean {
+    if (geoPosition.longitude < this.southWest.longitude) {
+      return false
+    }
+
+    if (geoPosition.latitude < this.southWest.latitude) {
+      return false
+    }
+
+    if (geoPosition.longitude > this.northEast.longitude) {
+      return false
+    }
+
+    if (geoPosition.latitude > this.northEast.latitude) {
+      return false
+    }
+
+    return true
+  }
 }
