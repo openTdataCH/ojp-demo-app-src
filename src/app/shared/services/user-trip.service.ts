@@ -100,8 +100,6 @@ export class UserTripService {
         }
       });
 
-      console.log('WE HAZ NEW DATA - notify listeners')
-
       this.locationsUpdated.emit();
     });
   }
