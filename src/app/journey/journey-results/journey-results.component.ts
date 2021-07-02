@@ -15,15 +15,6 @@ export class JourneyResultsComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.userTripService.locationUpdated.subscribe(locationData => {
-      if (
-        (locationData.updateSource === 'MapDragend')
-        || (locationData.updateSource === 'MapPopupClick')
-      ) {
-        this.trips = []
-      }
-    });
-
     this.userTripService.tripsUpdated.subscribe(trips => {
       this.trips = trips
     });

@@ -1,6 +1,7 @@
 import { EventEmitter, Injectable } from '@angular/core'
 import { MapPoiPropertiesEnum, MapPoiTypeEnum } from '../../map/app-layers/map-poi-type-enum'
 import * as OJP from '../ojp-sdk/index'
+import { UserSettingsService } from './user-settings.service'
 
 type LocationUpdateSource = 'SearchForm' | 'MapDragend' | 'MapPopupClick'
 interface LocationData {
@@ -11,23 +12,98 @@ interface LocationData {
 
 @Injectable( {providedIn: 'root'} )
 export class UserTripService {
+  private queryParams: URLSearchParams
+
   public fromLocation: OJP.Location | null
   public toLocation: OJP.Location | null
   public viaLocations: OJP.Location[]
   public tripMotTypes: OJP.TripMotType[]
 
-  public locationUpdated = new EventEmitter<LocationData>();
+  public locationsUpdated = new EventEmitter<void>();
   public tripsUpdated = new EventEmitter<OJP.Trip[]>();
   public activeTripSelected = new EventEmitter<OJP.Trip | null>();
 
   public viaAtIndexRemoved = new EventEmitter<number>();
   public viaAtIndexUpdated = new EventEmitter<{location: OJP.Location, idx: number}>();
 
-  constructor() {
+  constructor(private userSettingsService: UserSettingsService) {
+    this.queryParams = new URLSearchParams(document.location.search)
+
     this.fromLocation = null
     this.toLocation = null
     this.viaLocations = []
     this.tripMotTypes = ['Default']
+
+    this.initDefaults()
+  }
+
+  private initDefaults() {
+    const defaultLocationsPlaceRef = {
+      "Bern": "8507000",
+      "Geneva": "8501008",
+      "Gurten": "8507099",
+      "St. Gallen": "8506302",
+      "Uetliberg": "8503057",
+      "Zurich": "8503000",
+      "DemandLegFrom": "46.674360,6.460966",
+      "DemandLegTo": "46.310963,7.977509",
+    }
+    const fromPlaceRef = this.queryParams.get('from') ?? defaultLocationsPlaceRef.Bern
+    const toPlaceRef = this.queryParams.get('to') ?? defaultLocationsPlaceRef.Zurich
+
+    const promises: Promise<OJP.Location[]>[] = [];
+
+    const endpointTypes: OJP.JourneyPointType[] = ['From', 'To']
+    endpointTypes.forEach(endpointType => {
+      const isFrom = endpointType === 'From'
+
+      const stopPlaceRef = isFrom ? fromPlaceRef : toPlaceRef
+      const coordsLocation = OJP.Location.initFromLiteralCoords(stopPlaceRef);
+      if (coordsLocation) {
+        const coordsPromise = new Promise<OJP.Location[]>((resolve, reject) => {
+          resolve([coordsLocation]);
+        });
+        promises.push(coordsPromise);
+      } else {
+        const stageConfig = this.userSettingsService.getStageConfig();
+        const locationInformationRequest = OJP.LocationInformationRequest.initWithStopPlaceRef(stageConfig, stopPlaceRef)
+        const locationInformationPromise = locationInformationRequest.fetchResponse();
+        promises.push(locationInformationPromise)
+      }
+    });
+
+    const viaPartsS = this.queryParams.get('via') ?? null
+    const viaParts: string[] = viaPartsS === null ? [] : viaPartsS.split(';')
+    viaParts.forEach(viaKey => {
+      const viaLocation = OJP.Location.initFromLiteralCoords(viaKey)
+      if (viaLocation) {
+        this.viaLocations.push(viaLocation)
+
+        // TODO - add tripMotType from queryParams
+        this.tripMotTypes.push('Default')
+      }
+    });
+
+    Promise.all(promises).then(locationsData => {
+      endpointTypes.forEach(endpointType => {
+        const isFrom = endpointType === 'From'
+        const locations = isFrom ? locationsData[0] : locationsData[1];
+        if (locations.length === 0) {
+          return;
+        }
+
+        const firstLocation = locations[0]
+        if (isFrom) {
+          this.fromLocation = firstLocation
+        } else {
+          this.toLocation = firstLocation
+        }
+      });
+
+      console.log('WE HAZ NEW DATA - notify listeners')
+
+      this.locationsUpdated.emit();
+    });
   }
 
   updateTripEndpoint(location: OJP.Location, endpointType: OJP.JourneyPointType, updateSource: LocationUpdateSource) {
@@ -67,7 +143,7 @@ export class UserTripService {
       }
     }
 
-    this.locationUpdated.emit(locationData);
+    this.locationsUpdated.emit();
     this.activeTripSelected.emit(null);
   }
 

@@ -88,32 +88,9 @@ export class MapComponent implements OnInit {
   ngOnInit() {
     this.initMap()
 
-    this.userTripService.locationUpdated.subscribe(locationData => {
-      const location = locationData.location;
-
-      let marker: mapboxgl.Marker | null = null
-
-      if (locationData.endpointType === 'From') {
-        marker = this.fromMarker
-      }
-
-      if (locationData.endpointType === 'To') {
-        marker = this.toMarker
-      }
-
-      if (locationData.endpointType === 'Via') {
-        if (locationData.location) {
-          const viaMarker = this.createViaMarker(locationData.location)
-
-          this.viaMarkers.push(viaMarker)
-          marker = viaMarker
-        }
-      }
-
-      if (marker) {
-        this.updateMarkerLocation(marker, location);
-      }
-    });
+    this.userTripService.locationsUpdated.subscribe(nothing => {
+      this.updateMarkers()
+    })
 
     this.mapService.centerAndZoomToEndpointRequested.subscribe(endpointType => {
       const marker = endpointType === 'From' ? this.fromMarker : this.toMarker;
@@ -193,6 +170,44 @@ export class MapComponent implements OnInit {
         this.onMapLoad(map);
       });
     });
+  }
+
+  private updateMarkers() {
+    const endpointTypes: OJP.JourneyPointType[] = ['From', 'To']
+    endpointTypes.forEach(endpointType => {
+      const isFrom = endpointType === 'From'
+      const location = isFrom ? this.userTripService.fromLocation : this.userTripService.toLocation
+      const marker = isFrom ? this.fromMarker : this.toMarker
+
+      this.updateMarkerLocation(marker, location)
+    })
+
+    const viaMakersCount = this.viaMarkers.length
+    const viaLocationsCount = this.userTripService.viaLocations.length
+
+    // Remove excess VIA markers
+    if (viaMakersCount > viaLocationsCount) {
+      let markersToRemove: mapboxgl.Marker[] = this.viaMarkers
+      if (viaLocationsCount > 0) {
+        const markersCountToRemove = viaMakersCount - viaLocationsCount
+        markersToRemove = this.viaMarkers.splice(viaLocationsCount, markersCountToRemove)
+      }
+
+      markersToRemove.forEach(marker => {
+        marker.remove()
+      })
+    }
+
+    // Adds / Update VIA markers
+    this.userTripService.viaLocations.forEach((viaLocation, idx) => {
+      let marker = this.viaMarkers[idx] ?? null
+      if (marker === null) {
+        marker = this.createViaMarker(viaLocation)
+        this.viaMarkers.push(marker)
+      }
+
+      this.updateMarkerLocation(marker, viaLocation)
+    })
   }
 
   private handleMarkerDrag(marker: mapboxgl.Marker, endpointType: OJP.JourneyPointType) {

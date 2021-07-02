@@ -61,7 +61,7 @@ export class SearchFormComponent implements OnInit {
     this.fromLocationText = ''
     this.toLocationText = ''
 
-    this.currentAppStage = this.userSettingsService.appStage
+    this.currentAppStage = this.computeAppStage()
     this.appStageOptions = Object.keys(OJP.APP_Stages) as OJP.APP_Stage[];
 
     this.isSearching = false
@@ -72,6 +72,21 @@ export class SearchFormComponent implements OnInit {
 
     this.useMocks = false
 
+  }
+
+  private computeAppStage(): OJP.APP_Stage {
+    const defaultStage = this.userSettingsService.appStage
+
+    let queryParamStage = this.queryParams.get('stage') ?? null
+    if (queryParamStage === null) {
+      return defaultStage
+    }
+
+    if (queryParamStage.trim() === 'test') {
+      return 'TEST'
+    }
+
+    return defaultStage
   }
 
   private computeInitialDate(): Date {
@@ -87,44 +102,15 @@ export class SearchFormComponent implements OnInit {
   }
 
   ngOnInit() {
-    if (this.useMocks) {
-      this.initLocationsFromMocks()
-    } else {
-      this.initLocations()
-    }
+    this.userTripService.locationsUpdated.subscribe(nothing => {
+      this.searchState = 'ChooseEndpoints'
+
+      this.updateLocationTexts()
+    })
 
     this.userTripService.tripsUpdated.subscribe(trips => {
       if (trips.length > 0) {
         this.searchState = 'DisplayTrips'
-      }
-    });
-
-    this.userTripService.locationUpdated.subscribe(locationData => {
-      if (
-        (locationData.updateSource === 'MapDragend')
-        || (locationData.updateSource === 'MapPopupClick')
-      ) {
-        const geoPosition = locationData.location?.geoPosition ?? null;
-        if (geoPosition === null) {
-          return
-        }
-
-        this.searchState = 'ChooseEndpoints'
-
-        let locationFormText = geoPosition.asLatLngString()
-
-        const stopPlaceName = locationData.location?.stopPlace?.stopPlaceName ?? null
-        if (stopPlaceName) {
-          locationFormText = stopPlaceName
-        }
-
-        if (locationData.endpointType === 'From') {
-          this.fromLocationText = locationFormText
-        }
-
-        if (locationData.endpointType === 'To') {
-          this.toLocationText = locationFormText
-        }
       }
     });
 
@@ -136,6 +122,29 @@ export class SearchFormComponent implements OnInit {
     this.userTripService.viaAtIndexUpdated.subscribe(viaData => {
       this.searchState = 'ChooseEndpoints'
       this.requestDuration = null
+    })
+  }
+
+  private updateLocationTexts() {
+    const endpointTypes: OJP.JourneyPointType[] = ['From', 'To'];
+    endpointTypes.forEach(endpointType => {
+      const location = endpointType === 'From' ? this.userTripService.fromLocation : this.userTripService.toLocation
+
+      let locationText: string = ''
+      if (location) {
+        const stopPlaceName = location.stopPlace?.stopPlaceName ?? null
+        if (stopPlaceName) {
+          locationText = stopPlaceName
+        } else {
+          locationText = location.geoPosition?.asLatLngString() ?? ''
+        }
+      }
+
+      if (endpointType === 'From') {
+        this.fromLocationText = locationText
+      } else {
+        this.toLocationText = locationText
+      }
     })
   }
 
@@ -161,84 +170,6 @@ export class SearchFormComponent implements OnInit {
 
   isChoosingEndpoints(): boolean {
     return this.searchState === 'ChooseEndpoints'
-  }
-
-  private initLocations() {
-    const defaultLocationsPlaceRef = {
-      "Bern": "8507000",
-      "Geneva": "8501008",
-      "Gurten": "8507099",
-      "St. Gallen": "8506302",
-      "Uetliberg": "8503057",
-      "Zurich": "8503000",
-      "DemandLegFrom": "46.674360,6.460966",
-      "DemandLegTo": "46.310963,7.977509",
-    }
-    const fromPlaceRef = this.queryParams.get('from') ?? defaultLocationsPlaceRef.Bern
-    const toPlaceRef = this.queryParams.get('to') ?? defaultLocationsPlaceRef.Zurich
-
-    const promises: Promise<OJP.Location[]>[] = [];
-
-    const endpointTypes: OJP.JourneyPointType[] = ['From', 'To']
-    endpointTypes.forEach(endpointType => {
-      const isFrom = endpointType === 'From'
-
-      const stopPlaceRef = isFrom ? fromPlaceRef : toPlaceRef
-      if (isFrom) {
-        this.fromLocationText = stopPlaceRef
-      } else {
-        this.toLocationText = stopPlaceRef
-      }
-
-      const coordsLocation = OJP.Location.initFromLiteralCoords(stopPlaceRef);
-      if (coordsLocation) {
-        const coordsPromise = new Promise<OJP.Location[]>((resolve, reject) => {
-          resolve([coordsLocation]);
-        });
-        promises.push(coordsPromise);
-      } else {
-        const stageConfig = this.userSettingsService.getStageConfig();
-        const locationInformationRequest = OJP.LocationInformationRequest.initWithStopPlaceRef(stageConfig, stopPlaceRef)
-        const locationInformationPromise = locationInformationRequest.fetchResponse();
-        promises.push(locationInformationPromise)
-      }
-    });
-
-    Promise.all(promises).then(locationsData => {
-      const bbox = new OJP.GeoPositionBBOX([])
-
-      endpointTypes.forEach(endpointType => {
-        const isFrom = endpointType === 'From'
-        const locations = isFrom ? locationsData[0] : locationsData[1];
-        if (locations.length === 0) {
-          return;
-        }
-
-        const location = locations[0]
-        const locationName = location.stopPlace?.stopPlaceName ?? null;
-        if (locationName) {
-          if (isFrom) {
-            this.fromLocationText = locationName
-          } else {
-            this.toLocationText = locationName
-          }
-        }
-
-        if (location.geoPosition) {
-          bbox.extend(location.geoPosition)
-        }
-
-        this.onLocationSelected(location, endpointType);
-      });
-
-      if (bbox.isValid()) {
-        const newBounds = bbox.asLngLatBounds()
-        this.mapService.newMapBoundsRequested.emit({
-          bounds: newBounds,
-          onlyIfOutside: true
-        });
-      }
-    });
   }
 
   onLocationSelected(location: OJP.Location, originType: OJP.JourneyPointType) {
