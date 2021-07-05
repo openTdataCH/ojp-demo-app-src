@@ -17,3 +17,5 @@ Run `ng deploy` to deploy the app. The script will bundle the app files and asse
 The app is available under https://opentdatach.github.io/ojp-demo-app/
 
 See [CHANGELOG](./CHANGELOG.md) for deployment changes.
+
+See [docs/URLs](./docs/URLs.md) for application URL scheme parameters.
