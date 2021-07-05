@@ -8,7 +8,6 @@ import { SbbDialog } from '@sbb-esta/angular-business/dialog';
 import * as OJP from '../shared/ojp-sdk/index'
 
 import 'url-search-params-polyfill';
-import { MapService } from '../shared/services/map.service';
 
 type SearchState = 'ChooseEndpoints' | 'DisplayTrips'
 
@@ -41,7 +40,6 @@ export class SearchFormComponent implements OnInit {
 
   constructor(
     public userTripService: UserTripService,
-    private mapService: MapService,
     public dialog: SbbDialog,
   ) {
     this.queryParams = new URLSearchParams(location.search)
