@@ -7,8 +7,6 @@ import { SbbDialog } from '@sbb-esta/angular-business/dialog';
 
 import * as OJP from '../shared/ojp-sdk/index'
 
-import { UserSettingsService } from '../shared/services/user-settings.service';
-
 import 'url-search-params-polyfill';
 import { MapService } from '../shared/services/map.service';
 
@@ -29,7 +27,6 @@ export class SearchFormComponent implements OnInit {
   public fromLocationText: string
   public toLocationText: string
 
-  public currentAppStage: OJP.APP_Stage = 'PROD'
   public appStageOptions: OJP.APP_Stage[] = []
 
   public isSearching: boolean
@@ -44,7 +41,6 @@ export class SearchFormComponent implements OnInit {
 
   constructor(
     public userTripService: UserTripService,
-    private userSettingsService: UserSettingsService,
     private mapService: MapService,
     public dialog: SbbDialog,
   ) {
@@ -61,7 +57,6 @@ export class SearchFormComponent implements OnInit {
     this.fromLocationText = ''
     this.toLocationText = ''
 
-    this.currentAppStage = this.computeAppStage()
     this.appStageOptions = Object.keys(OJP.APP_Stages) as OJP.APP_Stage[];
 
     this.isSearching = false
@@ -72,21 +67,6 @@ export class SearchFormComponent implements OnInit {
 
     this.useMocks = false
 
-  }
-
-  private computeAppStage(): OJP.APP_Stage {
-    const defaultStage = this.userSettingsService.appStage
-
-    let queryParamStage = this.queryParams.get('stage') ?? null
-    if (queryParamStage === null) {
-      return defaultStage
-    }
-
-    if (queryParamStage.trim() === 'test') {
-      return 'TEST'
-    }
-
-    return defaultStage
   }
 
   private computeInitialDate(): Date {
@@ -178,9 +158,8 @@ export class SearchFormComponent implements OnInit {
 
   onChangeStageAPI(ev: SbbRadioChange) {
     const newAppStage = ev.value as OJP.APP_Stage
+    this.userTripService.updateAppStage(newAppStage)
 
-    this.currentAppStage = newAppStage
-    this.userSettingsService.appStage = newAppStage
   }
 
   private computeFormDepartureDate(): Date {
@@ -213,7 +192,7 @@ export class SearchFormComponent implements OnInit {
       return
     }
 
-    const stageConfig = this.userSettingsService.getStageConfig()
+    const stageConfig = this.userTripService.getStageConfig()
     const journeyRequest = new OJP.JourneyRequest(stageConfig, journeyRequestParams)
 
     this.isSearching = true

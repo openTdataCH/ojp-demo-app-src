@@ -3,7 +3,6 @@ import mapboxgl from 'mapbox-gl'
 
 import * as OJP from '../shared/ojp-sdk/index'
 import { MapService } from '../shared/services/map.service';
-import { UserSettingsService } from '../shared/services/user-settings.service';
 import { UserTripService } from '../shared/services/user-trip.service';
 
 import { MapHelpers } from './helpers/map.helpers';
@@ -41,8 +40,7 @@ export class MapComponent implements OnInit {
 
   constructor(
     private userTripService: UserTripService,
-    private mapService: MapService,
-    private userSettingsService: UserSettingsService
+    private mapService: MapService
   ) {
     // Dummy initialize the markers, re-init them in the loop below
     this.fromMarker = new mapboxgl.Marker();
@@ -233,10 +231,10 @@ export class MapComponent implements OnInit {
   }
 
   private onMapLoad(map: mapboxgl.Map) {
-    this.stopsMapAppLayer = new StopsAppLayer(map, this.userSettingsService, this.userTripService);
-    const addressAppLayer = new AddressAppLayer(map, this.userSettingsService, this.userTripService)
-    const parkAndRailLayer = new ParkAndRailLayer(map, this.userSettingsService, this.userTripService)
-    const bikeSharingLayer = new BikeSharingStationsLayer(map, this.userSettingsService, this.userTripService)
+    this.stopsMapAppLayer = new StopsAppLayer(map, this.userTripService);
+    const addressAppLayer = new AddressAppLayer(map, this.userTripService)
+    const parkAndRailLayer = new ParkAndRailLayer(map, this.userTripService)
+    const bikeSharingLayer = new BikeSharingStationsLayer(map, this.userTripService)
 
     this.mapAppLayers = [this.stopsMapAppLayer, addressAppLayer, parkAndRailLayer, bikeSharingLayer]
 

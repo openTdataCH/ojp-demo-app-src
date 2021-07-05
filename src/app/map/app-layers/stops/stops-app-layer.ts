@@ -1,5 +1,4 @@
 import mapboxgl from "mapbox-gl";
-import { UserSettingsService } from "src/app/shared/services/user-settings.service";
 import { UserTripService } from "src/app/shared/services/user-trip.service";
 import * as OJP from '../../../shared/ojp-sdk/index'
 
@@ -18,14 +17,13 @@ export class StopsAppLayer extends LocationMapAppLayer implements MapAppLayer {
   private stopsCircleLayerID = 'stops-circle'
   private stopsLabelLayerID = 'stops-label'
 
-  constructor(map: mapboxgl.Map, userSettingsService: UserSettingsService, userTripService: UserTripService) {
+  constructor(map: mapboxgl.Map, userTripService: UserTripService) {
     super(
       map,
       StopsAppLayer.geoRestrictionType,
       StopsAppLayer.layerKey,
       StopsAppLayer.minZoomLevel,
       StopsAppLayer.sourceId,
-      userSettingsService,
       userTripService
     )
   }

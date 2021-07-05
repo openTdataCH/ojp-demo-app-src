@@ -1,6 +1,5 @@
 import mapboxgl from "mapbox-gl";
 
-import { UserSettingsService } from "../../../../shared/services/user-settings.service";
 import { UserTripService } from "../../../../shared/services/user-trip.service";
 import * as OJP from '../../../../shared/ojp-sdk/index'
 
@@ -21,13 +20,12 @@ export class ParkAndRailLayer extends LocationMapAppLayer implements MapAppLayer
 
   private allFeatures: GeoJSON.Feature[]
 
-  constructor(map: mapboxgl.Map, userSettingsService: UserSettingsService, userTripService: UserTripService) {
+  constructor(map: mapboxgl.Map, userTripService: UserTripService) {
     super(
       map, ParkAndRailLayer.geoRestrictionType,
       ParkAndRailLayer.layerKey,
       ParkAndRailLayer.minZoomLevel,
       ParkAndRailLayer.sourceId,
-      userSettingsService,
       userTripService
     )
 

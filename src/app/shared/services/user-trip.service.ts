@@ -18,6 +18,7 @@ export class UserTripService {
   public toLocation: OJP.Location | null
   public viaLocations: OJP.Location[]
   public tripMotTypes: OJP.TripMotType[]
+  public currentAppStage: OJP.APP_Stage
 
   public locationsUpdated = new EventEmitter<void>();
   public tripsUpdated = new EventEmitter<OJP.Trip[]>();
@@ -26,13 +27,15 @@ export class UserTripService {
   public viaAtIndexRemoved = new EventEmitter<number>();
   public viaAtIndexUpdated = new EventEmitter<{location: OJP.Location, idx: number}>();
 
-  constructor(private userSettingsService: UserSettingsService) {
+  constructor() {
     this.queryParams = new URLSearchParams(document.location.search)
 
     this.fromLocation = null
     this.toLocation = null
     this.viaLocations = []
     this.tripMotTypes = ['Default']
+    this.currentAppStage = 'PROD'
+
 
     this.initDefaults()
   }
@@ -65,7 +68,7 @@ export class UserTripService {
         });
         promises.push(coordsPromise);
       } else {
-        const stageConfig = this.userSettingsService.getStageConfig();
+        const stageConfig = this.getStageConfig();
         const locationInformationRequest = OJP.LocationInformationRequest.initWithStopPlaceRef(stageConfig, stopPlaceRef)
         const locationInformationPromise = locationInformationRequest.fetchResponse();
         promises.push(locationInformationPromise)
@@ -83,6 +86,14 @@ export class UserTripService {
         this.tripMotTypes.push('Default')
       }
     });
+
+
+    const appStageS = this.queryParams.get('stage')
+    if (appStageS) {
+      const testStage: OJP.APP_Stage = 'TEST'
+      const isTest = appStageS.toUpperCase() === testStage
+      this.currentAppStage = isTest ? 'TEST' : 'PROD'
+    }
 
     Promise.all(promises).then(locationsData => {
       endpointTypes.forEach(endpointType => {
@@ -186,5 +197,19 @@ export class UserTripService {
     )
 
     return requestParams
+  }
+
+  public getStageConfig(): OJP.StageConfig {
+    if (!(this.currentAppStage in OJP.APP_Stages)) {
+      console.error('ERROR - cant find stage' + this.currentAppStage + ' using PROD');
+      return OJP.APP_Stages['PROD']
+    }
+
+    const stageConfig = OJP.APP_Stages[this.currentAppStage]
+    return stageConfig
+  }
+
+  public updateAppStage(newStage: OJP.APP_Stage) {
+    this.currentAppStage = newStage
   }
 }

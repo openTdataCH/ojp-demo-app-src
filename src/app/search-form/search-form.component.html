@@ -55,7 +55,7 @@
                 <sbb-radio-button
                   *ngFor="let appStageOption of appStageOptions"
                   [value]="appStageOption"
-                  [checked]="currentAppStage == appStageOption"
+                  [checked]="this.userTripService.currentAppStage == appStageOption"
                   (change)="onChangeStageAPI($event)"
                 >
                   {{ appStageOption }}

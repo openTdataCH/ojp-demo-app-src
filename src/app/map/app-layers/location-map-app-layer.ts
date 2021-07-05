@@ -1,7 +1,6 @@
 import mapboxgl from "mapbox-gl";
 import { MapHelpers } from "../helpers/map.helpers";
 
-import { UserSettingsService } from "src/app/shared/services/user-settings.service";
 import { UserTripService } from "src/app/shared/services/user-trip.service";
 
 import * as OJP from '../../shared/ojp-sdk/index'
@@ -16,10 +15,9 @@ export class LocationMapAppLayer {
   public currentFeatures: GeoJSON.Feature[]
   public isEnabled: boolean
 
-  private userSettingsService: UserSettingsService
   protected userTripService: UserTripService
 
-  constructor(map: mapboxgl.Map, geoRestrictionType: OJP.GeoRestrictionType, layerKey: string, minZoomLevel: number, sourceId: string, userSettingsService: UserSettingsService, userTripService: UserTripService) {
+  constructor(map: mapboxgl.Map, geoRestrictionType: OJP.GeoRestrictionType, layerKey: string, minZoomLevel: number, sourceId: string, userTripService: UserTripService) {
     this.map = map
 
     this.geoRestrictionType = geoRestrictionType
@@ -30,7 +28,6 @@ export class LocationMapAppLayer {
 
     this.isEnabled = true
 
-    this.userSettingsService = userSettingsService
     this.userTripService = userTripService
   }
 
@@ -57,7 +54,7 @@ export class LocationMapAppLayer {
     }
 
     const mapBounds = this.map.getBounds();
-    const stageConfig = this.userSettingsService.getStageConfig();
+    const stageConfig = this.userTripService.getStageConfig()
     const request = OJP.LocationInformationRequest.initWithBBOXAndType(
       stageConfig,
       mapBounds.getWest(),
