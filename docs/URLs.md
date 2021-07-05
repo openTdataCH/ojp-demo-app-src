@@ -10,9 +10,9 @@ OJP-Demo URL: https://opentdatach.github.io/ojp-demo-app/
 |--|--|--|
 |from| `8503000` for Zürich HB or `47.378173,8.540264` for same location as coordinates.|[DiDok](https://opentransportdata.swiss/de/dataset/didok) id or [Latitude,Longitude](https://developers.google.com/maps/documentation/javascript/reference/coordinates) coordinates |
 |to|see `from`| |
-|via| `47.044250,8.308174;47.163056,8.687139` | List of [Latitude,Longitude](https://developers.google.com/maps/documentation/javascript/reference/coordinates) coordinates separated by semi-colon `;` |
+|via| `47.044250,8.308174;47.163056,8.687139` | List of [Latitude,Longitude](https://developers.google.com/maps/documentation/javascript/reference/coordinates) coordinates separated by semi-colon `;`. |
 |mot_types | `default;walk` | List of MOT types: `default`, `walk`, `self-drive-car` separated by semi-colon `;`. Number of MOT types is equal with number of via parameters + 1 . If missing it will use `default`, meaning that no `ItModesToCover` filter will be used for the [OJPTripRequest](https://opentransportdata.swiss/de/cookbook/ojptriprequest/) calls |
-|trip_datetime| Trip datetime in `yyyy-MM-dd HH:mm` format | `default;walk` |
+|trip_datetime| Trip datetime in `yyyy-MM-dd HH:mm` format | `2021-08-01 10:00` |
 |stage| `prod` or `test` | To specify the OJP API backend |
 
 ## Examples
