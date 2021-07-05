@@ -96,13 +96,8 @@
       </div>
       <div style="width: 2px"></div>
       -->
-      <div
-        *ngIf="requestDuration !== null"
-      >
-        <span
-          class="badge bg-success debug-xml"
-          (click)="openRequestLogDialog()"
-        >{{ this.requestDuration }}</span>
+      <div *ngIf="requestDuration !== null">
+        <span class="badge bg-success">{{ this.requestDuration }}</span>
       </div>
     </div>
   </div>
