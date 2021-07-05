@@ -83,10 +83,10 @@ export class TripViaPointComponent implements OnInit {
     const isPreviousMotType = seqMotType === 'prev'
     if (isPreviousMotType) {
       this.prevMotType = motType
-      this.userTripService.tripMotTypes[this.viaIDx] = motType
+      this.userTripService.updateTripMotType(motType, this.viaIDx)
     } else {
       this.nextMotType = motType
-      this.userTripService.tripMotTypes[this.viaIDx + 1] = motType
+      this.userTripService.updateTripMotType(motType, this.viaIDx + 1)
     }
   }
 }

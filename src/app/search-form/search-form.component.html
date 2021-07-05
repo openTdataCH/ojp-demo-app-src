@@ -37,6 +37,7 @@
                     sbbInput
                     formControlName="date"
                     placeholder="Choose a date"
+                    (dateChange)="onChangeDateTime()"
                   />
                 </sbb-datepicker>
               </sbb-form-field>
@@ -46,6 +47,7 @@
               <input
                 sbbTimeInput
                 formControlName="time"
+                (change)="onChangeDateTime()"
               />
             </div>
           </div>
@@ -98,6 +100,10 @@
       -->
       <div *ngIf="requestDuration !== null">
         <span class="badge bg-success">{{ this.requestDuration }}</span>
+      </div>
+      <div style="width: 7px"></div>
+      <div *ngIf="this.userTripService.permalinkURLAddress !== null">
+        <a href="{{ this.userTripService.permalinkURLAddress }}" target="_blank">Permalink</a>
       </div>
     </div>
   </div>

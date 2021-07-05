@@ -145,7 +145,10 @@ export class SearchFormComponent implements OnInit {
   onChangeStageAPI(ev: SbbRadioChange) {
     const newAppStage = ev.value as OJP.APP_Stage
     this.userTripService.updateAppStage(newAppStage)
+  }
 
+  onChangeDateTime() {
+    this.userTripService.updateDepartureDateTime(this.computeFormDepartureDate())
   }
 
   private computeFormDepartureDate(): Date {
@@ -171,8 +174,9 @@ export class SearchFormComponent implements OnInit {
   }
 
   handleTapOnSearch() {
-    const departureDate = this.computeFormDepartureDate();
-    const journeyRequestParams = this.userTripService.computeJourneyRequestParams(departureDate)
+    this.userTripService.updateDepartureDateTime(this.computeFormDepartureDate())
+
+    const journeyRequestParams = this.userTripService.computeJourneyRequestParams()
     if (journeyRequestParams === null) {
       console.error('Whooops, JourneyRequestParams cant be null');
       return

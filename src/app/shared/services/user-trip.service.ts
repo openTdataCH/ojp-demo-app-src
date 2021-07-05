@@ -1,6 +1,7 @@
 import { EventEmitter, Injectable } from '@angular/core'
 import { MapPoiPropertiesEnum, MapPoiTypeEnum } from '../../map/app-layers/map-poi-type-enum'
 import * as OJP from '../ojp-sdk/index'
+import { DateHelpers, TripMotTypeHelpers } from '../ojp-sdk/index'
 
 type LocationUpdateSource = 'SearchForm' | 'MapDragend' | 'MapPopupClick'
 interface LocationData {
@@ -20,6 +21,8 @@ export class UserTripService {
   public departureDate: Date
   public currentAppStage: OJP.APP_Stage
 
+  public permalinkURLAddress: string | null
+
   public locationsUpdated = new EventEmitter<void>();
   public tripsUpdated = new EventEmitter<OJP.Trip[]>();
   public activeTripSelected = new EventEmitter<OJP.Trip | null>();
@@ -37,6 +40,7 @@ export class UserTripService {
     this.departureDate = this.computeInitialDate()
     this.currentAppStage = 'PROD'
 
+    this.permalinkURLAddress = null
 
     this.initDefaults()
   }
@@ -76,6 +80,9 @@ export class UserTripService {
       }
     });
 
+    const motTypeKeysS = this.queryParams.get('mot_types') ?? null
+    const motTypeKeys: string[] = motTypeKeysS === null ? [] : motTypeKeysS.split(';')
+
     const viaPartsS = this.queryParams.get('via') ?? null
     const viaParts: string[] = viaPartsS === null ? [] : viaPartsS.split(';')
     viaParts.forEach(viaKey => {
@@ -88,6 +95,15 @@ export class UserTripService {
       }
     });
 
+    let motTypeIDx = 0
+    this.tripMotTypes = []
+    while (motTypeIDx <= viaParts.length) {
+      const motTypeKey = motTypeKeys[motTypeIDx] ?? null
+      const motType = OJP.TripMotTypeHelpers.MotTypeFromQueryString(motTypeKey)
+      this.tripMotTypes.push(motType)
+
+      motTypeIDx += 1
+    }
 
     const appStageS = this.queryParams.get('stage')
     if (appStageS) {
@@ -113,6 +129,7 @@ export class UserTripService {
       });
 
       this.locationsUpdated.emit();
+      this.updatePermalinkAddress();
     });
   }
 
@@ -155,6 +172,7 @@ export class UserTripService {
 
     this.locationsUpdated.emit();
     this.activeTripSelected.emit(null);
+    this.updatePermalinkAddress();
   }
 
   updateViaPoint(location: OJP.Location, viaIDx: number) {
@@ -164,6 +182,7 @@ export class UserTripService {
       idx: viaIDx
     })
     this.activeTripSelected.emit(null);
+    this.updatePermalinkAddress();
   }
 
   updateTrips(trips: OJP.Trip[]) {
@@ -186,18 +205,68 @@ export class UserTripService {
 
     this.viaAtIndexRemoved.emit(idx);
     this.activeTripSelected.emit(null);
+    this.updatePermalinkAddress();
   }
 
-  computeJourneyRequestParams(departureDate: Date): OJP.JourneyRequestParams | null {
+  computeJourneyRequestParams(): OJP.JourneyRequestParams | null {
     const requestParams = OJP.JourneyRequestParams.initWithLocationsAndDate(
       this.fromLocation,
       this.toLocation,
       this.viaLocations,
       this.tripMotTypes,
-      departureDate
+      this.departureDate,
     )
 
     return requestParams
+  }
+
+  private updatePermalinkAddress() {
+    const queryParams = new URLSearchParams()
+
+    const endpointTypes: OJP.JourneyPointType[] = ['From', 'To']
+    endpointTypes.forEach(endpointType => {
+      const location = endpointType === 'From' ? this.fromLocation : this.toLocation
+
+      const queryParamKey = endpointType.toLowerCase()
+
+      const stopPlaceRef = location?.stopPlace?.stopPlaceRef ?? null
+      if (stopPlaceRef) {
+        queryParams.append(queryParamKey, stopPlaceRef)
+      } else {
+        const geoPositionLngLatS = location?.geoPosition?.asLatLngString(true) ?? null
+        if (geoPositionLngLatS) {
+          queryParams.append(queryParamKey, geoPositionLngLatS)
+        }
+      }
+    })
+
+    const viaParamParts: string[] = []
+    this.viaLocations.forEach(location => {
+      const geoPositionLngLatS = location?.geoPosition?.asLatLngString(true) ?? null
+      if (geoPositionLngLatS) {
+        viaParamParts.push(geoPositionLngLatS)
+      }
+    });
+    if (viaParamParts.length > 0) {
+      queryParams.append('via', viaParamParts.join(';'))
+    }
+
+    const motTypesParamParts: string[] = []
+    this.tripMotTypes.forEach(motType => {
+      const motTypeKey = TripMotTypeHelpers.MotTypeKey(motType)
+      motTypesParamParts.push(motTypeKey)
+    });
+    if (motTypesParamParts.length > 0) {
+      queryParams.append('mot_types', motTypesParamParts.join(';'))
+    }
+
+    const dateTimeS = DateHelpers.formatDate(this.departureDate)
+    queryParams.append('trip_datetime', dateTimeS.substr(0, 16))
+
+    const stageS = this.currentAppStage.toLowerCase()
+    queryParams.append('stage', stageS)
+
+    this.permalinkURLAddress = '?' + queryParams.toString()
   }
 
   private computeInitialDate(): Date {
@@ -224,5 +293,16 @@ export class UserTripService {
 
   public updateAppStage(newStage: OJP.APP_Stage) {
     this.currentAppStage = newStage
+    this.updatePermalinkAddress()
+  }
+
+  public updateDepartureDateTime(newDateTime: Date) {
+    this.departureDate = newDateTime
+    this.updatePermalinkAddress()
+  }
+
+  public updateTripMotType(motType: OJP.TripMotType, idx: number) {
+    this.tripMotTypes[idx] = motType
+    this.updatePermalinkAddress()
   }
 }
