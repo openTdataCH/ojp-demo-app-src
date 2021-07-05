@@ -4,6 +4,12 @@ OJP-Demo URL: https://opentdatach.github.io/ojp-demo-app/
 
 ----
 
+05.Jul 2021
+- allow the user to change from/to/via/MOT types/stage/date via query parameters
+- permanent URLs for easy copy/paste of the journeys
+- added [URLs](./docs/URLs.md) for URL query parameters documentation
+- refactor the trip service params storage
+
 30.Jun 2021
 - patch leg locations with LegTrack end coordinates (when available)
 
