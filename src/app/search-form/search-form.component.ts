@@ -44,7 +44,7 @@ export class SearchFormComponent implements OnInit {
   ) {
     this.queryParams = new URLSearchParams(location.search)
 
-    const searchDate = this.computeInitialDate()
+    const searchDate = this.userTripService.departureDate
     const timeFormatted = OJP.DateHelpers.formatTimeHHMM(searchDate);
 
     this.formGroup = new FormGroup({
@@ -65,18 +65,6 @@ export class SearchFormComponent implements OnInit {
 
     this.useMocks = false
 
-  }
-
-  private computeInitialDate(): Date {
-    const defaultDate = new Date()
-
-    const tripDateTimeS = this.queryParams.get('trip_datetime') ?? null
-    if (tripDateTimeS === null) {
-      return defaultDate
-    }
-
-    const tripDateTime = new Date(Date.parse(tripDateTimeS))
-    return tripDateTime
   }
 
   ngOnInit() {

@@ -1,7 +1,6 @@
 import { EventEmitter, Injectable } from '@angular/core'
 import { MapPoiPropertiesEnum, MapPoiTypeEnum } from '../../map/app-layers/map-poi-type-enum'
 import * as OJP from '../ojp-sdk/index'
-import { UserSettingsService } from './user-settings.service'
 
 type LocationUpdateSource = 'SearchForm' | 'MapDragend' | 'MapPopupClick'
 interface LocationData {
@@ -18,6 +17,7 @@ export class UserTripService {
   public toLocation: OJP.Location | null
   public viaLocations: OJP.Location[]
   public tripMotTypes: OJP.TripMotType[]
+  public departureDate: Date
   public currentAppStage: OJP.APP_Stage
 
   public locationsUpdated = new EventEmitter<void>();
@@ -34,6 +34,7 @@ export class UserTripService {
     this.toLocation = null
     this.viaLocations = []
     this.tripMotTypes = ['Default']
+    this.departureDate = this.computeInitialDate()
     this.currentAppStage = 'PROD'
 
 
@@ -197,6 +198,18 @@ export class UserTripService {
     )
 
     return requestParams
+  }
+
+  private computeInitialDate(): Date {
+    const defaultDate = new Date()
+
+    const tripDateTimeS = this.queryParams.get('trip_datetime') ?? null
+    if (tripDateTimeS === null) {
+      return defaultDate
+    }
+
+    const tripDateTime = new Date(Date.parse(tripDateTimeS))
+    return tripDateTime
   }
 
   public getStageConfig(): OJP.StageConfig {
