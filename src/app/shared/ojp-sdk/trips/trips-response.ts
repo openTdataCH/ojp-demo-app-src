@@ -3,6 +3,7 @@ import { Trip } from '../trip/trip'
 import { TripTimedLeg } from '../trip/leg/trip-timed-leg'
 import { XPathOJP } from '../helpers/xpath-ojp'
 import { XML_Helpers } from '../helpers/xml-helpers'
+import { TripMotType } from '../types/trip-mot-type'
 
 export class TripsResponse {
   public responseXMLText: string
@@ -15,10 +16,10 @@ export class TripsResponse {
     this.trips = trips
   }
 
-  public static initWithXML(responseXMLText: string): TripsResponse {
+  public static initWithXML(responseXMLText: string, motType: TripMotType): TripsResponse {
     const responseXML = new DOMParser().parseFromString(responseXMLText, 'application/xml');
     const contextLocations = TripsResponse.parseContextLocations(responseXML);
-    const trips = TripsResponse.parseTrips(responseXML, contextLocations);
+    const trips = TripsResponse.parseTrips(responseXML, contextLocations, motType);
 
     const tripResponse = new TripsResponse(responseXMLText, contextLocations, trips)
 
@@ -37,7 +38,7 @@ export class TripsResponse {
     return locations;
   }
 
-  private static parseTrips(responseXML: Document, contextLocations: Location[]): Trip[] {
+  private static parseTrips(responseXML: Document, contextLocations: Location[], motType: TripMotType): Trip[] {
     let trips: Trip[] = [];
 
     const mapContextLocations: Record<string, Location> = {}
@@ -50,7 +51,7 @@ export class TripsResponse {
 
     const tripResultNodes = XPathOJP.queryNodes('//ojp:TripResult', responseXML);
     tripResultNodes.forEach(tripResult => {
-      const trip = Trip.initFromTripResultNode(tripResult as Node, contextLocations);
+      const trip = Trip.initFromTripResultNode(tripResult as Node, motType);
       if (trip) {
         trip.legs.forEach(leg => {
           leg.patchLocations(mapContextLocations)

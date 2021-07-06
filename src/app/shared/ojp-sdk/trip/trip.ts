@@ -7,6 +7,7 @@ import { TripStats } from '../types/trip-stats'
 import { TripLeg } from './leg/trip-leg'
 import { TripLegFactory } from './leg/trip-leg-factory'
 import { TripTimedLeg } from './leg/trip-timed-leg'
+import { TripMotType } from '../types/trip-mot-type'
 
 export class Trip {
   public id: string
@@ -19,7 +20,7 @@ export class Trip {
     this.stats = tripStats
   }
 
-  public static initFromTripResultNode(tripResultNode: Node, contextLocations: Location[]) {
+  public static initFromTripResultNode(tripResultNode: Node, motType: TripMotType) {
     const tripId = XPathOJP.queryText('ojp:Trip/ojp:TripId', tripResultNode)
     if (tripId === null) {
       return null;

@@ -30,7 +30,7 @@ export class TripRequest extends OJPBaseRequest {
   }
 
   private handleResponse(responseText: string, completion: (response: TripsResponse) => void) {
-    const tripsResponse = TripsResponse.initWithXML(responseText);
+    const tripsResponse = TripsResponse.initWithXML(responseText, this.requestParams.motType);
     completion(tripsResponse);
   }
 
