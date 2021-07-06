@@ -6,7 +6,7 @@ export enum TripLegPropertiesEnum {
 }
 
 type TripTimedLegLineType = 'LongDistanceRail' | 'SBahn' | 'Bus' | 'PostAuto' | 'OnDemand' | 'Aerial' | 'Funicular'
-type TripContinousLegLineType = 'Walk' | 'Guidance' | 'Transfer'
+type TripContinousLegLineType = 'Walk' | 'Self-Drive Car' | 'Shared Mobility' | 'Guidance' | 'Transfer'
 export type TripLegLineType = 'Unknown' | TripTimedLegLineType | TripContinousLegLineType
 
 export type TripLegDrawType = 'Beeline' | 'LegPoint' | 'LegLine'
