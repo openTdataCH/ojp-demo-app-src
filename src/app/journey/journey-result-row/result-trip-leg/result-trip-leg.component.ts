@@ -65,7 +65,17 @@ export class ResultTripLegComponent implements OnInit {
 
     if (this.leg.legType === 'ContinousLeg') {
       const continuousLeg = this.leg as OJP.TripContinousLeg
-      return 'Walk ' + OJP.DateHelpers.formatDuration(continuousLeg.legDuration)
+
+      let leadingTextTitle = 'Walk'
+      if (continuousLeg.isSelfDriveCarLeg()) {
+        leadingTextTitle = 'Drive'
+      }
+      if (continuousLeg.isSharedMobility()) {
+        leadingTextTitle = 'Cycle'
+      }
+
+      const leadingText = leadingTextTitle + ' ' + OJP.DateHelpers.formatDuration(continuousLeg.legDuration)
+      return leadingText
     }
 
     if (this.leg.legType === 'TimedLeg') {
