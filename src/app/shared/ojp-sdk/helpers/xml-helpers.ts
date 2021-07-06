@@ -13,7 +13,7 @@ export class XML_Helpers {
       '  </xsl:template>',
       '  <xsl:output indent="yes"/>',
       '</xsl:stylesheet>',
-    ].join('\n'), 'application/xml');
+    ].join("\n"), 'application/xml');
 
     var xsltProcessor = new XSLTProcessor();
     xsltProcessor.importStylesheet(xsltDoc);
