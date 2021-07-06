@@ -81,5 +81,8 @@ export class TripRequest extends OJPBaseRequest {
     if (motType === 'Walking') {
       paramsNode.ele('ojp:ItModesToCover', 'walk');
     }
+    if (motType === 'Shared Mobility') {
+      paramsNode.ele('ojp:ItModesToCover', 'cycle');
+    }
   }
 }
