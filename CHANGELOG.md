@@ -8,6 +8,7 @@ OJP-Demo URL: https://opentdatach.github.io/ojp-demo-app/
 - use LegTrack (detailed paths) also for OnDemandMode services
 - display monomodal trips for walking, shared mobility (cycle) and self-drive car. See [URLs](./docs/URLs.md)
 - when from/to are given the map will fit the bounds that includes the journey points (via included)
+- fix Firefox issue, the application didn't work due to a XSLTProcessor issue - isolated and addressed the issue
 
 05.Jul 2021
 - allow the user to change from/to/via/MOT types/stage/date via query parameters
