@@ -10,8 +10,15 @@ import { LegTrack } from './leg-track'
 import { TripLeg, LegType, LinePointData } from "./trip-leg"
 import { TripLegPropertiesEnum, TripLegDrawType, TripLegLineType } from '../../types/map-geometry-types'
 
+enum ContinousLegMode {
+  'Unknown' = 'unknown',
+  'Walk' = 'walk',
+  'Self-Drive Car' = 'self-drive-car',
+  'Shared Mobility' = 'shared-mobility',
+}
+
 export class TripContinousLeg extends TripLeg {
-  public legModeS: string | null
+  public legMode: ContinousLegMode | null
   public legDuration: Duration
   public legDistance: number
   public pathGuidance: PathGuidance | null
@@ -19,7 +26,7 @@ export class TripContinousLeg extends TripLeg {
   constructor(legType: LegType, legIDx: number, legDuration: Duration, legDistance: number, fromLocation: Location, toLocation: Location) {
     super(legType, legIDx, fromLocation, toLocation)
 
-    this.legModeS = null
+    this.legMode = null
     this.legDuration = legDuration
     this.legDistance = legDistance
     this.pathGuidance = null
@@ -55,11 +62,40 @@ export class TripContinousLeg extends TripLeg {
     const tripLeg = new TripContinousLeg(legType, legIDx, legDuration, legDistance, fromLocation, toLocation);
 
     tripLeg.pathGuidance = PathGuidance.initFromTripLeg(legNode);
-    tripLeg.legModeS = XPathOJP.queryText('ojp:Service/ojp:IndividualMode', legNode)
+    tripLeg.legMode = tripLeg.computeLegMode(legNode)
 
     tripLeg.legTrack = LegTrack.initFromLegNode(legNode);
 
     return tripLeg;
+  }
+
+  private computeLegMode(legNode: Node): ContinousLegMode | null {
+    const legModeS = XPathOJP.queryText('ojp:Service/ojp:IndividualMode', legNode)
+    if (legModeS === null) {
+      return null
+    }
+
+    if (legModeS === 'walk') {
+      return ContinousLegMode.Walk
+    }
+
+    if (legModeS === 'self-drive-car') {
+      return ContinousLegMode['Self-Drive Car']
+    }
+
+    if (legModeS === 'cycle') {
+      return ContinousLegMode['Shared Mobility']
+    }
+
+    return null
+  }
+
+  public isSelfDriveCarLeg(): boolean {
+    return this.legMode === ContinousLegMode['Self-Drive Car']
+  }
+
+  public isSharedMobility(): boolean {
+    return this.legMode === ContinousLegMode['Shared Mobility']
   }
 
   protected computeSpecificJSONFeatures(): GeoJSON.Feature[] {
