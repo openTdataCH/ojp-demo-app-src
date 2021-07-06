@@ -90,16 +90,6 @@ export class MapComponent implements OnInit {
       this.updateMarkers()
     })
 
-    this.mapService.centerAndZoomToEndpointRequested.subscribe(endpointType => {
-      const marker = endpointType === 'From' ? this.fromMarker : this.toMarker;
-      this.mapLoadingPromise?.then(map => {
-        map.jumpTo({
-          center: marker.getLngLat(),
-          zoom: 16
-        });
-      });
-    });
-
     this.userTripService.activeTripSelected.subscribe(trip => {
       this.mapLoadingPromise?.then(map => {
         this.tripRenderController?.renderTrip(trip)

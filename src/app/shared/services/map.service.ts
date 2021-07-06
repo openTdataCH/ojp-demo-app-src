@@ -10,7 +10,22 @@ export interface IMapBoundsData {
 
 @Injectable( {providedIn: 'root'} )
 export class MapService {
-  public centerAndZoomToEndpointRequested = new EventEmitter<OJP.JourneyPointType>();
   public newMapBoundsRequested = new EventEmitter<IMapBoundsData>();
   public newMapCenterAndZoomRequested = new EventEmitter<{ lnglat: mapboxgl.LngLat, zoom: number }>();
+
+  public tryToCenterAndZoomToLocation(location: OJP.Location | null, zoomValue: number = 16.0) {
+    if (location === null) {
+      return
+    }
+
+    const locationLngLat = location.geoPosition?.asLngLat() ?? null
+    if (locationLngLat === null) {
+      return
+    }
+
+    this.newMapCenterAndZoomRequested.emit({
+      lnglat: locationLngLat,
+      zoom: zoomValue
+    })
+  }
 }

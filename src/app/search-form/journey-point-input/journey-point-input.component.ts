@@ -93,7 +93,8 @@ export class JourneyPointInputComponent implements OnInit, OnChanges {
   }
 
   public handleTapOnMapButton() {
-    this.mapService.centerAndZoomToEndpointRequested.emit(this.endpointType);
+    const location = this.endpointType === 'From' ? this.userTripService.fromLocation : this.userTripService.toLocation
+    this.mapService.tryToCenterAndZoomToLocation(location)
   }
 
   private handleCoordsPick(location: OJP.Location) {
