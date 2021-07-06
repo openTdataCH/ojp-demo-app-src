@@ -122,7 +122,7 @@ export class SearchFormComponent implements OnInit {
 
     responsePromise.then(response => {
       response.text().then(responseText => {
-        const tripsResponse = OJP.TripsResponse.initWithXML(responseText);
+        const tripsResponse = OJP.TripsResponse.initWithXML(responseText, 'Default');
         this.requestDuration = 'LOCAL MOCK';
 
         console.log('MOCK RESPONSE');
