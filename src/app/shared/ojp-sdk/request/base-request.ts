@@ -31,16 +31,16 @@ export class OJPBaseRequest {
   protected fetchOJPResponse(completion: (responseText: string) => void) {
     const apiEndpoint = this.stageConfig.apiEndpoint
     const requestHeaders = {
-        "Authorization": "Bearer " + this.stageConfig.authBearerKey
       "Content-Type": "text/xml",
+      "Authorization": "Bearer " + this.stageConfig.authBearerKey,
     };
 
     const bodyXML_s = this.serviceRequestNode.end();
 
     const responsePromise = fetch(apiEndpoint, {
-        headers: requestHeaders,
-        body: bodyXML_s,
-        method: 'POST'
+      headers: requestHeaders,
+      body: bodyXML_s,
+      method: 'POST'
     });
 
     if (this.stageConfig.logAPIRequests) {
