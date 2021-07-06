@@ -2,6 +2,7 @@ import { EventEmitter, Injectable } from '@angular/core'
 import { MapPoiPropertiesEnum, MapPoiTypeEnum } from '../../map/app-layers/map-poi-type-enum'
 import * as OJP from '../ojp-sdk/index'
 import { DateHelpers, TripMotTypeHelpers } from '../ojp-sdk/index'
+import { MapService } from './map.service'
 
 type LocationUpdateSource = 'SearchForm' | 'MapDragend' | 'MapPopupClick'
 interface LocationData {
@@ -30,7 +31,7 @@ export class UserTripService {
   public viaAtIndexRemoved = new EventEmitter<number>();
   public viaAtIndexUpdated = new EventEmitter<{location: OJP.Location, idx: number}>();
 
-  constructor() {
+  constructor(private mapService: MapService) {
     this.queryParams = new URLSearchParams(document.location.search)
 
     this.fromLocation = null
@@ -80,6 +81,8 @@ export class UserTripService {
       }
     });
 
+    const bbox = new OJP.GeoPositionBBOX([])
+
     const motTypeKeysS = this.queryParams.get('mot_types') ?? null
     const motTypeKeys: string[] = motTypeKeysS === null ? [] : motTypeKeysS.split(';')
 
@@ -92,6 +95,10 @@ export class UserTripService {
 
         // TODO - add tripMotType from queryParams
         this.tripMotTypes.push('Default')
+
+        if (viaLocation.geoPosition) {
+          bbox.extend(viaLocation.geoPosition)
+        }
       }
     });
 
@@ -126,10 +133,22 @@ export class UserTripService {
         } else {
           this.toLocation = firstLocation
         }
+
+        if (firstLocation.geoPosition) {
+          bbox.extend(firstLocation.geoPosition)
+        }
       });
 
       this.locationsUpdated.emit();
       this.updatePermalinkAddress();
+
+      const shouldZoomToBounds = this.queryParams.has('from') || this.queryParams.has('to')
+      if (shouldZoomToBounds) {
+        const mapData = {
+          bounds: bbox.asLngLatBounds()
+        }
+        this.mapService.newMapBoundsRequested.emit(mapData);
+      }
     });
   }
 
