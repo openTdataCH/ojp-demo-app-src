@@ -1,4 +1,4 @@
-# CHANGELOG 
+# Application URLs
 
 OJP-Demo URL: https://opentdatach.github.io/ojp-demo-app/
 
