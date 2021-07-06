@@ -15,11 +15,16 @@ export class XML_Helpers {
       '</xsl:stylesheet>',
     ].join("\n"), 'application/xml');
 
-    var xsltProcessor = new XSLTProcessor();
-    xsltProcessor.importStylesheet(xsltDoc);
-    var resultDoc = xsltProcessor.transformToDocument(xmlDoc);
-    var resultXml = new XMLSerializer().serializeToString(resultDoc);
-
-    return resultXml;
+    try {
+      var xsltProcessor = new XSLTProcessor();
+      // TODO - check what's wrong in Firefox, why this fails
+      xsltProcessor.importStylesheet(xsltDoc);
+      var resultDoc = xsltProcessor.transformToDocument(xmlDoc);
+      var resultXml = new XMLSerializer().serializeToString(resultDoc);
+      return resultXml
+    } catch(error) {
+      console.error('XML_Helpers.prettyPrintXML - fails, see TODO');
+      return sourceXml
+    }
   }
 }
