@@ -74,7 +74,6 @@ export class MapboxLayerHelpers {
   public static FilterTimedLegTracks(): mapboxgl.Expression {
     const filterExpression: mapboxgl.Expression = [
       "all",
-      this.FilterByLegType('TimedLeg'),
       this.FilterByDrawType('LegLine'),
     ]
 
