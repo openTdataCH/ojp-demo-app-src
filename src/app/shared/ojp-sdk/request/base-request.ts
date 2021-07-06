@@ -31,8 +31,8 @@ export class OJPBaseRequest {
   protected fetchOJPResponse(completion: (responseText: string) => void) {
     const apiEndpoint = this.stageConfig.apiEndpoint
     const requestHeaders = {
-        "Content-Type": "application/xml",
         "Authorization": "Bearer " + this.stageConfig.authBearerKey
+      "Content-Type": "text/xml",
     };
 
     const bodyXML_s = this.serviceRequestNode.end();
