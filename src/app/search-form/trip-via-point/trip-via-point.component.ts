@@ -1,5 +1,6 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { MapPoiPropertiesEnum, MapPoiTypeEnum } from 'src/app/map/app-layers/map-poi-type-enum';
+import { MapService } from 'src/app/shared/services/map.service';
 import { UserTripService } from 'src/app/shared/services/user-trip.service';
 import * as OJP from '../../shared/ojp-sdk/index'
 
@@ -17,7 +18,7 @@ export class TripViaPointComponent implements OnInit {
   public nextMotType: OJP.TripMotType
   private viaPoiType: MapPoiTypeEnum | null
 
-  constructor(private userTripService: UserTripService) {
+  constructor(private userTripService: UserTripService, private mapService: MapService) {
     this.viaIDx = 0
 
     this.motTypes = OJP.TripMotTypes
@@ -88,5 +89,10 @@ export class TripViaPointComponent implements OnInit {
       this.nextMotType = motType
       this.userTripService.updateTripMotType(motType, this.viaIDx + 1)
     }
+  }
+
+  public handleTapOnMapButton() {
+    const location = this.userTripService.viaLocations[this.viaIDx] ?? null
+    this.mapService.tryToCenterAndZoomToLocation(location)
   }
 }
