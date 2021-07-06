@@ -23,6 +23,6 @@ No parameters
 - [Bern to Rütli for Aug.1 with stop in Luzern](https://opentdatach.github.io/ojp-demo-app/?from=46.941621%2C7.462849&to=8508471&via=47.050180%2C8.310180&mot_types=default%3Bdefault&trip_datetime=2021-08-01+10%3A00&stage=prod) - the app will prefill the from/to and via points and set the datetime to 1st of August.
 - [Croy-Romainmôtier to Glis](https://opentdatach.github.io/ojp-demo-app/?from=46.673066%2C6.462309&to=46.311076%2C7.977560&mot_types=default&trip_datetime=2021-07-25+17%3A45&stage=test) - use `TEST` stage to demo the `demandAndResponseBus` in the `BusSubmode` TripRequest response. The journey takes place in a Sunday evening.
 - [Meiringen demandAndResponseBus](https://opentdatach.github.io/ojp-demo-app/?from=46.691000%2C8.223430&to=46.726650%2C8.222980&stage=test) - use `TEST` stage to demo the `demandAndResponseBus` mode in Meiringen area.
-
-TODO: add more examples
-
+- [Walk trip in Bern](https://opentdatach.github.io/ojp-demo-app/?from=46.933946%2C7.440027&to=46.947515%2C7.466062&via=46.936732%2C7.447386&mot_types=walk%3Bdefault&trip_datetime=2021-07-06+10%3A00&stage=test) - use walking MOT type that will use `walk` for `ItModesToCover`.
+- [Self-drive car ride](https://opentdatach.github.io/ojp-demo-app/?from=46.882350%2C7.470718&to=46.964427%2C7.432219&via=46.948819%2C7.439128&mot_types=self-drive-car%3Bdefault&trip_datetime=2021-07-06+10%3A00&stage=test) - use walking MOT type that will use `self-drive-car` for `ItModesToCover`.
+- [Shared mobility(cycle) ride](https://opentdatach.github.io/ojp-demo-app/?from=46.743506%2C7.590045&to=46.745899%2C7.637482&via=46.743386%2C7.595724&mot_types=walk%3Bshared-mobility&trip_datetime=2021-07-06+10%3A00&stage=test) - use walking MOT type that will use `cycle` for `ItModesToCover` in Thun (Donkey Republic provider).
