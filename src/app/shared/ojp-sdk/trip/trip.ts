@@ -8,6 +8,7 @@ import { TripLeg } from './leg/trip-leg'
 import { TripLegFactory } from './leg/trip-leg-factory'
 import { TripTimedLeg } from './leg/trip-timed-leg'
 import { TripMotType } from '../types/trip-mot-type'
+import { TripContinousLeg } from './leg/trip-continous-leg'
 
 export class Trip {
   public id: string
@@ -70,6 +71,46 @@ export class Trip {
 
       legs.push(tripLeg);
     })
+
+    if (motType === 'Walking') {
+      const firstNonWalkingLeg = legs.find(leg => {
+        return leg.legType !== 'ContinousLeg'
+      })
+
+      if (firstNonWalkingLeg) {
+        return null
+      }
+    }
+
+    if (motType === 'Self-Driving Car') {
+      const firstSelfDrivingLeg = legs.find(leg => {
+        if (leg.legType === 'ContinousLeg') {
+          const continousLeg = leg as TripContinousLeg
+          return continousLeg.isSelfDriveCarLeg()
+        }
+
+        return false
+      })
+
+      if (!firstSelfDrivingLeg) {
+        return null
+      }
+    }
+
+    if (motType === 'Shared Mobility') {
+      const firstSharedMobilityLeg = legs.find(leg => {
+        if (leg.legType === 'ContinousLeg') {
+          const continousLeg = leg as TripContinousLeg
+          return continousLeg.isSharedMobility()
+        }
+
+        return false
+      })
+
+      if (!firstSharedMobilityLeg) {
+        return null
+      }
+    }
 
     const trip = new Trip(tripId, legs, tripStats);
 
