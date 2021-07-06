@@ -9,6 +9,7 @@ import { LegTrack } from './leg-track'
 
 import { TripLeg, LegType, LinePointData } from "./trip-leg"
 import { TripLegPropertiesEnum, TripLegDrawType, TripLegLineType } from '../../types/map-geometry-types'
+import { MapLegLineTypeColor } from '../../config/map-colors'
 
 enum ContinousLegMode {
   'Unknown' = 'unknown',
@@ -127,8 +128,7 @@ export class TripContinousLeg extends TripLeg {
         const drawType: TripLegDrawType = 'LegLine'
         feature.properties[TripLegPropertiesEnum.DrawType] = drawType
 
-        const lineType: TripLegLineType = 'Walk'
-        feature.properties[TripLegPropertiesEnum.LineType] = lineType
+        feature.properties[TripLegPropertiesEnum.LineType] = this.computeLegLineType()
 
         features.push(feature);
       }
@@ -138,7 +138,21 @@ export class TripContinousLeg extends TripLeg {
   }
 
   protected computeLegLineType(): TripLegLineType {
-    return this.legType === 'ContinousLeg' ? 'Walk' : 'Transfer'
+    if (this.legType === 'ContinousLeg') {
+      if (this.isSelfDriveCarLeg()) {
+        return 'Self-Drive Car'
+      }
+
+      if (this.isSharedMobility()) {
+        return 'Shared Mobility'
+      }
+    }
+
+    if (this.legType === 'TransferLeg') {
+      return 'Transfer'
+    }
+
+    return 'Walk'
   }
 
   protected computeLinePointsData(): LinePointData[] {
@@ -148,5 +162,17 @@ export class TripContinousLeg extends TripLeg {
     }
 
     return super.computeLinePointsData();
+  }
+
+  public computeLegColor(): string {
+    if (this.isSelfDriveCarLeg()) {
+      return MapLegLineTypeColor['Self-Drive Car']
+    }
+
+    if (this.isSharedMobility()) {
+      return MapLegLineTypeColor['Shared Mobility']
+    }
+
+    return MapLegLineTypeColor.Walk
   }
 }
