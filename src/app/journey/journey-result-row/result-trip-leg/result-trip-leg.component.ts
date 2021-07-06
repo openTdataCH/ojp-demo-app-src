@@ -140,7 +140,7 @@ export class ResultTripLegComponent implements OnInit {
         lnglat: bounds.getCenter(),
         zoom: 16
       }
-      this.mapService.mapCenterAndZoomChanged.emit(mapData);
+      this.mapService.newMapCenterAndZoomRequested.emit(mapData);
     } else {
       const mapData = {
         bounds: bounds

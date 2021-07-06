@@ -12,5 +12,5 @@ export interface IMapBoundsData {
 export class MapService {
   public centerAndZoomToEndpointRequested = new EventEmitter<OJP.JourneyPointType>();
   public newMapBoundsRequested = new EventEmitter<IMapBoundsData>();
-  public mapCenterAndZoomChanged = new EventEmitter<{ lnglat: mapboxgl.LngLat, zoom: number }>();
+  public newMapCenterAndZoomRequested = new EventEmitter<{ lnglat: mapboxgl.LngLat, zoom: number }>();
 }

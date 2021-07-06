@@ -126,7 +126,7 @@ export class MapComponent implements OnInit {
       });
     })
 
-    this.mapService.mapCenterAndZoomChanged.subscribe(mapData => {
+    this.mapService.newMapCenterAndZoomRequested.subscribe(mapData => {
       this.mapLoadingPromise?.then(map => {
         map.jumpTo({
           center: mapData.lnglat,
