@@ -3,6 +3,7 @@ enum TripMotTypeKey {
   'Default' = 'default',
   'Walking' = 'walk',
   'Self-Driving Car' = 'self-drive-car',
+  'Shared Mobility' = 'shared-mobility',
 }
 
 export const TripMotTypes: TripMotType[] = ['Default', 'Walking', 'Self-Driving Car', 'Shared Mobility']
@@ -17,6 +18,10 @@ export class TripMotTypeHelpers {
       return 'Walking'
     }
 
+    if (param === TripMotTypeKey["Shared Mobility"]) {
+      return 'Shared Mobility'
+    }
+
     return 'Default'
   }
 
@@ -27,6 +32,10 @@ export class TripMotTypeHelpers {
 
     if (motType === 'Walking') {
       return TripMotTypeKey.Walking
+    }
+
+    if (motType === 'Shared Mobility') {
+      return TripMotTypeKey["Shared Mobility"]
     }
 
     return TripMotTypeKey.Default
