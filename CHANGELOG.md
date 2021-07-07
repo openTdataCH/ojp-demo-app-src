@@ -6,6 +6,7 @@ OJP-Demo URL: https://opentdatach.github.io/ojp-demo-app/
 
 07.Jul 2021
 - user can center/zoom on VIA input elements
+- remove guidance polylines
 
 06.Jul 2021
 - use LegTrack (detailed paths) also for OnDemandMode services
