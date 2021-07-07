@@ -174,6 +174,10 @@ export class TripContinousLeg extends TripLeg {
       return MapLegLineTypeColor['Shared Mobility']
     }
 
+    if (this.legType === 'TransferLeg') {
+      return MapLegLineTypeColor.Transfer
+    }
+
     return MapLegLineTypeColor.Walk
   }
 }
