@@ -12,6 +12,7 @@ export class Location {
   public stopPlace: StopPlace | null
   public geoPosition: GeoPosition | null
   public poi: PointOfInterest | null
+  public attributes: Record<string, any>
 
   constructor() {
     this.address = null
@@ -20,6 +21,7 @@ export class Location {
     this.stopPlace = null;
     this.geoPosition = null;
     this.poi = null
+    this.attributes = {}
   }
 
   public static initWithOJPContextNode(contextNode: Node): Location {
@@ -36,6 +38,17 @@ export class Location {
       locationName = XPathOJP.queryText('ojp:StopPointName/ojp:Text', contextNode)
     }
     location.locationName = locationName
+
+    location.attributes = {}
+    const attributesNodes = XPathOJP.queryNodes('ojp:Attribute/*', contextNode)
+    attributesNodes.forEach(attributeNode => {
+      const nodeNameParts = attributeNode.nodeName.split(':')
+      const attrKey = nodeNameParts.length === 1 ? nodeNameParts[0] : nodeNameParts[1]
+      const attrValue = XPathOJP.queryText('ojp:Attribute/' + attributeNode.nodeName, contextNode)
+      if (attrValue) {
+        location.attributes[attrKey] = attrValue.trim()
+      }
+    })
 
     return location
   }
@@ -115,6 +128,10 @@ export class Location {
     const featureProperties: GeoJSON.GeoJsonProperties = {
       'locationName': this.locationName ?? ''
     };
+
+    for (let attrKey in this.attributes) {
+      featureProperties['OJP.Attr.' + attrKey] = this.attributes[attrKey]
+    }
 
     const stopPlaceRef = this.stopPlace?.stopPlaceRef ?? null;
     if (stopPlaceRef) {
