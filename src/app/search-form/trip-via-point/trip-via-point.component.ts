@@ -46,12 +46,12 @@ export class TripViaPointComponent implements OnInit {
     }
 
     if (this.viaPoiType === 'BikeSharing') {
-      const stationName = 'Donkey Rep. ' + featureProperties['name'] ?? ''
+      const stationName = 'Donkey Rep. ' + featureProperties['OJP.Attr.Text'] ?? ''
       return stationName
     }
 
     if (this.viaPoiType === 'ParkAndRail') {
-      const stationName = 'P+Rail ' + (featureProperties['label'] ?? '')
+      const stationName = featureProperties['OJP.Attr.Text'] ?? ''
       return stationName
     }
 
