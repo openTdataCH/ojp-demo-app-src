@@ -3,7 +3,7 @@ import xmlbuilder from 'xmlbuilder';
 import { StageConfig } from '../../config/config'
 import { XPathOJP } from '../../helpers/xpath-ojp';
 import { Location } from '../../location/location';
-import { GeoRestrictionType } from '../../types/geo-restriction.type';
+import { GeoRestrictionPoiOSMTag, GeoRestrictionType } from '../../types/geo-restriction.type';
 import { OJPBaseRequest } from '../base-request'
 import { LocationInformationRequestParams } from './location-information-request-params.interface'
 
@@ -33,14 +33,24 @@ export class LocationInformationRequest extends OJPBaseRequest {
     return locationInformationRequest
   }
 
-  public static initWithBBOXAndType(stageConfig: StageConfig, bboxWest: number, bboxNorth: number, bboxEast: number, bboxSouth: number, type: GeoRestrictionType, limit: number = 1000): LocationInformationRequest {
+  public static initWithBBOXAndType(
+    stageConfig: StageConfig,
+    bboxWest: number,
+    bboxNorth: number,
+    bboxEast: number,
+    bboxSouth: number,
+    geoRestrictionType: GeoRestrictionType,
+    limit: number = 1000,
+    poiOsmTag: GeoRestrictionPoiOSMTag | null = null
+  ): LocationInformationRequest {
     const requestParams = <LocationInformationRequestParams>{
       bboxWest: bboxWest,
       bboxNorth: bboxNorth,
       bboxEast: bboxEast,
       bboxSouth: bboxSouth,
       numberOfResults: limit,
-      geoRestrictionType: type,
+      geoRestrictionType: geoRestrictionType,
+      poiOsmTag: poiOsmTag
     }
 
     const locationInformationRequest = new LocationInformationRequest(stageConfig, requestParams);
@@ -130,6 +140,12 @@ export class LocationInformationRequest extends OJPBaseRequest {
     const geoRestrictionType = this.requestParams.geoRestrictionType ?? null;
     if (geoRestrictionType) {
       restrictionsNode.ele('ojp:Type', geoRestrictionType);
+
+      if (this.requestParams.poiOsmTag) {
+        const osmTagNode = restrictionsNode.ele('ojp:PointOfInterestFilter').ele('ojp:PointOfInterestCategory').ele('ojp:OsmTag')
+        osmTagNode.ele('ojp:Tag', this.requestParams.poiOsmTag)
+        osmTagNode.ele('ojp:Value', 'yes')
+      }
     }
   }
 
