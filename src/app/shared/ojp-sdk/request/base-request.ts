@@ -5,9 +5,12 @@ export class OJPBaseRequest {
   protected serviceRequestNode: xmlbuilder.XMLElement;
   protected stageConfig: StageConfig
 
+  protected logRequests: boolean
+
   constructor(stageConfig: StageConfig) {
     this.stageConfig = stageConfig
     this.serviceRequestNode = this.computeServiceRequestNode();
+    this.logRequests = false
   }
 
   private computeServiceRequestNode(): xmlbuilder.XMLElement {
@@ -43,7 +46,7 @@ export class OJPBaseRequest {
       method: 'POST'
     });
 
-    if (this.stageConfig.logAPIRequests) {
+    if (this.logRequests) {
       console.log('OJP Request: /POST - ' + apiEndpoint);
       console.log(bodyXML_s);
     }

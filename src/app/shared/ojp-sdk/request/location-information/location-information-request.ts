@@ -71,8 +71,10 @@ export class LocationInformationRequest extends OJPBaseRequest {
         if (hasErrors) {
           const errorNode = XPathOJP.queryNode('//ojp:OJPLocationInformationDelivery/siri:ErrorCondition', responseXML)
 
-          console.error('OJP LocationInformationRequest error');
-          console.log(errorNode);
+          if (this.logRequests) {
+            console.error('OJP LocationInformationRequest error');
+            console.log(errorNode);
+          }
 
           resolve(locations);
           return;
