@@ -3,6 +3,7 @@ import { GeoPosition } from "./geoposition";
 import { StopPlace } from "./stopplace";
 import { Address } from "./address";
 import { MapPoiPropertiesEnum, MapPoiTypeEnum } from "src/app/map/app-layers/map-poi-type-enum";
+import { PointOfInterest } from "./poi";
 
 export class Location {
   public address: Address | null
@@ -10,6 +11,7 @@ export class Location {
   public locationName: string | null
   public stopPlace: StopPlace | null
   public geoPosition: GeoPosition | null
+  public poi: PointOfInterest | null
 
   constructor() {
     this.address = null
@@ -17,6 +19,7 @@ export class Location {
     this.locationName = null;
     this.stopPlace = null;
     this.geoPosition = null;
+    this.poi = null
   }
 
   public static initWithOJPContextNode(contextNode: Node): Location {
@@ -26,6 +29,7 @@ export class Location {
     location.stopPointRef = XPathOJP.queryText('siri:StopPointRef', contextNode)
     location.stopPlace = StopPlace.initFromContextNode(contextNode)
     location.geoPosition = GeoPosition.initFromContextNode(contextNode)
+    location.poi = PointOfInterest.initFromContextNode(contextNode)
 
     let locationName = XPathOJP.queryText('ojp:LocationName/ojp:Text', contextNode)
     if (locationName === null) {
