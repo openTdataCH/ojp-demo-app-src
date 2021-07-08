@@ -74,7 +74,7 @@ export class LocationMapAppLayer {
       const features: GeoJSON.Feature[] = []
 
       locations.forEach(location => {
-        const feature = location.asGeoJSONFeature();
+        const feature = this.computeFeatureFromLocation(location)
         if (feature === null) {
           return;
         }
@@ -236,5 +236,11 @@ export class LocationMapAppLayer {
     popup.setLngLat(locationLngLat)
       .setDOMContent(popupContainer)
       .addTo(this.map);
+  }
+
+  // Override
+  protected computeFeatureFromLocation(location: OJP.Location): GeoJSON.Feature | null {
+    const feature = location.asGeoJSONFeature();
+    return feature
   }
 }
