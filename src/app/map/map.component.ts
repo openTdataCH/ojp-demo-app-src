@@ -10,12 +10,13 @@ import { MapHelpers } from './helpers/map.helpers';
 import { MapAppLayer } from './app-layers/map-app-layer.interface';
 import { StopsAppLayer } from './app-layers/stops/stops-app-layer';
 import { AddressAppLayer } from './app-layers/address/address-app-layer';
+import { PoiBicycleRentalLayer } from './app-layers/poi/bicycle-rental/poi-bicycle-rental-layer';
+import { PoiParkRideLayer } from './app-layers/poi/park-ride/poi-park-ride-layer';
+
 
 import { MapDebugControl } from './controls/map-debug-control'
 import { MapLayersLegendControl } from './controls/map-layers-legend-control';
 import { TripRenderController } from './controllers/trip-render-controller';
-import { ParkAndRailLayer } from './app-layers/poi-mocks/park-and-rail-layer/park-and-rail-layer';
-import { BikeSharingStationsLayer } from './app-layers/poi-mocks/bike-sharing-layer/bike-sharing-stations-layer';
 
 @Component({
   selector: 'app-map',
@@ -223,10 +224,10 @@ export class MapComponent implements OnInit {
   private onMapLoad(map: mapboxgl.Map) {
     this.stopsMapAppLayer = new StopsAppLayer(map, this.userTripService);
     const addressAppLayer = new AddressAppLayer(map, this.userTripService)
-    const parkAndRailLayer = new ParkAndRailLayer(map, this.userTripService)
-    const bikeSharingLayer = new BikeSharingStationsLayer(map, this.userTripService)
+    const parkAndRideLayer = new PoiParkRideLayer(map, this.userTripService)
+    const bikeSharingLayer = new PoiBicycleRentalLayer(map, this.userTripService)
 
-    this.mapAppLayers = [this.stopsMapAppLayer, addressAppLayer, parkAndRailLayer, bikeSharingLayer]
+    this.mapAppLayers = [this.stopsMapAppLayer, addressAppLayer, parkAndRideLayer, bikeSharingLayer]
 
     this.addMapControls(map);
 
