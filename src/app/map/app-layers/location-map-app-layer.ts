@@ -9,6 +9,8 @@ export class LocationMapAppLayer {
   public map: mapboxgl.Map
 
   public geoRestrictionType: OJP.GeoRestrictionType
+  public geoRestrictionPoiOSMTag: OJP.GeoRestrictionPoiOSMTag | null
+
   public layerKey: string
   public minZoomLevel: number
   public sourceId: string
@@ -29,6 +31,8 @@ export class LocationMapAppLayer {
     this.isEnabled = true
 
     this.userTripService = userTripService
+
+    this.geoRestrictionPoiOSMTag = null
   }
 
   public addToMap() {
@@ -62,7 +66,8 @@ export class LocationMapAppLayer {
       mapBounds.getEast(),
       mapBounds.getSouth(),
       this.geoRestrictionType,
-      300
+      300,
+      this.geoRestrictionPoiOSMTag,
     );
 
     request.fetchResponse().then(locations => {
