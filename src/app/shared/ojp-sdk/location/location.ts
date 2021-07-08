@@ -2,7 +2,6 @@ import { XPathOJP } from "../helpers/xpath-ojp";
 import { GeoPosition } from "./geoposition";
 import { StopPlace } from "./stopplace";
 import { Address } from "./address";
-import { MapPoiPropertiesEnum, MapPoiTypeEnum } from "src/app/map/app-layers/map-poi-type-enum";
 import { PointOfInterest } from "./poi";
 
 export class Location {
@@ -123,8 +122,6 @@ export class Location {
       return null
     }
 
-    let featureType = MapPoiTypeEnum.Coordinates
-
     const featureProperties: GeoJSON.GeoJsonProperties = {
       'locationName': this.locationName ?? ''
     };
@@ -135,22 +132,16 @@ export class Location {
 
     const stopPlaceRef = this.stopPlace?.stopPlaceRef ?? null;
     if (stopPlaceRef) {
-      featureType = MapPoiTypeEnum.PublicTransportStop
-
       featureProperties['stopPlace.stopPlaceRef'] = this.stopPlace?.stopPlaceRef ?? ''
       featureProperties['stopPlace.stopPlaceName'] = this.stopPlace?.stopPlaceName ?? ''
       featureProperties['stopPlace.topographicPlaceRef'] = this.stopPlace?.topographicPlaceRef ?? ''
     }
 
     if (this.address) {
-      featureType = MapPoiTypeEnum.Address
-
       featureProperties['addressCode'] = this.address?.addressCode ?? ''
       featureProperties['addressName'] = this.address?.addressName ?? ''
       featureProperties['topographicPlaceRef'] = this.address?.topographicPlaceRef ?? ''
     }
-
-    featureProperties[MapPoiPropertiesEnum.PoiType] = featureType;
 
     const feature: GeoJSON.Feature<GeoJSON.Point> = {
       type: 'Feature',
