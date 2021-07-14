@@ -155,12 +155,6 @@ export class UserTripService {
   }
 
   updateTripEndpoint(location: OJP.Location, endpointType: OJP.JourneyPointType, updateSource: LocationUpdateSource) {
-    const locationData = <LocationData>{
-      endpointType: endpointType,
-      location: location,
-      updateSource: updateSource
-    }
-
     if (endpointType === 'From') {
       this.fromLocation = location
     }
