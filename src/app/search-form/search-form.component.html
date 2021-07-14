@@ -13,11 +13,10 @@
             </journey-point-input>
           </div>
 
-          <trip-via-point
-            *ngFor="let viaLocation of this.userTripService.viaLocations; index as idx"
-            [location]="viaLocation"
-            [viaIDx]="idx">
-          </trip-via-point>
+          <trip-mot-type
+            *ngFor="let motType of this.userTripService.tripMotTypes; index as idx"
+            [tripMotTypeIdx]="idx">
+          </trip-mot-type>
 
           <div>
             <journey-point-input
