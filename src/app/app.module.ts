@@ -22,6 +22,7 @@ import { ResultTripLegComponent } from './journey/journey-result-row/result-trip
 import { MapComponent } from './map/map.component';
 import { SearchFormComponent } from './search-form/search-form.component';
 import { TripViaPointComponent } from './search-form/trip-via-point/trip-via-point.component';
+import { TripMotTypeComponent } from './search-form/trip-mot-type/trip-mot-type.component';
 
 @NgModule({
   declarations: [
@@ -34,6 +35,7 @@ import { TripViaPointComponent } from './search-form/trip-via-point/trip-via-poi
     ResultTripLegComponent,
     SearchFormComponent,
     TripViaPointComponent,
+    TripMotTypeComponent,
   ],
   imports: [
     BrowserModule,
