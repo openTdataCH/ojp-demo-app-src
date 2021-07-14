@@ -75,20 +75,15 @@ export class SearchFormComponent implements OnInit {
     })
 
     this.userTripService.tripsUpdated.subscribe(trips => {
-      if (trips.length > 0) {
-        this.searchState = 'DisplayTrips'
-      }
+      const hasTrips = trips.length > 0
+      this.searchState = hasTrips ? 'DisplayTrips' : 'ChooseEndpoints'
     });
 
-    this.userTripService.viaAtIndexRemoved.subscribe(idx => {
+    this.userTripService.searchParamsResetted.subscribe(() => {
       this.searchState = 'ChooseEndpoints'
       this.requestDuration = null
-    })
+    });
 
-    this.userTripService.viaAtIndexUpdated.subscribe(viaData => {
-      this.searchState = 'ChooseEndpoints'
-      this.requestDuration = null
-    })
   }
 
   private updateLocationTexts() {
