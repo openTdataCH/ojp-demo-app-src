@@ -19,7 +19,7 @@ export class JourneyResultsComponent implements OnInit {
       this.trips = trips
     });
 
-    this.userTripService.searchParamsResetted.subscribe(() => {
+    this.userTripService.searchParamsReset.subscribe(() => {
       this.trips = []
     });
   }

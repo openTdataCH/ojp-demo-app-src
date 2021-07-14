@@ -79,7 +79,7 @@ export class SearchFormComponent implements OnInit {
       this.searchState = hasTrips ? 'DisplayTrips' : 'ChooseEndpoints'
     });
 
-    this.userTripService.searchParamsResetted.subscribe(() => {
+    this.userTripService.searchParamsReset.subscribe(() => {
       this.searchState = 'ChooseEndpoints'
       this.requestDuration = null
     });

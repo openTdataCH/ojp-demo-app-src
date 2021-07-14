@@ -31,7 +31,7 @@ export class UserTripService {
   public viaAtIndexRemoved = new EventEmitter<number>();
   public viaAtIndexUpdated = new EventEmitter<{location: OJP.Location, idx: number}>();
 
-  public searchParamsResetted = new EventEmitter<void>();
+  public searchParamsReset = new EventEmitter<void>();
 
   constructor(private mapService: MapService) {
     this.queryParams = new URLSearchParams(document.location.search)
@@ -194,7 +194,7 @@ export class UserTripService {
     this.locationsUpdated.emit();
     this.activeTripSelected.emit(null);
 
-    this.searchParamsResetted.emit();
+    this.searchParamsReset.emit();
     this.updatePermalinkAddress();
   }
 
@@ -206,7 +206,7 @@ export class UserTripService {
     })
     this.activeTripSelected.emit(null);
 
-    this.searchParamsResetted.emit();
+    this.searchParamsReset.emit();
     this.updatePermalinkAddress();
   }
 
@@ -231,7 +231,7 @@ export class UserTripService {
     this.viaAtIndexRemoved.emit(idx);
     this.activeTripSelected.emit(null);
 
-    this.searchParamsResetted.emit();
+    this.searchParamsReset.emit();
     this.updatePermalinkAddress();
   }
 
