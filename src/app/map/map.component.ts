@@ -148,10 +148,17 @@ export class MapComponent implements OnInit {
       accessToken: 'pk.eyJ1IjoidmFzaWxlIiwiYSI6ImNra2k2dWFkeDFrbG0ycXF0Nmg0Z2tsNXAifQ.nK-i-3cpWmji7HvK1Ilynw',
     });
 
-    map.fitBounds(mapBounds, {
-      padding: 50,
-      duration: 0,
-    });
+    if (this.mapService.initialMapCenter) {
+      map.setCenter(this.mapService.initialMapCenter)
+      if (this.mapService.initialMapZoom) {
+        map.setZoom(this.mapService.initialMapZoom)
+      }
+    } else {
+      map.fitBounds(mapBounds, {
+        padding: 50,
+        duration: 0,
+      });
+    }
 
     this.mapLoadingPromise = new Promise<mapboxgl.Map>((resolve, reject) => {
       map.on('load', ev => {

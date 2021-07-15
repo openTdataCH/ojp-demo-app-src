@@ -145,7 +145,7 @@ export class UserTripService {
       this.updatePermalinkAddress();
 
       const shouldZoomToBounds = this.queryParams.has('from') || this.queryParams.has('to')
-      if (shouldZoomToBounds) {
+      if (shouldZoomToBounds && !this.mapService.initialMapCenter) {
         const mapData = {
           bounds: bbox.asLngLatBounds()
         }

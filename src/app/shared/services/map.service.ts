@@ -28,4 +28,12 @@ export class MapService {
       zoom: zoomValue
     })
   }
+
+  public initialMapCenter: mapboxgl.LngLat | null
+  public initialMapZoom: number | null
+
+  constructor() {
+    this.initialMapCenter = null
+    this.initialMapZoom = null
+  }
 }
