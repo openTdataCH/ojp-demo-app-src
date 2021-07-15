@@ -1,11 +1,12 @@
+import { RequestData } from "../request"
 import { TripsResponse } from "../trips/trips-response"
 
 export class JourneySection {
-  public requestXMLText: string
+  public requestData: RequestData
   public response: TripsResponse
 
-  constructor(requestXMLText: string, response: TripsResponse) {
-    this.requestXMLText = requestXMLText
+  constructor(requestData: RequestData, response: TripsResponse) {
+    this.requestData = requestData
     this.response = response
   }
 }
