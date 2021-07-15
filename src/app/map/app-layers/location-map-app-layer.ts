@@ -19,6 +19,8 @@ export class LocationMapAppLayer {
 
   protected userTripService: UserTripService
 
+  public lastOJPRequest: OJP.LocationInformationRequest | null
+
   constructor(map: mapboxgl.Map, geoRestrictionType: OJP.GeoRestrictionType, layerKey: string, minZoomLevel: number, sourceId: string, userTripService: UserTripService) {
     this.map = map
 
@@ -33,6 +35,8 @@ export class LocationMapAppLayer {
     this.userTripService = userTripService
 
     this.geoRestrictionPoiOSMTag = null
+
+    this.lastOJPRequest = null
   }
 
   public addToMap() {
@@ -69,6 +73,8 @@ export class LocationMapAppLayer {
       300,
       this.geoRestrictionPoiOSMTag,
     );
+
+    this.lastOJPRequest = request
 
     request.fetchResponse().then(locations => {
       const features: GeoJSON.Feature[] = []
