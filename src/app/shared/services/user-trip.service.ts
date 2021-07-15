@@ -5,11 +5,6 @@ import { DateHelpers, TripMotTypeHelpers } from '../ojp-sdk/index'
 import { MapService } from './map.service'
 
 type LocationUpdateSource = 'SearchForm' | 'MapDragend' | 'MapPopupClick'
-interface LocationData {
-  endpointType: OJP.JourneyPointType,
-  location: OJP.Location | null,
-  updateSource: LocationUpdateSource,
-}
 
 @Injectable( {providedIn: 'root'} )
 export class UserTripService {
