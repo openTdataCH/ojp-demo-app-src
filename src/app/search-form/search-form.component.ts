@@ -7,8 +7,6 @@ import { SbbDialog } from '@sbb-esta/angular-business/dialog';
 
 import * as OJP from '../shared/ojp-sdk/index'
 
-import 'url-search-params-polyfill';
-
 type SearchState = 'ChooseEndpoints' | 'DisplayTrips'
 
 @Component({
@@ -17,8 +15,6 @@ type SearchState = 'ChooseEndpoints' | 'DisplayTrips'
   styleUrls: ['./search-form.component.scss']
 })
 export class SearchFormComponent implements OnInit {
-  private queryParams: URLSearchParams
-
   formGroup: FormGroup
 
   searchState: SearchState = 'ChooseEndpoints'
@@ -42,8 +38,6 @@ export class SearchFormComponent implements OnInit {
     public userTripService: UserTripService,
     public dialog: SbbDialog,
   ) {
-    this.queryParams = new URLSearchParams(location.search)
-
     const searchDate = this.userTripService.departureDate
     const timeFormatted = OJP.DateHelpers.formatTimeHHMM(searchDate);
 
