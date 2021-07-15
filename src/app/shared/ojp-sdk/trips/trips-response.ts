@@ -1,6 +1,5 @@
 import { Location } from '../location/location'
 import { Trip } from '../trip/trip'
-import { TripTimedLeg } from '../trip/leg/trip-timed-leg'
 import { XPathOJP } from '../helpers/xpath-ojp'
 import { TripMotType } from '../types/trip-mot-type'
 
