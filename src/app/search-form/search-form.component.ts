@@ -189,6 +189,7 @@ export class SearchFormComponent implements OnInit {
 
       this.isSearching = false
       this.userTripService.updateTrips(trips)
+      this.userTripService.lastJourneyResponse = journeyRequest.lastJourneyResponse
     })
   }
 
