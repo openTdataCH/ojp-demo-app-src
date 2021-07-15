@@ -9,15 +9,18 @@ import { JourneyRequestParams } from "./journey-request-params";
 
 export class JourneyRequest extends OJPBaseRequest {
   public requestParams: JourneyRequestParams
+  public lastJourneyResponse: JourneyResponse | null
 
   constructor(stageConfig: StageConfig, requestParams: JourneyRequestParams) {
     super(stageConfig);
     this.requestParams = requestParams;
+    this.lastJourneyResponse = null
   }
 
   public fetchResponse(completion: (response: Trip[]) => void) {
     const journeyResponse = new JourneyResponse([])
     const tripDepartureDate = this.requestParams.departureDate
+    this.lastJourneyResponse = null
     this.computeTripResponse(0, tripDepartureDate, journeyResponse, completion)
   }
 
@@ -37,14 +40,17 @@ export class JourneyRequest extends OJPBaseRequest {
 
     const tripRequest = new TripRequest(this.stageConfig, tripRequestParams);
     tripRequest.fetchResponse(tripsResponse => {
-      const journeySection = new JourneySection(
-        tripRequest.computeRequestXML(),
-        tripsResponse
-      )
-      journeysResponse.sections.push(journeySection)
+      if (tripRequest.lastRequestData) {
+        const journeySection = new JourneySection(
+          tripRequest.lastRequestData,
+          tripsResponse
+        )
+        journeyResponse.sections.push(journeySection)
+      }
 
       if (isLastJourneySegment) {
         const trips = journeyResponse.computeAggregatedTrips()
+        this.lastJourneyResponse = journeyResponse
         completion(trips)
       } else {
         const hasTrips = tripsResponse.trips.length > 0
