@@ -14,6 +14,7 @@ export class UserTripService {
   public toLocation: OJP.Location | null
   public viaLocations: OJP.Location[]
   public tripMotTypes: OJP.TripMotType[]
+  public lastJourneyResponse: OJP.JourneyResponse | null
   public departureDate: Date
   public currentAppStage: OJP.APP_Stage
 
@@ -35,6 +36,7 @@ export class UserTripService {
     this.toLocation = null
     this.viaLocations = []
     this.tripMotTypes = ['Default']
+    this.lastJourneyResponse = null
     this.departureDate = this.computeInitialDate()
     this.currentAppStage = 'PROD'
 
