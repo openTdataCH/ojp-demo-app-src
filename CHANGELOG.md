@@ -4,6 +4,9 @@ OJP-Demo URL: https://opentdatach.github.io/ojp-demo-app/
 
 ----
 
+15.Jul 2021
+- display request/response XML for map layers (LocationInformationRequest) and for each indvidual journey section. See [#3 - Copying Requests](https://github.com/openTdataCH/ojp-demo-app-src/issues/3) and [#2 POI for P&R and Donkey Rep obtained by Location Information Request](https://github.com/openTdataCH/ojp-demo-app-src/issues/2)
+
 14.Jul 2021
 - allow to change MOT also for no-via journeys - see [#1 - Transportmode Setting also, when there are no vias](https://github.com/openTdataCH/ojp-demo-app-src/issues/1)
 
