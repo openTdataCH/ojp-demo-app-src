@@ -2,11 +2,13 @@ import { SbbDialog } from "@sbb-esta/angular-business/dialog";
 
 import mapboxgl from "mapbox-gl";
 import { DebugXmlPopoverComponent } from "src/app/search-form/debug-xml-popover/debug-xml-popover.component";
+import { LocationMapAppLayer } from "../app-layers/location-map-app-layer";
 import { MapAppLayer } from "../app-layers/map-app-layer.interface";
 
 interface LayerData {
   inputEl: HTMLInputElement | null
   textEl: HTMLSpanElement | null
+  xmlInfoEl: HTMLSpanElement | null
   layer: MapAppLayer
 }
 
@@ -22,6 +24,7 @@ export class MapLayersLegendControl implements mapboxgl.IControl {
       const layerData = <LayerData>{
         inputEl: null,
         textEl: null,
+        xmlInfoEl: null,
         layer: mapAppLayer
       }
       this.layersData.push(layerData);
@@ -61,6 +64,8 @@ export class MapLayersLegendControl implements mapboxgl.IControl {
         return
       }
 
+      const layerXmlInfoEl = divEl.querySelector('.layer-xml-info') as HTMLInputElement
+
       inputEl.addEventListener('change', ev => {
         if (inputEl.checked) {
           layerData.layer.enable();
@@ -69,9 +74,27 @@ export class MapLayersLegendControl implements mapboxgl.IControl {
         }
       });
 
+      if (layerXmlInfoEl) {
+        layerXmlInfoEl.addEventListener('click', ev => {
+          const lastOJPRequest = ((layerData.layer as unknown) as LocationMapAppLayer).lastOJPRequest
+          if (lastOJPRequest) {
+            const dialogRef = this.debugXmlPopover.open(DebugXmlPopoverComponent, {
+              width: '40rem',
+              height: '40rem',
+              position: { top: '10px' },
+            });
+            dialogRef.afterOpen().subscribe(() => {
+              const popover = dialogRef.componentInstance as DebugXmlPopoverComponent
+              popover.updateRequestData(lastOJPRequest.lastRequestData)
+            });
+          }
+        })
+      }
+
       layerData.layer.isEnabled = inputEl.checked
       layerData.inputEl = inputEl
       layerData.textEl = layerTextEl
+      layerData.xmlInfoEl = layerXmlInfoEl
     });
 
     this.onZoomChanged(map);
