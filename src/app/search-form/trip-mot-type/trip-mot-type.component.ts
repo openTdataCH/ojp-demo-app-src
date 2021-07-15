@@ -1,8 +1,10 @@
 import { Component, Input, OnInit } from '@angular/core';
+import { SbbDialog } from '@sbb-esta/angular-business/dialog';
 import { MapPoiPropertiesEnum } from 'src/app/map/app-layers/map-poi-type-enum';
 import { MapService } from 'src/app/shared/services/map.service';
 import { UserTripService } from 'src/app/shared/services/user-trip.service';
 import * as OJP from '../../shared/ojp-sdk/index'
+import { DebugXmlPopoverComponent } from '../debug-xml-popover/debug-xml-popover.component';
 
 @Component({
   selector: 'trip-mot-type',
@@ -15,16 +17,22 @@ export class TripMotTypeComponent implements OnInit {
   // Needed by the template
   public motTypes: OJP.TripMotType[]
   public tripMotType: OJP.TripMotType
+  public hasActiveTrip: boolean
 
-  constructor(public userTripService: UserTripService, private mapService: MapService) {
+  constructor(private debugXmlPopover: SbbDialog, public userTripService: UserTripService, private mapService: MapService) {
     this.motTypes = OJP.TripMotTypes
 
     this.tripMotTypeIdx = 0
     this.tripMotType = this.userTripService.tripMotTypes[0]
+    this.hasActiveTrip = false
   }
 
   ngOnInit() {
     this.tripMotType = this.userTripService.tripMotTypes[this.tripMotTypeIdx]
+
+    this.userTripService.activeTripSelected.subscribe(trip => {
+      this.hasActiveTrip = trip !== null
+    })
   }
 
   public handleTapOnMapButton() {
@@ -83,5 +91,27 @@ export class TripMotTypeComponent implements OnInit {
   public hasViaPoint(): boolean {
     const isLastSegment = this.tripMotTypeIdx === (this.userTripService.tripMotTypes.length - 1)
     return !isLastSegment
+  }
+
+  public showRequestXmlPopover() {
+    const lastJourneyResponse = this.userTripService.lastJourneyResponse
+    if (lastJourneyResponse === null) {
+      return
+    }
+
+    const journeySection = lastJourneyResponse.sections[this.tripMotTypeIdx] ?? null
+    if (journeySection === null) {
+      return
+    }
+
+    const dialogRef = this.debugXmlPopover.open(DebugXmlPopoverComponent, {
+      width: '40rem',
+      height: '40rem',
+      position: { top: '10px' },
+    });
+    dialogRef.afterOpen().subscribe(() => {
+      const popover = dialogRef.componentInstance as DebugXmlPopoverComponent
+      popover.updateRequestData(journeySection.requestData)
+    });
   }
 }
