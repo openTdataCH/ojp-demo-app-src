@@ -136,6 +136,12 @@ export class TripLeg {
         const isFrom = location === this.fromLocation;
         const stopPointType: StopPointType = isFrom ? 'From' : 'To'
 
+        // Extend the endpoints to the LegTrack if available
+        const pointGeoPosition = isFrom ? this.legTrack?.fromGeoPosition() : this.legTrack?.toGeoPosition()
+        if (pointGeoPosition) {
+          locationFeature.geometry.coordinates = pointGeoPosition.asPosition()
+        }
+
         linePointsData.push({
           type: stopPointType,
           feature: locationFeature
