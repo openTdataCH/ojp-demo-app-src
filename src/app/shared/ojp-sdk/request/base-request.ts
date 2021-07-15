@@ -1,16 +1,32 @@
 import xmlbuilder from 'xmlbuilder';
 import { StageConfig } from '../config/config';
 
+export interface RequestData {
+  requestXmlS: string | null
+  requestDatetime: Date | null
+  responseXmlS: string | null
+  responseDatetime: Date | null
+}
+
 export class OJPBaseRequest {
   protected serviceRequestNode: xmlbuilder.XMLElement;
   protected stageConfig: StageConfig
 
   protected logRequests: boolean
 
+  public lastRequestData: RequestData | null
+
   constructor(stageConfig: StageConfig) {
     this.stageConfig = stageConfig
     this.serviceRequestNode = this.computeServiceRequestNode();
     this.logRequests = false
+
+    this.lastRequestData = {
+      requestXmlS: null,
+      requestDatetime: null,
+      responseXmlS: null,
+      responseDatetime: null,
+    }
   }
 
   private computeServiceRequestNode(): xmlbuilder.XMLElement {
@@ -51,8 +67,19 @@ export class OJPBaseRequest {
       console.log(bodyXML_s);
     }
 
+    const requestData = <RequestData>{
+      requestXmlS: bodyXML_s,
+      requestDatetime: new Date(),
+      responseXmlS: null,
+      responseDatetime: null,
+    }
+    this.lastRequestData = requestData
+
     responsePromise.then(response => {
       response.text().then(responseText => {
+        requestData.responseXmlS = responseText
+        requestData.responseDatetime = new Date()
+
         completion(responseText);
       });
     });
