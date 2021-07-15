@@ -163,15 +163,6 @@ export class TripContinousLeg extends TripLeg {
     }
 
     const pointsData = super.computeLinePointsData()
-    pointsData.forEach(pointData => {
-      const isFrom = pointData.type === 'From'
-      const pointGeoPosition = isFrom ? this.legTrack?.fromGeoPosition() : this.legTrack?.toGeoPosition()
-      if (!pointGeoPosition) {
-        return
-      }
-
-      pointData.feature.geometry.coordinates = pointGeoPosition.asPosition()
-    })
 
     return pointsData;
   }
