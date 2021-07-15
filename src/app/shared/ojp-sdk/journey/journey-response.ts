@@ -1,7 +1,7 @@
 import { Trip, TripLeg } from "../trip";
 import { JourneySection } from "./journey-section";
 
-export class JourneysResponse {
+export class JourneyResponse {
   public sections: JourneySection[]
 
   constructor(sections: JourneySection[]) {

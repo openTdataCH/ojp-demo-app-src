@@ -1,6 +1,6 @@
 import { StageConfig } from "../../config/config";
 import { JourneySection } from "../../journey/journey-section";
-import { JourneysResponse } from "../../journey/journeys-response";
+import { JourneyResponse } from "../../journey/journey-response";
 import { Trip } from "../../trip";
 import { OJPBaseRequest } from "../base-request";
 import { TripRequest } from "../trips-request/trips-request";
@@ -16,12 +16,12 @@ export class JourneyRequest extends OJPBaseRequest {
   }
 
   public fetchResponse(completion: (response: Trip[]) => void) {
-    const journeysResponse = new JourneysResponse([])
+    const journeyResponse = new JourneyResponse([])
     const tripDepartureDate = this.requestParams.departureDate
-    this.computeTripResponse(0, tripDepartureDate, journeysResponse, completion)
+    this.computeTripResponse(0, tripDepartureDate, journeyResponse, completion)
   }
 
-  private computeTripResponse(idx: number, tripDepartureDate: Date, journeysResponse: JourneysResponse, completion: (response: Trip[]) => void) {
+  private computeTripResponse(idx: number, tripDepartureDate: Date, journeyResponse: JourneyResponse, completion: (response: Trip[]) => void) {
     const isLastJourneySegment = idx === (this.requestParams.tripMotTypes.length - 1)
 
     const fromLocation = this.requestParams.journeyLocations[idx]
@@ -44,7 +44,7 @@ export class JourneyRequest extends OJPBaseRequest {
       journeysResponse.sections.push(journeySection)
 
       if (isLastJourneySegment) {
-        const trips = journeysResponse.computeAggregatedTrips()
+        const trips = journeyResponse.computeAggregatedTrips()
         completion(trips)
       } else {
         const hasTrips = tripsResponse.trips.length > 0
@@ -53,7 +53,7 @@ export class JourneyRequest extends OJPBaseRequest {
           tripDepartureDate = firstTrip.stats.endDatetime
         }
 
-        this.computeTripResponse(idx + 1, tripDepartureDate, journeysResponse, completion)
+        this.computeTripResponse(idx + 1, tripDepartureDate, journeyResponse, completion)
       }
     })
   }
