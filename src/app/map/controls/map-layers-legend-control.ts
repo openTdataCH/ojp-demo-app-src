@@ -1,4 +1,7 @@
+import { SbbDialog } from "@sbb-esta/angular-business/dialog";
+
 import mapboxgl from "mapbox-gl";
+import { DebugXmlPopoverComponent } from "src/app/search-form/debug-xml-popover/debug-xml-popover.component";
 import { MapAppLayer } from "../app-layers/map-app-layer.interface";
 
 interface LayerData {
@@ -11,7 +14,7 @@ export class MapLayersLegendControl implements mapboxgl.IControl {
   private map: mapboxgl.Map | null;
   private layersData: LayerData[]
 
-  constructor(map: mapboxgl.Map, mapAppLayers: MapAppLayer[]) {
+  constructor(private debugXmlPopover: SbbDialog, map: mapboxgl.Map, mapAppLayers: MapAppLayer[]) {
     this.map = map;
 
     this.layersData = []

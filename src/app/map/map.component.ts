@@ -1,4 +1,6 @@
 import { Component, OnInit } from '@angular/core';
+import { SbbDialog } from "@sbb-esta/angular-business/dialog";
+
 import mapboxgl from 'mapbox-gl'
 
 import * as OJP from '../shared/ojp-sdk/index'
@@ -12,7 +14,6 @@ import { StopsAppLayer } from './app-layers/stops/stops-app-layer';
 import { AddressAppLayer } from './app-layers/address/address-app-layer';
 import { PoiBicycleRentalLayer } from './app-layers/poi/bicycle-rental/poi-bicycle-rental-layer';
 import { PoiParkRideLayer } from './app-layers/poi/park-ride/poi-park-ride-layer';
-
 
 import { MapDebugControl } from './controls/map-debug-control'
 import { MapLayersLegendControl } from './controls/map-layers-legend-control';
@@ -41,7 +42,8 @@ export class MapComponent implements OnInit {
 
   constructor(
     private userTripService: UserTripService,
-    private mapService: MapService
+    private mapService: MapService,
+    private debugXmlPopover: SbbDialog,
   ) {
     // Dummy initialize the markers, re-init them in the loop below
     this.fromMarker = new mapboxgl.Marker();
@@ -319,7 +321,7 @@ export class MapComponent implements OnInit {
     const debugControl = new MapDebugControl(map);
     map.addControl(debugControl, 'top-left');
 
-    const mapLayersLegendControl = new MapLayersLegendControl(map, this.mapAppLayers);
+    const mapLayersLegendControl = new MapLayersLegendControl(this.debugXmlPopover, map, this.mapAppLayers);
     map.addControl(mapLayersLegendControl, 'bottom-right');
   }
 
