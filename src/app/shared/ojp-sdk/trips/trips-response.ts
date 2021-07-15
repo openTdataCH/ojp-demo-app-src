@@ -2,7 +2,6 @@ import { Location } from '../location/location'
 import { Trip } from '../trip/trip'
 import { TripTimedLeg } from '../trip/leg/trip-timed-leg'
 import { XPathOJP } from '../helpers/xpath-ojp'
-import { XML_Helpers } from '../helpers/xml-helpers'
 import { TripMotType } from '../types/trip-mot-type'
 
 export class TripsResponse {
@@ -11,7 +10,7 @@ export class TripsResponse {
   public trips: Trip[]
 
   constructor(responseXMLText: string, contextLocations: Location[], trips: Trip[]) {
-    this.responseXMLText = XML_Helpers.prettyPrintXML(responseXMLText)
+    this.responseXMLText = responseXMLText
     this.contextLocations = contextLocations
     this.trips = trips
   }
