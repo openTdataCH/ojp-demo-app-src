@@ -1,9 +1,8 @@
-import { Component, OnInit, TemplateRef, ViewChild } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
 import { UserTripService } from '../shared/services/user-trip.service'
 
 import { SbbRadioChange } from '@sbb-esta/angular-core/radio-button';
-import { SbbDialog } from '@sbb-esta/angular-business/dialog';
 
 import * as OJP from '../shared/ojp-sdk/index'
 
@@ -32,11 +31,8 @@ export class SearchFormComponent implements OnInit {
 
   private useMocks: boolean
 
-  @ViewChild('debugXMLPopoverTemplate', { static: true }) debugXMLPopoverTemplate: TemplateRef<any> | undefined;
-
   constructor(
-    public userTripService: UserTripService,
-    public dialog: SbbDialog,
+    public userTripService: UserTripService
   ) {
     const searchDate = this.userTripService.departureDate
     const timeFormatted = OJP.DateHelpers.formatTimeHHMM(searchDate);
@@ -185,11 +181,5 @@ export class SearchFormComponent implements OnInit {
       this.userTripService.updateTrips(trips)
       this.userTripService.lastJourneyResponse = journeyRequest.lastJourneyResponse
     })
-  }
-
-  openRequestLogDialog() {
-    if (this.debugXMLPopoverTemplate) {
-      const dialogRef = this.dialog.open(this.debugXMLPopoverTemplate);
-    }
   }
 }

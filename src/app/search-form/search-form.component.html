@@ -88,15 +88,6 @@
 <div class="row mb-2">
   <div class="col">
     <div class="d-flex flex-row-reverse">
-      <!-- TEMPORARELY DISABLE
-        <div>
-        <span
-          class="badge bg-info text-dark debug-xml"
-          (click)="openRequestLogDialog()"
-        >Debug XML</span>
-      </div>
-      <div style="width: 2px"></div>
-      -->
       <div *ngIf="requestDuration !== null">
         <span class="badge bg-success">{{ this.requestDuration }}</span>
       </div>
@@ -107,29 +98,3 @@
     </div>
   </div>
 </div>
-
-<ng-template #debugXMLPopoverTemplate>
-  <div>
-    <div sbbDialogHeader>Debug XML</div>
-    <div sbbDialogContent>
-      <div style="width: 500px">
-        <div>
-          Request XML
-          <textarea class="w-100" rows="7">{{ tripRequestFormattedXML }}</textarea>
-        </div>
-        <div>
-          Response XML
-          <textarea class="w-100" rows="7">{{ tripResponseFormattedXML }}</textarea>
-        </div>
-      </div>
-    </div>
-    <div sbbDialogFooter>
-      <button
-        type="button"
-        class="btn btn-secondary"
-        sbbDialogClose>
-        Close
-      </button>
-    </div>
-  </div>
-</ng-template>
