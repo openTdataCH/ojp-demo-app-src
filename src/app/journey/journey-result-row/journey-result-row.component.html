@@ -1,7 +1,18 @@
 <sbb-expansion-panel
   [expanded]="idx == 0"
 >
-  <sbb-expansion-panel-header>{{ computeTripTitle() }}</sbb-expansion-panel-header>
+  <sbb-expansion-panel-header>
+    <div class="d-flex justify-content-between w-100 trip-info">
+      <div>
+        <div class="trip-info-header">{{ this.tripHeaderStats.title }} - {{ this.tripHeaderStats.tripChangesInfo }}</div>
+        <div>{{ this.tripHeaderStats.tripDurationS }} - {{ this.tripHeaderStats.tripDistanceS }}</div>
+      </div>
+      <div class="trip-info-header">
+        <div>{{ this.tripHeaderStats.tripFromTime }}</div>
+        <div>{{ this.tripHeaderStats.tripToTime }}</div>
+      </div>
+    </div>
+  </sbb-expansion-panel-header>
   <div>
     <result-trip-leg
       *ngFor="let leg of trip?.legs; index as idx"

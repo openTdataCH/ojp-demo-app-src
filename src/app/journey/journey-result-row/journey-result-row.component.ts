@@ -3,6 +3,15 @@ import { SbbExpansionPanel } from '@sbb-esta/angular-business/accordion';
 import { UserTripService } from 'src/app/shared/services/user-trip.service';
 import * as OJP from '../../shared/ojp-sdk/index'
 
+interface TripHeaderStats {
+  title: string,
+  tripChangesInfo: string, 
+  tripFromTime: string,
+  tripToTime: string,
+  tripDurationS: string,
+  tripDistanceS: string,
+}
+
 @Component({
   selector: 'journey-result-row',
   templateUrl: './journey-result-row.component.html',
@@ -14,12 +23,16 @@ export class JourneyResultRowComponent implements OnInit {
 
   @ViewChild(SbbExpansionPanel, { static: true }) tripPanel: SbbExpansionPanel | undefined;
 
-  constructor(private userTripService: UserTripService) {
+  public tripHeaderStats: TripHeaderStats
 
+  constructor(private userTripService: UserTripService) {
+    this.tripHeaderStats = <TripHeaderStats>{}
   }
 
   ngOnInit() {
-    this.tripPanel?.expanded
+    if (this.trip) {
+      this.initTripHeaderStats(this.trip)
+    }
 
     this.tripPanel?.afterExpand.subscribe(ev => {
       if (this.trip) {
@@ -28,7 +41,19 @@ export class JourneyResultRowComponent implements OnInit {
     })
   }
 
-  computeTripTitle(): string {
-    return 'Trip ' + ((this.idx ?? 0) + 1);
+  private initTripHeaderStats(trip: OJP.Trip) {
+    this.tripHeaderStats.title = 'Trip ' + ((this.idx ?? 0) + 1)
+      
+    if (trip.stats.transferNo === 0) {
+      this.tripHeaderStats.tripChangesInfo = 'non-stop'
+    } else {
+      this.tripHeaderStats.tripChangesInfo = trip.stats.transferNo + ' transfers'
+    }
+
+    this.tripHeaderStats.tripFromTime = OJP.DateHelpers.formatTimeHHMM(trip.stats.startDatetime)
+    this.tripHeaderStats.tripToTime = OJP.DateHelpers.formatTimeHHMM(trip.stats.endDatetime)
+
+    this.tripHeaderStats.tripDurationS = trip.stats.duration.formatDuration()
+    this.tripHeaderStats.tripDistanceS = OJP.DateHelpers.formatDistance(trip.stats.distanceMeters)
   }
 }
