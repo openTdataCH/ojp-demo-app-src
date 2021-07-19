@@ -71,14 +71,14 @@ export class LegTrack {
 class TrackSection {
   public fromLocation: Location
   public toLocation: Location
-  public durationS: string | null
+  public duration: Duration | null
   public length: number | null
   public linkProjection: LinkProjection | null;
 
   constructor(fromLocation: Location, toLocation: Location) {
     this.fromLocation = fromLocation
     this.toLocation = toLocation
-    this.durationS = null
+    this.duration = null
     this.length = null
     this.linkProjection = null
   }
@@ -95,7 +95,7 @@ class TrackSection {
     const toLocation = Location.initWithOJPContextNode(trackEndNode)
 
     const trackSection = new TrackSection(fromLocation, toLocation);
-    trackSection.durationS = XPathOJP.queryText('ojp:Duration', contextNode);
+    trackSection.duration = Duration.initFromContextNode(contextNode)
 
     const lengthS = XPathOJP.queryText('ojp:Length', contextNode);
     if (lengthS) {

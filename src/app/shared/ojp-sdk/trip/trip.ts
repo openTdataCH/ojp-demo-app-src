@@ -1,7 +1,6 @@
 import { XPathOJP } from '../helpers/xpath-ojp'
 import { DateHelpers } from '../helpers/date-helpers'
 
-import { Location } from '../location/location'
 import { TripStats } from '../types/trip-stats'
 
 import { TripLeg } from './leg/trip-leg'
@@ -9,6 +8,7 @@ import { TripLegFactory } from './leg/trip-leg-factory'
 import { TripTimedLeg } from './leg/trip-timed-leg'
 import { TripMotType } from '../types/trip-mot-type'
 import { TripContinousLeg } from './leg/trip-continous-leg'
+import { Duration } from '../shared/duration'
 
 export class Trip {
   public id: string
@@ -27,8 +27,9 @@ export class Trip {
       return null;
     }
 
-    const durationS = XPathOJP.queryText('ojp:Trip/ojp:Duration', tripResultNode)
-    if (durationS === null) {
+    const tripNode = XPathOJP.queryNode('ojp:Trip', tripResultNode)
+    const duration = Duration.initFromContextNode(tripNode)
+    if (duration === null) {
       return null;
     }
 
@@ -53,7 +54,7 @@ export class Trip {
     const tripEndTime = new Date(Date.parse(tripEndTimeS));
 
     const tripStats = <TripStats>{
-      duration: DateHelpers.computeDuration(durationS),
+      duration: duration,
       distanceMeters: parseInt(distanceS),
       transferNo: parseInt(transfersNoS),
       startDatetime: tripStartTime,

@@ -1,15 +1,14 @@
-import { Duration } from '../../types/duration'
 import { Location } from '../../location/location'
 
 import { PathGuidance } from '../path-guidance'
 import { XPathOJP } from '../../helpers/xpath-ojp'
-import { DateHelpers } from '../../helpers/date-helpers'
 
 import { LegTrack } from './leg-track'
 
 import { TripLeg, LegType, LinePointData } from "./trip-leg"
 import { TripLegPropertiesEnum, TripLegDrawType, TripLegLineType } from '../../types/map-geometry-types'
 import { MapLegLineTypeColor } from '../../config/map-colors'
+import { Duration } from '../../shared/duration'
 
 enum ContinousLegMode {
   'Unknown' = 'unknown',
@@ -20,15 +19,13 @@ enum ContinousLegMode {
 
 export class TripContinousLeg extends TripLeg {
   public legMode: ContinousLegMode | null
-  public legDuration: Duration
   public legDistance: number
   public pathGuidance: PathGuidance | null
 
-  constructor(legType: LegType, legIDx: number, legDuration: Duration, legDistance: number, fromLocation: Location, toLocation: Location) {
+  constructor(legType: LegType, legIDx: number, legDistance: number, fromLocation: Location, toLocation: Location) {
     super(legType, legIDx, fromLocation, toLocation)
 
     this.legMode = null
-    this.legDuration = legDuration
     this.legDistance = legDistance
     this.pathGuidance = null
   }
@@ -47,20 +44,14 @@ export class TripContinousLeg extends TripLeg {
     const fromLocation = Location.initWithOJPContextNode(fromLocationNode)
     const toLocation = Location.initWithOJPContextNode(toLocationNode)
 
-    const durationS = XPathOJP.queryText('ojp:Duration', legNode)
-    if (durationS === null) {
-      return null;
-    }
-
     let distanceS = XPathOJP.queryText('ojp:Length', legNode)
     if (distanceS === null) {
       distanceS = '0';
     }
-
-    const legDuration = DateHelpers.computeDuration(durationS)
     const legDistance = parseInt(distanceS)
 
-    const tripLeg = new TripContinousLeg(legType, legIDx, legDuration, legDistance, fromLocation, toLocation);
+    const tripLeg = new TripContinousLeg(legType, legIDx, legDistance, fromLocation, toLocation);
+    tripLeg.legDuration = Duration.initFromContextNode(legNode)
 
     tripLeg.pathGuidance = PathGuidance.initFromTripLeg(legNode);
     tripLeg.legMode = tripLeg.computeLegMode(legNode)

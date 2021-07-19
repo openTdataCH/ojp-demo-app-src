@@ -6,6 +6,7 @@ import { MapLegTypeColor } from '../../config/map-colors'
 import { GeoPosition } from '../../location/geoposition'
 import { GeoPositionBBOX } from '../../location/geoposition-bbox'
 import { StopPointType } from '../../types/stop-point-type'
+import { Duration } from '../../shared/duration'
 
 export type LegType = 'ContinousLeg' | 'TimedLeg' | 'TransferLeg'
 
@@ -20,6 +21,7 @@ export class TripLeg {
   public fromLocation: Location
   public toLocation: Location
   public legTrack: LegTrack | null
+  public legDuration: Duration | null
 
   constructor(legType: LegType, legIDx: number, fromLocation: Location, toLocation: Location) {
     this.legType = legType
@@ -27,6 +29,7 @@ export class TripLeg {
     this.fromLocation = fromLocation
     this.toLocation = toLocation
     this.legTrack = null
+    this.legDuration = null
   }
 
   public patchLocations(mapContextLocations: Record<string, Location>) {

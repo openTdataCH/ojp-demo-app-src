@@ -1,4 +1,4 @@
-import { Duration } from './duration'
+import { Duration } from "../shared/duration";
 
 export interface TripStats {
     duration: Duration
