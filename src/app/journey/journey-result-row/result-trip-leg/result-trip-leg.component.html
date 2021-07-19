@@ -1,7 +1,7 @@
 <div class="mb-2">
   <span
     class="badge rounded-pill leg-pill"
-    [ngStyle]="{'background-color': this.computeLegColor()}"
+    [ngStyle]="{'background-color': this.legInfoDataModel.legColor}"
     (click)="handleTapOnPill()"
-  >{{ this.computeLegPill() }}</span> {{ this.computeLegInfo() }}
+  >{{ this.legInfoDataModel.leadingText }}</span> {{ this.legInfoDataModel.legInfo }}
 </div>

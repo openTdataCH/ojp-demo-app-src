@@ -5,6 +5,12 @@ import { MapService } from 'src/app/shared/services/map.service';
 import * as OJP from '../../../shared/ojp-sdk/index'
 import { MapLegTypeColor } from '../../../shared/ojp-sdk/index';
 
+interface LegInfoDataModel {
+  legColor: string,
+  leadingText: string,
+  legInfo: string,
+}
+
 @Component({
   selector: 'result-trip-leg',
   templateUrl: './result-trip-leg.component.html',
@@ -13,12 +19,19 @@ import { MapLegTypeColor } from '../../../shared/ojp-sdk/index';
 export class ResultTripLegComponent implements OnInit {
   @Input() leg: OJP.TripLeg | undefined
 
+  legInfoDataModel: LegInfoDataModel
+
   constructor(private mapService: MapService) {
+    this.legInfoDataModel = <LegInfoDataModel>{}
   }
 
-  ngOnInit() {}
+  ngOnInit() {
+    if (this.leg) {
+      this.initLegInfo(this.leg)
+    }
+  }
 
-  computeLegInfo(): string {
+  private computeLegInfo(): string {
     if (!this.leg) {
       return ''
     }
@@ -52,13 +65,21 @@ export class ResultTripLegComponent implements OnInit {
     return titleParts.join('')
   }
 
-  computeLegPill(): string {
+  private computeLegPill(): string {
     if (this.leg === undefined) {
       return 'n/a'
     }
 
     if (this.leg.legType === 'TransferLeg') {
-      return 'Transfer'
+      const leadingTextTitle = 'Transfer'
+      
+      const continuousLeg = this.leg as OJP.TripContinousLeg
+      let legDurationS = ''
+      if (continuousLeg.walkDuration) {
+        legDurationS = ' ' + continuousLeg.walkDuration.formatDuration()
+      }
+      
+      return leadingTextTitle + legDurationS
     }
 
     if (this.leg.legType === 'ContinousLeg') {
@@ -72,13 +93,24 @@ export class ResultTripLegComponent implements OnInit {
         leadingTextTitle = 'Cycle'
       }
 
-      const leadingText = leadingTextTitle + ' ' + OJP.DateHelpers.formatDuration(continuousLeg.legDuration)
-      return leadingText
+      let legDurationS = ''
+      if (this.leg.legDuration) {
+        legDurationS = ' ' + this.leg.legDuration.formatDuration()
+      }
+      
+      return leadingTextTitle + legDurationS
     }
 
     if (this.leg.legType === 'TimedLeg') {
       const timedLeg = this.leg as OJP.TripTimedLeg
-      return timedLeg.service.formatServiceName()
+      const serviceName = timedLeg.service.formatServiceName()
+
+      let legDurationS = ''
+      if (this.leg.legDuration) {
+        legDurationS = ' ' + this.leg.legDuration.formatDuration()
+      }
+
+      return serviceName + legDurationS
     }
 
     return this.leg.legType
@@ -147,7 +179,13 @@ export class ResultTripLegComponent implements OnInit {
     }
   }
 
-  computeLegColor(): string {
+  private computeLegColor(): string {
     return this.leg?.computeLegColor() ?? MapLegTypeColor.TimedLeg
+  }
+
+  private initLegInfo(leg: OJP.TripLeg) {
+    this.legInfoDataModel.legColor = this.computeLegColor()
+    this.legInfoDataModel.leadingText = this.computeLegPill()
+    this.legInfoDataModel.legInfo = this.computeLegInfo()
   }
 }
