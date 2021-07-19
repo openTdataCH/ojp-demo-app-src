@@ -67,7 +67,13 @@ export class TripTimedLeg extends TripLeg {
     })
 
     const timedLeg = new TripTimedLeg(legIDx, service, fromStopPoint, toStopPoint, intermediateStopPoints);
+    
     timedLeg.legTrack = LegTrack.initFromLegNode(legNode)
+    
+    // Try to get the duration from LegTrack
+    if (timedLeg.legTrack && timedLeg.legDuration === null) {
+      timedLeg.legDuration = timedLeg.legTrack.duration
+    }
 
     return timedLeg
   }
