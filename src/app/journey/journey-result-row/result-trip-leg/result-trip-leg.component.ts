@@ -10,10 +10,8 @@ import { MapLegTypeColor } from '../../../shared/ojp-sdk/index';
   templateUrl: './result-trip-leg.component.html',
   styleUrls: ['./result-trip-leg.component.scss']
 })
-
 export class ResultTripLegComponent implements OnInit {
   @Input() leg: OJP.TripLeg | undefined
-  @Input() isLastLeg: boolean = false
 
   constructor(private mapService: MapService) {
   }

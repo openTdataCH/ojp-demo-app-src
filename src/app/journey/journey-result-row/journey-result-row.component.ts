@@ -30,9 +30,4 @@ export class JourneyResultRowComponent implements OnInit {
   computeTripTitle(): string {
     return 'Trip ' + ((this.idx ?? 0) + 1);
   }
-
-  isLastLeg(legIdx: number): boolean {
-    const tripLegsNo = this.trip?.legs.length ?? 0
-    return legIdx === tripLegsNo - 1
-  }
 }
