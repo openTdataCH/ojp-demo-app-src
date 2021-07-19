@@ -21,6 +21,7 @@ export class TripContinousLeg extends TripLeg {
   public legMode: ContinousLegMode | null
   public legDistance: number
   public pathGuidance: PathGuidance | null
+  public walkDuration: Duration | null
 
   constructor(legType: LegType, legIDx: number, legDistance: number, fromLocation: Location, toLocation: Location) {
     super(legType, legIDx, fromLocation, toLocation)
@@ -28,6 +29,7 @@ export class TripContinousLeg extends TripLeg {
     this.legMode = null
     this.legDistance = legDistance
     this.pathGuidance = null
+    this.walkDuration = null
   }
 
   public static initFromTripLeg(legIDx: number, legNode: Node | null, legType: LegType): TripContinousLeg | null {
@@ -57,6 +59,10 @@ export class TripContinousLeg extends TripLeg {
     tripLeg.legMode = tripLeg.computeLegMode(legNode)
 
     tripLeg.legTrack = LegTrack.initFromLegNode(legNode);
+
+    if (legType === 'TransferLeg') {
+      tripLeg.walkDuration = Duration.initFromContextNode(legNode)
+    }
 
     return tripLeg;
   }
