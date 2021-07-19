@@ -6,6 +6,7 @@ import * as OJP from '../../shared/ojp-sdk/index'
 @Component({
   selector: 'journey-result-row',
   templateUrl: './journey-result-row.component.html',
+  styleUrls: ['./journey-result-row.component.scss'],
 })
 export class JourneyResultRowComponent implements OnInit {
   @Input() trip: OJP.Trip | undefined
