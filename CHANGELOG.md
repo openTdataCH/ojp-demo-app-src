@@ -4,6 +4,10 @@ OJP-Demo URL: https://opentdatach.github.io/ojp-demo-app/
 
 ----
 
+19.Jul 2021
+- display additional information for trip header. The timed/transfer legs have also duration information. See [#4 - More information in the trip header](https://github.com/openTdataCH/ojp-demo-app-src/issues/4). 
+- OJP SDK: unify legDuration for all TripLeg (not only Continous)
+
 15.Jul 2021
 - display request/response XML for map layers (LocationInformationRequest) and for each indvidual journey section. See [#3 - Copying Requests](https://github.com/openTdataCH/ojp-demo-app-src/issues/3) and [#2 POI for P&R and Donkey Rep obtained by Location Information Request](https://github.com/openTdataCH/ojp-demo-app-src/issues/2)
 
