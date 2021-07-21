@@ -4,6 +4,9 @@ OJP-Demo URL: https://opentdatach.github.io/ojp-demo-app/
 
 ----
 
+21.Jul 2021
+- display turn-by-turn transfer descriptions, when available. See [#5 - Turn Description for legs](https://github.com/openTdataCH/ojp-demo-app-src/issues/5). 
+
 19.Jul 2021
 - display additional information for trip header. The timed/transfer legs have also duration information. See [#4 - More information in the trip header](https://github.com/openTdataCH/ojp-demo-app-src/issues/4). 
 - OJP SDK: unify legDuration for all TripLeg (not only Continous)
