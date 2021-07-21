@@ -10,8 +10,10 @@ import { SbbAutocompleteModule } from '@sbb-esta/angular-business/autocomplete';
 import { SbbDatepickerModule } from '@sbb-esta/angular-business/datepicker';
 import { SbbDialogModule } from '@sbb-esta/angular-business/dialog';
 import { SbbFormFieldModule } from '@sbb-esta/angular-business/form-field';
+import { SbbIconModule } from '@sbb-esta/angular-core/icon';
 import { SbbRadioButtonModule } from '@sbb-esta/angular-business/radio-button';
 import { SbbTimeInputModule } from '@sbb-esta/angular-business/time-input';
+import { SbbTooltipModule } from '@sbb-esta/angular-business/tooltip';
 
 import { AppComponent } from './app.component';
 
@@ -50,9 +52,11 @@ import { DebugXmlPopoverComponent } from './search-form/debug-xml-popover/debug-
     SbbAutocompleteModule,
     SbbDatepickerModule,
     SbbDialogModule,
+    SbbIconModule,
     SbbFormFieldModule,
     SbbRadioButtonModule,
     SbbTimeInputModule,
+    SbbTooltipModule,
   ],
   providers: [],
   bootstrap: [AppComponent]
