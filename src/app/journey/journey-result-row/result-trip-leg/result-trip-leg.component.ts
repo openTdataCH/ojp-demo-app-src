@@ -9,6 +9,8 @@ interface LegInfoDataModel {
   legColor: string,
   leadingText: string,
   legInfo: string,
+  hasGuidance: boolean,
+  guidanceTextLines: string[],
 }
 
 @Component({
@@ -187,5 +189,38 @@ export class ResultTripLegComponent implements OnInit {
     this.legInfoDataModel.legColor = this.computeLegColor()
     this.legInfoDataModel.leadingText = this.computeLegPill()
     this.legInfoDataModel.legInfo = this.computeLegInfo()
+
+    const isTransfer = leg.legType === 'TransferLeg'
+    this.legInfoDataModel.guidanceTextLines = []
+
+    if (isTransfer) {
+      const transferLeg = leg as OJP.TripContinousLeg
+      const guidanceSections = transferLeg.pathGuidance?.sections ?? []
+      guidanceSections.forEach(section => {
+        if (section.guidanceAdvice === null) {
+          return
+        }
+
+        const lineTextParts = [
+          section.guidanceAdvice ?? '',
+          '(',
+          section.turnAction ?? '',
+          ') - ',
+          section.trackSection?.roadName ?? '',
+        ]
+
+        const guidanceLength = section.trackSection?.length ?? 0
+        if (guidanceLength > 0) {
+          lineTextParts.push(' (')
+          lineTextParts.push('' + guidanceLength)
+          lineTextParts.push('m)')
+        }
+
+        const lineText = lineTextParts.join('')
+        this.legInfoDataModel.guidanceTextLines.push(lineText)
+      })
+    }
+
+    this.legInfoDataModel.hasGuidance = this.legInfoDataModel.guidanceTextLines.length > 0
   }
 }

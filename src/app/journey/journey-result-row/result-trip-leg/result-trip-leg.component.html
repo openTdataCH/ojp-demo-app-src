@@ -4,4 +4,12 @@
     [ngStyle]="{'background-color': this.legInfoDataModel.legColor}"
     (click)="handleTapOnPill()"
   >{{ this.legInfoDataModel.leadingText }}</span> {{ this.legInfoDataModel.legInfo }}
+  <sbb-tooltip *ngIf="this.legInfoDataModel.hasGuidance">
+    <sbb-icon svgIcon="kom:arrow-change-horizontal-medium" *sbbIcon></sbb-icon>
+    <ul class="tooltip-list">
+      <li *ngFor="let guidanceText of this.legInfoDataModel.guidanceTextLines">
+        {{ guidanceText }}
+      </li>
+    </ul>
+  </sbb-tooltip>
 </div>
