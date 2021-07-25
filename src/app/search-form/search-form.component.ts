@@ -44,7 +44,7 @@ export class SearchFormComponent implements OnInit {
     this.fromLocationText = ''
     this.toLocationText = ''
 
-    this.appStageOptions = Object.keys(OJP.APP_Stages) as OJP.APP_Stage[];
+    this.appStageOptions = ['PROD', 'TEST']
 
     this.isSearching = false
 
