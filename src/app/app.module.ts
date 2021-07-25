@@ -25,6 +25,7 @@ import { MapComponent } from './map/map.component';
 import { SearchFormComponent } from './search-form/search-form.component';
 import { TripMotTypeComponent } from './search-form/trip-mot-type/trip-mot-type.component';
 import { DebugXmlPopoverComponent } from './search-form/debug-xml-popover/debug-xml-popover.component';
+import { InputXmlPopoverComponent } from './search-form/input-xml-popover/input-xml-popover.component';
 
 @NgModule({
   declarations: [
@@ -38,6 +39,7 @@ import { DebugXmlPopoverComponent } from './search-form/debug-xml-popover/debug-
     SearchFormComponent,
     TripMotTypeComponent,
     DebugXmlPopoverComponent,
+    InputXmlPopoverComponent,
   ],
   imports: [
     BrowserModule,

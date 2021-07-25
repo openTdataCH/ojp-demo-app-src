@@ -1,0 +1,24 @@
+<div>
+  <div sbbDialogHeader>Test Trip Response</div>
+  <div sbbDialogContent>
+    <div style="width: 500px">
+      <div>
+        Response XML
+        <textarea 
+          class="w-100" 
+          [(ngModel)]="this.inputXmlS" 
+          rows="20">
+        </textarea>
+      </div>
+    </div>
+  </div>
+  <div sbbDialogFooter>
+    <button
+      type="button"
+      class="btn btn-primary"
+      (click)="this.saveXML()"
+      sbbDialogClose>
+      Load Trips
+    </button>
+  </div>
+</div>
