@@ -176,8 +176,8 @@ export class SearchFormComponent implements OnInit {
       this.requestDuration = requestDuration + ' sec';
 
       this.isSearching = false
-      this.userTripService.updateTrips(trips)
       this.userTripService.lastJourneyResponse = journeyRequest.lastJourneyResponse
+      this.userTripService.updateTrips(trips)
     })
   }
 
