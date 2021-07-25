@@ -1,12 +1,11 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
 import { UserTripService } from '../shared/services/user-trip.service'
 
+import { SbbExpansionPanel } from '@sbb-esta/angular-business/accordion';
 import { SbbRadioChange } from '@sbb-esta/angular-core/radio-button';
 
 import * as OJP from '../shared/ojp-sdk/index'
-
-type SearchState = 'ChooseEndpoints' | 'DisplayTrips'
 
 @Component({
   selector: 'app-search-form',
@@ -14,9 +13,9 @@ type SearchState = 'ChooseEndpoints' | 'DisplayTrips'
   styleUrls: ['./search-form.component.scss']
 })
 export class SearchFormComponent implements OnInit {
-  formGroup: FormGroup
+  @ViewChild(SbbExpansionPanel, { static: true }) searchPanel: SbbExpansionPanel | undefined;
 
-  searchState: SearchState = 'ChooseEndpoints'
+  formGroup: FormGroup
 
   public fromLocationText: string
   public toLocationText: string
@@ -59,18 +58,21 @@ export class SearchFormComponent implements OnInit {
 
   ngOnInit() {
     this.userTripService.locationsUpdated.subscribe(nothing => {
-      this.searchState = 'ChooseEndpoints'
-
       this.updateLocationTexts()
+      this.expandSearchPanel()
     })
 
     this.userTripService.tripsUpdated.subscribe(trips => {
       const hasTrips = trips.length > 0
-      this.searchState = hasTrips ? 'DisplayTrips' : 'ChooseEndpoints'
+      if (hasTrips) {
+        this.collapseSearchPanel()
+      } else {
+        this.expandSearchPanel()
+      }
     });
 
     this.userTripService.searchParamsReset.subscribe(() => {
-      this.searchState = 'ChooseEndpoints'
+      this.expandSearchPanel()
       this.requestDuration = null
     });
 
@@ -117,10 +119,6 @@ export class SearchFormComponent implements OnInit {
         this.tripResponseFormattedXML = tripsResponse.responseXMLText
       });
     });
-  }
-
-  isChoosingEndpoints(): boolean {
-    return this.searchState === 'ChooseEndpoints'
   }
 
   onLocationSelected(location: OJP.Location, originType: OJP.JourneyPointType) {
@@ -181,5 +179,13 @@ export class SearchFormComponent implements OnInit {
       this.userTripService.updateTrips(trips)
       this.userTripService.lastJourneyResponse = journeyRequest.lastJourneyResponse
     })
+  }
+
+  private expandSearchPanel() {
+    this.searchPanel?.open()
+  }
+
+  private collapseSearchPanel() {
+    this.searchPanel?.close()
   }
 }
