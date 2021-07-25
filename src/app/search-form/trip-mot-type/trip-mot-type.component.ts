@@ -6,6 +6,11 @@ import { UserTripService } from 'src/app/shared/services/user-trip.service';
 import * as OJP from '../../shared/ojp-sdk/index'
 import { DebugXmlPopoverComponent } from '../debug-xml-popover/debug-xml-popover.component';
 
+interface TripMotTypeDataModel {
+  sectionRequestData: OJP.RequestData | null,
+  isNotLastSegment: boolean
+}
+
 @Component({
   selector: 'trip-mot-type',
   templateUrl: './trip-mot-type.component.html',
@@ -17,21 +22,26 @@ export class TripMotTypeComponent implements OnInit {
   // Needed by the template
   public motTypes: OJP.TripMotType[]
   public tripMotType: OJP.TripMotType
-  public hasActiveTrip: boolean
+
+  public tripMotTypeDataModel: TripMotTypeDataModel
 
   constructor(private debugXmlPopover: SbbDialog, public userTripService: UserTripService, private mapService: MapService) {
     this.motTypes = OJP.TripMotTypes
 
     this.tripMotTypeIdx = 0
     this.tripMotType = this.userTripService.tripMotTypes[0]
-    this.hasActiveTrip = false
+
+    this.tripMotTypeDataModel = <TripMotTypeDataModel>{}
   }
 
   ngOnInit() {
     this.tripMotType = this.userTripService.tripMotTypes[this.tripMotTypeIdx]
 
+    this.tripMotTypeDataModel.isNotLastSegment = this.tripMotTypeIdx < (this.userTripService.tripMotTypes.length - 1)
+    this.tripMotTypeDataModel.sectionRequestData = null
+
     this.userTripService.activeTripSelected.subscribe(trip => {
-      this.hasActiveTrip = trip !== null
+      this.updateRequestDataModel()
     })
   }
 
@@ -88,22 +98,23 @@ export class TripMotTypeComponent implements OnInit {
     this.userTripService.updateTripMotType(motType, this.tripMotTypeIdx)
   }
 
-  public hasViaPoint(): boolean {
-    const isLastSegment = this.tripMotTypeIdx === (this.userTripService.tripMotTypes.length - 1)
-    return !isLastSegment
-  }
-
-  public showRequestXmlPopover() {
+  private updateRequestDataModel() {
     const lastJourneyResponse = this.userTripService.lastJourneyResponse
     if (lastJourneyResponse === null) {
+      this.tripMotTypeDataModel.sectionRequestData = null
       return
     }
 
     const journeySection = lastJourneyResponse.sections[this.tripMotTypeIdx] ?? null
     if (journeySection === null) {
+      this.tripMotTypeDataModel.sectionRequestData = null
       return
     }
 
+    this.tripMotTypeDataModel.sectionRequestData = journeySection.requestData
+  }
+
+  public showRequestXmlPopover() {
     const dialogRef = this.debugXmlPopover.open(DebugXmlPopoverComponent, {
       width: '40rem',
       height: '40rem',
@@ -111,7 +122,7 @@ export class TripMotTypeComponent implements OnInit {
     });
     dialogRef.afterOpen().subscribe(() => {
       const popover = dialogRef.componentInstance as DebugXmlPopoverComponent
-      popover.updateRequestData(journeySection.requestData)
+      popover.updateRequestData(this.tripMotTypeDataModel.sectionRequestData)
     });
   }
 }

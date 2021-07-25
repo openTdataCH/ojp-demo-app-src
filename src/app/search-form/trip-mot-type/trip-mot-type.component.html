@@ -13,7 +13,7 @@
     </select>
     <div style="width: 5px"></div>
     <div
-      *ngIf="this.hasActiveTrip"
+      *ngIf="this.tripMotTypeDataModel.sectionRequestData"
       class="xml-info"
       (click)="this.showRequestXmlPopover()"
     >
@@ -23,7 +23,7 @@
     </div>
   </div>
 
-  <div class="via-content" *ngIf="this.hasViaPoint()">
+  <div class="via-content" *ngIf="this.tripMotTypeDataModel.isNotLastSegment">
     <div
       class="via-label"
       (click)="this.handleTapOnMapButton()"
