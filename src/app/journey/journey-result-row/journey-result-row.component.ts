@@ -34,6 +34,11 @@ export class JourneyResultRowComponent implements OnInit {
       this.initTripHeaderStats(this.trip)
     }
 
+    const isFirstTrip = this.idx === 0
+    if (this.tripPanel && isFirstTrip) {
+      this.tripPanel.open()
+    }
+
     this.tripPanel?.afterExpand.subscribe(ev => {
       if (this.trip) {
         this.userTripService.activeTripSelected.emit(this.trip);
