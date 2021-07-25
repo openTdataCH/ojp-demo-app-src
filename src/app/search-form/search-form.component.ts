@@ -1,9 +1,12 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
+
 import { UserTripService } from '../shared/services/user-trip.service'
+import { InputXmlPopoverComponent } from './input-xml-popover/input-xml-popover.component';
 
 import { SbbExpansionPanel } from '@sbb-esta/angular-business/accordion';
 import { SbbRadioChange } from '@sbb-esta/angular-core/radio-button';
+import { SbbDialog } from "@sbb-esta/angular-business/dialog";
 
 import * as OJP from '../shared/ojp-sdk/index'
 
@@ -31,6 +34,7 @@ export class SearchFormComponent implements OnInit {
   private useMocks: boolean
 
   constructor(
+    private tripXmlPopover: SbbDialog,
     public userTripService: UserTripService
   ) {
     const searchDate = this.userTripService.departureDate
@@ -187,5 +191,38 @@ export class SearchFormComponent implements OnInit {
 
   private collapseSearchPanel() {
     this.searchPanel?.close()
+  }
+
+  public loadInputTripXMLPopover() {
+    const dialogRef = this.tripXmlPopover.open(InputXmlPopoverComponent, {
+      width: '40rem',
+      height: '40rem',
+      position: { top: '20px' },
+    });
+    dialogRef.afterOpen().subscribe(() => {
+      const popover = dialogRef.componentInstance as InputXmlPopoverComponent
+      popover.tripResponseXmlSaved.subscribe((tripsResponseXML) => {
+        const tripResponse = OJP.TripsResponse.initWithXML(tripsResponseXML, 'Default')
+
+        this.requestDuration = 'USER XML';
+
+        this.isSearching = false
+        this.userTripService.lastJourneyResponse = null
+        this.userTripService.updateTrips(tripResponse.trips) 
+
+        this.collapseSearchPanel()
+        this.updateSearchForm(tripResponse)
+      })
+    });
+  }
+
+  private updateSearchForm(tripResponse: OJP.TripsResponse) {
+    const firstTrip = tripResponse.trips[0]
+    if (firstTrip === null) {
+      return
+    }
+
+    this.userTripService.updateParamsFromTrip(firstTrip)
+    this.updateLocationTexts()
   }
 }

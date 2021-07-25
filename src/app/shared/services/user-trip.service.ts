@@ -323,4 +323,22 @@ export class UserTripService {
     this.tripMotTypes[idx] = motType
     this.updatePermalinkAddress()
   }
+
+  public updateParamsFromTrip(trip: OJP.Trip) {
+    const hasLegs = trip.legs.length > 0
+    if (!hasLegs) {
+      return
+    }
+
+    const firstLeg = trip.legs[0]
+    const lastLeg = trip.legs[trip.legs.length - 1]
+
+    this.fromLocation = firstLeg.fromLocation
+    this.toLocation = lastLeg.toLocation
+
+    this.viaLocations = []
+    this.tripMotTypes = ['Default']
+    
+    this.updatePermalinkAddress()
+  }
 }
