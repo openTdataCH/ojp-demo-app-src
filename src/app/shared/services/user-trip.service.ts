@@ -21,6 +21,7 @@ export class UserTripService {
   public permalinkURLAddress: string | null
 
   public locationsUpdated = new EventEmitter<void>();
+  public geoLocationsUpdated = new EventEmitter<void>();
   public tripsUpdated = new EventEmitter<OJP.Trip[]>();
   public activeTripSelected = new EventEmitter<OJP.Trip | null>();
 
@@ -139,6 +140,7 @@ export class UserTripService {
       });
 
       this.locationsUpdated.emit();
+      this.geoLocationsUpdated.emit();
       this.updatePermalinkAddress();
 
       const shouldZoomToBounds = this.queryParams.has('from') || this.queryParams.has('to')
@@ -183,6 +185,7 @@ export class UserTripService {
     }
 
     this.locationsUpdated.emit();
+    this.geoLocationsUpdated.emit();
     this.activeTripSelected.emit(null);
 
     this.searchParamsReset.emit();
@@ -339,6 +342,7 @@ export class UserTripService {
     this.viaLocations = []
     this.tripMotTypes = ['Default']
     
+    this.geoLocationsUpdated.emit()
     this.updatePermalinkAddress()
   }
 }

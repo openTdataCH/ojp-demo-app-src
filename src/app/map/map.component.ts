@@ -89,7 +89,7 @@ export class MapComponent implements OnInit {
   ngOnInit() {
     this.initMap()
 
-    this.userTripService.locationsUpdated.subscribe(nothing => {
+    this.userTripService.geoLocationsUpdated.subscribe(nothing => {
       this.updateMarkers()
     })
 
