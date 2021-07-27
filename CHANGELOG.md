@@ -4,6 +4,9 @@ OJP-Demo URL: https://opentdatach.github.io/ojp-demo-app/
 
 ----
 
+27.Jul 2021
+- Change custom XML wording. See [#10 - Label different](https://github.com/openTdataCH/ojp-demo-app-src/issues/10).
+
 26.Jul 2021
 - fix bug that markers weren't updated for custom TripRequest response XML. See [#7 - Being able to add a request in a window (copy/paste) and visualise the results like the rest](https://github.com/openTdataCH/ojp-demo-app-src/issues/7).
 
