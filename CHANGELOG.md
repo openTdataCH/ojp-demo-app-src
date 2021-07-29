@@ -4,6 +4,10 @@ OJP-Demo URL: https://opentdatach.github.io/ojp-demo-app/
 
 ----
 
+29.Jul 2021
+- Updates TripRequest required parameters in SDK. See [#13 - LocationName is required in TripRequest](https://github.com/openTdataCH/ojp-demo-app-src/issues/13)
+- Add support to user to enter custom TripRequest XML. See [#10 - Label different](https://github.com/openTdataCH/ojp-demo-app-src/issues/10).
+
 27.Jul 2021
 - Change custom XML wording. See [#10 - Label different](https://github.com/openTdataCH/ojp-demo-app-src/issues/10).
 
