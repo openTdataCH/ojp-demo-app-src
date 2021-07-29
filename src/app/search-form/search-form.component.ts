@@ -199,7 +199,6 @@ export class SearchFormComponent implements OnInit {
 
   public loadInputTripXMLPopover() {
     const dialogRef = this.tripXmlPopover.open(InputXmlPopoverComponent, {
-      width: '40rem',
       height: '40rem',
       position: { top: '20px' },
     });
