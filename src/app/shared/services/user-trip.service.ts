@@ -241,6 +241,19 @@ export class UserTripService {
     return requestParams
   }
 
+  public computeTripRequestXML(departureDate: Date): string {
+    const stageConfig = this.getStageConfig()
+    const tripRequestParams = OJP.TripsRequestParams.initWithLocationsAndDate(this.fromLocation, this.toLocation, departureDate)
+    if (tripRequestParams === null) {
+      return 'BROKEN TripsRequestParams'
+    }
+    
+    const tripRequest = new OJP.TripRequest(stageConfig, tripRequestParams)
+    const tripRequestXmlS = tripRequest.computeRequestXmlString()
+    
+    return tripRequestXmlS
+  }
+
   private updatePermalinkAddress() {
     const queryParams = new URLSearchParams()
 

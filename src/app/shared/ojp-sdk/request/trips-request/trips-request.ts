@@ -20,7 +20,7 @@ export class TripRequest extends OJPBaseRequest {
     });
   }
 
-  public computeRequestXML(): string {
+  public computeRequestXmlString(): string {
     this.buildTripRequestNode();
 
     let bodyXML_s = this.serviceRequestNode.end({
