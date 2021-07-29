@@ -59,9 +59,10 @@ export class LocationInformationRequest extends OJPBaseRequest {
 
   public fetchResponse(): Promise<Location[]> {
     this.buildRequestNode();
+    const bodyXML_s = this.serviceRequestNode.end();
 
     const loadingPromise = new Promise<Location[]>((resolve, reject) => {
-      super.fetchOJPResponse(responseText => {
+      super.fetchOJPResponse(bodyXML_s, responseText => {
         const responseXML = new DOMParser().parseFromString(responseText, 'application/xml');
 
         const locations: Location[] = [];

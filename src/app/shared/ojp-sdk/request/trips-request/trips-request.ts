@@ -15,7 +15,8 @@ export class TripRequest extends OJPBaseRequest {
 
   public fetchResponse(completion: (response: TripsResponse) => void) {
     this.buildTripRequestNode();
-    super.fetchOJPResponse(responseText => {
+    const bodyXML_s = this.serviceRequestNode.end();
+    super.fetchOJPResponse(bodyXML_s, responseText => {
       this.handleResponse(responseText, completion);
     });
   }
