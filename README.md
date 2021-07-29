@@ -24,4 +24,4 @@ See [docs/URLs](./docs/URLs.md) for application URL scheme parameters.
 
 The project is released under a [MIT license](./LICENSE.txt).
 
-Copyright (c) 2021 Open Data Platform Mobility Switzerland - opentransportdata.swiss
+Copyright (c) 2021 Open Data Platform Mobility Switzerland - [opentransportdata.swiss](https://opentransportdata.swiss/en/).
