@@ -79,7 +79,6 @@ export class MapLayersLegendControl implements mapboxgl.IControl {
           const lastOJPRequest = ((layerData.layer as unknown) as LocationMapAppLayer).lastOJPRequest
           if (lastOJPRequest) {
             const dialogRef = this.debugXmlPopover.open(DebugXmlPopoverComponent, {
-              width: '40rem',
               height: '40rem',
               position: { top: '10px' },
             });

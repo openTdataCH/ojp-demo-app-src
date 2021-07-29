@@ -116,7 +116,6 @@ export class TripMotTypeComponent implements OnInit {
 
   public showRequestXmlPopover() {
     const dialogRef = this.debugXmlPopover.open(DebugXmlPopoverComponent, {
-      width: '40rem',
       height: '40rem',
       position: { top: '10px' },
     });
