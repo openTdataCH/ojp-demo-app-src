@@ -19,3 +19,9 @@ The app is available under https://opentdatach.github.io/ojp-demo-app/
 See [CHANGELOG](./CHANGELOG.md) for deployment changes.
 
 See [docs/URLs](./docs/URLs.md) for application URL scheme parameters.
+
+## License
+
+The project is released under a [MIT license](./LICENSE.txt).
+
+Copyright (c) 2021 Open Data Platform Mobility Switzerland - opentransportdata.swiss
