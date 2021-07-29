@@ -35,7 +35,12 @@ export class TripRequest extends OJPBaseRequest {
   }
 
   private buildTripRequestNode() {
+    const now = new Date()
+    const dateF = now.toISOString();
+    this.serviceRequestNode.ele('RequestTimestamp', dateF)
+
     const tripRequestNode = this.serviceRequestNode.ele('ojp:OJPTripRequest');
+    tripRequestNode.ele('RequestTimestamp', dateF)
 
     const tripEndpoints: JourneyPointType[] = ["From", "To"]
     tripEndpoints.forEach(tripEndpoint => {
