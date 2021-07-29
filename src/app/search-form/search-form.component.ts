@@ -204,12 +204,7 @@ export class SearchFormComponent implements OnInit {
     });
     dialogRef.afterOpen().subscribe(() => {
       const popover = dialogRef.componentInstance as InputXmlPopoverComponent
-
-      if (this.lastCustomTripRequestXML) {
-        popover.inputTripRequestXmlS = this.lastCustomTripRequestXML
-      } else {
-        popover.inputTripRequestXmlS = this.userTripService.computeTripRequestXML(this.computeFormDepartureDate())
-      }
+      popover.inputTripRequestXmlS = this.userTripService.computeTripRequestXML(this.computeFormDepartureDate())
 
       popover.tripCustomRequestSaved.subscribe((tripsResponseXML) => {
         this.lastCustomTripRequestXML = popover.inputTripRequestXmlS
