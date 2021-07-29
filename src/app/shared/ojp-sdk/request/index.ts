@@ -1,4 +1,4 @@
-export { RequestData } from './base-request'
+export * from './base-request'
 export * from './journey-request/journey-request'
 export * from './journey-request/journey-request-params'
 export * from './location-information/location-information-request'
