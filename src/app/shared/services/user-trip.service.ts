@@ -229,7 +229,7 @@ export class UserTripService {
     this.updatePermalinkAddress();
   }
 
-  computeJourneyRequestParams(): OJP.JourneyRequestParams | null {
+  public computeJourneyRequestParams(): OJP.JourneyRequestParams | null {
     const requestParams = OJP.JourneyRequestParams.initWithLocationsAndDate(
       this.fromLocation,
       this.toLocation,
