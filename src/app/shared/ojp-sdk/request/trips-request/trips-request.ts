@@ -48,13 +48,18 @@ export class TripRequest extends OJPBaseRequest {
 
       if (location.stopPlace?.stopPlaceRef) {
         const stopPlaceRef = location.stopPlace?.stopPlaceRef
-
         placeRefNode.ele('StopPointRef', stopPlaceRef);
+        
+        const locationName = location.locationName ?? 'n/a'
+        placeRefNode.ele('ojp:LocationName').ele('ojp:Text', locationName)
       } else {
         if (location.geoPosition) {
           const geoPositionNode = placeRefNode.ele('ojp:GeoPosition')
-          geoPositionNode.ele('Longitude',location.geoPosition.longitude)
-          geoPositionNode.ele('Latitude',location.geoPosition.latitude)
+          geoPositionNode.ele('Longitude', location.geoPosition.longitude)
+          geoPositionNode.ele('Latitude', location.geoPosition.latitude)
+
+          const locationName = location.geoPosition.asLatLngString()
+          placeRefNode.ele('ojp:LocationName').ele('ojp:Text', locationName)
         }
       }
 
