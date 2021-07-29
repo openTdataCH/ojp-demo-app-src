@@ -1,24 +1,49 @@
 <div>
-  <div sbbDialogHeader>Add XML Request</div>
+  <div sbbDialogHeader>Custom Trip Request / Response XML</div>
   <div sbbDialogContent>
     <div style="width: 500px">
-      <div>
-        Response XML
-        <textarea 
-          class="w-100" 
-          [(ngModel)]="this.inputXmlS" 
-          rows="20">
-        </textarea>
+      <div class="d-flex justify-content-between">
+        <div>Trip Request XML</div>
+        <div><a target="_blank" href="https://opentransportdata.swiss/en/cookbook/ojptriprequest/">Cookbook opentransportdata.swiss</a></div>
+      </div>
+      <textarea class="w-100" rows="7" [(ngModel)]="this.inputTripRequestXmlS"></textarea>
+      <div class="d-flex">
+        <button 
+          class="btn btn-primary" 
+          (click)="this.parseCustomRequestXML()"
+          [disabled]="this.isRunningTripRequest"
+          type="button">
+          <span
+            class="spinner-border spinner-border-sm"
+            role="status"
+            aria-hidden="true"
+            *ngIf="this.isRunningTripRequest"
+          ></span>
+          Execute OJPTripRequest
+        </button>
+      </div>
+      <hr/>
+      <div class="d-flex justify-content-between">
+        <div>Trip Request Response XML</div>
+      </div>
+      <textarea class="w-100" rows="7" [(ngModel)]="this.inputTripRequestResponseXmlS"></textarea>
+      <div class="d-flex">
+        <button
+        type="button"
+        class="btn btn-primary"
+        (click)="this.parseCustomResponseXML()"
+        [disabled]="this.isRunningTripRequest">
+        Display Trips
+      </button>    
       </div>
     </div>
   </div>
   <div sbbDialogFooter>
     <button
       type="button"
-      class="btn btn-primary"
-      (click)="this.saveXML()"
+      class="btn btn-secondary"
       sbbDialogClose>
-      Load XML
+      Close
     </button>
   </div>
 </div>

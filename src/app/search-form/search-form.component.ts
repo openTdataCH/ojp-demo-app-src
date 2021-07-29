@@ -31,6 +31,8 @@ export class SearchFormComponent implements OnInit {
   public tripResponseFormattedXML: string
   public requestDuration: string | null
 
+  private lastCustomTripRequestXML: string | null
+
   private useMocks: boolean
 
   constructor(
@@ -55,6 +57,8 @@ export class SearchFormComponent implements OnInit {
     this.tripRequestFormattedXML = 'RequestXML'
     this.tripResponseFormattedXML = 'ResponseXML'
     this.requestDuration = null
+
+    this.lastCustomTripRequestXML = null
 
     this.useMocks = false
 
@@ -201,19 +205,46 @@ export class SearchFormComponent implements OnInit {
     });
     dialogRef.afterOpen().subscribe(() => {
       const popover = dialogRef.componentInstance as InputXmlPopoverComponent
-      popover.tripResponseXmlSaved.subscribe((tripsResponseXML) => {
+
+      if (this.lastCustomTripRequestXML) {
+        popover.inputTripRequestXmlS = this.lastCustomTripRequestXML
+      } else {
+        popover.inputTripRequestXmlS = this.userTripService.computeTripRequestXML(this.computeFormDepartureDate())
+      }
+
+      popover.tripCustomRequestSaved.subscribe((tripsResponseXML) => {
+        this.lastCustomTripRequestXML = popover.inputTripRequestXmlS
+
         const tripResponse = OJP.TripsResponse.initWithXML(tripsResponseXML, 'Default')
+        if (tripResponse.trips.length === 0) {
+          popover.inputTripRequestResponseXmlS = tripsResponseXML
+          return
+        }
 
-        this.requestDuration = 'USER XML';
+        dialogRef.close()
+        this.handleCustomTripResponse(tripResponse)
+      })
 
-        this.isSearching = false
-        this.userTripService.lastJourneyResponse = null
-        this.userTripService.updateTrips(tripResponse.trips) 
+      popover.tripCustomResponseSaved.subscribe((tripsResponseXML) => {
+        const tripResponse = OJP.TripsResponse.initWithXML(tripsResponseXML, 'Default')
+        if (tripResponse.trips.length === 0) {
+          return
+        }
 
-        this.collapseSearchPanel()
-        this.updateSearchForm(tripResponse)
+        this.handleCustomTripResponse(tripResponse)
       })
     });
+  }
+
+  private handleCustomTripResponse(tripResponse: OJP.TripsResponse) {
+    this.requestDuration = 'USER XML';
+
+    this.isSearching = false
+    this.userTripService.lastJourneyResponse = null
+    this.userTripService.updateTrips(tripResponse.trips) 
+
+    this.collapseSearchPanel()
+    this.updateSearchForm(tripResponse)
   }
 
   private updateSearchForm(tripResponse: OJP.TripsResponse) {
