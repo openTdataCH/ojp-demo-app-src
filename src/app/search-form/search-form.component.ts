@@ -225,6 +225,7 @@ export class SearchFormComponent implements OnInit {
           return
         }
 
+        dialogRef.close()
         this.handleCustomTripResponse(tripResponse)
       })
     });
