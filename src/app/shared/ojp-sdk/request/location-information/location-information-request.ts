@@ -100,7 +100,12 @@ export class LocationInformationRequest extends OJPBaseRequest {
   }
 
   private buildRequestNode() {
+    const now = new Date()
+    const dateF = now.toISOString();
+    this.serviceRequestNode.ele('RequestTimestamp', dateF)
+
     const requestNode = this.serviceRequestNode.ele('ojp:OJPLocationInformationRequest');
+    requestNode.ele('RequestTimestamp', dateF)
 
     let initialInputNode: xmlbuilder.XMLElement | null = null
 
