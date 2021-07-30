@@ -50,7 +50,7 @@ export class SearchFormComponent implements OnInit {
     this.fromLocationText = ''
     this.toLocationText = ''
 
-    this.appStageOptions = ['PROD', 'TEST']
+    this.appStageOptions = ['PROD', 'TEST', 'TEST LA']
 
     this.isSearching = false
 
