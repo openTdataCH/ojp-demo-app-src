@@ -11,6 +11,7 @@ import { SbbDatepickerModule } from '@sbb-esta/angular-business/datepicker';
 import { SbbDialogModule } from '@sbb-esta/angular-business/dialog';
 import { SbbFormFieldModule } from '@sbb-esta/angular-business/form-field';
 import { SbbIconModule } from '@sbb-esta/angular-core/icon';
+import { SbbNotificationToastModule } from '@sbb-esta/angular-business/notification-toast';
 import { SbbRadioButtonModule } from '@sbb-esta/angular-business/radio-button';
 import { SbbTimeInputModule } from '@sbb-esta/angular-business/time-input';
 import { SbbTooltipModule } from '@sbb-esta/angular-business/tooltip';
@@ -55,6 +56,7 @@ import { InputXmlPopoverComponent } from './search-form/input-xml-popover/input-
     SbbDatepickerModule,
     SbbDialogModule,
     SbbIconModule,
+    SbbNotificationToastModule,
     SbbFormFieldModule,
     SbbRadioButtonModule,
     SbbTimeInputModule,
