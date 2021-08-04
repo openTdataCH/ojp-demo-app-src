@@ -199,6 +199,13 @@ export class SearchFormComponent implements OnInit {
         return
       }
 
+      if (trips.length === 0) {
+        this.notificationToast.open('No trips found', {
+          type: 'info',
+          verticalPosition: 'top',
+        })
+      }
+
       const endRequestDate = new Date();
       const requestDuration = ((endRequestDate.getTime() - startRequestDate.getTime()) / 1000).toFixed(2);
       this.requestDuration = requestDuration + ' sec';
