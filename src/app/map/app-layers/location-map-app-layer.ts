@@ -89,7 +89,10 @@ export class LocationMapAppLayer {
       });
 
       this.setSourceFeatures(features);
-    });
+    }).catch(error => {
+      console.log('LocationMapAppLayer: ' + this.layerKey + ' backend ERROR');
+      console.log(error);
+    });;
   }
 
   enable() {

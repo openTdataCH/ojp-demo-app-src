@@ -4,9 +4,10 @@ import { FormControl, FormGroup } from '@angular/forms';
 import { UserTripService } from '../shared/services/user-trip.service'
 import { InputXmlPopoverComponent } from './input-xml-popover/input-xml-popover.component';
 
-import { SbbExpansionPanel } from '@sbb-esta/angular-business/accordion';
-import { SbbRadioChange } from '@sbb-esta/angular-core/radio-button';
 import { SbbDialog } from "@sbb-esta/angular-business/dialog";
+import { SbbExpansionPanel } from '@sbb-esta/angular-business/accordion';
+import { SbbNotificationToast } from '@sbb-esta/angular-business/notification-toast';
+import { SbbRadioChange } from '@sbb-esta/angular-core/radio-button';
 
 import * as OJP from '../shared/ojp-sdk/index'
 
@@ -36,6 +37,7 @@ export class SearchFormComponent implements OnInit {
   private useMocks: boolean
 
   constructor(
+    private notificationToast: SbbNotificationToast,
     private tripXmlPopover: SbbDialog,
     public userTripService: UserTripService
   ) {
@@ -173,12 +175,30 @@ export class SearchFormComponent implements OnInit {
       return
     }
 
+    this.notificationToast.dismiss()
+
     const stageConfig = this.userTripService.getStageConfig()
     const journeyRequest = new OJP.JourneyRequest(stageConfig, journeyRequestParams)
 
     this.isSearching = true
     const startRequestDate = new Date();
-    journeyRequest.fetchResponse(trips => {
+    journeyRequest.fetchResponse((trips, error) => {
+      if (error) {
+        this.notificationToast.open(error.message, {
+          type: 'error',
+          verticalPosition: 'top',
+        })
+
+        this.isSearching = false
+        this.userTripService.lastJourneyResponse = null
+
+        this.requestDuration = null;
+
+        this.userTripService.updateTrips([])
+
+        return
+      }
+
       const endRequestDate = new Date();
       const requestDuration = ((endRequestDate.getTime() - startRequestDate.getTime()) / 1000).toFixed(2);
       this.requestDuration = requestDuration + ' sec';
