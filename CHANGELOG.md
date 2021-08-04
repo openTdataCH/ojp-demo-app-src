@@ -4,6 +4,10 @@ OJP-Demo URL: https://opentdatach.github.io/ojp-demo-app/
 
 ----
 
+04.Aug 2021
+- Display an error message when theer are TripRequest server/XML errors. See [#16 - Handle server issues](https://github.com/openTdataCH/ojp-demo-app-src/issues/16)
+- Handle 0-results. See [#17 - Handle 0-results](https://github.com/openTdataCH/ojp-demo-app-src/issues/17)
+
 30.Jul 2021
 - Adds TEST LA(Linking Alps) stage. See [#8 - Add new stage: TEST LA](https://github.com/openTdataCH/ojp-demo-app-src/issues/8)
 - Updates LocationInformationRequest with required parameters. See [#13 - LocationName is required in TripRequest](https://github.com/openTdataCH/ojp-demo-app-src/issues/13) + [#9 POI no longer visible](https://github.com/openTdataCH/ojp-demo-app-src/issues/9)
