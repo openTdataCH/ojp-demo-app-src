@@ -112,11 +112,9 @@ export class UserTripService {
       motTypeIDx += 1
     }
 
-    const appStageS = this.queryParams.get('stage')
+    let appStageS = this.queryParams.get('stage')
     if (appStageS) {
-      const testStage: OJP.APP_Stage = 'TEST'
-      const isTest = appStageS.toUpperCase() === testStage
-      this.currentAppStage = isTest ? 'TEST' : 'PROD'
+      this.currentAppStage = this.computeAppStageFromString(appStageS)
     }
 
     Promise.all(promises).then(locationsData => {
@@ -151,6 +149,19 @@ export class UserTripService {
         this.mapService.newMapBoundsRequested.emit(mapData);
       }
     });
+  }
+
+  private computeAppStageFromString(appStageS: string): OJP.APP_Stage {
+    const appStage = appStageS.toUpperCase() as OJP.APP_Stage
+    if (appStage === 'TEST') {
+      return 'TEST'
+    }
+
+    if (appStage === 'TEST LA') {
+      return 'TEST LA'
+    }
+
+    return 'PROD'
   }
 
   updateTripEndpoint(location: OJP.Location, endpointType: OJP.JourneyPointType, updateSource: LocationUpdateSource) {
