@@ -66,6 +66,8 @@ export class LocationInformationRequest extends OJPBaseRequest {
         const responseXML = new DOMParser().parseFromString(responseText, 'application/xml');
 
         const locations: Location[] = [];
+        const statusText = XPathOJP.queryText('//siri:OJPResponse/siri:ServiceDelivery/siri:Status', responseXML)
+        const hasServiceStatusOK = statusText === 'true'
 
         const responseStatus = XPathOJP.queryText('//ojp:OJPLocationInformationDelivery/siri:Status', responseXML)
         const hasErrors = responseStatus === 'false';

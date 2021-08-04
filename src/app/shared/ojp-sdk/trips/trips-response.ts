@@ -4,11 +4,13 @@ import { XPathOJP } from '../helpers/xpath-ojp'
 import { TripMotType } from '../types/trip-mot-type'
 
 export class TripsResponse {
+  public hasValidResponse: boolean
   public responseXMLText: string
   public contextLocations: Location[]
   public trips: Trip[]
 
-  constructor(responseXMLText: string, contextLocations: Location[], trips: Trip[]) {
+  constructor(hasValidResponse: boolean, responseXMLText: string, contextLocations: Location[], trips: Trip[]) {
+    this.hasValidResponse = hasValidResponse
     this.responseXMLText = responseXMLText
     this.contextLocations = contextLocations
     this.trips = trips
@@ -16,10 +18,14 @@ export class TripsResponse {
 
   public static initWithXML(responseXMLText: string, motType: TripMotType): TripsResponse {
     const responseXML = new DOMParser().parseFromString(responseXMLText, 'application/xml');
+
+    const statusText = XPathOJP.queryText('//siri:OJPResponse/siri:ServiceDelivery/siri:Status', responseXML)
+    const serviceStatus = statusText === 'true'
+
     const contextLocations = TripsResponse.parseContextLocations(responseXML);
     const trips = TripsResponse.parseTrips(responseXML, contextLocations, motType);
 
-    const tripResponse = new TripsResponse(responseXMLText, contextLocations, trips)
+    const tripResponse = new TripsResponse(serviceStatus, responseXMLText, contextLocations, trips)
 
     return tripResponse
   }
