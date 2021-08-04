@@ -1,4 +1,5 @@
 import xmlbuilder from 'xmlbuilder';
+import { RequestErrorData } from './request-error'
 import { StageConfig } from '../config/config';
 
 export interface RequestData {
@@ -47,7 +48,7 @@ export class OJPBaseRequest {
     return serviceRequestNode;
   }
 
-  public fetchOJPResponse(bodyXML_s: string, completion: (responseText: string) => void) {
+  public fetchOJPResponse(bodyXML_s: string, completion: (responseText: string, error: RequestErrorData | null) => void) {
     const apiEndpoint = this.stageConfig.apiEndpoint
     const requestHeaders = {
       "Content-Type": "text/xml",
@@ -78,8 +79,20 @@ export class OJPBaseRequest {
         requestData.responseXmlS = responseText
         requestData.responseDatetime = new Date()
 
-        completion(responseText);
-      });
-    });
+        completion(responseText, null);
+      }).catch(reason => {
+        const errorData: RequestErrorData = {
+          error: 'ParseTextError',
+          message: reason
+        }
+        completion('', errorData);
+      })
+    }).catch(reason => {
+      const errorData: RequestErrorData = {
+        error: 'FetchError',
+        message: 'API Endpoint Error: ' + reason
+      }
+      completion('', errorData);
+    })
   }
 }

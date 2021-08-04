@@ -6,6 +6,7 @@ import { OJPBaseRequest } from "../base-request";
 import { TripRequest } from "../trips-request/trips-request";
 import { TripsRequestParams } from "../trips-request/trips-request-params";
 import { JourneyRequestParams } from "./journey-request-params";
+import { RequestErrorData } from "../request-error";
 
 export class JourneyRequest extends OJPBaseRequest {
   public requestParams: JourneyRequestParams
@@ -17,14 +18,14 @@ export class JourneyRequest extends OJPBaseRequest {
     this.lastJourneyResponse = null
   }
 
-  public fetchResponse(completion: (response: Trip[]) => void) {
+  public fetchResponse(completion: (response: Trip[], error: RequestErrorData | null) => void) {
     const journeyResponse = new JourneyResponse([])
     const tripDepartureDate = this.requestParams.departureDate
     this.lastJourneyResponse = null
     this.computeTripResponse(0, tripDepartureDate, journeyResponse, completion)
   }
 
-  private computeTripResponse(idx: number, tripDepartureDate: Date, journeyResponse: JourneyResponse, completion: (response: Trip[]) => void) {
+  private computeTripResponse(idx: number, tripDepartureDate: Date, journeyResponse: JourneyResponse, completion: (response: Trip[], error: RequestErrorData | null) => void) {
     const isLastJourneySegment = idx === (this.requestParams.tripMotTypes.length - 1)
 
     const fromLocation = this.requestParams.journeyLocations[idx]
@@ -39,7 +40,12 @@ export class JourneyRequest extends OJPBaseRequest {
     tripRequestParams.motType = this.requestParams.tripMotTypes[idx]
 
     const tripRequest = new TripRequest(this.stageConfig, tripRequestParams);
-    tripRequest.fetchResponse(tripsResponse => {
+    tripRequest.fetchResponse((tripsResponse, error) => {
+      if (error) {
+        completion([], error)
+        return
+      }
+
       if (tripRequest.lastRequestData) {
         const journeySection = new JourneySection(
           tripRequest.lastRequestData,
@@ -51,7 +57,7 @@ export class JourneyRequest extends OJPBaseRequest {
       if (isLastJourneySegment) {
         const trips = journeyResponse.computeAggregatedTrips()
         this.lastJourneyResponse = journeyResponse
-        completion(trips)
+        completion(trips, null)
       } else {
         const hasTrips = tripsResponse.trips.length > 0
         if (hasTrips) {

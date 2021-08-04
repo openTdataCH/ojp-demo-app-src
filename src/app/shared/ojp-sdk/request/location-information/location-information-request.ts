@@ -62,24 +62,23 @@ export class LocationInformationRequest extends OJPBaseRequest {
     const bodyXML_s = this.serviceRequestNode.end();
 
     const loadingPromise = new Promise<Location[]>((resolve, reject) => {
-      super.fetchOJPResponse(bodyXML_s, responseText => {
+      super.fetchOJPResponse(bodyXML_s, (responseText, errorData) => {
         const responseXML = new DOMParser().parseFromString(responseText, 'application/xml');
 
-        const locations: Location[] = [];
         const statusText = XPathOJP.queryText('//siri:OJPResponse/siri:ServiceDelivery/siri:Status', responseXML)
         const hasServiceStatusOK = statusText === 'true'
 
-        const responseStatus = XPathOJP.queryText('//ojp:OJPLocationInformationDelivery/siri:Status', responseXML)
-        const hasErrors = responseStatus === 'false';
-        if (hasErrors) {
-          const errorNode = XPathOJP.queryNode('//ojp:OJPLocationInformationDelivery/siri:ErrorCondition', responseXML)
+        const locations: Location[] = [];
 
-          if (this.logRequests) {
-            console.error('OJP LocationInformationRequest error');
-            console.log(errorNode);
+        if (!hasServiceStatusOK) {
+          if (errorData === null && !hasServiceStatusOK) {
+            errorData = {
+              error: 'ParseLocationInformationRequestXMLError',
+              message: 'Invalid LocationInformationRequest Response XML'
+            }
           }
 
-          resolve(locations);
+          reject(errorData)
           return;
         }
 

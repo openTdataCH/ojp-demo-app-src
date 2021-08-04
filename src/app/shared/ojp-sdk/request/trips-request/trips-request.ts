@@ -3,6 +3,7 @@ import { OJPBaseRequest } from '../base-request';
 import { TripsRequestParams } from './trips-request-params';
 import { TripsResponse } from '../../trips/trips-response'
 import { StageConfig } from '../../config/config';
+import { RequestErrorData } from './../request-error'
 
 export class TripRequest extends OJPBaseRequest {
   public requestParams: TripsRequestParams
@@ -12,11 +13,18 @@ export class TripRequest extends OJPBaseRequest {
     this.requestParams = requestParams;
   }
 
-  public fetchResponse(completion: (response: TripsResponse) => void) {
+  public fetchResponse(completion: (response: TripsResponse, error: RequestErrorData | null) => void) {
     this.buildTripRequestNode();
     const bodyXML_s = this.serviceRequestNode.end();
-    super.fetchOJPResponse(bodyXML_s, responseText => {
-      this.handleResponse(responseText, completion);
+    super.fetchOJPResponse(bodyXML_s, (responseText, errorData) => {
+      const tripsResponse = TripsResponse.initWithXML(responseText, this.requestParams.motType);
+      if (errorData === null && !tripsResponse.hasValidResponse) {
+        errorData = {
+          error: 'ParseTripsXMLError',
+          message: 'Invalid TripsRequest Response XML'
+        }
+      }
+      completion(tripsResponse, errorData);
     });
   }
 
@@ -28,11 +36,6 @@ export class TripRequest extends OJPBaseRequest {
     });
 
     return bodyXML_s;
-  }
-
-  private handleResponse(responseText: string, completion: (response: TripsResponse) => void) {
-    const tripsResponse = TripsResponse.initWithXML(responseText, this.requestParams.motType);
-    completion(tripsResponse);
   }
 
   private buildTripRequestNode() {
