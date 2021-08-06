@@ -9,14 +9,21 @@
 <body>
   <div class="container">
     <div class="row">
-      <div class="col bg-ojp-blue">
-        <nav class="navbar navbar-light">
-          <a class="navbar-brand title text-white p-3" href="#">
-            <img class="mb-3" src="assets/opentransportdata.swiss.header-icons.svg" height="30">
-            <br/>
-            <span class="navbar-brand mb-0 h1 text-white">OJP Demo</span>
-          </a>
-        </nav>
+      <div class="col nav-main bg-ojp-blue">
+        <div class="d-flex flex-row align-items-center justify-content-between">
+          <div class="foobar">
+            <span class="navbar-brand text-white">OJP Demo</span>
+            <br/> <img class="mb-2" src="assets/opentransportdata.swiss.header-icons.svg" height="23" />
+          </div>
+          <div class="d-flex">
+            <div class="nav-item">
+              <a class="nav-link" href="https://github.com/openTdataCH/ojp-demo-app-src">Source Code</a>
+            </div>
+            <div class="nav-item">
+              <a class="nav-link" href="https://opentransportdata.swiss/en/cookbook/open-journey-planner-ojp/">OJP Cookbook</a>
+            </div>
+          </div>
+        </div>
       </div>
       <div class="bg-ojp-orange w-100" style="height: 10px"></div>
     </div>
@@ -24,9 +31,17 @@
     <div class="row bg-ojp-blue text-white">
       <div class="bg-ojp-orange w-100" style="height: 5px"></div>
       <div class="col">
-        <div class="p-3">© Open-Data-Plattform Mobilität Schweiz 2021<br/><span class="last-update">Last Update: 06.August 2021 - v20210806.1</span></div>
+        <div class="footer">
+          <div>
+            © <a href="https://opentransportdata.swiss/en/" target="_blank">Open-Data-Plattform Mobilität Schweiz</a> 2021
+          </div>
+          <div>
+            Last Update: <a href="https://github.com/openTdataCH/ojp-demo-app-src/blob/main/CHANGELOG.md" target="_blank">06.August 2021 - v20210806.1</a>
+          </div>
+        </div>
       </div>
     </div>
+    <div class="row" style="height: 16px"></div>
   </div>
   <div class="d-none">
     <div id="map-debug-control">
