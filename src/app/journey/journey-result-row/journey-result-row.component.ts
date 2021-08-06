@@ -50,7 +50,9 @@ export class JourneyResultRowComponent implements OnInit {
     this.tripHeaderStats.title = 'Trip ' + ((this.idx ?? 0) + 1)
       
     if (trip.stats.transferNo === 0) {
-      this.tripHeaderStats.tripChangesInfo = 'non-stop'
+      this.tripHeaderStats.tripChangesInfo = 'direct'
+    } else if (trip.stats.transferNo === 1) {
+      this.tripHeaderStats.tripChangesInfo = trip.stats.transferNo + ' transfer'
     } else {
       this.tripHeaderStats.tripChangesInfo = trip.stats.transferNo + ' transfers'
     }
