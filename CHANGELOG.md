@@ -7,6 +7,7 @@ OJP-Demo URL: https://opentdatach.github.io/ojp-demo-app/
 06.Aug 2021
 - Fix showing 'non-stop' for 'direct' trips. See [#19 - Fix non-stop in trips information - 0 changes](https://github.com/openTdataCH/ojp-demo-app-src/issues/19)
 - Fix 3rd party components vulnerabilitie issue. See [#18 - Fix Github vulnerabilities report](https://github.com/openTdataCH/ojp-demo-app-src/issues/18)
+- Add links to Github, opentransportdata.swiss. See [#20 - Add links in header](https://github.com/openTdataCH/ojp-demo-app-src/issues/20)
 
 04.Aug 2021
 - Display an error message when theer are TripRequest server/XML errors. See [#16 - Handle server issues](https://github.com/openTdataCH/ojp-demo-app-src/issues/16)
