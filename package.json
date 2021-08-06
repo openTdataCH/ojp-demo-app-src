@@ -29,7 +29,7 @@
     "tslib": "^2.0.0",
     "url-search-params-polyfill": "^8.1.1",
     "xmlbuilder": "^15.1.1",
-    "xmldom": "^0.6.0",
+    "xmldom": "git://github.com/xmldom/xmldom#0.7.0",
     "xpath": "0.0.32",
     "zone.js": "~0.11.3"
   },
