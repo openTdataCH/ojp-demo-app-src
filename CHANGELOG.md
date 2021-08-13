@@ -4,6 +4,9 @@ OJP-Demo URL: https://opentdatach.github.io/ojp-demo-app/
 
 ----
 
+13.Aug 2021
+- Add support for TEST-LA stopRef IDs `OJP:STOP:SBB:8503000|Zurich HB@MRCV:950692:5995977`. See [#8 - Add new stage: TEST LA](https://github.com/openTdataCH/ojp-demo-app-src/issues/8)
+
 06.Aug 2021
 - Fix showing 'non-stop' for 'direct' trips. See [#19 - Fix non-stop in trips information - 0 changes](https://github.com/openTdataCH/ojp-demo-app-src/issues/19)
 - Fix 3rd party components vulnerabilitie issue. See [#18 - Fix Github vulnerabilities report](https://github.com/openTdataCH/ojp-demo-app-src/issues/18)
