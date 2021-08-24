@@ -6,6 +6,7 @@ OJP-Demo URL: https://opentdatach.github.io/ojp-demo-app/
 
 24.Aug 2021
 - Use a proxy server for TEST-LA requests. See [#8 - Add new stage: TEST LA](https://github.com/openTdataCH/ojp-demo-app-src/issues/8)
+- If TEST-LA use PROD type-ahead station lookups otherwise the iinternational stops (i.e. Feldkirch) don't work as expected.
 - Prevent cases when multimodal journeys fail to show because there are no trips to match the monomodal section. 
 
 13.Aug 2021
