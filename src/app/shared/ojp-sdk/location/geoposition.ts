@@ -23,6 +23,10 @@ export class GeoPosition {
     const longitude = parseFloat(longitudeS)
     const latitude = parseFloat(latitudeS)
 
+    if (longitude === 0 || latitude === 0) {
+      return null
+    }
+
     const geoPosition = new GeoPosition(longitude, latitude)
 
     return geoPosition
