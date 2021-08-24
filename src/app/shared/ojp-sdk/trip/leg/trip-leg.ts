@@ -69,7 +69,8 @@ export class TripLeg {
   public computeGeoJSONFeatures(): GeoJSON.Feature[] {
     let features: GeoJSON.Feature[] = [];
 
-    if (this.useBeeline()) {
+    const useBeeline = this.useBeeline();
+    if (useBeeline) {
       const beelineFeature = this.computeBeelineFeature()
       if (beelineFeature) {
         features.push(beelineFeature);
