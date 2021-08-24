@@ -37,7 +37,8 @@ export class JourneyRequest extends OJPBaseRequest {
       return
     }
 
-    tripRequestParams.motType = this.requestParams.tripMotTypes[idx]
+    const motType = this.requestParams.tripMotTypes[idx];
+    tripRequestParams.motType = motType;
 
     const tripRequest = new TripRequest(this.stageConfig, tripRequestParams);
     tripRequest.fetchResponse((tripsResponse, error) => {
@@ -54,12 +55,17 @@ export class JourneyRequest extends OJPBaseRequest {
         journeyResponse.sections.push(journeySection)
       }
 
+      const hasTrips = tripsResponse.trips.length > 0;
+      if (!hasTrips) {
+        console.error('ERROR: no trips found for section ' + idx + ' MOT - ' + motType);
+        console.log(tripsResponse);
+      }
+
       if (isLastJourneySegment) {
         const trips = journeyResponse.computeAggregatedTrips()
         this.lastJourneyResponse = journeyResponse
         completion(trips, null)
       } else {
-        const hasTrips = tripsResponse.trips.length > 0
         if (hasTrips) {
           const firstTrip = tripsResponse.trips[0]
           tripDepartureDate = firstTrip.stats.endDatetime
