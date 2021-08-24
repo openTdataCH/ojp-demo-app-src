@@ -23,8 +23,12 @@ export class JourneyResponse {
       if (isLast) {
         section.response.trips.forEach(trip => {
           if (hasMultipleSections) {
-            const firstTrip = this.sections[0].response.trips[0]
-            trip.stats.startDatetime = firstTrip.stats.startDatetime
+            let firstValidTrip = this.computeFirstValidTrip()
+            if (firstValidTrip) {
+              trip.stats.startDatetime = firstValidTrip.stats.startDatetime
+            } else {
+              trip.stats.startDatetime = new Date()
+            }
 
             // Sum the first sections count which are monomodals
             trip.stats.transferNo += (this.sections.length - 1)
@@ -55,5 +59,16 @@ export class JourneyResponse {
     })
 
     return aggregatedTrips
+  }
+
+  private computeFirstValidTrip(): Trip | null {
+    for (let section of this.sections) {
+      const hasTrips = section.response.trips.length > 0;
+      if (hasTrips) {
+        return section.response.trips[0]
+      }
+    }
+
+    return null
   }
 }
