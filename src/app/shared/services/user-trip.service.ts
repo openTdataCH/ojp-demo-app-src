@@ -46,6 +46,13 @@ export class UserTripService {
     this.initDefaults()
   }
 
+  // TODO
+  // ====
+
+  // - check mock - self_driving.xml - should add new mot line - self driving
+  // - check meiringen for ond-emand bus - SAVE A MOCK!
+  // - add debug XML
+
   private initDefaults() {
     const defaultLocationsPlaceRef = {
       "Bern": "8507000",
@@ -174,6 +181,8 @@ export class UserTripService {
     }
 
     if (endpointType === 'Via') {
+      // debugger;
+
       this.viaLocations.push(location)
       this.tripMotTypes.push('Default')
 
@@ -326,13 +335,13 @@ export class UserTripService {
     return tripDateTime
   }
 
-  public getStageConfig(): OJP.StageConfig {
+  public getStageConfig(forStage: OJP.APP_Stage = this.currentAppStage): OJP.StageConfig {
     const stageConfig = OJP.APP_Stages.find(appStage => {
-      return appStage.key === this.currentAppStage
+      return appStage.key === forStage
     })
 
     if (stageConfig === undefined) {
-      console.error('ERROR - cant find stage' + this.currentAppStage + ' using PROD');
+      console.error('ERROR - cant find stage' + forStage + ' using PROD');
       return OJP.APP_Stages[0]
     }
     
