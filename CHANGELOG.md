@@ -4,6 +4,9 @@ OJP-Demo URL: https://opentdatach.github.io/ojp-demo-app/
 
 ----
 
+27.Aug 2021
+- Format legs. See [#15 - Enrich Leg Component](https://github.com/openTdataCH/ojp-demo-app-src/issues/15)
+
 24.Aug 2021
 - Use a proxy server for TEST-LA requests. See [#8 - Add new stage: TEST LA](https://github.com/openTdataCH/ojp-demo-app-src/issues/8)
 - If TEST-LA use PROD type-ahead station lookups otherwise the iinternational stops (i.e. Feldkirch) don't work as expected.
