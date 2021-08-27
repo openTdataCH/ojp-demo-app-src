@@ -11,12 +11,12 @@ export class Duration {
     this.totalMinutes = hours * 60 + minutes
   }
 
-  public static initFromContextNode(contextNode: Node | null): Duration | null {
+  public static initFromContextNode(contextNode: Node | null, nodeName: string = 'ojp:Duration'): Duration | null {
     if (contextNode === null) {
       return null
     }
 
-    let durationS = XPathOJP.queryText('ojp:Duration', contextNode)
+    let durationS = XPathOJP.queryText(nodeName, contextNode)
     if (durationS === null) {
       return null
     }
