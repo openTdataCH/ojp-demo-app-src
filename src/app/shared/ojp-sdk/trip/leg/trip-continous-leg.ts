@@ -61,7 +61,7 @@ export class TripContinousLeg extends TripLeg {
     tripLeg.legTrack = LegTrack.initFromLegNode(legNode);
 
     if (legType === 'TransferLeg') {
-      tripLeg.walkDuration = Duration.initFromContextNode(legNode)
+      tripLeg.walkDuration = Duration.initFromContextNode(legNode, 'ojp:WalkDuration')
     }
 
     return tripLeg;
