@@ -1,8 +1,42 @@
-.leg-pill:hover {
+.pill-hover:hover {
+  cursor: pointer;
+}
+
+.location-hover:hover {
   cursor: pointer;
 }
 
 .tooltip-list {
   margin-top: 16px;
   margin-bottom: 8px;
+}
+
+.leg-left-side {
+  width: 50px;
+}
+
+.leg-right-side {
+  width: auto;
+}
+
+.leg-leading-text {
+  margin-bottom: 2px;
+}
+
+.leg-icon {
+  width: 40px;
+  height: 40px;
+}
+
+.leg-location {
+  background-color: transparent;
+  margin-left: 4px;
+}
+
+.leg-time-wrapper {
+  background-color: transparent;
+}
+
+.leg-time {
+  font-size: 15px;
 }

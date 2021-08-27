@@ -1,15 +1,87 @@
-<div class="mb-2">
-  <span
-    class="badge rounded-pill leg-pill"
-    [ngStyle]="{'background-color': this.legInfoDataModel.legColor}"
-    (click)="handleTapOnPill()"
-  >{{ this.legInfoDataModel.leadingText }}</span> {{ this.legInfoDataModel.legInfo }}
-  <sbb-tooltip *ngIf="this.legInfoDataModel.hasGuidance">
-    <sbb-icon svgIcon="kom:arrow-change-horizontal-medium" *sbbIcon></sbb-icon>
-    <ul class="tooltip-list">
-      <li *ngFor="let guidanceText of this.legInfoDataModel.guidanceTextLines">
-        {{ guidanceText }}
-      </li>
-    </ul>
-  </sbb-tooltip>
+<div class="mb-2 d-flex flex-row">
+  <div class="flex-grow-1">
+    <div
+      class="badge leg-pill pill-hover leg-leading-text"
+      [ngStyle]="{'background-color': this.legInfoDataModel.legColor}"
+      (click)="handleTapOnPill()"
+    >{{ this.legInfoDataModel.leadingText }}</div>
+  </div>
+  <div class="flex-grow-0 leg-right-side">
+    <div
+      class="badge leg-pill pill-hover bg-primary"
+      (click)="handleTapOnPill()"
+    >MAP</div>
+  </div>
 </div>
+
+<div class="mb-2 d-flex flex-row align-items-center">
+  <div class="flex-grow-0 leg-left-side">
+    <div class="d-flex flex-column leg-icon-wrapper">
+      <div class="align-self-center">
+        <img class="leg-icon" src="{{ this.legInfoDataModel.legIconPath }}" />
+      </div>
+      <div class="align-self-center">{{ this.legInfoDataModel.walkingDistanceText }}</div>
+    </div>
+  </div>
+  
+  <div class="flex-grow-1">
+    <ng-container
+      *ngIf="this.legInfoDataModel.isWalking; then walkingLegTemplate; else timedLegTemplate">
+    </ng-container>
+  </div>
+</div>
+
+<div class="mb-2">
+  <div class="border-bottom" style="height: 8px"></div>
+</div>
+
+<ng-template #timedLegTemplate>
+  <div class="d-flex flex-row">
+    <div 
+      class="flex-grow-1 leg-location location-hover" 
+      (click)="this.handleClickOnLocation('From')"
+    >{{ this.legInfoDataModel.fromLocationData.locationText }}</div>
+    <div class="flex-grow-0 leg-time leg-right-side">{{ this.legInfoDataModel.fromLocationData.timeText }}</div>
+  </div>
+  <div class="d-flex flex-row">
+    <div 
+      class="flex-grow-1 leg-location location-hover"
+      (click)="this.handleClickOnLocation('To')"
+    >{{ this.legInfoDataModel.toLocationData.locationText }}</div>
+    <div class="flex-grow-0 leg-time leg-right-side">{{ this.legInfoDataModel.toLocationData.timeText }}</div>
+  </div>
+</ng-template>
+
+<ng-template #walkingLegTemplate>
+  <div class="d-flex flex-row align-items-center">
+    <div class="flex-grow-1 leg-location">
+      <div class="d-flex flex-column leg-location">
+        <div 
+          class="location-hover"
+          (click)="this.handleClickOnLocation('From')"
+        >{{ this.legInfoDataModel.fromLocationData.locationText }}</div>
+
+        <sbb-tooltip *ngIf="this.legInfoDataModel.hasGuidance">
+          <sbb-icon svgIcon="kom:arrow-change-horizontal-medium" *sbbIcon></sbb-icon>
+          <ul class="tooltip-list">
+            <li *ngFor="let guidanceText of this.legInfoDataModel.guidanceTextLines">
+              {{ guidanceText }}
+            </li>
+          </ul>
+        </sbb-tooltip>
+      
+        <div 
+          class="location-hover"
+          (click)="this.handleClickOnLocation('To')"
+        >{{ this.legInfoDataModel.toLocationData.locationText }}</div>
+      </div>
+    </div>
+    <div class="flex-grow-0 leg-time leg-right-side">
+      <div>{{ this.legInfoDataModel.walkingDurationText }}</div>
+    </div>
+  </div>
+</ng-template>
+
+<ng-template #legGeoLocation>
+  
+</ng-template>
