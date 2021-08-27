@@ -179,4 +179,13 @@ export class TripContinousLeg extends TripLeg {
 
     return MapLegLineTypeColor.Walk
   }
+
+  public formatDistance(): string {
+    if (this.legDistance > 1000) {
+      const distanceKmS = (this.legDistance / 1000).toFixed(1) + ' km'
+      return distanceKmS
+    }
+
+    return this.legDistance + ' m'
+  }
 }
