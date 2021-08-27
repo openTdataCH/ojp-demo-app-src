@@ -228,8 +228,6 @@ export class ResultTripLegComponent implements OnInit {
     this.legInfoDataModel.isTimed = leg.legType === 'TimedLeg'
     this.legInfoDataModel.fromLocationData = this.computeLocationData(leg, 'From')
     this.legInfoDataModel.toLocationData = this.computeLocationData(leg, 'To')
-
-    console.log(this.legInfoDataModel)
   }
 
   private computeLegIconFilename(leg: OJP.TripLeg): string {
