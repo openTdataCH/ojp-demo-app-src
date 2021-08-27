@@ -96,6 +96,10 @@ export class TripContinousLeg extends TripLeg {
     return this.legMode === ContinousLegMode['Shared Mobility']
   }
 
+  public isWalking(): boolean {
+    return this.legMode === ContinousLegMode['Walk']
+  }
+
   protected computeSpecificJSONFeatures(): GeoJSON.Feature[] {
     const features: GeoJSON.Feature[] = [];
 
