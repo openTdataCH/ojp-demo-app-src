@@ -4,8 +4,12 @@ OJP-Demo URL: https://opentdatach.github.io/ojp-demo-app/
 
 ----
 
+29.Aug 2021
+- Display estimated times, including delays, when available. See [#15 - Enrich Leg Component](https://github.com/openTdataCH/ojp-demo-app-src/issues/15)
+
 27.Aug 2021
 - Format legs. See [#15 - Enrich Leg Component](https://github.com/openTdataCH/ojp-demo-app-src/issues/15)
+- Make endpoints clickable and center the location on map
 
 24.Aug 2021
 - Use a proxy server for TEST-LA requests. See [#8 - Add new stage: TEST LA](https://github.com/openTdataCH/ojp-demo-app-src/issues/8)
