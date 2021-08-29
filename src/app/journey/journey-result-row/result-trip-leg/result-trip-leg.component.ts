@@ -10,7 +10,6 @@ interface LegLocationData {
   // NOT YET IMPLEMENTED
   platformText: string | null,
   timeText: string | null,
-  // NOT YET IMPLEMENTED
   delayText: string | null,
 }
 
@@ -278,9 +277,20 @@ export class ResultTripLegComponent implements OnInit {
       const timedLeg = leg as OJP.TripTimedLeg
       const stopPointTime = isFrom ? timedLeg.fromStopPoint.departureData : timedLeg.toStopPoint.arrivalData
 
-      const depTime = stopPointTime?.timetableTime
+      const depTime = stopPointTime?.estimatedTime ?? stopPointTime?.timetableTime
       if (depTime) {
         locationData.timeText = OJP.DateHelpers.formatTimeHHMM(depTime)
+
+        const delayMinutes = stopPointTime?.delayMinutes
+        if (delayMinutes) {
+          const delayTextParts: string[] = []
+          delayTextParts.push(' ')
+          delayTextParts.push(delayMinutes > 0 ? '+' : '')
+          delayTextParts.push('' + delayMinutes)
+          delayTextParts.push("'")
+
+          locationData.delayText = delayTextParts.join('')
+        }
       }
     }
 
