@@ -275,8 +275,9 @@ export class ResultTripLegComponent implements OnInit {
 
     if (leg.legType === 'TimedLeg') {
       const timedLeg = leg as OJP.TripTimedLeg
-      const stopPointTime = isFrom ? timedLeg.fromStopPoint.departureData : timedLeg.toStopPoint.arrivalData
-
+      const stopPoint = isFrom ? timedLeg.fromStopPoint : timedLeg.toStopPoint
+      
+      const stopPointTime = isFrom ? stopPoint.departureData : stopPoint.arrivalData
       const depTime = stopPointTime?.estimatedTime ?? stopPointTime?.timetableTime
       if (depTime) {
         locationData.timeText = OJP.DateHelpers.formatTimeHHMM(depTime)
@@ -292,6 +293,8 @@ export class ResultTripLegComponent implements OnInit {
           locationData.delayText = delayTextParts.join('')
         }
       }
+
+      locationData.platformText = stopPoint.plannedPlatform
     }
 
     return locationData
