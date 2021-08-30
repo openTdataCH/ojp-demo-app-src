@@ -8,12 +8,14 @@ export class StopPoint {
   public location: Location
   public arrivalData: StopPointTime | null
   public departureData: StopPointTime | null
+  public plannedPlatform: string | null
 
-  constructor(stopPointType: StopPointType, location: Location, arrivalData: StopPointTime | null, departureData: StopPointTime | null) {
+  constructor(stopPointType: StopPointType, location: Location, arrivalData: StopPointTime | null, departureData: StopPointTime | null, plannedPlatform: string | null) {
     this.stopPointType = stopPointType
     this.location = location
     this.arrivalData = arrivalData
     this.departureData = departureData
+    this.plannedPlatform = plannedPlatform
   }
 
   public static initWithContextNode(stopPointType: StopPointType, contextNode: Node): StopPoint | null {
@@ -26,8 +28,9 @@ export class StopPoint {
 
     const arrivalData = StopPoint.computeStopPointTime('ServiceArrival', contextNode)
     const departureData = StopPoint.computeStopPointTime('ServiceDeparture', contextNode)
+    const plannedPlatform = XPathOJP.queryText('ojp:PlannedQuay/ojp:Text', contextNode)
 
-    const stopPoint = new StopPoint(stopPointType, location, arrivalData, departureData)
+    const stopPoint = new StopPoint(stopPointType, location, arrivalData, departureData, plannedPlatform)
     return stopPoint
   }
 
