@@ -14,7 +14,8 @@ export const APP_Stages: StageConfig[] = [
   },
   {
     key: 'TEST',
-    apiEndpoint: 'https://odpch-test.cloud.tyk.io/ojp-test',
+    // apiEndpoint: 'https://ojp-beta.odpch.ch/ojp/ojp',
+    apiEndpoint: 'https://www.webgis.ro/tmp/cors-proxy?url=https://ojp-beta.odpch.ch/ojp/ojp',
     authBearerKey: '57c5dadd5e6307000100005ead6b87d5ec4f48d3ad5f9414e92907d4',
   },
   {
