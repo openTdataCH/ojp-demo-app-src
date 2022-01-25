@@ -4,7 +4,7 @@
   "type": "symbol",
   "minzoom": 14.5,
   "layout": {
-    "text-field": "P+Rail\n{OJP.Attr.Text}",
+    "text-field": "P+Rail\n{locationName}",
     "text-size": 12,
     "text-justify": "left",
     "text-anchor": "top-left",
