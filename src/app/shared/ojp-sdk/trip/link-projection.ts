@@ -5,6 +5,7 @@ import { GeoPositionBBOX } from "../location/geoposition-bbox";
 export class LinkProjection {
   public coordinates: GeoPosition[];
   public bbox: GeoPositionBBOX;
+  // TODO - add length or computeLength()
 
   constructor(coordinates: GeoPosition[], bbox: GeoPositionBBOX) {
     this.coordinates = coordinates;

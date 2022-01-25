@@ -10,6 +10,7 @@ import { TripLegPropertiesEnum, TripLegDrawType, TripLegLineType } from '../../t
 import { MapLegLineTypeColor } from '../../config/map-colors'
 import { Duration } from '../../shared/duration'
 
+// TODO - duplicate with TripMotTypeKey
 enum ContinousLegMode {
   'Unknown' = 'unknown',
   'Walk' = 'walk',

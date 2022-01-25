@@ -7,7 +7,6 @@ import { MapLegTypeColor } from '../../../shared/ojp-sdk/index';
 
 interface LegLocationData {
   locationText: string,
-  // NOT YET IMPLEMENTED
   platformText: string | null,
   timeText: string | null,
   delayText: string | null,
