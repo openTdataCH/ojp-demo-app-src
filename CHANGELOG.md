@@ -4,6 +4,9 @@ OJP-Demo URL: https://opentdatach.github.io/ojp-demo-app/
 
 ----
 
+25.Jan 2022
+- Updates TEST server
+
 30.Aug 2021
 - Adds planned platform in the SDK, display it in timed legs, when available. See [#15 - Enrich Leg Component](https://github.com/openTdataCH/ojp-demo-app-src/issues/15)
 
