@@ -85,10 +85,6 @@ export class JourneyPointInputComponent implements OnInit, OnChanges {
 
   private fetchJourneyPoints(searchTerm: string) {
     let stageConfig = this.userTripService.getStageConfig()
-    if (stageConfig.key === 'TEST LA') {
-      // TEST-LA is not reliable for location lookups
-      stageConfig = this.userTripService.getStageConfig('PROD')
-    }
 
     const locationInformationRequest = OJP.LocationInformationRequest.initWithLocationName(stageConfig, searchTerm);
 

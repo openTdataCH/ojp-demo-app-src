@@ -60,10 +60,6 @@ export class TripRequest extends OJPBaseRequest {
         
         let stopPlaceRef = location.stopPlace?.stopPlaceRef ?? ''
 
-        // HACK - TEST LA needs different ids
-        // @see https://github.com/openTdataCH/ojp-demo-app-src/issues/8
-        stopPlaceRef = this.hackPatchStopPlaceRef(stopPlaceRef)
-
         placeRefNode.ele('StopPointRef', stopPlaceRef);
         placeRefNode.ele('ojp:LocationName').ele('ojp:Text', locationName)
       } else {
@@ -103,25 +99,5 @@ export class TripRequest extends OJPBaseRequest {
     if (motType === 'Shared Mobility') {
       paramsNode.ele('ojp:ItModesToCover', 'cycle');
     }
-  }
-
-  // @see https://github.com/openTdataCH/ojp-demo-app-src/issues/8
-  private hackPatchStopPlaceRef(stopPlaceRef: string): string {
-    const isTestLA = this.stageConfig.key == 'TEST LA'
-    if (!isTestLA) {
-      return stopPlaceRef
-    }
-
-    const newStopPlaceRefTemplate = 'OJP:STOP:[OPERATOR_NAME]:[STOP_PLACE_REF]|--@MRCV:11:22'
-    let operatorName = 'SBB'
-    if (stopPlaceRef.startsWith('81')) {
-      operatorName = 'OBB'
-    }
-
-    let newStopPlaceRef = newStopPlaceRefTemplate.slice()
-    newStopPlaceRef = newStopPlaceRef.replace('[OPERATOR_NAME]', operatorName)
-    newStopPlaceRef = newStopPlaceRef.replace('[STOP_PLACE_REF]', stopPlaceRef)
-
-    return newStopPlaceRef
   }
 }
