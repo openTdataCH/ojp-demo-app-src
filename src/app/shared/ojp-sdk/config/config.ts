@@ -14,14 +14,12 @@ export const APP_Stages: StageConfig[] = [
   },
   {
     key: 'TEST',
-    // apiEndpoint: 'https://ojp-beta.odpch.ch/ojp/ojp',
-    apiEndpoint: 'https://www.webgis.ro/tmp/cors-proxy?url=https://ojp-beta.odpch.ch/ojp/ojp',
+    apiEndpoint: 'https://odpch-test.cloud.tyk.io/ojp-test/',
     authBearerKey: '57c5dadd5e6307000100005ead6b87d5ec4f48d3ad5f9414e92907d4',
   },
   {
     key: 'TEST LA',
-    // apiEndpoint: 'https://odpch-test.cloud.tyk.io/la_test_active_server',
-    apiEndpoint: 'https://www.webgis.ro/tmp/cors-proxy?url=https://odpch-test.cloud.tyk.io/la_test_active_server',
+    apiEndpoint: 'https://odpch-test.cloud.tyk.io/la_test_active_server/',
     authBearerKey: '57c5dadd5e6307000100005e0e0520340d05419b8c1f13c17a20a8ab',
   }
 ]
