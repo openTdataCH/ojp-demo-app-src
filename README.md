@@ -34,7 +34,7 @@ ng serve
 - run `ng deploy` to deploy the app. 
 - the CLI will bundle the app files and assets in production mode and upload them to `gh-pages` branch of https://github.com/openTdataCH/ojp-demo-app 
 - read/write access is needed to push to repo
-- if you need to deploy to another repo, change `..architect.deploy` config in [./angular.json](./angular.json) for a different repo.
+- if you need to deploy to another repo, change `..architect.deploy` config in [./angular.json](./angular.json#L133-L140) for a different repo.
 ```
   "deploy": {
     "builder": "angular-cli-ghpages:deploy",
