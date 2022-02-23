@@ -1,29 +1,53 @@
-# ojp-demo-app-src
+# OJP Demo App
 
-Source-code repo for https://opentdatach.github.io/ojp-demo-app/
+This is the source-code repository used for developing and deploying [OJP Demo](https://opentdatach.github.io/ojp-demo-app/) web-application.
 
 ![OJP_Demo](./docs/OJP_Demo.jpg)
 
-See [docs/URLs](./docs/URLs.md) for application URL scheme parameters.
+Resources:
+- https://opentdatach.github.io/ojp-demo-app/ - production URL
+- [docs/URLs](./docs/URLs.md) - application URL scheme parameters.
+- [CHANGELOG](./CHANGELOG.md) - deployment changes.
 
-## Development server
+## Install & Development server
 
-This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 11.2.12.
+Requirements:
+- [Node.js](https://nodejs.org/en/), [npm](https://www.npmjs.com/)
+- [Angular](https://angular.io/guide/setup-local#install-the-angular-cli), version 11.x was used to generate this project via `ng new` CLI command.
 
-Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The app will automatically reload if you change any of the source files.
+Installation steps:
+- clone this repo
+- install dependencies via npm
+```
+npm install
+```
+- serve development server via `ng serve` cli
+```
+ng serve
+```
+- navigate to [http://localhost:4200](http://localhost:4200/) in the browser
 
 ## Deploy to production
 
-We are using [Github Pages](https://pages.github.com/) to publish and host the OJP Demo app.
+[Github Pages](https://pages.github.com/) is used to publish and host the OJP Demo app.
 
-Run `ng deploy` to deploy the app. The script will bundle the app files and assets in production mode and upload them to `gh-pages` branch of https://github.com/openTdataCH/ojp-demo-app .
-
-The app is available under https://opentdatach.github.io/ojp-demo-app/
-
-See [CHANGELOG](./CHANGELOG.md) for deployment changes.
+- run `ng deploy` to deploy the app. 
+- the CLI will bundle the app files and assets in production mode and upload them to `gh-pages` branch of https://github.com/openTdataCH/ojp-demo-app 
+- read/write access is needed to push to repo
+- if you need to deploy to another repo, change `..architect.deploy` config in [./angular.json](./angular.json) for a different repo.
+```
+  "deploy": {
+    "builder": "angular-cli-ghpages:deploy",
+    "options": {
+      "repo": "git@github.com:openTdataCH/ojp-demo-app.git",
+      "baseHref": "https://openTdataCH.github.io/ojp-demo-app/",
+      "name": "OJP Demo App"
+    }
+  }
+```
 
 ## License
 
 The project is released under a [MIT license](./LICENSE.txt).
 
-Copyright (c) 2021 Open Data Platform Mobility Switzerland - [opentransportdata.swiss](https://opentransportdata.swiss/en/).
+Copyright (c) 2021 - 2022 Open Data Platform Mobility Switzerland - [opentransportdata.swiss](https://opentransportdata.swiss/en/).
