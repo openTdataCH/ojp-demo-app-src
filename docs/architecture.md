@@ -1,6 +1,6 @@
 # Architecture
 
-![image](./OJP_Demo_Architecture.jpg)
+![image](./img/OJP_Demo_Architecture.jpg)
 
 OJP Demo is a [TypeScript](https://www.typescriptlang.org/) web application, composed of the following:
 - OJP JavaScript SDK - written is TypeScript only, its main responsability is to comunicate with [OJP APIs](https://opentransportdata.swiss/en/cookbook/open-journey-planner-ojp/). Following OSS libraries are used for querying and parsing the XML response:
@@ -11,7 +11,7 @@ OJP Demo is a [TypeScript](https://www.typescriptlang.org/) web application, com
   - [SBB Angular v.12](https://angular-v12.app.sbb.ch/) - OSS component library from SBB for UI elements like autocomplete, date pickers, etc.
   - [Bootstrap](https://getbootstrap.com/) - OSS web framework for final HTML / CSS appearance
 
-![image](./OJP_Demo_OSS_Components.jpg)
+![image](./img/OJP_Demo_OSS_Components.jpg)
 
 See also
 - [App Components](./app_components.md)
