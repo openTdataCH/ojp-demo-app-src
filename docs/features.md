@@ -1,6 +1,6 @@
 # OJP App Features
 
-## From / To Search
+## From / To / Via Search
 
 - from/to endpoints can be pick-ed up using the autocomplete (type-ahead) feature
 
