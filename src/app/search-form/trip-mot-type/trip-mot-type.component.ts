@@ -37,12 +37,16 @@ export class TripMotTypeComponent implements OnInit {
   ngOnInit() {
     this.tripMotType = this.userTripService.tripMotTypes[this.tripMotTypeIdx]
 
-    this.tripMotTypeDataModel.isNotLastSegment = this.tripMotTypeIdx < (this.userTripService.tripMotTypes.length - 1)
+    this.tripMotTypeDataModel.isNotLastSegment = !this.isLastSegment();
     this.tripMotTypeDataModel.sectionRequestData = null
 
     this.userTripService.activeTripSelected.subscribe(trip => {
       this.updateRequestDataModel()
     })
+  }
+
+  private isLastSegment(): boolean {
+    return this.tripMotTypeIdx === (this.userTripService.tripMotTypes.length - 1);
   }
 
   public handleTapOnMapButton() {
@@ -99,6 +103,8 @@ export class TripMotTypeComponent implements OnInit {
   }
 
   private updateRequestDataModel() {
+    this.tripMotTypeDataModel.isNotLastSegment = !this.isLastSegment();
+
     const lastJourneyResponse = this.userTripService.lastJourneyResponse
     if (lastJourneyResponse === null) {
       this.tripMotTypeDataModel.sectionRequestData = null
