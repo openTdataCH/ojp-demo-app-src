@@ -2,7 +2,7 @@
 
 This is the source-code repository used for developing and deploying [OJP Demo](https://opentdatach.github.io/ojp-demo-app/) web-application.
 
-![OJP_Demo](./docs/OJP_Demo.jpg)
+![OJP_Demo](./docs/img/OJP_Demo.jpg)
 
 ## Quick Resources
 
