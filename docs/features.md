@@ -4,7 +4,7 @@
 
 - from/to endpoints can be pick-ed up using the autocomplete (type-ahead) feature
 
-![image](./img/features/search_type_ahead.jpg)
+![image](./img/features/search_type_ahead_v2.jpg)
 
 - clicking on the `From`, `To` labels will zoom the map to the endpoint locations
 
