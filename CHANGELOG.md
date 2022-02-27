@@ -4,6 +4,10 @@ OJP-Demo URL: https://opentdatach.github.io/ojp-demo-app/
 
 ----
 
+27.Feb 2022
+- Updates documentation - [./docs](https://github.com/openTdataCH/ojp-demo-app-src/tree/main/docs)
+- Updates OJP API key
+
 31.Jan 2022
 - Updates TEST, TEST LA servers with CORS support
 - Remove TEST LA hacks - use stop IDs from LocationInformationRequest lookup for TripRequest queries
