@@ -18,6 +18,12 @@
 
 ![image](./img/features/map_drag_marker.jpg)
 
+## Multi-modal Journeys Search
+
+- a simple search has only a `From` and a `To` endpoint without any `Via`(intermediary) point. This search will return `ojp:TripResult/ojp:Trip` entries which are composed of individual, mono-modal `ojp:TripLeg` entries. See [request](./request_examples/Gurten_Zuerich-simple-01-request.xml) and [response](./request_examples/Gurten_Zuerich-simple-02-response.xml) XMLs.
+
+![image](./img/features/OJPTripRequest-Search-Map.jpg)
+
 ----
 
 VIP
