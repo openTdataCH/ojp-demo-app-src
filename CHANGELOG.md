@@ -7,6 +7,7 @@ OJP-Demo URL: https://opentdatach.github.io/ojp-demo-app/
 27.Feb 2022
 - Updates documentation - [./docs](https://github.com/openTdataCH/ojp-demo-app-src/tree/main/docs)
 - Updates OJP API key
+- Fix the bug which prevented the via point to be added after selecting on the map
 
 31.Jan 2022
 - Updates TEST, TEST LA servers with CORS support
