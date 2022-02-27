@@ -14,7 +14,7 @@
 
 ![image](./img/features/map_right_click.jpg)
 
-- the `From`/ `To`/ `Via` position of the map markers can be adjusted via dragging
+- the `From`/ `To`/ `Via` position of the map markers can be adjusted via dragging the marker on the map
 
 ![image](./img/features/map_drag_marker.jpg)
 
