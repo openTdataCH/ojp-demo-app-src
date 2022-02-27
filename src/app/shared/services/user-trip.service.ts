@@ -181,8 +181,6 @@ export class UserTripService {
     }
 
     if (endpointType === 'Via') {
-      // debugger;
-
       this.viaLocations.push(location)
       this.tripMotTypes.push('Default')
 
