@@ -10,7 +10,7 @@ export const APP_Stages: StageConfig[] = [
   {
     key: 'PROD',
     apiEndpoint: 'https://api.opentransportdata.swiss/ojp2020',
-    authBearerKey: '57c5dbbbf1fe4d0001000018c80803a382b64bf3583d5f1801a5959d',
+    authBearerKey: '57c5dbbbf1fe4d0001000018e0f7158cb2b347e3a6745e3ef949e7bf',
   },
   {
     key: 'TEST',
