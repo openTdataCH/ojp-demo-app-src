@@ -44,10 +44,11 @@
 - the `TripLeg` nodes from the prev requests are prepended to the `TripLeg` nodes of the last `OJPTripRequest`. 
 - the final journey stats (duration, start, end datetimes) are updated
 
-----
+## Inspect OJP XML
 
-VIP
-- document the debug XML
+The OJP [TripRequest](https://opentransportdata.swiss/en/cookbook/ojptriprequest/) and [LocationInformationRequest](https://opentransportdata.swiss/en/cookbook/location-information-service/) requests can be debugged directly in the application
+
+![image](./img/features/Debug_OJP_XML.jpg)
 
 ----
 
