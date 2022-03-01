@@ -44,11 +44,17 @@
 - the `TripLeg` nodes from the prev requests are prepended to the `TripLeg` nodes of the last `OJPTripRequest`. 
 - the final journey stats (duration, start, end datetimes) are updated
 
-## Inspect OJP XML
+## Inspect OJP request/response XML
 
-The OJP [TripRequest](https://opentransportdata.swiss/en/cookbook/ojptriprequest/) and [LocationInformationRequest](https://opentransportdata.swiss/en/cookbook/location-information-service/) requests can be debugged directly in the application
+The OJP [TripRequest](https://opentransportdata.swiss/en/cookbook/ojptriprequest/) and [LocationInformationRequest](https://opentransportdata.swiss/en/cookbook/location-information-service/) request / response can be debugged directly in the application, click on the `</>` icon next to the MOT select or POI map layer.
 
-![image](./img/features/Debug_OJP_XML.jpg)
+![image](./img/features/Debug_OJP_XML_v2.jpg)
+
+## Use custom OJP TripRequest XML
+
+The user can upload a custom TripRequest request and response XML.
+
+![image](./img/features/Debug_Custom_OJP_XML.jpg)
 
 ----
 
