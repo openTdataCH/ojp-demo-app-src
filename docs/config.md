@@ -4,6 +4,7 @@
 
 `angular.json`
 
+- path: [./angular.json](./../angular.json)
 - main Angular build settings
 - created with `ng new`
 - following settings were customized 
@@ -12,10 +13,12 @@
 
 `package.json`
 
+- path: [./package.json](./../package.json)
 - the dependencies used to build and run the application
 
 `tsconfig.json`
 
+- path: [./tsconfig.json](./../tsconfig.json)
 - TypeScript related settings
 
 ## OJP SDK Settings
