@@ -9,6 +9,8 @@ import { TripTimedLeg } from './leg/trip-timed-leg'
 import { TripMotType } from '../types/trip-mot-type'
 import { TripContinousLeg } from './leg/trip-continous-leg'
 import { Duration } from '../shared/duration'
+import { Location } from '../location/location';
+import { GeoPositionBBOX } from '../location/geoposition-bbox'
 
 export class Trip {
   public id: string
@@ -176,5 +178,38 @@ export class Trip {
     }
 
     return geojson
+  }
+
+  public computeFromLocation(): Location | null {
+    if (this.legs.length === 0) {
+      return null;
+    }
+
+    const firstLeg = this.legs[0];
+    return firstLeg.fromLocation;
+  }
+
+  public computeToLocation(): Location | null {
+    if (this.legs.length === 0) {
+      return null;
+    }
+
+    const lastLeg = this.legs[this.legs.length - 1];
+    return lastLeg.toLocation;
+  }
+
+  public computeBBOX(): GeoPositionBBOX {
+    const bbox = new GeoPositionBBOX([]);
+
+    const fromGeoPosition = this.computeFromLocation()?.geoPosition;
+    if (fromGeoPosition) {
+      bbox.extend(fromGeoPosition);
+    }
+    const toGeoPosition = this.computeToLocation()?.geoPosition;
+    if (toGeoPosition) {
+      bbox.extend(toGeoPosition);
+    }
+
+    return bbox;
   }
 }
