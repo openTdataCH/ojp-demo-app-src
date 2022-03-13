@@ -4,6 +4,10 @@ OJP-Demo URL: https://opentdatach.github.io/ojp-demo-app/
 
 ----
 
+13.Mar 2022
+- Added support to automatic perform the search via `do_search` query param
+- Split the results / map for `-md` and smaller screens
+
 27.Feb 2022
 - Updates documentation - [./docs](https://github.com/openTdataCH/ojp-demo-app-src/tree/main/docs)
 - Updates OJP API key
