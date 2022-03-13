@@ -2,6 +2,7 @@ import { Component, OnInit, ViewChild } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
 
 import { UserTripService } from '../shared/services/user-trip.service'
+import { MapService } from '../shared/services/map.service';
 import { InputXmlPopoverComponent } from './input-xml-popover/input-xml-popover.component';
 
 import { SbbDialog } from "@sbb-esta/angular-business/dialog";
@@ -39,7 +40,8 @@ export class SearchFormComponent implements OnInit {
   constructor(
     private notificationToast: SbbNotificationToast,
     private tripXmlPopover: SbbDialog,
-    public userTripService: UserTripService
+    public userTripService: UserTripService,
+    public mapService: MapService
   ) {
     const searchDate = this.userTripService.departureDate
     const timeFormatted = OJP.DateHelpers.formatTimeHHMM(searchDate);
@@ -86,6 +88,9 @@ export class SearchFormComponent implements OnInit {
       this.requestDuration = null
     });
 
+    if (this.useMocks) {
+      this.initLocationsFromMocks()
+    }
   }
 
   private updateLocationTexts() {
@@ -112,7 +117,12 @@ export class SearchFormComponent implements OnInit {
   }
 
   private initLocationsFromMocks() {
-    const mockURL = 'assets/mocks/on-demand-response.xml'
+    let mockBaseFolder = 'assets/mocks/ojp-trips-response/';
+
+    let mockURL = 'n/a';
+    
+    mockURL = mockBaseFolder + 'on-demand-response.xml';
+
     const responsePromise = fetch(mockURL);
 
     console.log('USE MOCKS: ' + mockURL);
@@ -120,13 +130,24 @@ export class SearchFormComponent implements OnInit {
     responsePromise.then(response => {
       response.text().then(responseText => {
         const tripsResponse = OJP.TripsResponse.initWithXML(responseText, 'Default');
-        this.requestDuration = 'LOCAL MOCK';
 
-        console.log('MOCK RESPONSE');
+        console.log('MOCK RESPONSE from ' + mockURL);
         console.log(tripsResponse);
 
-        this.userTripService.updateTrips(tripsResponse.trips)
-        this.tripResponseFormattedXML = tripsResponse.responseXMLText
+        this.handleCustomTripResponse(tripsResponse);
+        const friendlyNameParts = mockURL.split('/');
+        const friendlyName = friendlyNameParts[friendlyNameParts.length - 1];
+        this.requestDuration = 'MOCK from ' + friendlyName;
+
+        if (tripsResponse.trips.length > 0) {
+          const firstTrip = tripsResponse.trips[0];
+          const bbox = firstTrip.computeBBOX();
+
+          const mapData = {
+            bounds: bbox.asLngLatBounds()
+          }
+          this.mapService.newMapBoundsRequested.emit(mapData);
+        }
       });
     });
   }
