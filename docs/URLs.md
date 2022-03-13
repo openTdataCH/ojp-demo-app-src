@@ -14,6 +14,7 @@ OJP-Demo URL: https://opentdatach.github.io/ojp-demo-app/
 |mot_types | `default;walk` | List of MOT types: `default`, `walk`, `self-drive-car` separated by semi-colon `;`. Number of MOT types is equal with number of via parameters + 1 . If missing it will use `default`, meaning that no `ItModesToCover` filter will be used for the [OJPTripRequest](https://opentransportdata.swiss/de/cookbook/ojptriprequest/) calls. |
 |trip_datetime| Trip datetime in `yyyy-MM-dd HH:mm` format | `2021-08-01 10:00` |
 |stage| `prod` or `test` | To specify the OJP API backend. |
+|do_search| `false` or `true` | If `true` the search will be performed after the endpoints information is init-ed. Default is `false`. |
 
 ## Examples
 

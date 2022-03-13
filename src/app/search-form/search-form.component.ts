@@ -88,6 +88,14 @@ export class SearchFormComponent implements OnInit {
       this.requestDuration = null
     });
 
+    this.userTripService.defaultsInited.subscribe(nothing => {
+      const queryParams = new URLSearchParams(document.location.search);
+      const doSearch = queryParams.get('do_search') ?? false;
+      if (doSearch) {
+        this.handleTapOnSearch();
+      }
+    });
+
     if (this.useMocks) {
       this.initLocationsFromMocks()
     }

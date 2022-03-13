@@ -20,6 +20,7 @@ export class UserTripService {
 
   public permalinkURLAddress: string | null
 
+  public defaultsInited = new EventEmitter<void>();
   public locationsUpdated = new EventEmitter<void>();
   public geoLocationsUpdated = new EventEmitter<void>();
   public tripsUpdated = new EventEmitter<OJP.Trip[]>();
@@ -155,6 +156,8 @@ export class UserTripService {
         }
         this.mapService.newMapBoundsRequested.emit(mapData);
       }
+
+      this.defaultsInited.emit();
     });
   }
 
