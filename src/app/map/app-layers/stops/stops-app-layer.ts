@@ -62,4 +62,24 @@ export class StopsAppLayer extends LocationMapAppLayer implements MapAppLayer {
     return popupHTML
   }
 
+  protected computeFeatureFromLocation(location: OJP.Location): GeoJSON.Feature | null {
+    const feature = location.asGeoJSONFeature();
+    if (feature === null || feature.properties === null) {
+      return feature;
+    }
+
+    const featureStopPlaceRef = feature.properties['stopPlace.stopPlaceRef'] as string;
+    let featureStopPlaceRefLabel = featureStopPlaceRef.slice();
+
+    // TEST LA issue - long ids are too long - trim the Mapbox layer label if needed
+    const maxCharsNo = 32;
+    if (featureStopPlaceRefLabel.length > maxCharsNo) {
+      featureStopPlaceRefLabel = featureStopPlaceRef.substring(0, maxCharsNo) + '...';
+    }
+
+    feature.properties['stopPlace.stopPlaceRefLabel'] = featureStopPlaceRefLabel;
+
+    return feature
+  }
+
 }
