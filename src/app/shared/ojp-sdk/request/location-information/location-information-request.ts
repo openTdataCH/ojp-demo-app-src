@@ -118,7 +118,9 @@ export class LocationInformationRequest extends OJPBaseRequest {
 
     const stopPlaceRef = this.requestParams.stopPlaceRef ?? null;
     if (stopPlaceRef) {
-      requestNode.ele('ojp:PlaceRef').ele('ojp:StopPlaceRef', stopPlaceRef);
+      const requestPlaceRefNode = requestNode.ele('ojp:PlaceRef');
+      requestPlaceRefNode.ele('ojp:StopPlaceRef', stopPlaceRef);
+      requestPlaceRefNode.ele('ojp:LocationName').ele('ojp:Text', '');
     }
 
     const bboxWest = this.requestParams.bboxWest ?? null;
