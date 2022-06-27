@@ -1,5 +1,7 @@
 import { XPathOJP } from '../helpers/xpath-ojp'
 
+type PublicTransportPictogram = 'picto-bus' | 'picto-railway' | 'picto-tram' | 'picto-rack-railway' | 'picto-funicular' | 'picto-cablecar' | 'picto-gondola' | 'picto-chairlift' | 'picto-boat' | 'car-sharing' | 'picto-bus-fallback';
+
 export class PublicTransportMode {
   public ptMode: string
   public name: string | null
@@ -32,5 +34,48 @@ export class PublicTransportMode {
 
   public isRail(): boolean {
     return this.ptMode === 'rail';
+  }
+
+  public computePublicTransportPictogram(): PublicTransportPictogram {
+    if (this.ptMode === 'bus') {
+      return 'picto-bus';
+    }
+
+    if (this.isRail()) {
+      return 'picto-railway';
+    }
+
+    if (this.ptMode === 'tram') {
+      return 'picto-tram';
+    }
+
+    // ojp:PtMode === funicular
+    if (this.shortName === 'CC') {
+      return 'picto-rack-railway';
+    }
+    
+    // ojp:PtMode === telecabin
+    if (this.shortName === 'FUN') {
+      return 'picto-funicular';
+    }
+    if (this.shortName === 'PB') {
+      return 'picto-cablecar';
+    }
+    if (this.shortName === 'GB') {
+      return 'picto-gondola';
+    }
+    if (this.shortName === 'SL') {
+      return 'picto-chairlift';
+    }
+
+    if (this.ptMode === 'water') {
+      return 'picto-boat';
+    }
+
+    if (this.isDemandMode) {
+      return 'car-sharing';
+    }
+
+    return 'picto-bus-fallback';
   }
 }
