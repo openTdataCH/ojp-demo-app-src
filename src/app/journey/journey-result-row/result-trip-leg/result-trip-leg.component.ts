@@ -235,13 +235,7 @@ export class ResultTripLegComponent implements OnInit {
 
     if (leg.legType === 'TimedLeg') {
       const timedLeg = leg as OJP.TripTimedLeg
-      if (timedLeg.service.ptMode.isRail()) {
-        return 'picto-railway'
-      }
-
-      if (timedLeg.service.ptMode.isDemandMode) {
-        return 'car-sharing'
-      }
+      return timedLeg.service.ptMode.computePublicTransportPictogram();
     }
 
     if (leg.legType === 'ContinousLeg') {
@@ -257,7 +251,7 @@ export class ResultTripLegComponent implements OnInit {
       return 'picto-walk'
     }
 
-    return 'picto-bus'
+    return 'picto-bus-fallback';
   }
 
   private computeLocationData(leg: OJP.TripLeg, endpointType: OJP.JourneyPointType): LegLocationData {
