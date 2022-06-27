@@ -36,6 +36,25 @@ export class PublicTransportMode {
     return this.ptMode === 'rail';
   }
 
+  public hasPrecisePolyline(): boolean {
+    if (this.isDemandMode) {
+      return true;
+    }
+
+    const ignorePtPictograms: PublicTransportPictogram[] = [
+      'picto-bus',
+      'picto-bus-fallback',
+      'picto-tram'
+    ];
+
+    const ptPictogram = this.computePublicTransportPictogram();
+    if (ignorePtPictograms.indexOf(ptPictogram) === -1) {
+      return true;
+    }
+
+    return false;
+  }
+
   public computePublicTransportPictogram(): PublicTransportPictogram {
     if (this.ptMode === 'bus') {
       return 'picto-bus';

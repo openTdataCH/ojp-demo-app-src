@@ -176,7 +176,7 @@ export class TripTimedLeg extends TripLeg {
   }
 
   protected useBeeline(): boolean {
-    const usedDetailedLine = this.service.ptMode.isRail() || this.service.ptMode.isDemandMode
+    const usedDetailedLine = this.service.ptMode.hasPrecisePolyline();
     const useBeeline = super.useBeeline() || !usedDetailedLine
     return useBeeline
   }
