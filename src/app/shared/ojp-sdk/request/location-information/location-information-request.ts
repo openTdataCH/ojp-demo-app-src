@@ -154,8 +154,8 @@ export class LocationInformationRequest extends OJPBaseRequest {
 
       if (this.requestParams.poiOsmTag) {
         const osmTagNode = restrictionsNode.ele('ojp:PointOfInterestFilter').ele('ojp:PointOfInterestCategory').ele('ojp:OsmTag')
-        osmTagNode.ele('ojp:Tag', this.requestParams.poiOsmTag)
-        osmTagNode.ele('ojp:Value', 'yes')
+        osmTagNode.ele('ojp:Tag', 'amenity')
+        osmTagNode.ele('ojp:Value', this.requestParams.poiOsmTag)
       }
     }
   }
