@@ -337,13 +337,11 @@ export class UserTripService {
   }
 
   public getStageConfig(forStage: OJP.APP_Stage = this.currentAppStage): OJP.StageConfig {
-    const stageConfig = OJP.APP_Stages.find(appStage => {
-      return appStage.key === forStage
-    })
+    const stageConfig = OJP.APP_Stages[forStage] ?? null
 
-    if (stageConfig === undefined) {
+    if (stageConfig === null) {
       console.error('ERROR - cant find stage' + forStage + ' using PROD');
-      return OJP.APP_Stages[0]
+      return OJP.APP_Stages['PROD']
     }
     
     return stageConfig
