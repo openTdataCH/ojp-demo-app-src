@@ -49,6 +49,10 @@ export class Location {
       }
     })
 
+    if (location.stopPointRef === null && location.stopPlace?.stopPlaceRef) {
+      location.stopPointRef = location.stopPlace.stopPlaceRef;
+    }
+
     return location
   }
 
