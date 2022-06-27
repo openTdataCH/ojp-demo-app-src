@@ -18,8 +18,8 @@ export class JourneyService {
     this.journeyNumber = null;
   }
 
-  public static initFromTripLeg(tripLegNode: Node): JourneyService | null {
-    const serviceNode = XPathOJP.queryNode('ojp:Service', tripLegNode)
+  public static initFromContextNode(contextNode: Node): JourneyService | null {
+    const serviceNode = XPathOJP.queryNode('ojp:Service', contextNode)
     if (serviceNode === null) {
       return null;
     }
@@ -37,7 +37,7 @@ export class JourneyService {
     const legService = new JourneyService(journeyRef, ptMode, agencyID);
 
     legService.serviceLineNumber = XPathOJP.queryText('ojp:PublishedLineName/ojp:Text', serviceNode);
-    legService.journeyNumber = XPathOJP.queryText('ojp:Extension/ojp:PublishedJourneyNumber/ojp:Text', tripLegNode);
+    legService.journeyNumber = XPathOJP.queryText('ojp:Extension/ojp:PublishedJourneyNumber/ojp:Text', contextNode);
 
     return legService
   }

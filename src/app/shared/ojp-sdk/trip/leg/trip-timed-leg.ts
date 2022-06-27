@@ -40,7 +40,7 @@ export class TripTimedLeg extends TripLeg {
       return null;
     }
 
-    const service = JourneyService.initFromTripLeg(legNode);
+    const service = JourneyService.initFromContextNode(legNode);
     if (service === null) {
       return null
     }
