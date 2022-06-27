@@ -4,6 +4,14 @@ OJP-Demo URL: https://opentdatach.github.io/ojp-demo-app/
 
 ----
 
+26.June 2022
+- Add support for additional public transport pictograms - see [#47 Add all PtMode of Transport (except air)](https://github.com/openTdataCH/ojp-demo-app-src/issues/47).
+- OJP SDK: add `StopEvent` and `StopEventRequest` to build `OJPStopEventRequest` requests - see [#49 - SDK to include StopEventRequest](https://github.com/openTdataCH/ojp-demo-app-src/issues/49)
+
+05.May 2022
+- Fix for the initial stops lookup, for `PlaceRef` stop_ids (an empty) `LocationName` is required
+- TEST LA stop labels are trimmed if stopRef is too long (check in Innsbruck area)
+
 13.Mar 2022
 - Added support to automatic perform the search via `do_search` query param
 - Split the results / map for `-md` and smaller screens
