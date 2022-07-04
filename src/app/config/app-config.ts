@@ -17,3 +17,7 @@ const app_stages: Record<OJP.APP_Stage, OJP.StageConfig> = {
       authBearerKey: '57c5dadd5e6307000100005e0e0520340d05419b8c1f13c17a20a8ab',
     }
 }
+
+export const APP_CONFIG = {
+    app_stages: app_stages,
+}
