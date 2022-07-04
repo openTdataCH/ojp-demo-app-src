@@ -1,19 +1,34 @@
 import { XPathOJP } from "../helpers/xpath-ojp"
 
+// OJP reference - these are the same?
+//  - 8.4.5.2 StopPoint Structure
+//  - 8.4.5.3 StopPlace tructure
+type StopType = 'StopPlace' | 'StopPoint'
+
 export class StopPlace {
   public stopPlaceRef: string
   public stopPlaceName: string
   public topographicPlaceRef: string | null
+  public stopType: StopType
 
-  constructor(stopPlaceRef: string, stopPlaceName: string, topographicPlaceRef: string | null) {
+  constructor(stopPlaceRef: string, stopPlaceName: string, topographicPlaceRef: string | null,  stopType: StopType = 'StopPlace') {
     this.stopPlaceRef = stopPlaceRef
     this.stopPlaceName = stopPlaceName
     this.topographicPlaceRef = topographicPlaceRef
+    this.stopType = stopType
   }
 
   public static initFromContextNode(contextNode: Node): StopPlace | null {
-    const stopPlaceRef = XPathOJP.queryText('ojp:StopPlace/ojp:StopPlaceRef', contextNode)
-    const stopPlaceName = XPathOJP.queryText('ojp:StopPlace/ojp:StopPlaceName/ojp:Text', contextNode)
+    let stopType: StopType = 'StopPlace';
+    let stopPlaceRef = XPathOJP.queryText('ojp:StopPlace/ojp:StopPlaceRef', contextNode)
+    let stopPlaceName = XPathOJP.queryText('ojp:StopPlace/ojp:StopPlaceName/ojp:Text', contextNode)
+
+    if (!(stopPlaceRef && stopPlaceName)) {
+      // Try to build the StopPlace from StopPoint
+      stopType = 'StopPoint';
+      stopPlaceRef = XPathOJP.queryText('ojp:StopPoint/siri:StopPointRef', contextNode)
+      stopPlaceName = XPathOJP.queryText('ojp:StopPoint/ojp:StopPointName/ojp:Text', contextNode)
+    }
 
     if (!(stopPlaceRef && stopPlaceName)) {
       return null;
