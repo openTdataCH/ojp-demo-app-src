@@ -1,9 +1,12 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { SbbDialog } from '@sbb-esta/angular-business/dialog';
+
+import * as OJP from '../../shared/ojp-sdk/index'
+
+import { DebugXmlPopoverComponent } from '../debug-xml-popover/debug-xml-popover.component';
+
 import { MapService } from 'src/app/shared/services/map.service';
 import { UserTripService } from 'src/app/shared/services/user-trip.service';
-import * as OJP from '../../shared/ojp-sdk/index'
-import { DebugXmlPopoverComponent } from '../debug-xml-popover/debug-xml-popover.component';
 
 interface TripMotTypeDataModel {
   sectionRequestData: OJP.RequestData | null,
