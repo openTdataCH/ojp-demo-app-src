@@ -1,5 +1,4 @@
 import { EventEmitter, Injectable } from '@angular/core'
-import { MapPoiPropertiesEnum, MapPoiTypeEnum } from '../../map/app-layers/map-poi-type-enum'
 import * as OJP from '../ojp-sdk/index'
 import { DateHelpers, TripMotTypeHelpers } from '../ojp-sdk/index'
 import { MapService } from './map.service'
@@ -179,23 +178,6 @@ export class UserTripService {
     if (endpointType === 'Via') {
       this.viaLocations.push(location)
       this.tripMotTypes.push('Default')
-
-      const featureProperties = location.geoPosition?.properties
-      if (featureProperties) {
-        const tripMotIdx = this.viaLocations.length
-
-        const poiType: MapPoiTypeEnum | null = featureProperties[MapPoiPropertiesEnum.PoiType] ?? null
-
-        if (poiType === 'BikeSharing') {
-          this.tripMotTypes[tripMotIdx - 1] = 'Walking'
-          this.tripMotTypes[tripMotIdx] = 'Shared Mobility'
-        }
-
-        if (poiType === 'ParkAndRail') {
-          this.tripMotTypes[tripMotIdx - 1] = 'Self-Driving Car'
-          this.tripMotTypes[tripMotIdx] = 'Default'
-        }
-      }
     }
 
     this.locationsUpdated.emit();
