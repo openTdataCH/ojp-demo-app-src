@@ -26,11 +26,11 @@ export class MapHelpers {
     const bboxPx: [mapboxgl.PointLike, mapboxgl.PointLike] = [
       [
         pointPx.x - width / 2,
-        pointPx.y + height * 1.2,
+        pointPx.y + height / 2,
       ],
       [
         pointPx.x + width / 2,
-        pointPx.y + height * 0.2,
+        pointPx.y - height / 2,
       ]
     ]
 
