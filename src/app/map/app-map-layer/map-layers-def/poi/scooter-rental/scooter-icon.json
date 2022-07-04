@@ -1,0 +1,11 @@
+{
+  "id": "[LAYER_ID]",
+  "source": "[SOURCE_ID]",
+  "type": "symbol",
+  "minzoom": 0.0,
+  "layout": {
+    "icon-image": "poi-scooter",
+    "icon-allow-overlap": true,
+    "icon-size": 0.4
+  }
+}
