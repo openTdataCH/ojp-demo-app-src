@@ -1,6 +1,5 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { SbbDialog } from '@sbb-esta/angular-business/dialog';
-import { MapPoiPropertiesEnum } from 'src/app/map/app-layers/map-poi-type-enum';
 import { MapService } from 'src/app/shared/services/map.service';
 import { UserTripService } from 'src/app/shared/services/user-trip.service';
 import * as OJP from '../../shared/ojp-sdk/index'
@@ -61,31 +60,6 @@ export class TripMotTypeComponent implements OnInit {
     }
 
     const defaultName = nextViaLocation.geoPosition?.asLatLngString() ?? ''
-    const featureProperties = nextViaLocation.geoPosition?.properties ?? null
-
-    if (featureProperties === null) {
-      return defaultName
-    }
-
-    const nextViaPoiType = featureProperties[MapPoiPropertiesEnum.PoiType] ?? null
-    if (nextViaPoiType === null) {
-      return defaultName
-    }
-
-    if (nextViaPoiType === 'BikeSharing') {
-      const stationName = 'Donkey Rep. ' + featureProperties['OJP.Attr.Text'] ?? ''
-      return stationName
-    }
-
-    if (nextViaPoiType === 'ParkAndRail') {
-      const stationName = featureProperties['OJP.Attr.Text'] ?? ''
-      return stationName
-    }
-
-    if (nextViaPoiType === 'PublicTransportStop') {
-      const stationName = 'Stop ' + (featureProperties['stopPlace.stopPlaceName'] ?? '')
-      return stationName
-    }
 
     return defaultName
   }
