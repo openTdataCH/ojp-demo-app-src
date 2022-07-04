@@ -1,4 +1,4 @@
-import { StageConfig } from "../../config/config";
+import { StageConfig } from "../../types/stage-config";
 import { JourneySection } from "../../journey/journey-section";
 import { JourneyResponse } from "../../journey/journey-response";
 import { Trip } from "../../trip";

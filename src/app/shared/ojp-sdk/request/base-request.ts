@@ -1,6 +1,6 @@
 import xmlbuilder from 'xmlbuilder';
 import { RequestErrorData } from './request-error'
-import { StageConfig } from '../config/config';
+import { StageConfig } from '../types/stage-config';
 
 export interface RequestData {
   requestXmlS: string | null

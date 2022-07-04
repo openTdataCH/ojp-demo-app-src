@@ -2,7 +2,7 @@ import { JourneyPointType } from '../../types/journey-points';
 import { OJPBaseRequest } from '../base-request';
 import { TripsRequestParams } from './trips-request-params';
 import { TripsResponse } from '../../trips/trips-response'
-import { StageConfig } from '../../config/config';
+import { StageConfig } from '../../types/stage-config';
 import { RequestErrorData } from './../request-error'
 
 export class TripRequest extends OJPBaseRequest {

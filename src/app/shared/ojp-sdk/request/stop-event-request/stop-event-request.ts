@@ -1,6 +1,6 @@
 import { XPathOJP } from '../../helpers/xpath-ojp';
 
-import { StageConfig } from '../../config/config'
+import { StageConfig } from '../../types/stage-config'
 import { OJPBaseRequest } from '../base-request'
 import { StopEvent } from '../../stop-event/stop-event';
 import { Location } from '../../location/location'

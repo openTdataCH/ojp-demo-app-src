@@ -1,6 +1,6 @@
 import xmlbuilder from 'xmlbuilder';
 
-import { StageConfig } from '../../config/config'
+import { StageConfig } from '../../types/stage-config'
 import { XPathOJP } from '../../helpers/xpath-ojp';
 import { Location } from '../../location/location';
 import { GeoRestrictionPoiOSMTag, GeoRestrictionType } from '../../types/geo-restriction.type';

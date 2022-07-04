@@ -1,7 +1,11 @@
 import { EventEmitter, Injectable } from '@angular/core'
-import * as OJP from '../ojp-sdk/index'
+
+import { APP_CONFIG } from 'src/app/config/app-config'
+
 import { DateHelpers, TripMotTypeHelpers } from '../ojp-sdk/index'
 import { MapService } from './map.service'
+
+import * as OJP from '../ojp-sdk/index'
 
 type LocationUpdateSource = 'SearchForm' | 'MapDragend' | 'MapPopupClick'
 
@@ -312,11 +316,11 @@ export class UserTripService {
   }
 
   public getStageConfig(forStage: OJP.APP_Stage = this.currentAppStage): OJP.StageConfig {
-    const stageConfig = OJP.APP_Stages[forStage] ?? null
+    const stageConfig = APP_CONFIG.app_stages[forStage] ?? null
 
     if (stageConfig === null) {
       console.error('ERROR - cant find stage' + forStage + ' using PROD');
-      return OJP.APP_Stages['PROD']
+      return APP_CONFIG.app_stages['PROD']
     }
     
     return stageConfig
