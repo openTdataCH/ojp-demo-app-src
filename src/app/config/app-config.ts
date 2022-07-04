@@ -1,5 +1,13 @@
 import * as OJP from '../shared/ojp-sdk/index'
 
+export interface AppMapLayerOptions {
+    LIR_Restriction_Type: OJP.GeoRestrictionType
+    LIR_POI_Type?: null | OJP.GeoRestrictionPoiOSMTag
+    minZoom: number
+    layer_ids: string[],
+    click_layer_ids?: string[] | 'SAME_AS_LAYER_IDS' | null
+}
+
 const app_stages: Record<OJP.APP_Stage, OJP.StageConfig> = {
     'PROD': {
       key: 'PROD',
@@ -18,6 +26,63 @@ const app_stages: Record<OJP.APP_Stage, OJP.StageConfig> = {
     }
 }
 
+const map_app_map_layers: Record<string, AppMapLayerOptions> = {
+    'stops': {
+        LIR_Restriction_Type: 'stop',
+        minZoom: 13,
+        layer_ids: [
+            'stops-circle',
+            'stops-label',
+        ],
+        click_layer_ids: 'SAME_AS_LAYER_IDS',
+    },
+    'addresses': {
+        LIR_Restriction_Type: 'address',
+        minZoom: 17,
+        layer_ids: [
+            'address-circle',
+        ],
+        click_layer_ids: 'SAME_AS_LAYER_IDS',
+    },
+    'sharing_cars': {
+        LIR_Restriction_Type: 'poi',
+        LIR_POI_Type: 'car_sharing',
+        minZoom: 12,
+        layer_ids: [
+            'car-rental-icon',
+        ],
+        click_layer_ids: 'SAME_AS_LAYER_IDS',
+    },
+    'sharing_bicycles': {
+        LIR_Restriction_Type: 'poi',
+        LIR_POI_Type: 'bicycle_rental',
+        minZoom: 14,
+        layer_ids: [
+            'bike-icon',
+        ],
+        click_layer_ids: 'SAME_AS_LAYER_IDS',
+    },
+    'sharing_scooters': {
+        LIR_Restriction_Type: 'poi',
+        LIR_POI_Type: 'escooter_rental',
+        minZoom: 14,
+        layer_ids: [
+            'scooter-icon',
+        ],
+        click_layer_ids: 'SAME_AS_LAYER_IDS',
+    },
+    'charging_stations': {
+        LIR_Restriction_Type: 'poi',
+        LIR_POI_Type: 'charging_station',
+        minZoom: 12,
+        layer_ids: [
+            'charging-station-icon',
+        ],
+        click_layer_ids: 'SAME_AS_LAYER_IDS',
+    },
+}
+
 export const APP_CONFIG = {
     app_stages: app_stages,
+    map_app_map_layers: map_app_map_layers,
 }

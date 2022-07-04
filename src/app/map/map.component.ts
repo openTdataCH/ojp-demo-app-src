@@ -9,12 +9,6 @@ import { UserTripService } from '../shared/services/user-trip.service';
 
 import { MapHelpers } from './helpers/map.helpers';
 
-import { MapAppLayer } from './app-layers/map-app-layer.interface';
-import { StopsAppLayer } from './app-layers/stops/stops-app-layer';
-import { AddressAppLayer } from './app-layers/address/address-app-layer';
-import { PoiBicycleRentalLayer } from './app-layers/poi/bicycle-rental/poi-bicycle-rental-layer';
-import { PoiParkRideLayer } from './app-layers/poi/park-ride/poi-park-ride-layer';
-
 import { MapDebugControl } from './controls/map-debug-control'
 import { MapLayersLegendControl } from './controls/map-layers-legend-control';
 import { TripRenderController } from './controllers/trip-render-controller';
@@ -30,11 +24,6 @@ export class MapComponent implements OnInit {
   private fromMarker: mapboxgl.Marker;
   private toMarker: mapboxgl.Marker;
   private viaMarkers: mapboxgl.Marker[]
-
-  private mapAppLayers: MapAppLayer[]
-  private stopsMapAppLayer: StopsAppLayer | null
-
-  private prevMapBoundsHash: string = '';
 
   private popupContextMenu: mapboxgl.Popup
 
@@ -74,16 +63,13 @@ export class MapComponent implements OnInit {
 
     this.viaMarkers = []
 
-    this.mapAppLayers = []
-    this.stopsMapAppLayer = null
-
     this.mapLoadingPromise = null;
 
     this.popupContextMenu = new mapboxgl.Popup({
       focusAfterOpen: false
     });
 
-    this.tripRenderController = null
+    this.tripRenderController = null;
   }
 
   ngOnInit() {
@@ -214,65 +200,28 @@ export class MapComponent implements OnInit {
     let location = OJP.Location.initWithLngLat(lngLat.lng, lngLat.lat);
 
     // Try to snap to the nearest stop
-    const nearbyStopFeature = this.stopsMapAppLayer?.queryNearbyFeature(lngLat) ?? null;
-    if (nearbyStopFeature) {
-      const nearbyLocation = OJP.Location.initWithFeature(nearbyStopFeature);
-      if (nearbyLocation) {
-        location = nearbyLocation
-      }
-
-      const nearbyStopLngLat = MapHelpers.computePointLngLatFromFeature(nearbyStopFeature)
-      if (nearbyStopLngLat) {
-        marker.setLngLat(nearbyStopLngLat);
-      }
-    }
 
     this.userTripService.updateTripEndpoint(location, endpointType, 'MapDragend');
   }
 
   private onMapLoad(map: mapboxgl.Map) {
-    this.stopsMapAppLayer = new StopsAppLayer(map, this.userTripService);
-    const addressAppLayer = new AddressAppLayer(map, this.userTripService)
-    const parkAndRideLayer = new PoiParkRideLayer(map, this.userTripService)
-    const bikeSharingLayer = new PoiBicycleRentalLayer(map, this.userTripService)
-
-    this.mapAppLayers = [this.stopsMapAppLayer, addressAppLayer, parkAndRideLayer, bikeSharingLayer]
-
     this.addMapControls(map);
-
-    this.mapAppLayers.forEach(mapAppLayer => {
-      mapAppLayer.addToMap();
-    });
-
-    map.on('idle', ev => {
-      const currentMapBoundsHash = map.getBounds().toString();
-      const hasSameBounds = this.prevMapBoundsHash === currentMapBoundsHash;
-      if (hasSameBounds) {
-        return;
-      }
-      this.prevMapBoundsHash = currentMapBoundsHash;
-
-      this.mapAppLayers.forEach(mapAppLayer => {
-        mapAppLayer.refreshFeatures();
-      })
-    });
 
     map.on('contextmenu', (ev: mapboxgl.MapMouseEvent) => {
       this.showPickupPopup(map, ev.lngLat);
     });
 
-    map.on('click', (ev: mapboxgl.MapMouseEvent) => {
-      let foundClickResponder = false;
-      this.mapAppLayers.forEach(mapAppLayer => {
-        if (foundClickResponder) {
-          return
+    map.on('styleimagemissing', ev => {
+      const image_url = './assets/map-style-icons/' + ev.id + '.png';
+      map.loadImage(image_url, (error, image) => {
+        if (error) {
+          console.error(error);
+          return;
         }
-
-        const layerHasClickResponder = mapAppLayer.onMapClick(ev)
-        if (layerHasClickResponder) {
-          foundClickResponder = true
-        }
-      })
+        if (!map.hasImage(ev.id) && image) {
+          map.addImage(ev.id, image);
+        } 
+      });
     });
 
     this.tripRenderController = new TripRenderController(map);
@@ -321,7 +270,7 @@ export class MapComponent implements OnInit {
     const debugControl = new MapDebugControl(map);
     map.addControl(debugControl, 'top-left');
 
-    const mapLayersLegendControl = new MapLayersLegendControl(this.debugXmlPopover, map, this.mapAppLayers);
+    const mapLayersLegendControl = new MapLayersLegendControl(map, this.debugXmlPopover, this.userTripService);
     map.addControl(mapLayersLegendControl, 'bottom-right');
   }
 
