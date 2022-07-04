@@ -47,13 +47,6 @@ export class UserTripService {
     this.initDefaults()
   }
 
-  // TODO
-  // ====
-
-  // - check mock - self_driving.xml - should add new mot line - self driving
-  // - check meiringen for ond-emand bus - SAVE A MOCK!
-  // - add debug XML
-
   private initDefaults() {
     const defaultLocationsPlaceRef = {
       "Bern": "8507000",
