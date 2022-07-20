@@ -4,6 +4,13 @@ OJP-Demo URL: https://opentdatach.github.io/ojp-demo-app/
 
 ----
 
+20.July 2022
+- OJP SDK
+    - adds fallback for constructing a `StopPlace` also from a `StopPoint` node
+    - adds support for origin / destination of the `JourneyService`
+    - adds actual platform (when available) to `StopPoint`
+- refactor map app layers definition, add 'Charging Stations' and Shared (Cars, Bycicles and Scooters) layers: [#51](https://github.com/openTdataCH/ojp-demo-app-src/issues/51), [#52](https://github.com/openTdataCH/ojp-demo-app-src/issues/52), [#53](https://github.com/openTdataCH/ojp-demo-app-src/issues/53).
+
 26.June 2022
 - Add support for additional public transport pictograms - see [#47 Add all PtMode of Transport (except air)](https://github.com/openTdataCH/ojp-demo-app-src/issues/47).
 - OJP SDK: add `StopEvent` and `StopEventRequest` to build `OJPStopEventRequest` requests - see [#49 - SDK to include StopEventRequest](https://github.com/openTdataCH/ojp-demo-app-src/issues/49)
