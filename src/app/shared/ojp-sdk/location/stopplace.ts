@@ -2,7 +2,7 @@ import { XPathOJP } from "../helpers/xpath-ojp"
 
 // OJP reference - these are the same?
 //  - 8.4.5.2 StopPoint Structure
-//  - 8.4.5.3 StopPlace tructure
+//  - 8.4.5.3 StopPlace Structure
 type StopType = 'StopPlace' | 'StopPoint'
 
 export class StopPlace {
