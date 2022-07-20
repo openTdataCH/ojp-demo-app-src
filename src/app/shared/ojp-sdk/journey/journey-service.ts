@@ -8,18 +8,18 @@ export class JourneyService {
   public journeyRef: string;
   public ptMode: PublicTransportMode;
   public agencyID: string;
-  public originStopPlace: StopPlace;
-  public destinationStopPlace: StopPlace;
+  public originStopPlace: StopPlace | null;
+  public destinationStopPlace: StopPlace | null;
   public serviceLineNumber: string | null
   public journeyNumber: string | null
 
-  constructor(journeyRef: string, ptMode: PublicTransportMode, agencyID: string, originStopPlace: StopPlace, destinationStopPlace: StopPlace) {
+  constructor(journeyRef: string, ptMode: PublicTransportMode, agencyID: string) {
     this.journeyRef = journeyRef;
     this.ptMode = ptMode;
     this.agencyID = agencyID;
-    this.originStopPlace = originStopPlace;
-    this.destinationStopPlace = destinationStopPlace;
-
+    
+    this.originStopPlace = null;
+    this.destinationStopPlace = null;
     this.serviceLineNumber = null;
     this.journeyNumber = null;
   }
@@ -36,14 +36,14 @@ export class JourneyService {
     const ojpAgencyId = XPathOJP.queryText('ojp:OperatorRef', serviceNode);
     const agencyID = ojpAgencyId?.replace('ojp:', '');
 
-    const originStopPlace = StopPlace.initFromServiceNode(serviceNode, 'Origin');
-    const destinationStopPlace = StopPlace.initFromServiceNode(serviceNode, 'Destination');
-    
-    if (!(journeyRef && ptMode && agencyID && originStopPlace && destinationStopPlace)) {
+    if (!(journeyRef && ptMode && agencyID)) {
       return null
     }
 
-    const legService = new JourneyService(journeyRef, ptMode, agencyID, originStopPlace, destinationStopPlace);
+    const legService = new JourneyService(journeyRef, ptMode, agencyID);
+
+    legService.originStopPlace = StopPlace.initFromServiceNode(serviceNode, 'Origin');
+    legService.destinationStopPlace = StopPlace.initFromServiceNode(serviceNode, 'Destination');
 
     legService.serviceLineNumber = XPathOJP.queryText('ojp:PublishedLineName/ojp:Text', serviceNode);
     legService.journeyNumber = XPathOJP.queryText('ojp:Extension/ojp:PublishedJourneyNumber/ojp:Text', contextNode);
