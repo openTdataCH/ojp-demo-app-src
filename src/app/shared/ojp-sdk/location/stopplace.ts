@@ -39,4 +39,16 @@ export class StopPlace {
 
     return stopPlace
   }
+
+  public static initFromServiceNode(serviceNode: Node, pointType: 'Origin' | 'Destination'): StopPlace | null {
+    const stopPlaceRef = XPathOJP.queryText('ojp:' + pointType + 'StopPointRef', serviceNode);
+    const stopPlaceText = XPathOJP.queryText('ojp:' + pointType + 'Text/ojp:Text', serviceNode);
+
+    if (!(stopPlaceRef && stopPlaceText)) {
+      return null;
+    }
+
+    const stopPlace = new StopPlace(stopPlaceRef, stopPlaceText, null, 'StopPlace');
+    return stopPlace;
+  }
 }
