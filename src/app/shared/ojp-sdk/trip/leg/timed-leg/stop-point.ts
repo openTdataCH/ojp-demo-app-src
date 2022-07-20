@@ -9,6 +9,7 @@ export class StopPoint {
   public arrivalData: StopPointTime | null
   public departureData: StopPointTime | null
   public plannedPlatform: string | null
+  public actualPlatform: string | null
   public sequenceOrder: number | null
 
   constructor(
@@ -23,6 +24,7 @@ export class StopPoint {
     this.arrivalData = arrivalData
     this.departureData = departureData
     this.plannedPlatform = plannedPlatform
+    this.actualPlatform = null
     this.sequenceOrder =  sequenceOrder
   }
 
@@ -42,6 +44,8 @@ export class StopPoint {
     const sequenceOrder = sequenceOrderS === null ? null : parseInt(sequenceOrderS, 10);
 
     const stopPoint = new StopPoint(stopPointType, location, arrivalData, departureData, plannedPlatform, sequenceOrder)
+    stopPoint.actualPlatform = XPathOJP.queryText('ojp:EstimatedQuay/ojp:Text', contextNode)
+
     return stopPoint
   }
 
