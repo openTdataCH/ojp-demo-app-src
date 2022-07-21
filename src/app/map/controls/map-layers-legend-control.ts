@@ -94,10 +94,9 @@ export class MapLayersLegendControl implements mapboxgl.IControl {
           const lastOJPRequest = appMapLayer.lastOJPRequest
           if (lastOJPRequest) {
             const dialogRef = this.debugXmlPopover.open(DebugXmlPopoverComponent, {
-              height: '40rem',
               position: { top: '10px' },
             });
-            dialogRef.afterOpen().subscribe(() => {
+            dialogRef.afterOpened().subscribe(() => {
               const popover = dialogRef.componentInstance as DebugXmlPopoverComponent
               popover.updateRequestData(lastOJPRequest.lastRequestData)
             });

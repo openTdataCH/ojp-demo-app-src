@@ -99,10 +99,9 @@ export class TripMotTypeComponent implements OnInit {
 
   public showRequestXmlPopover() {
     const dialogRef = this.debugXmlPopover.open(DebugXmlPopoverComponent, {
-      height: '40rem',
       position: { top: '10px' },
     });
-    dialogRef.afterOpen().subscribe(() => {
+    dialogRef.afterOpened().subscribe(() => {
       const popover = dialogRef.componentInstance as DebugXmlPopoverComponent
       popover.updateRequestData(this.tripMotTypeDataModel.sectionRequestData)
     });

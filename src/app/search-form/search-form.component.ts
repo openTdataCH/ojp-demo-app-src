@@ -255,10 +255,9 @@ export class SearchFormComponent implements OnInit {
 
   public loadInputTripXMLPopover() {
     const dialogRef = this.tripXmlPopover.open(InputXmlPopoverComponent, {
-      height: '40rem',
       position: { top: '20px' },
     });
-    dialogRef.afterOpen().subscribe(() => {
+    dialogRef.afterOpened().subscribe(() => {
       const popover = dialogRef.componentInstance as InputXmlPopoverComponent
       popover.inputTripRequestXmlS = this.userTripService.computeTripRequestXML(this.computeFormDepartureDate())
 
