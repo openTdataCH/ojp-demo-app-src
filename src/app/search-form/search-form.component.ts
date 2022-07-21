@@ -20,8 +20,6 @@ import * as OJP from '../shared/ojp-sdk/index'
 export class SearchFormComponent implements OnInit {
   @ViewChild(SbbExpansionPanel, { static: true }) searchPanel: SbbExpansionPanel | undefined;
 
-  formGroup: FormGroup
-
   public fromLocationText: string
   public toLocationText: string
 
@@ -35,6 +33,9 @@ export class SearchFormComponent implements OnInit {
 
   private lastCustomTripRequestXML: string | null
 
+  public searchDate: Date
+  public searchTime: string
+
   private useMocks: boolean
 
   constructor(
@@ -44,12 +45,8 @@ export class SearchFormComponent implements OnInit {
     public mapService: MapService
   ) {
     const searchDate = this.userTripService.departureDate
-    const timeFormatted = OJP.DateHelpers.formatTimeHHMM(searchDate);
-
-    this.formGroup = new FormGroup({
-      date: new FormControl(searchDate),
-      time: new FormControl(timeFormatted)
-    })
+    this.searchDate = searchDate
+    this.searchTime = OJP.DateHelpers.formatTimeHHMM(searchDate);
 
     this.fromLocationText = ''
     this.toLocationText = ''
@@ -174,8 +171,9 @@ export class SearchFormComponent implements OnInit {
   }
 
   private computeFormDepartureDate(): Date {
-    const departureDate = this.formGroup.controls['date'].value as Date;
-    const timeParts = this.formGroup.controls['time'].value.split(':');
+    const departureDate = this.searchDate;
+    
+    const timeParts = this.searchTime.split(':');
     if (timeParts.length === 2) {
       const timeHours = parseInt(timeParts[0]);
       const timeMinutes = parseInt(timeParts[1]);

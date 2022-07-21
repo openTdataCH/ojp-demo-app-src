@@ -3,7 +3,7 @@
     <sbb-accordion>
       <sbb-expansion-panel>
         <sbb-expansion-panel-header>Search</sbb-expansion-panel-header>
-        <form [formGroup]="formGroup">
+
           <div>
             <journey-point-input
               (selectedLocation)="onLocationSelected($event, 'From')"
@@ -26,30 +26,30 @@
               [placeholder]="'To'">
             </journey-point-input>
           </div>
-          <div class="d-flex align-items-center justify-content-start">
-            <div>
-              <sbb-form-field label="Choose Date and Time">
+
+          <div class="row">
+            <div class="col">
+              <sbb-form-field label="Choose Day">
                 <sbb-datepicker arrows>
-                  <input
-                    type="text"
+                  <input 
+                    sbbInput  
                     sbbDateInput
-                    sbbInput
-                    formControlName="date"
-                    placeholder="Choose a date"
-                    (dateChange)="onChangeDateTime()"
-                  />
+                    [(ngModel)]="this.searchDate"
+                    (dateChange)="onChangeDateTime()" />
                 </sbb-datepicker>
               </sbb-form-field>
             </div>
-            <div style="width: 10px"></div>
-            <div>
-              <input
-                sbbTimeInput
-                formControlName="time"
-                (change)="onChangeDateTime()"
-              />
+            <div class="col">
+              <sbb-form-field label="Time">
+                <input 
+                  sbbInput
+                  sbbTimeInput
+                  [(ngModel)]="this.searchTime"
+                  (change)="onChangeDateTime()" />
+              </sbb-form-field>
             </div>
           </div>
+          
           <div class="mb-2 d-flex">
             <div>
               <sbb-radio-group class="sbb-radio-group-horizontal">
@@ -64,6 +64,7 @@
               </sbb-radio-group>
             </div>
           </div>
+          
           <div class="d-flex justify-content-between">
             <button
               class="btn btn-primary"
@@ -78,6 +79,7 @@
               ></span>
               Search
             </button>
+            
             <button 
               class="btn btn-secondary" 
               (click)="this.loadInputTripXMLPopover()"
@@ -85,7 +87,7 @@
               Add XML Request
             </button>
           </div>
-        </form>
+        
       </sbb-expansion-panel>
     </sbb-accordion>
   </div>
