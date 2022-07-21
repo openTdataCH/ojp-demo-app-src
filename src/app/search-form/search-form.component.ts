@@ -5,10 +5,10 @@ import { UserTripService } from '../shared/services/user-trip.service'
 import { MapService } from '../shared/services/map.service';
 import { InputXmlPopoverComponent } from './input-xml-popover/input-xml-popover.component';
 
-import { SbbDialog } from "@sbb-esta/angular-business/dialog";
-import { SbbExpansionPanel } from '@sbb-esta/angular-business/accordion';
-import { SbbNotificationToast } from '@sbb-esta/angular-business/notification-toast';
-import { SbbRadioChange } from '@sbb-esta/angular-core/radio-button';
+import { SbbDialog } from "@sbb-esta/angular/dialog";
+import { SbbExpansionPanel } from '@sbb-esta/angular/accordion';
+import { SbbNotificationToast } from '@sbb-esta/angular/notification-toast';
+import { SbbRadioChange } from '@sbb-esta/angular/radio-button';
 
 import * as OJP from '../shared/ojp-sdk/index'
 

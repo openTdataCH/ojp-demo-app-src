@@ -1,4 +1,4 @@
-import { SbbDialog } from "@sbb-esta/angular-business/dialog";
+import { SbbDialog } from "@sbb-esta/angular/dialog";
 
 import mapboxgl from "mapbox-gl";
 import { APP_CONFIG } from "src/app/config/app-config";

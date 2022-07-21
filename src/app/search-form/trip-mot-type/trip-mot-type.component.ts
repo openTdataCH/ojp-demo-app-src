@@ -1,5 +1,5 @@
 import { Component, Input, OnInit } from '@angular/core';
-import { SbbDialog } from '@sbb-esta/angular-business/dialog';
+import { SbbDialog } from '@sbb-esta/angular/dialog';
 
 import * as OJP from '../../shared/ojp-sdk/index'
 

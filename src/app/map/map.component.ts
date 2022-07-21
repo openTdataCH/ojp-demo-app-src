@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { SbbDialog } from "@sbb-esta/angular-business/dialog";
+import { SbbDialog } from "@sbb-esta/angular/dialog";
 
 import mapboxgl from 'mapbox-gl'
 
