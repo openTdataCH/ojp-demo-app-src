@@ -32,7 +32,11 @@ export class JourneyPointInputComponent implements OnInit, OnChanges {
     this.inputControl.valueChanges.pipe(
       debounceTime(500),
       distinctUntilChanged()
-    ).subscribe((searchTerm: string) => {
+    ).subscribe((searchTerm: string | null) => {
+      if (searchTerm === null) {
+        return;
+      }
+
       if (!this.shouldFetchNewData) {
         return
       }
