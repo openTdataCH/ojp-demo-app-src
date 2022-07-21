@@ -46,15 +46,7 @@ body {
   color: hsla(0,0%,100%,.8);
 }
 
-.map-control {
-  background-color: #fff;
-  padding: 8px;
-}
-
-.popup-picker-header {
-  font-size: 14px;
-}
-
+// MAP endpoints - START
 .marker-journey-endpoint {
   border: none;
   cursor: pointer;
@@ -73,6 +65,20 @@ body {
 
 .marker-journey-endpoint-Via {
   background-image: url(assets/map-icons/pin-via-v3.png);
+}
+// END
+
+.map-layer-data > * {
+  margin-right: 2px;
+}
+
+.map-control {
+  background-color: #fff;
+  padding: 8px;
+}
+
+.popup-picker-header {
+  font-size: 14px;
 }
 
 .layer-xml-info {

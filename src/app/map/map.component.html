@@ -1,1 +1,80 @@
 <div id="map_canvas" class="map_wrapper"></div>
+
+<div class="d-none">
+    <div id="map-debug-control">
+        <div>
+            <span class="fw-bold">Center</span>: <span id="map_debug_center">n/a</span>
+        </div>
+        <div>
+            <span class="fw-bold">Zoom</span>: <span id="map_debug_zoom">n/a</span>
+        </div>
+    </div>
+    <div id="map-layers-legend-control">
+        <div class="map-layers-legend-wrapper">
+            <div class="map-layer-data" data-map-layer-key="stops">
+                <input type="checkbox" class="map-layer-checkbox align-middle" checked> <span class="layer-text">Stops
+                    (z13+)</span> <span class="layer-xml-info badge bg-info text-dark">XML</span>
+            </div>
+            <div style="width: 5px"></div>
+            <div class="map-layer-data" data-map-layer-key="addresses">
+                <input type="checkbox" class="map-layer-checkbox align-middle"> <span class="layer-text">Addresses
+                    (z17+)</span> <span class="layer-xml-info badge bg-info text-dark">XML</span>
+            </div>
+            <div style="width: 5px"></div>
+            <div class="map-layer-data" data-map-layer-key="charging_stations">
+                <input type="checkbox" class="map-layer-checkbox align-middle"> <span class="layer-text">Charging
+                    Stations (z12+)</span> <span class="layer-xml-info badge bg-info text-dark">XML</span>
+            </div>
+            <div class="map-layer-data" data-map-layer-key="sharing_cars">
+                <input type="checkbox" class="map-layer-checkbox align-middle"> <span class="layer-text">Shared Cars
+                    (z12+)</span> <span class="layer-xml-info badge bg-info text-dark">XML</span>
+            </div>
+            <div class="map-layer-data" data-map-layer-key="sharing_bicycles">
+                <input type="checkbox" class="map-layer-checkbox align-middle"> <span class="layer-text">Shared Bicycles
+                    (z14+)</span> <span class="layer-xml-info badge bg-info text-dark">XML</span>
+            </div>
+            <div class="map-layer-data" data-map-layer-key="sharing_scooters">
+                <input type="checkbox" class="map-layer-checkbox align-middle"> <span class="layer-text">Shared Scooters
+                    (z14+)</span> <span class="layer-xml-info badge bg-info text-dark">XML</span>
+            </div>
+        </div>
+    </div>
+    <div id="map-endpoint-coords-picker-popup">
+        <div class="popup-picker p-2">
+            <div class="popup-picker-header mb-2">
+                Coords: [PICKER_COORDS]
+            </div>
+            <div class="popup-picker-body">
+                <button type="button" class="btn btn-primary btn-sm" data-endpoint-type="From">From</button> <button
+                    type="button" class="btn btn-primary btn-sm" data-endpoint-type="To">To</button> <button
+                    type="button" class="btn btn-primary btn-sm" data-endpoint-type="Via">Via</button>
+            </div>
+        </div>
+    </div>
+    <div id="map-endpoint-stop-picker-popup">
+        <div class="popup-picker p-2">
+            <div class="popup-picker-header mb-2">
+                [STOP_NAME] ([STOP_ID])
+            </div>
+            <div class="popup-picker-body">
+                <button type="button" class="btn btn-primary btn-sm" data-endpoint-type="From">From</button> <button
+                    type="button" class="btn btn-primary btn-sm" data-endpoint-type="To">To</button> <button
+                    type="button" class="btn btn-primary btn-sm" data-endpoint-type="Via">Via</button>
+            </div>
+        </div>
+    </div>
+    <div id="map-endpoint-picker-popup">
+        <div class="popup-picker p-2">
+            <div class="popup-picker-header mb-2">
+                TYPE: [GEO_RESTRICTION_TYPE]
+            </div>
+            <div class="popup-picker-body">
+                [GEOJSON_PROPERTIES_TABLE]
+
+                <button type="button" class="btn btn-primary btn-sm" data-endpoint-type="From">From</button> <button
+                    type="button" class="btn btn-primary btn-sm" data-endpoint-type="To">To</button> <button
+                    type="button" class="btn btn-primary btn-sm" data-endpoint-type="Via">Via</button>
+            </div>
+        </div>
+    </div>
+</div>
