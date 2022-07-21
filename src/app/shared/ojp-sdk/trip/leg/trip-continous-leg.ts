@@ -101,7 +101,7 @@ export class TripContinousLeg extends TripLeg {
     return this.legMode === ContinousLegMode['Walk']
   }
 
-  protected computeSpecificJSONFeatures(): GeoJSON.Feature[] {
+  protected override computeSpecificJSONFeatures(): GeoJSON.Feature[] {
     const features: GeoJSON.Feature[] = [];
 
     this.pathGuidance?.sections.forEach((pathGuidanceSection, guidanceIDx) => {
@@ -140,7 +140,7 @@ export class TripContinousLeg extends TripLeg {
     return features;
   }
 
-  protected computeLegLineType(): TripLegLineType {
+  protected override computeLegLineType(): TripLegLineType {
     if (this.legType === 'ContinousLeg') {
       if (this.isSelfDriveCarLeg()) {
         return 'Self-Drive Car'
@@ -158,7 +158,7 @@ export class TripContinousLeg extends TripLeg {
     return 'Walk'
   }
 
-  protected computeLinePointsData(): LinePointData[] {
+  protected override computeLinePointsData(): LinePointData[] {
     // Don't show endpoints for TransferLeg
     if (this.legType === 'TransferLeg') {
       return []
@@ -169,7 +169,7 @@ export class TripContinousLeg extends TripLeg {
     return pointsData;
   }
 
-  public computeLegColor(): string {
+  public override computeLegColor(): string {
     if (this.isSelfDriveCarLeg()) {
       return MapLegLineTypeColor['Self-Drive Car']
     }
