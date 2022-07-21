@@ -145,6 +145,14 @@ export class MapLayersLegendControl implements mapboxgl.IControl {
       const inputEl = layerData.inputEl
       if (inputEl) {
         inputEl.disabled = shouldDisableLayer
+
+        if (layerData.xmlInfoEl) {
+          if (shouldDisableLayer) {
+            layerData.xmlInfoEl.classList.add('d-none');
+          } else {
+            layerData.xmlInfoEl.classList.remove('d-none');
+          }
+        }
       }
     });
   }
