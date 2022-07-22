@@ -1,17 +1,19 @@
 <div class="trip-mot-type-container">
 
   <div class="d-flex align-items-center via-mot">
-    <div>MOT</div>
+    <sbb-form-field>
+      <sbb-label>Mode of Transport (MOT)</sbb-label>
+      <sbb-select
+        [(ngModel)]="tripMotType"
+        (selectionChange)="this.onOptionChange($event)">
+        <sbb-option
+          *ngFor="let motType of this.motTypes"
+          [value]="motType">{{ motType }}</sbb-option>
+      </sbb-select>
+    </sbb-form-field>
+
     <div style="width: 5px"></div>
-    <select
-      (change)="this.onOptionChange($event)"
-    >
-      <option
-        *ngFor="let motType of this.motTypes"
-        [selected]="motType === this.tripMotType"
-      >{{ motType }}</option>
-    </select>
-    <div style="width: 5px"></div>
+
     <div
       *ngIf="this.tripMotTypeDataModel.sectionRequestData"
       class="xml-info"

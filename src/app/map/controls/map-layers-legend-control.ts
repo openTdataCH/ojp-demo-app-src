@@ -1,4 +1,4 @@
-import { SbbDialog } from "@sbb-esta/angular-business/dialog";
+import { SbbDialog } from "@sbb-esta/angular/dialog";
 
 import mapboxgl from "mapbox-gl";
 import { APP_CONFIG } from "src/app/config/app-config";
@@ -94,10 +94,9 @@ export class MapLayersLegendControl implements mapboxgl.IControl {
           const lastOJPRequest = appMapLayer.lastOJPRequest
           if (lastOJPRequest) {
             const dialogRef = this.debugXmlPopover.open(DebugXmlPopoverComponent, {
-              height: '40rem',
               position: { top: '10px' },
             });
-            dialogRef.afterOpen().subscribe(() => {
+            dialogRef.afterOpened().subscribe(() => {
               const popover = dialogRef.componentInstance as DebugXmlPopoverComponent
               popover.updateRequestData(lastOJPRequest.lastRequestData)
             });
@@ -146,6 +145,14 @@ export class MapLayersLegendControl implements mapboxgl.IControl {
       const inputEl = layerData.inputEl
       if (inputEl) {
         inputEl.disabled = shouldDisableLayer
+
+        if (layerData.xmlInfoEl) {
+          if (shouldDisableLayer) {
+            layerData.xmlInfoEl.classList.add('d-none');
+          } else {
+            layerData.xmlInfoEl.classList.remove('d-none');
+          }
+        }
       }
     });
   }

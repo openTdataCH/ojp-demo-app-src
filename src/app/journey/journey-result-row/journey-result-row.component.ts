@@ -1,5 +1,5 @@
 import { Component, Input, OnInit, ViewChild } from '@angular/core';
-import { SbbExpansionPanel } from '@sbb-esta/angular-business/accordion';
+import { SbbExpansionPanel } from '@sbb-esta/angular/accordion';
 import { UserTripService } from 'src/app/shared/services/user-trip.service';
 import * as OJP from '../../shared/ojp-sdk/index'
 

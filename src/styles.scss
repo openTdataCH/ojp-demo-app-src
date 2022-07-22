@@ -20,10 +20,15 @@ body {
 
 .nav-item {
   font-size: 24px;
+  padding: 0.5rem 1rem;
 }
 
 .nav-link {
   color: rgba(255, 255, 255, .55);
+}
+
+.nav-link:focus, .nav-link:hover {
+  color: #0a58ca;
 }
 
 .footer {
@@ -38,17 +43,10 @@ body {
 
 .footer a:hover {
   text-decoration: underline;
+  color: hsla(0,0%,100%,.8);
 }
 
-.map-control {
-  background-color: #fff;
-  padding: 8px;
-}
-
-.popup-picker-header {
-  font-size: 14px;
-}
-
+// MAP endpoints - START
 .marker-journey-endpoint {
   border: none;
   cursor: pointer;
@@ -68,6 +66,20 @@ body {
 .marker-journey-endpoint-Via {
   background-image: url(assets/map-icons/pin-via-v3.png);
 }
+// END
+
+.map-layer-data > * {
+  margin-right: 2px;
+}
+
+.map-control {
+  background-color: #fff;
+  padding: 8px;
+}
+
+.popup-picker-header {
+  font-size: 14px;
+}
 
 .layer-xml-info {
   cursor: pointer;
@@ -75,4 +87,14 @@ body {
 
 .popup-picker {
   word-break: break-all;
+}
+
+.map-layers-legend-wrapper {
+  width: 200px;
+}
+
+// HACK - use !important to avoid horizontal bar
+//      - TODO: fix it properly by overriding
+.sbb-tab-body-content {
+  overflow: hidden !important;
 }

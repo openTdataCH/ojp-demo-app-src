@@ -1,5 +1,5 @@
 import { Component, Input, OnInit } from '@angular/core';
-import { SbbDialog } from '@sbb-esta/angular-business/dialog';
+import { SbbDialog } from '@sbb-esta/angular/dialog';
 
 import * as OJP from '../../shared/ojp-sdk/index'
 
@@ -7,6 +7,7 @@ import { DebugXmlPopoverComponent } from '../debug-xml-popover/debug-xml-popover
 
 import { MapService } from 'src/app/shared/services/map.service';
 import { UserTripService } from 'src/app/shared/services/user-trip.service';
+import { SbbSelectChange } from '@sbb-esta/angular/select';
 
 interface TripMotTypeDataModel {
   sectionRequestData: OJP.RequestData | null,
@@ -71,9 +72,8 @@ export class TripMotTypeComponent implements OnInit {
     this.userTripService.removeViaAtIndex(this.tripMotTypeIdx)
   }
 
-  public onOptionChange(event: Event) {
-    const inputEl = event.target as HTMLInputElement
-    const motType = inputEl.value as OJP.TripMotType
+  public onOptionChange(event: SbbSelectChange) {
+    const motType = event.value as OJP.TripMotType
 
     this.tripMotType = motType
     this.userTripService.updateTripMotType(motType, this.tripMotTypeIdx)
@@ -99,10 +99,9 @@ export class TripMotTypeComponent implements OnInit {
 
   public showRequestXmlPopover() {
     const dialogRef = this.debugXmlPopover.open(DebugXmlPopoverComponent, {
-      height: '40rem',
       position: { top: '10px' },
     });
-    dialogRef.afterOpen().subscribe(() => {
+    dialogRef.afterOpened().subscribe(() => {
       const popover = dialogRef.componentInstance as DebugXmlPopoverComponent
       popover.updateRequestData(this.tripMotTypeDataModel.sectionRequestData)
     });

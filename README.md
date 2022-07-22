@@ -14,7 +14,7 @@ This is the source-code repository used for developing and deploying [OJP Demo](
 
 Requirements:
 - [Node.js](https://nodejs.org/en/), [npm](https://www.npmjs.com/)
-- [Angular](https://angular.io/guide/setup-local#install-the-angular-cli), version 11.x was used to generate this project via `ng new` CLI command.
+- [Angular](https://angular.io/guide/setup-local#install-the-angular-cli), version 14.x was used to generate this project via `ng new` CLI command.
 
 Installation steps:
 - clone this repo
