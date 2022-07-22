@@ -92,3 +92,9 @@ body {
 .map-layers-legend-wrapper {
   width: 200px;
 }
+
+// HACK - use !important to avoid horizontal bar
+//      - TODO: fix it properly by overriding
+.sbb-tab-body-content {
+  overflow: hidden !important;
+}
