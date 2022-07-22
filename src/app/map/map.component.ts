@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { SbbDialog } from "@sbb-esta/angular/dialog";
 
 import mapboxgl from 'mapbox-gl'
@@ -18,7 +18,7 @@ import { TripRenderController } from './controllers/trip-render-controller';
   templateUrl: './map.component.html',
   styleUrls: ['./map.component.scss']
 })
-export class MapComponent implements OnInit {
+export class MapComponent implements OnInit, AfterViewInit {
   public mapLoadingPromise: Promise<mapboxgl.Map> | null;
 
   private fromMarker: mapboxgl.Marker;
@@ -28,6 +28,8 @@ export class MapComponent implements OnInit {
   private popupContextMenu: mapboxgl.Popup
 
   private tripRenderController: TripRenderController | null
+
+  @ViewChild('map_canvas') mapCanvasElRef!: ElementRef;
 
   constructor(
     private userTripService: UserTripService,
@@ -73,8 +75,6 @@ export class MapComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.initMap()
-
     this.userTripService.geoLocationsUpdated.subscribe(nothing => {
       this.updateMarkers()
     })
@@ -126,11 +126,16 @@ export class MapComponent implements OnInit {
     })
   }
 
+  ngAfterViewInit(): void {
+    this.initMap()
+  }
+
   private initMap() {
+    const mapCanvas = this.mapCanvasElRef.nativeElement as HTMLElement;
     const mapBounds = new mapboxgl.LngLatBounds([[5.9559,45.818], [10.4921,47.8084]]);
 
     const map = new mapboxgl.Map({
-      container: 'map_canvas',
+      container: mapCanvas,
       style: 'mapbox://styles/mapbox/light-v10',
       bounds: mapBounds,
       accessToken: 'pk.eyJ1IjoidmFzaWxlIiwiYSI6ImNra2k2dWFkeDFrbG0ycXF0Nmg0Z2tsNXAifQ.nK-i-3cpWmji7HvK1Ilynw',
