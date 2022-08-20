@@ -80,8 +80,7 @@
           (click)="this.handleClickOnLocation('From')"
         >{{ this.legInfoDataModel.fromLocationData.locationText }}</div>
 
-        <sbb-tooltip *ngIf="this.legInfoDataModel.hasGuidance">
-          <sbb-icon svgIcon="kom:arrow-change-horizontal-medium" *sbbIcon></sbb-icon>
+        <sbb-tooltip svgIcon="kom:arrow-change-horizontal-medium" *ngIf="this.legInfoDataModel.hasGuidance">
           <ul class="tooltip-list">
             <li *ngFor="let guidanceText of this.legInfoDataModel.guidanceTextLines">
               {{ guidanceText }}

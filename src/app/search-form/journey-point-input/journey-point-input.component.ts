@@ -2,7 +2,7 @@ import { debounceTime, distinctUntilChanged } from 'rxjs/operators'
 import { Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges } from '@angular/core';
 import { FormControl } from '@angular/forms';
 
-import { SbbAutocompleteSelectedEvent } from '@sbb-esta/angular-business/autocomplete';
+import { SbbAutocompleteSelectedEvent } from '@sbb-esta/angular/autocomplete';
 
 import * as OJP from '../../shared/ojp-sdk/index'
 import { MapService } from 'src/app/shared/services/map.service';
@@ -32,7 +32,11 @@ export class JourneyPointInputComponent implements OnInit, OnChanges {
     this.inputControl.valueChanges.pipe(
       debounceTime(500),
       distinctUntilChanged()
-    ).subscribe((searchTerm: string) => {
+    ).subscribe((searchTerm: string | null) => {
+      if (searchTerm === null) {
+        return;
+      }
+
       if (!this.shouldFetchNewData) {
         return
       }

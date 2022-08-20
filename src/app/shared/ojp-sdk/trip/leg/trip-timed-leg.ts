@@ -78,7 +78,7 @@ export class TripTimedLeg extends TripLeg {
     return timedLeg
   }
 
-  public patchLocations(mapContextLocations: Record<string, Location>) {
+  public override patchLocations(mapContextLocations: Record<string, Location>) {
     super.patchLocations(mapContextLocations)
 
     this.intermediateStopPoints.forEach(stopPoint => {
@@ -103,7 +103,7 @@ export class TripTimedLeg extends TripLeg {
     return stopPointDate
   }
 
-  protected computeSpecificJSONFeatures(): GeoJSON.Feature[] {
+  protected override computeSpecificJSONFeatures(): GeoJSON.Feature[] {
     let features: GeoJSON.Feature[] = [];
 
     const lineType: TripLegLineType = this.service.computeLegLineType()
@@ -126,11 +126,11 @@ export class TripTimedLeg extends TripLeg {
     return features
   }
 
-  protected computeLegLineType(): TripLegLineType {
+  protected override computeLegLineType(): TripLegLineType {
     return this.service.computeLegLineType()
   }
 
-  protected computeLinePointsData(): LinePointData[] {
+  protected override computeLinePointsData(): LinePointData[] {
     const linePointsData = super.computeLinePointsData()
 
     // Intermediate points
@@ -147,7 +147,7 @@ export class TripTimedLeg extends TripLeg {
     return linePointsData
   }
 
-  public computeLegColor(): string {
+  public override computeLegColor(): string {
     const defaultColor = super.computeLegColor();
 
     const timedLegLineType = this.service.computeLegLineType()
@@ -156,7 +156,7 @@ export class TripTimedLeg extends TripLeg {
     return color
   }
 
-  protected computeBeelineGeoPositions(): GeoPosition[] {
+  protected override computeBeelineGeoPositions(): GeoPosition[] {
     const geoPositions: GeoPosition[] = []
 
     const stopPoints: StopPoint[] = []
@@ -175,7 +175,7 @@ export class TripTimedLeg extends TripLeg {
     return geoPositions
   }
 
-  protected useBeeline(): boolean {
+  protected override useBeeline(): boolean {
     const usedDetailedLine = this.service.ptMode.hasPrecisePolyline();
     const useBeeline = super.useBeeline() || !usedDetailedLine
     return useBeeline
