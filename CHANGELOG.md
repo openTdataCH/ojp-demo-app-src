@@ -4,6 +4,9 @@ OJP-Demo URL: https://opentdatach.github.io/ojp-demo-app/
 
 ----
 
+19.August 2022
+- Angular v14 update + [SBB Angular v14](https://angular.app.sbb.ch/) update
+
 20.July 2022
 - OJP SDK
     - adds fallback for constructing a `StopPlace` also from a `StopPoint` node
