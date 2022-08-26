@@ -11,10 +11,16 @@ type LocationUpdateSource = 'SearchForm' | 'MapDragend' | 'MapPopupClick'
 export class UserTripService {
   private queryParams: URLSearchParams
 
-  public fromLocation: OJP.Location | null
-  public toLocation: OJP.Location | null
-  public viaLocations: OJP.Location[]
-  public tripMotTypes: OJP.TripMotType[]
+  public fromTripLocation: OJP.TripLocationPoint | null
+  public toTripLocation: OJP.TripLocationPoint | null
+  public viaTripLocations: OJP.TripLocationPoint[]
+  
+  // Used by the src/app/search-form/search-form.component.html template
+  public journeyTripsPlaceholder: string[]
+  
+  public tripModeTypes: OJP.TripModeType[]
+  public tripTransportModes: OJP.IndividualTransportMode[]
+  
   public lastJourneyResponse: OJP.JourneyResponse | null
   public departureDate: Date
   public currentAppStage: OJP.APP_Stage
@@ -35,10 +41,14 @@ export class UserTripService {
   constructor(private mapService: MapService) {
     this.queryParams = new URLSearchParams(document.location.search)
 
-    this.fromLocation = null
-    this.toLocation = null
-    this.viaLocations = []
-    this.tripMotTypes = ['Default']
+    this.fromTripLocation = null
+    this.toTripLocation = null
+    this.viaTripLocations = []
+    
+    this.journeyTripsPlaceholder = ['-']
+    this.tripModeTypes = ['monomodal']
+    this.tripTransportModes = ['public_transport']
+    
     this.lastJourneyResponse = null
     this.departureDate = this.computeInitialDate()
     this.currentAppStage = 'PROD'
@@ -85,33 +95,41 @@ export class UserTripService {
 
     const bbox = new OJP.GeoPositionBBOX([])
 
-    const motTypeKeysS = this.queryParams.get('mot_types') ?? null
-    const motTypeKeys: string[] = motTypeKeysS === null ? [] : motTypeKeysS.split(';')
-
     const viaPartsS = this.queryParams.get('via') ?? null
     const viaParts: string[] = viaPartsS === null ? [] : viaPartsS.split(';')
     viaParts.forEach(viaKey => {
       const viaLocation = OJP.Location.initFromLiteralCoords(viaKey)
       if (viaLocation) {
-        this.viaLocations.push(viaLocation)
-
-        // TODO - add tripMotType from queryParams
-        this.tripMotTypes.push('Default')
+        const viaTripLocaton = new OJP.TripLocationPoint(viaLocation)
+        this.viaTripLocations.push(viaTripLocaton)
 
         if (viaLocation.geoPosition) {
           bbox.extend(viaLocation.geoPosition)
         }
       }
     });
+    
+    this.journeyTripsPlaceholder = [];
+    this.tripModeTypes = [];
+    const tripModeTypesS = this.queryParams.get('mode_types') ?? null;
+    if (tripModeTypesS) {
+      tripModeTypesS.split(';').forEach(tripModeTypeS => {
+        this.tripModeTypes.push(tripModeTypeS as OJP.TripModeType);
+        this.journeyTripsPlaceholder.push('-');
+      });
+    } else {
+      this.journeyTripsPlaceholder = ['-'];
+      this.tripModeTypes = ['monomodal'];
+    }
 
-    let motTypeIDx = 0
-    this.tripMotTypes = []
-    while (motTypeIDx <= viaParts.length) {
-      const motTypeKey = motTypeKeys[motTypeIDx] ?? null
-      const motType = OJP.TripMotTypeHelpers.MotTypeFromQueryString(motTypeKey)
-      this.tripMotTypes.push(motType)
-
-      motTypeIDx += 1
+    this.tripTransportModes = [];
+    const tripTransportModesS = this.queryParams.get('transport_modes') ?? null;
+    if (tripTransportModesS) {
+      tripTransportModesS.split(';').forEach(tripTransportModeS => {
+        this.tripTransportModes.push(tripTransportModeS as OJP.IndividualTransportMode);
+      });
+    } else {
+      this.tripTransportModes = ['public_transport'];
     }
 
     let appStageS = this.queryParams.get('stage')
@@ -129,9 +147,9 @@ export class UserTripService {
 
         const firstLocation = locations[0]
         if (isFrom) {
-          this.fromLocation = firstLocation
+          this.fromTripLocation = new OJP.TripLocationPoint(firstLocation)
         } else {
-          this.toLocation = firstLocation
+          this.toTripLocation = new OJP.TripLocationPoint(firstLocation)
         }
 
         if (firstLocation.geoPosition) {
@@ -169,17 +187,25 @@ export class UserTripService {
   }
 
   updateTripEndpoint(location: OJP.Location, endpointType: OJP.JourneyPointType, updateSource: LocationUpdateSource) {
+    let tripLocationRef: OJP.TripLocationPoint | null = null
     if (endpointType === 'From') {
-      this.fromLocation = location
+      tripLocationRef = this.fromTripLocation
     }
-
     if (endpointType === 'To') {
-      this.toLocation = location
+      tripLocationRef = this.toTripLocation
+    }
+    
+    if (tripLocationRef) {
+      tripLocationRef.location = location
     }
 
     if (endpointType === 'Via') {
-      this.viaLocations.push(location)
-      this.tripMotTypes.push('Default')
+      const viaTripLocation = new OJP.TripLocationPoint(location)
+      this.viaTripLocations.push(viaTripLocation)
+      
+      this.journeyTripsPlaceholder.push('-');
+      this.tripModeTypes.push('monomodal');
+      this.tripTransportModes.push('public_transport');
     }
 
     this.locationsUpdated.emit();
@@ -191,7 +217,7 @@ export class UserTripService {
   }
 
   updateViaPoint(location: OJP.Location, viaIDx: number) {
-    this.viaLocations[viaIDx] = location
+    this.viaTripLocations[viaIDx].location = location
     this.viaAtIndexUpdated.emit({
       location: location,
       idx: viaIDx
@@ -212,12 +238,16 @@ export class UserTripService {
   }
 
   removeViaAtIndex(idx: number) {
-    this.viaLocations.splice(idx, 1)
-    this.tripMotTypes.splice(idx, 1)
+    this.viaTripLocations.splice(idx, 1);
+    this.tripModeTypes.splice(idx, 1);
+    this.journeyTripsPlaceholder.splice(idx, 1);
+    this.tripTransportModes.splice(idx, 1);
 
     // Reset the tripMotTypes
-    if (this.viaLocations.length === 0) {
-      this.tripMotTypes = ['Default']
+    if (this.viaTripLocations.length === 0) {
+      this.journeyTripsPlaceholder = ['-'];
+      this.tripModeTypes = ['monomodal'];
+      this.tripTransportModes = ['public_transport'];
     }
 
     this.viaAtIndexRemoved.emit(idx);
@@ -229,10 +259,11 @@ export class UserTripService {
 
   public computeJourneyRequestParams(): OJP.JourneyRequestParams | null {
     const requestParams = OJP.JourneyRequestParams.initWithLocationsAndDate(
-      this.fromLocation,
-      this.toLocation,
-      this.viaLocations,
-      this.tripMotTypes,
+      this.fromTripLocation,
+      this.toTripLocation,
+      this.viaTripLocations,
+      this.tripModeTypes,
+      this.tripTransportModes,
       this.departureDate,
     )
 
@@ -241,7 +272,7 @@ export class UserTripService {
 
   public computeTripRequestXML(departureDate: Date): string {
     const stageConfig = this.getStageConfig()
-    const tripRequestParams = OJP.TripsRequestParams.initWithLocationsAndDate(this.fromLocation, this.toLocation, departureDate)
+    const tripRequestParams = OJP.TripsRequestParams.initWithLocationsAndDate(this.fromTripLocation, this.toTripLocation, departureDate)
     if (tripRequestParams === null) {
       return 'BROKEN TripsRequestParams'
     }
@@ -257,15 +288,15 @@ export class UserTripService {
 
     const endpointTypes: OJP.JourneyPointType[] = ['From', 'To']
     endpointTypes.forEach(endpointType => {
-      const location = endpointType === 'From' ? this.fromLocation : this.toLocation
+      const tripLocationPoint = endpointType === 'From' ? this.fromTripLocation : this.toTripLocation
 
       const queryParamKey = endpointType.toLowerCase()
 
-      const stopPlaceRef = location?.stopPlace?.stopPlaceRef ?? null
+      const stopPlaceRef = tripLocationPoint?.location.stopPlace?.stopPlaceRef ?? null
       if (stopPlaceRef) {
         queryParams.append(queryParamKey, stopPlaceRef)
       } else {
-        const geoPositionLngLatS = location?.geoPosition?.asLatLngString(true) ?? null
+        const geoPositionLngLatS = tripLocationPoint?.location.geoPosition?.asLatLngString(true) ?? null
         if (geoPositionLngLatS) {
           queryParams.append(queryParamKey, geoPositionLngLatS)
         }
@@ -273,7 +304,8 @@ export class UserTripService {
     })
 
     const viaParamParts: string[] = []
-    this.viaLocations.forEach(location => {
+    this.viaTripLocations.forEach(viaTripLocation => {
+      const location = viaTripLocation.location;
       const geoPositionLngLatS = location?.geoPosition?.asLatLngString(true) ?? null
       if (geoPositionLngLatS) {
         viaParamParts.push(geoPositionLngLatS)
@@ -282,15 +314,9 @@ export class UserTripService {
     if (viaParamParts.length > 0) {
       queryParams.append('via', viaParamParts.join(';'))
     }
-
-    const motTypesParamParts: string[] = []
-    this.tripMotTypes.forEach(motType => {
-      const motTypeKey = TripMotTypeHelpers.MotTypeKey(motType)
-      motTypesParamParts.push(motTypeKey)
-    });
-    if (motTypesParamParts.length > 0) {
-      queryParams.append('mot_types', motTypesParamParts.join(';'))
-    }
+    
+    queryParams.append('mode_types', this.tripModeTypes.join(';'));
+    queryParams.append('transport_modes', this.tripTransportModes.join(';'));
 
     const dateTimeS = OJP.DateHelpers.formatDate(this.departureDate)
     queryParams.append('trip_datetime', dateTimeS.substring(0, 16))
@@ -348,11 +374,14 @@ export class UserTripService {
     const firstLeg = trip.legs[0]
     const lastLeg = trip.legs[trip.legs.length - 1]
 
-    this.fromLocation = firstLeg.fromLocation
-    this.toLocation = lastLeg.toLocation
+    this.fromTripLocation = new OJP.TripLocationPoint(firstLeg.fromLocation)
+    this.toTripLocation = new OJP.TripLocationPoint(lastLeg.toLocation)
 
-    this.viaLocations = []
-    this.tripMotTypes = ['Default']
+    this.viaTripLocations = []
+    
+    this.journeyTripsPlaceholder = ['-'];
+    this.tripModeTypes = ['monomodal'];
+    this.tripTransportModes = ['public_transport'];
     
     this.geoLocationsUpdated.emit()
     this.updatePermalinkAddress()
