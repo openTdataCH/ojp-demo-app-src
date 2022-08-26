@@ -165,14 +165,14 @@ export class MapComponent implements OnInit, AfterViewInit {
     const endpointTypes: OJP.JourneyPointType[] = ['From', 'To']
     endpointTypes.forEach(endpointType => {
       const isFrom = endpointType === 'From'
-      const location = isFrom ? this.userTripService.fromLocation : this.userTripService.toLocation
+      const tripLocationPoint = isFrom ? this.userTripService.fromTripLocation : this.userTripService.toTripLocation
       const marker = isFrom ? this.fromMarker : this.toMarker
 
-      this.updateMarkerLocation(marker, location)
+      this.updateMarkerLocation(marker, tripLocationPoint?.location ?? null)
     })
 
     const viaMakersCount = this.viaMarkers.length
-    const viaLocationsCount = this.userTripService.viaLocations.length
+    const viaLocationsCount = this.userTripService.viaTripLocations.length
 
     // Remove excess VIA markers
     if (viaMakersCount > viaLocationsCount) {
@@ -188,14 +188,14 @@ export class MapComponent implements OnInit, AfterViewInit {
     }
 
     // Adds / Update VIA markers
-    this.userTripService.viaLocations.forEach((viaLocation, idx) => {
+    this.userTripService.viaTripLocations.forEach((viaTripLocation, idx) => {
       let marker = this.viaMarkers[idx] ?? null
       if (marker === null) {
-        marker = this.createViaMarker(viaLocation)
+        marker = this.createViaMarker(viaTripLocation.location)
         this.viaMarkers.push(marker)
       }
 
-      this.updateMarkerLocation(marker, viaLocation)
+      this.updateMarkerLocation(marker, viaTripLocation.location)
     })
   }
 
