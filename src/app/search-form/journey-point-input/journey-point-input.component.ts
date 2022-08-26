@@ -98,7 +98,8 @@ export class JourneyPointInputComponent implements OnInit, OnChanges {
   }
 
   public handleTapOnMapButton() {
-    const location = this.endpointType === 'From' ? this.userTripService.fromLocation : this.userTripService.toLocation
+    const tripLocationPoint = this.endpointType === 'From' ? this.userTripService.fromTripLocation : this.userTripService.toTripLocation
+    const location = tripLocationPoint?.location ?? null;
     this.mapService.tryToCenterAndZoomToLocation(location)
   }
 
