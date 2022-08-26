@@ -4,6 +4,7 @@ import { TripsRequestParams } from './trips-request-params';
 import { TripsResponse } from '../../trips/trips-response'
 import { StageConfig } from '../../types/stage-config';
 import { RequestErrorData } from './../request-error'
+import { IndividualTransportMode } from '../../types/individual-mode.types';
 
 export class TripRequest extends OJPBaseRequest {
   public requestParams: TripsRequestParams
@@ -17,7 +18,7 @@ export class TripRequest extends OJPBaseRequest {
     this.buildTripRequestNode();
     const bodyXML_s = this.serviceRequestNode.end();
     super.fetchOJPResponse(bodyXML_s, (responseText, errorData) => {
-      const tripsResponse = TripsResponse.initWithXML(responseText, this.requestParams.motType);
+      const tripsResponse = TripsResponse.initWithXML(responseText, this.requestParams.transportMode);
       if (errorData === null && !tripsResponse.hasValidResponse) {
         errorData = {
           error: 'ParseTripsXMLError',
@@ -49,7 +50,9 @@ export class TripRequest extends OJPBaseRequest {
     const tripEndpoints: JourneyPointType[] = ["From", "To"]
     tripEndpoints.forEach(tripEndpoint => {
       const isFrom = tripEndpoint === 'From';
-      const location = isFrom ? this.requestParams.fromLocation : this.requestParams.toLocation;
+      const tripLocation = isFrom ? this.requestParams.fromTripLocation : this.requestParams.toTripLocation;
+      const location = tripLocation.location;
+
       let tagName = isFrom ? 'Origin' : 'Destination';
 
       const endPointNode = tripRequestNode.ele('ojp:' + tagName);
@@ -89,15 +92,54 @@ export class TripRequest extends OJPBaseRequest {
     paramsNode.ele('ojp:IncludeTurnDescription', true)
     paramsNode.ele('ojp:IncludeIntermediateStops', true)
 
-    const motType = this.requestParams.motType
-    if (motType === 'Self-Driving Car') {
-      paramsNode.ele('ojp:ItModesToCover', 'self-drive-car');
-    }
-    if (motType === 'Walking') {
-      paramsNode.ele('ojp:ItModesToCover', 'walk');
-    }
-    if (motType === 'Shared Mobility') {
-      paramsNode.ele('ojp:ItModesToCover', 'cycle');
+    const modeType = this.requestParams.modeType
+    const transportMode = this.requestParams.transportMode
+
+    if (modeType === 'monomodal') {
+      if (transportMode === 'walking') {
+        paramsNode.ele('ojp:ItModesToCover', 'walk');
+      }
+
+      if (transportMode === 'car_self_driving') {
+        paramsNode.ele('ojp:ItModesToCover', 'self-drive-car');
+      }
+
+      if (transportMode === 'cycle') {
+        paramsNode.ele('ojp:ItModesToCover', 'cycle');
+      } 
+
+      const sharingModes: IndividualTransportMode[] = ['bicycle_rental', 'car_sharing', 'escooter_rental'];
+      const isSharing = sharingModes.indexOf(transportMode) !== -1;
+      if (isSharing) {
+        const paramsExtensionNode = paramsNode.ele('ojp:Extension');
+        paramsExtensionNode.ele('ojp:ItModesToCover', transportMode);
+      }
+    } else {
+      const paramsExtensionNode = paramsNode.ele('ojp:Extension');
+      
+      tripEndpoints.forEach(tripEndpoint => {
+        const isFrom = tripEndpoint === 'From';
+        if (isFrom && this.requestParams.modeType === 'mode_at_end') {
+          return;
+        }
+        if (!isFrom && this.requestParams.modeType === 'mode_at_start') {
+          return;
+        }
+        
+        const tripLocation = isFrom ? this.requestParams.fromTripLocation : this.requestParams.toTripLocation;
+        
+        let tagName = isFrom ? 'Origin' : 'Destination';
+        const endpointNode = paramsExtensionNode.ele('ojp:' + tagName);
+  
+        endpointNode.ele('ojp:MinDuration', 'PT' + tripLocation.minDuration + 'M')
+        endpointNode.ele('ojp:MaxDuration', 'PT' + tripLocation.maxDuration + 'M')
+        endpointNode.ele('ojp:MinDistance', tripLocation.minDistance)
+        endpointNode.ele('ojp:MaxDistance', tripLocation.maxDistance)
+  
+        if (tripLocation.customTransportMode) {
+          endpointNode.ele('ojp:Mode', tripLocation.customTransportMode)
+        }
+      });
     }
   }
 }
