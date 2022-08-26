@@ -360,9 +360,64 @@ export class UserTripService {
     this.updatePermalinkAddress()
   }
 
-  public updateTripMotType(motType: OJP.TripMotType, idx: number) {
-    this.tripMotTypes[idx] = motType
+  public updateTripMode(tripModeType: OJP.TripModeType, tripTransportMode: OJP.IndividualTransportMode, tripSectionIdx: number) {
+    this.tripModeTypes[tripSectionIdx] = tripModeType;
+    this.tripTransportModes[tripSectionIdx] = tripTransportMode;
+
     this.updatePermalinkAddress()
+  }
+
+  private computeTripLocationsToUpdate(tripSectionIdx: number): OJP.TripLocationPoint[] {
+    const tripLocationsToUpdate: OJP.TripLocationPoint[] = [];
+
+    const tripLocations = [this.fromTripLocation];
+    this.viaTripLocations.forEach(viaTripLocation => {
+      tripLocations.push(viaTripLocation);
+    });
+    tripLocations.push(this.toTripLocation);
+
+    const tripModeType = this.tripModeTypes[tripSectionIdx];
+    
+    const tripLocationPointA = tripLocations[tripSectionIdx];
+    if (tripLocationPointA) {
+      if (tripModeType === 'mode_at_start' || tripModeType === 'mode_at_start_end') {
+        tripLocationsToUpdate.push(tripLocationPointA);
+      }
+    }
+
+    const tripLocationPointB = tripLocations[tripSectionIdx + 1];
+    if (tripLocationPointB) {
+      if (tripModeType === 'mode_at_end' || tripModeType === 'mode_at_start_end') {
+        tripLocationsToUpdate.push(tripLocationPointB);
+      }
+    }
+
+    return tripLocationsToUpdate;
+  }
+
+  public updateTripLocationRestrictions(minDuration: number, maxDuration: number, minDistance: number, maxDistance: number, tripSectionIdx: number) {
+    const tripLocationsToUpdate = this.computeTripLocationsToUpdate(tripSectionIdx);
+
+    tripLocationsToUpdate.forEach(tripLocation => {
+      tripLocation.minDuration = minDuration;
+      tripLocation.maxDuration = maxDuration;
+      tripLocation.minDistance = minDistance;
+      tripLocation.maxDistance = maxDistance;
+    });
+  }
+
+  public updateTripLocationCustomMode(tripSectionIdx: number) {
+    const tripLocationsToUpdate = this.computeTripLocationsToUpdate(tripSectionIdx);
+    const tripModeType = this.tripModeTypes[tripSectionIdx];
+
+    tripLocationsToUpdate.forEach(tripLocation => {
+      if (tripModeType === 'monomodal') {
+        tripLocation.customTransportMode = null;
+      } else {
+        const tripTransportMode = this.tripTransportModes[tripSectionIdx];
+        tripLocation.customTransportMode = tripTransportMode;
+      }
+    });
   }
 
   public updateParamsFromTrip(trip: OJP.Trip) {
