@@ -89,8 +89,8 @@ export class TripContinousLeg extends TripLeg {
     return null
   }
 
-  public isSelfDriveCarLeg(): boolean {
     return this.legMode === ContinousLegMode['Self-Drive Car']
+  public isDriveCarLeg(): boolean {
   }
 
   public isSharedMobility(): boolean {
@@ -142,7 +142,7 @@ export class TripContinousLeg extends TripLeg {
 
   protected override computeLegLineType(): TripLegLineType {
     if (this.legType === 'ContinousLeg') {
-      if (this.isSelfDriveCarLeg()) {
+      if (this.isDriveCarLeg()) {
         return 'Self-Drive Car'
       }
 
@@ -170,7 +170,7 @@ export class TripContinousLeg extends TripLeg {
   }
 
   public override computeLegColor(): string {
-    if (this.isSelfDriveCarLeg()) {
+    if (this.isDriveCarLeg()) {
       return MapLegLineTypeColor['Self-Drive Car']
     }
 
