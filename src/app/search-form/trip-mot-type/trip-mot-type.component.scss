@@ -22,4 +22,28 @@
 
 .xml-info {
   cursor: pointer;
+  margin-left: 5px;
+}
+
+.mobility-settings {
+  margin-left: 5px;
+  margin-top: 3px;
+}
+
+// Used only bv v2
+.mobility-settings-left-v2 {
+  margin-left: 10px;
+}
+
+.endpoint-settings {
+  margin-bottom: 18px;
+  margin-left: 12px;
+  margin-right: 12px;
+  
+  padding: 0 14px;
+  border-color: #CACACA;
+  border-style: solid;
+  /* top, right, bottom, left - just like margin and padding */
+  border-width: 0 1px 1px 1px;
+  border-radius: 2px;
 }
