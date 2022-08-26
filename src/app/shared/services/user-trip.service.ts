@@ -1,8 +1,6 @@
 import { EventEmitter, Injectable } from '@angular/core'
 
 import { APP_CONFIG } from 'src/app/config/app-config'
-
-import { DateHelpers, TripMotTypeHelpers } from '../ojp-sdk/index'
 import { MapService } from './map.service'
 
 import * as OJP from '../ojp-sdk/index'
@@ -294,8 +292,8 @@ export class UserTripService {
       queryParams.append('mot_types', motTypesParamParts.join(';'))
     }
 
-    const dateTimeS = DateHelpers.formatDate(this.departureDate)
-    queryParams.append('trip_datetime', dateTimeS.substr(0, 16))
+    const dateTimeS = OJP.DateHelpers.formatDate(this.departureDate)
+    queryParams.append('trip_datetime', dateTimeS.substring(0, 16))
 
     const stageS = this.currentAppStage.toLowerCase()
     queryParams.append('stage', stageS)
