@@ -1,4 +1,3 @@
-import { Location } from "../../location/location"
 import { TripLocationPoint } from "../../trip";
 import { IndividualTransportMode } from "../../types/individual-mode.types";
 import { TripModeType } from "../../types/trip-mode-type";
