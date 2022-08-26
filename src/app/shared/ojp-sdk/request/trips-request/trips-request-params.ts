@@ -1,6 +1,6 @@
 import { TripLocationPoint } from "../../trip";
 import { IndividualTransportMode } from "../../types/individual-mode.types";
-import { TripModeType } from "../../types/trip-mot-type";
+import { TripModeType } from "../../types/trip-mode-type";
 
 export class TripsRequestParams {
   fromTripLocation: TripLocationPoint
