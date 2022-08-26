@@ -19,11 +19,11 @@ interface TripTransportModeData {
 }
 
 @Component({
-  selector: 'trip-mot-type',
-  templateUrl: './trip-mot-type.component.html',
-  styleUrls: ['./trip-mot-type.component.scss']
+  selector: 'trip-mode-type',
+  templateUrl: './trip-mode-type.component.html',
+  styleUrls: ['./trip-mode-type.component.scss']
 })
-export class TripMotTypeComponent implements OnInit {
+export class TripModeTypeComponent implements OnInit {
   @Input() tripModeTypeIdx: number
   @ViewChild('settingsContainer') settingsContainer!: ElementRef; 
 

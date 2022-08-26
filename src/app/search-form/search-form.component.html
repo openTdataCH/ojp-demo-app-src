@@ -10,10 +10,10 @@
             [placeholder]="'From'">
           </journey-point-input>
 
-          <trip-mot-type
+          <trip-mode-type
             *ngFor="let modeType of this.userTripService.journeyTripsPlaceholder; index as idx"
             [tripModeTypeIdx]="idx">
-          </trip-mot-type>
+          </trip-mode-type>
 
           <journey-point-input
             (selectedLocation)="onLocationSelected($event, 'To')"

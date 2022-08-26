@@ -19,7 +19,7 @@ import { JourneyResultRowComponent } from './journey/journey-result-row/journey-
 import { MapComponent } from './map/map.component';
 import { ResultTripLegComponent } from './journey/journey-result-row/result-trip-leg/result-trip-leg.component';
 import { SearchFormComponent } from './search-form/search-form.component';
-import { TripMotTypeComponent } from './search-form/trip-mot-type/trip-mot-type.component';
+import { TripModeTypeComponent } from './search-form/trip-mode-type/trip-mode-type.component';
 
 
 @NgModule({
@@ -32,7 +32,7 @@ import { TripMotTypeComponent } from './search-form/trip-mot-type/trip-mot-type.
     MapComponent,
     ResultTripLegComponent,
     SearchFormComponent,
-    TripMotTypeComponent,
+    TripModeTypeComponent,
 
     DebugXmlPopoverComponent,
     InputXmlPopoverComponent,
