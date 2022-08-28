@@ -1,5 +1,4 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
-import { FormControl, FormGroup } from '@angular/forms';
 
 import { UserTripService } from '../shared/services/user-trip.service'
 import { MapService } from '../shared/services/map.service';
