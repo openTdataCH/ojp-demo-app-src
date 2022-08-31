@@ -20,6 +20,19 @@ export class GeoPositionBBOX {
     this.northEast = new GeoPosition(maxLongitude, maxLatitude);
   }
 
+  public static initFromGeoPosition(geoPosition: GeoPosition, width_x_meters: number, width_y_meters: number): GeoPositionBBOX {
+    // 7612m for 0.1deg long - for Switzerland, latitude 46.8
+    // 11119m for 0.1deg lat
+    const spanLongitude = width_x_meters * 0.1 / 7612;
+    const spanLatitude = width_y_meters * 0.1 / 11119;
+
+    const southWest = new GeoPosition(geoPosition.longitude - spanLongitude / 2, geoPosition.latitude - spanLatitude / 2);
+    const northEast = new GeoPosition(geoPosition.longitude + spanLongitude / 2, geoPosition.latitude + spanLatitude / 2);
+
+    const bbox = new GeoPositionBBOX([southWest, northEast]);
+    return bbox;
+  }
+
   extend(geoPositions: GeoPosition | GeoPosition[]) {
     if (!Array.isArray(geoPositions)) {
       geoPositions = [geoPositions];
