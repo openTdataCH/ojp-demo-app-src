@@ -166,6 +166,8 @@ export class SearchFormComponent implements OnInit {
   onChangeStageAPI(ev: SbbRadioChange) {
     const newAppStage = ev.value as OJP.APP_Stage
     this.userTripService.updateAppStage(newAppStage)
+
+    this.userTripService.refetchEndpointsByName();
   }
 
   onChangeDateTime() {
