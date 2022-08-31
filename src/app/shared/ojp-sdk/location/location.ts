@@ -161,4 +161,12 @@ export class Location {
 
     return feature
   }
+
+  public computeLocationName(): string | null {
+    if (this.stopPlace) {
+      return this.stopPlace.stopPlaceName;
+    }
+
+    return this.locationName ?? null;
+  }
 }
