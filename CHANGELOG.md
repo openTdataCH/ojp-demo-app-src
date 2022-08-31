@@ -4,6 +4,11 @@ OJP-Demo URL: https://opentdatach.github.io/ojp-demo-app/
 
 ----
 
+03.September 2022
+- Fixes for TEST LA stage
+    - limit TripRequest number of results to 1
+    - reload endpoints stop IDs when changing the app stage
+
 27.August 2022
 - Adds full support for mono- / multi- modal journeys - see [#51](https://github.com/openTdataCH/ojp-demo-app-src/issues/51)
 
