@@ -84,7 +84,11 @@ export class TripRequest extends OJPBaseRequest {
 
     const paramsNode = tripRequestNode.ele('ojp:Params');
 
-    const numberOfResults = 5;
+    let numberOfResults = 5;
+    if (this.stageConfig.key === 'TEST LA') {
+      numberOfResults = 1;
+    }
+
     paramsNode.ele('ojp:NumberOfResults', numberOfResults);
 
     paramsNode.ele('ojp:IncludeTrackSections', true)
