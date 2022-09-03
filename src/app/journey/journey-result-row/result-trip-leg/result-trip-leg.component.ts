@@ -69,20 +69,14 @@ export class ResultTripLegComponent implements OnInit {
     if (this.leg.legType === 'ContinousLeg') {
       const continuousLeg = this.leg as OJP.TripContinousLeg
 
-      let leadingTextTitle = 'Walk'
-      if (continuousLeg.isSelfDriveCarLeg()) {
-        leadingTextTitle = 'Drive'
-      }
-      if (continuousLeg.isSharedMobility()) {
-        leadingTextTitle = 'Cycle'
-      }
+      const leadingText = this.computeLegLeadTextContinousLeg(continuousLeg);
 
       let legDurationS = ''
       if (this.leg.legDuration) {
         legDurationS = ' ' + this.leg.legDuration.formatDuration()
       }
       
-      return leadingTextTitle + legDurationS
+      return leadingText + legDurationS
     }
 
     if (this.leg.legType === 'TimedLeg') {
@@ -98,6 +92,22 @@ export class ResultTripLegComponent implements OnInit {
     }
 
     return this.leg.legType
+  }
+
+  private computeLegLeadTextContinousLeg(continuousLeg: OJP.TripContinousLeg): string {
+    if (continuousLeg.legTransportMode === 'walking') {
+      return 'Walk';
+    }
+
+    if (continuousLeg.isDriveCarLeg()) {
+      return 'Drive';
+    }
+
+    if (continuousLeg.isSharedMobility()) {
+      return 'Shared Mobility';
+    }
+
+    return 'Walk (DEFAULT)';
   }
 
   computeLegPillClassName(): string {
@@ -240,7 +250,7 @@ export class ResultTripLegComponent implements OnInit {
 
     if (leg.legType === 'ContinousLeg') {
       const continousLeg = leg as OJP.TripContinousLeg
-      if (continousLeg.isSelfDriveCarLeg()) {
+      if (continousLeg.isDriveCarLeg()) {
         return 'car-sharing'
       }
 

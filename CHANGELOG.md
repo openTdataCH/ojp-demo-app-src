@@ -4,6 +4,9 @@ OJP-Demo URL: https://opentdatach.github.io/ojp-demo-app/
 
 ----
 
+27.August 2022
+- Adds full support for mono- / multi- modal journeys - see [#51](https://github.com/openTdataCH/ojp-demo-app-src/issues/51)
+
 19.August 2022
 - Angular v14 update + [SBB Angular v14](https://angular.app.sbb.ch/) update
 

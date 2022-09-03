@@ -1,67 +1,68 @@
-import { Location } from "../../location/location"
-import { TripMotType } from "../../types/trip-mot-type";
+import { TripLocationPoint } from "../../trip";
+import { IndividualTransportMode } from "../../types/individual-mode.types";
+import { TripModeType } from "../../types/trip-mode-type";
 
 export class JourneyRequestParams {
-  journeyLocations: Location[]
-  tripMotTypes: TripMotType[]
+  tripLocations: TripLocationPoint[]
+  tripModeTypes: TripModeType[]
+  transportModes: IndividualTransportMode[]
   departureDate: Date
 
-  constructor(
-    fromLocation: Location,
-    toLocation: Location,
-    viaLocations: Location[] = [],
-    tripMotTypes: TripMotType[] = [],
-    departureDate: Date = new Date()
-  ) {
-    this.journeyLocations = []
-    this.journeyLocations.push(fromLocation)
-    this.journeyLocations = this.journeyLocations.concat(viaLocations)
-    this.journeyLocations.push(toLocation)
+  constructor(tripLocations: TripLocationPoint[], tripModeTypes: TripModeType[], transportModes: IndividualTransportMode[], departureDate: Date) {
 
-    this.tripMotTypes = tripMotTypes
+    this.tripLocations = tripLocations;
+    this.tripModeTypes = tripModeTypes
+    this.transportModes = transportModes
     this.departureDate = departureDate
   }
 
   public static initWithLocationsAndDate(
-    fromLocation: Location | null,
-    toLocation: Location | null,
-    viaLocations: Location[],
-    tripMotTypes: TripMotType[],
+    fromTripLocation: TripLocationPoint | null,
+    toTripLocation: TripLocationPoint | null,
+    viaTripLocations: TripLocationPoint[],
+    tripModeTypes: TripModeType[],
+    transportModes: IndividualTransportMode[],
     departureDate: Date
   ): JourneyRequestParams | null {
-    if ((fromLocation === null) || (toLocation === null)) {
+    if ((fromTripLocation === null) || (toTripLocation === null)) {
       return null;
     }
 
     // Both locations should have a geoPosition OR stopPlace
-    if (!((fromLocation.geoPosition || fromLocation.stopPlace) && (toLocation.geoPosition || toLocation.stopPlace))) {
+    if (!((fromTripLocation.location.geoPosition || fromTripLocation.location.stopPlace) && (toTripLocation.location.geoPosition || toTripLocation.location.stopPlace))) {
       console.error('JourneyRequestParams.initWithLocationsAndDate - broken from, to')
-      console.log(fromLocation)
-      console.log(toLocation)
+      console.log(fromTripLocation)
+      console.log(toTripLocation)
       return null;
     }
 
     // Via locations should have a geoPosition
     let hasBrokenVia = false
-    viaLocations.forEach(location => {
-      if (location.geoPosition === null) {
+    viaTripLocations.forEach(tripLocation => {
+      if (tripLocation.location.geoPosition === null) {
         hasBrokenVia = true
       }
     })
     if (hasBrokenVia) {
       console.error('JourneyRequestParams.initWithLocationsAndDate - broken via')
-      console.log(viaLocations)
+      console.log(viaTripLocations)
       return null;
     }
 
-    if ((viaLocations.length + 1) !== tripMotTypes.length) {
+    if ((viaTripLocations.length + 1) !== tripModeTypes.length) {
       console.error('JourneyRequestParams.initWithLocationsAndDate - wrong via/mot types')
-      console.log(viaLocations)
-      console.log(tripMotTypes)
+      console.log(viaTripLocations)
+      console.log(tripModeTypes)
       return null;
     }
 
-    const requestParams = new JourneyRequestParams(fromLocation, toLocation, viaLocations, tripMotTypes, departureDate)
+    let tripLocations: TripLocationPoint[] = [];
+    tripLocations.push(fromTripLocation)
+    tripLocations = tripLocations.concat(viaTripLocations);
+    tripLocations.push(toTripLocation);
+
+    const requestParams = new JourneyRequestParams(tripLocations, tripModeTypes, transportModes, departureDate)
+
     return requestParams
   }
 }

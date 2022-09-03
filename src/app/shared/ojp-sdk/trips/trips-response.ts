@@ -1,7 +1,7 @@
 import { Location } from '../location/location'
 import { Trip } from '../trip/trip'
 import { XPathOJP } from '../helpers/xpath-ojp'
-import { TripMotType } from '../types/trip-mot-type'
+import { IndividualTransportMode } from '../types/individual-mode.types'
 
 export class TripsResponse {
   public hasValidResponse: boolean
@@ -16,14 +16,14 @@ export class TripsResponse {
     this.trips = trips
   }
 
-  public static initWithXML(responseXMLText: string, motType: TripMotType): TripsResponse {
+  public static initWithXML(responseXMLText: string, transportMode: IndividualTransportMode): TripsResponse {
     const responseXML = new DOMParser().parseFromString(responseXMLText, 'application/xml');
 
     const statusText = XPathOJP.queryText('//siri:OJPResponse/siri:ServiceDelivery/siri:Status', responseXML)
     const serviceStatus = statusText === 'true'
 
     const contextLocations = TripsResponse.parseContextLocations(responseXML);
-    const trips = TripsResponse.parseTrips(responseXML, contextLocations, motType);
+    const trips = TripsResponse.parseTrips(responseXML, contextLocations, transportMode);
 
     const tripResponse = new TripsResponse(serviceStatus, responseXMLText, contextLocations, trips)
 
@@ -42,7 +42,7 @@ export class TripsResponse {
     return locations;
   }
 
-  private static parseTrips(responseXML: Document, contextLocations: Location[], motType: TripMotType): Trip[] {
+  private static parseTrips(responseXML: Document, contextLocations: Location[], transportMode: IndividualTransportMode): Trip[] {
     let trips: Trip[] = [];
 
     const mapContextLocations: Record<string, Location> = {}
@@ -55,7 +55,7 @@ export class TripsResponse {
 
     const tripResultNodes = XPathOJP.queryNodes('//ojp:TripResult', responseXML);
     tripResultNodes.forEach(tripResult => {
-      const trip = Trip.initFromTripResultNode(tripResult as Node, motType);
+      const trip = Trip.initFromTripResultNode(tripResult as Node, transportMode);
       if (trip) {
         trip.legs.forEach(leg => {
           leg.patchLocations(mapContextLocations)

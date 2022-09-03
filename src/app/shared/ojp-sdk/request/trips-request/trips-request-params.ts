@@ -1,34 +1,38 @@
-import { Location } from "../../location/location";
-import { TripMotType } from "../../types/trip-mot-type";
+import { TripLocationPoint } from "../../trip";
+import { IndividualTransportMode } from "../../types/individual-mode.types";
+import { TripModeType } from "../../types/trip-mode-type";
 
 export class TripsRequestParams {
-  fromLocation: Location
-  toLocation: Location
+  fromTripLocation: TripLocationPoint
+  toTripLocation: TripLocationPoint
   departureDate: Date
-  motType: TripMotType
+  modeType: TripModeType
+  transportMode: IndividualTransportMode
 
-  constructor(fromLocation: Location, toLocation: Location, departureDate: Date) {
-    this.fromLocation = fromLocation
-    this.toLocation = toLocation
+  constructor(fromTripLocation: TripLocationPoint, toTripLocation: TripLocationPoint, departureDate: Date) {
+    this.fromTripLocation = fromTripLocation
+    this.toTripLocation = toTripLocation
     this.departureDate = departureDate
-    this.motType = 'Default'
+    
+    this.modeType = 'monomodal'
+    this.transportMode = 'public_transport'
   }
 
   public static initWithLocationsAndDate(
-    fromLocation: Location | null,
-    toLocation: Location | null,
+    fromTripLocation: TripLocationPoint | null,
+    toTripLocation: TripLocationPoint | null,
     departureDate: Date
   ): TripsRequestParams | null {
-    if ((fromLocation === null) || (toLocation === null)) {
+    if ((fromTripLocation === null) || (toTripLocation === null)) {
       return null;
     }
 
     // Both locations should have a geoPosition OR stopPlace
-    if (!((fromLocation.geoPosition || fromLocation.stopPlace) && (toLocation.geoPosition || toLocation.stopPlace))) {
+    if (!((fromTripLocation.location.geoPosition || fromTripLocation.location.stopPlace) && (toTripLocation.location.geoPosition || toTripLocation.location.stopPlace))) {
       return null;
     }
 
-    const tripRequestParams = new TripsRequestParams(fromLocation, toLocation, departureDate)
+    const tripRequestParams = new TripsRequestParams(fromTripLocation, toTripLocation, departureDate)
     return tripRequestParams
   }
 }

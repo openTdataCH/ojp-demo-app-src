@@ -3,29 +3,24 @@
     <sbb-accordion>
       <sbb-expansion-panel>
         <sbb-expansion-panel-header>Search</sbb-expansion-panel-header>
+          <journey-point-input
+            (selectedLocation)="onLocationSelected($event, 'From')"
+            [endpointType]="'From'"
+            [inputValue]="fromLocationText"
+            [placeholder]="'From'">
+          </journey-point-input>
 
-          <div>
-            <journey-point-input
-              (selectedLocation)="onLocationSelected($event, 'From')"
-              [endpointType]="'From'"
-              [inputValue]="fromLocationText"
-              [placeholder]="'From'">
-            </journey-point-input>
-          </div>
+          <trip-mode-type
+            *ngFor="let modeType of this.userTripService.journeyTripsPlaceholder; index as idx"
+            [tripModeTypeIdx]="idx">
+          </trip-mode-type>
 
-          <trip-mot-type
-            *ngFor="let motType of this.userTripService.tripMotTypes; index as idx"
-            [tripMotTypeIdx]="idx">
-          </trip-mot-type>
-
-          <div>
-            <journey-point-input
-              (selectedLocation)="onLocationSelected($event, 'To')"
-              [endpointType]="'To'"
-              [inputValue]="toLocationText"
-              [placeholder]="'To'">
-            </journey-point-input>
-          </div>
+          <journey-point-input
+            (selectedLocation)="onLocationSelected($event, 'To')"
+            [endpointType]="'To'"
+            [inputValue]="toLocationText"
+            [placeholder]="'To'">
+          </journey-point-input>
 
           <div class="row">
             <div class="col">
@@ -65,27 +60,32 @@
             </div>
           </div>
           
-          <div class="d-flex justify-content-between">
-            <button
-              class="btn btn-primary"
-              type="button"
-              (click)="handleTapOnSearch()"
-              [disabled]="shouldDisableSearchButton()">
-              <span
-                class="spinner-border spinner-border-sm"
-                role="status"
-                aria-hidden="true"
-                *ngIf="isSearching"
-              ></span>
-              Search
-            </button>
-            
-            <button 
-              class="btn btn-secondary" 
-              (click)="this.loadInputTripXMLPopover()"
-              type="button">
-              Add XML Request
-            </button>
+          <div class="d-flex">
+            <div style="margin-right: 4px;">
+              <button
+                class="btn btn-primary"
+                type="button"
+                (click)="handleTapOnSearch()"
+                [disabled]="shouldDisableSearchButton()">
+                <span
+                  class="spinner-border spinner-border-sm"
+                  role="status"
+                  aria-hidden="true"
+                  *ngIf="isSearching"
+                ></span>
+                Search Journeys
+              </button>
+            </div>
+
+            <div class="ms-auto">
+                <button 
+                class="btn btn-secondary" 
+                (click)="this.loadInputTripXMLPopover()"
+                type="button">
+                Debug XML
+              </button>
+            </div>
+
           </div>
         
       </sbb-expansion-panel>

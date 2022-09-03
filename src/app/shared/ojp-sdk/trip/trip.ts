@@ -6,11 +6,11 @@ import { TripStats } from '../types/trip-stats'
 import { TripLeg } from './leg/trip-leg'
 import { TripLegFactory } from './leg/trip-leg-factory'
 import { TripTimedLeg } from './leg/trip-timed-leg'
-import { TripMotType } from '../types/trip-mot-type'
 import { TripContinousLeg } from './leg/trip-continous-leg'
 import { Duration } from '../shared/duration'
 import { Location } from '../location/location';
 import { GeoPositionBBOX } from '../location/geoposition-bbox'
+import { IndividualTransportMode } from '../types/individual-mode.types'
 
 export class Trip {
   public id: string
@@ -23,7 +23,7 @@ export class Trip {
     this.stats = tripStats
   }
 
-  public static initFromTripResultNode(tripResultNode: Node, motType: TripMotType) {
+  public static initFromTripResultNode(tripResultNode: Node, transportMode: IndividualTransportMode) {
     const tripId = XPathOJP.queryText('ojp:Trip/ojp:TripId', tripResultNode)
     if (tripId === null) {
       return null;
@@ -75,7 +75,7 @@ export class Trip {
       legs.push(tripLeg);
     })
 
-    if (motType === 'Walking') {
+    if (transportMode === 'walking') {
       const firstNonWalkingLeg = legs.find(leg => {
         return leg.legType !== 'ContinousLeg'
       })
@@ -85,39 +85,39 @@ export class Trip {
       }
     }
 
-    if (motType === 'Self-Driving Car') {
-      const firstSelfDrivingLeg = legs.find(leg => {
-        if (leg.legType === 'ContinousLeg') {
-          const continousLeg = leg as TripContinousLeg
-          return continousLeg.isSelfDriveCarLeg()
-        }
-
-        return false
-      })
-
-      if (!firstSelfDrivingLeg) {
-        return null
+    if (transportMode === 'car_self_driving' || transportMode === 'car_sharing') {
+       // TripRequest response returns <ojp:IndividualMode>self-drive-car</ojp:IndividualMode> also for car_sharing
+      const hasLegWithCarMode = Trip.hasLegWithTransportMode(legs, 'car_self_driving');
+      if (!hasLegWithCarMode) {
+        return null;
       }
     }
 
-    if (motType === 'Shared Mobility') {
-      const firstSharedMobilityLeg = legs.find(leg => {
-        if (leg.legType === 'ContinousLeg') {
-          const continousLeg = leg as TripContinousLeg
-          return continousLeg.isSharedMobility()
-        }
-
-        return false
-      })
-
-      if (!firstSharedMobilityLeg) {
-        return null
+    const customTransportModes: IndividualTransportMode[] = ['cycle', 'bicycle_rental', 'escooter_rental'];
+    if (customTransportModes.indexOf(transportMode) !== -1) {
+      // TripRequest response returns <ojp:IndividualMode>cycle</ojp:IndividualMode> for cycle (indvidual and sharing), escooters (sharing)
+      const hasLegWithTransportMode = Trip.hasLegWithTransportMode(legs, 'cycle');
+      if (hasLegWithTransportMode === false) {
+        return null;
       }
     }
 
     const trip = new Trip(tripId, legs, tripStats);
 
     return trip;
+  }
+
+  private static hasLegWithTransportMode(legs: TripLeg[], transportMode: IndividualTransportMode): boolean {
+    const foundLeg = legs.find(leg => {
+      if (leg.legType === 'ContinousLeg') {
+        const continousLeg = leg as TripContinousLeg
+        return continousLeg.legTransportMode === transportMode;
+      }
+
+      return false
+    }) ?? null;
+
+    return foundLeg !== null;
   }
 
   public computeDepartureTime(): Date | null {

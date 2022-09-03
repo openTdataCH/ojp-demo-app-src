@@ -101,16 +101,19 @@ export class SearchFormComponent implements OnInit {
   private updateLocationTexts() {
     const endpointTypes: OJP.JourneyPointType[] = ['From', 'To'];
     endpointTypes.forEach(endpointType => {
-      const location = endpointType === 'From' ? this.userTripService.fromLocation : this.userTripService.toLocation
+      const tripLocationPoint = endpointType === 'From' ? this.userTripService.fromTripLocation : this.userTripService.toTripLocation
+      const location = tripLocationPoint?.location ?? null
+
+      if (location === null) {
+        return
+      }
 
       let locationText: string = ''
-      if (location) {
-        const stopPlaceName = location.stopPlace?.stopPlaceName ?? null
-        if (stopPlaceName) {
-          locationText = stopPlaceName
-        } else {
-          locationText = location.geoPosition?.asLatLngString() ?? ''
-        }
+      const stopPlaceName = location.stopPlace?.stopPlaceName ?? null
+      if (stopPlaceName) {
+        locationText = stopPlaceName
+      } else {
+        locationText = location.geoPosition?.asLatLngString() ?? ''
       }
 
       if (endpointType === 'From') {
@@ -134,7 +137,7 @@ export class SearchFormComponent implements OnInit {
 
     responsePromise.then(response => {
       response.text().then(responseText => {
-        const tripsResponse = OJP.TripsResponse.initWithXML(responseText, 'Default');
+        const tripsResponse = OJP.TripsResponse.initWithXML(responseText, 'public_transport');
 
         console.log('MOCK RESPONSE from ' + mockURL);
         console.log(tripsResponse);
@@ -262,7 +265,7 @@ export class SearchFormComponent implements OnInit {
       popover.tripCustomRequestSaved.subscribe((tripsResponseXML) => {
         this.lastCustomTripRequestXML = popover.inputTripRequestXmlS
 
-        const tripResponse = OJP.TripsResponse.initWithXML(tripsResponseXML, 'Default')
+        const tripResponse = OJP.TripsResponse.initWithXML(tripsResponseXML, 'public_transport')
         if (tripResponse.trips.length === 0) {
           popover.inputTripRequestResponseXmlS = tripsResponseXML
           return
@@ -273,7 +276,7 @@ export class SearchFormComponent implements OnInit {
       })
 
       popover.tripCustomResponseSaved.subscribe((tripsResponseXML) => {
-        const tripResponse = OJP.TripsResponse.initWithXML(tripsResponseXML, 'Default')
+        const tripResponse = OJP.TripsResponse.initWithXML(tripsResponseXML, 'public_transport')
         if (tripResponse.trips.length === 0) {
           return
         }

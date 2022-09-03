@@ -9,17 +9,10 @@ import { TripLeg, LegType, LinePointData } from "./trip-leg"
 import { TripLegPropertiesEnum, TripLegDrawType, TripLegLineType } from '../../types/map-geometry-types'
 import { MapLegLineTypeColor } from '../../config/map-colors'
 import { Duration } from '../../shared/duration'
-
-// TODO - duplicate with TripMotTypeKey
-enum ContinousLegMode {
-  'Unknown' = 'unknown',
-  'Walk' = 'walk',
-  'Self-Drive Car' = 'self-drive-car',
-  'Shared Mobility' = 'shared-mobility',
-}
+import { IndividualTransportMode } from '../../types/individual-mode.types'
 
 export class TripContinousLeg extends TripLeg {
-  public legMode: ContinousLegMode | null
+  public legTransportMode: IndividualTransportMode | null
   public legDistance: number
   public pathGuidance: PathGuidance | null
   public walkDuration: Duration | null
@@ -27,7 +20,7 @@ export class TripContinousLeg extends TripLeg {
   constructor(legType: LegType, legIDx: number, legDistance: number, fromLocation: Location, toLocation: Location) {
     super(legType, legIDx, fromLocation, toLocation)
 
-    this.legMode = null
+    this.legTransportMode = null
     this.legDistance = legDistance
     this.pathGuidance = null
     this.walkDuration = null
@@ -57,7 +50,7 @@ export class TripContinousLeg extends TripLeg {
     tripLeg.legDuration = Duration.initFromContextNode(legNode)
 
     tripLeg.pathGuidance = PathGuidance.initFromTripLeg(legNode);
-    tripLeg.legMode = tripLeg.computeLegMode(legNode)
+    tripLeg.legTransportMode = tripLeg.computeLegTransportMode(legNode)
 
     tripLeg.legTrack = LegTrack.initFromLegNode(legNode);
 
@@ -68,37 +61,44 @@ export class TripContinousLeg extends TripLeg {
     return tripLeg;
   }
 
-  private computeLegMode(legNode: Node): ContinousLegMode | null {
+  private computeLegTransportMode(legNode: Node): IndividualTransportMode | null {
     const legModeS = XPathOJP.queryText('ojp:Service/ojp:IndividualMode', legNode)
     if (legModeS === null) {
       return null
     }
 
     if (legModeS === 'walk') {
-      return ContinousLegMode.Walk
+      return 'walking'
     }
 
     if (legModeS === 'self-drive-car') {
-      return ContinousLegMode['Self-Drive Car']
+      return 'car_self_driving'
     }
 
     if (legModeS === 'cycle') {
-      return ContinousLegMode['Shared Mobility']
+      return 'cycle'
     }
 
     return null
   }
 
-  public isSelfDriveCarLeg(): boolean {
-    return this.legMode === ContinousLegMode['Self-Drive Car']
+  public isDriveCarLeg(): boolean {
+    return this.legTransportMode === 'car_self_driving';
   }
 
   public isSharedMobility(): boolean {
-    return this.legMode === ContinousLegMode['Shared Mobility']
+    if (this.legTransportMode === null) {
+      return false;
+    }
+
+    const sharedMobilityModes: IndividualTransportMode[] = ['cycle', 'bicycle_rental', 'car_sharing', 'escooter_rental'];
+    const hasSharedMobilityMode = sharedMobilityModes.indexOf(this.legTransportMode) !== -1;
+
+    return hasSharedMobilityMode;
   }
 
   public isWalking(): boolean {
-    return this.legMode === ContinousLegMode['Walk']
+    return this.legTransportMode === 'walking';
   }
 
   protected override computeSpecificJSONFeatures(): GeoJSON.Feature[] {
@@ -142,7 +142,7 @@ export class TripContinousLeg extends TripLeg {
 
   protected override computeLegLineType(): TripLegLineType {
     if (this.legType === 'ContinousLeg') {
-      if (this.isSelfDriveCarLeg()) {
+      if (this.isDriveCarLeg()) {
         return 'Self-Drive Car'
       }
 
@@ -170,7 +170,7 @@ export class TripContinousLeg extends TripLeg {
   }
 
   public override computeLegColor(): string {
-    if (this.isSelfDriveCarLeg()) {
+    if (this.isDriveCarLeg()) {
       return MapLegLineTypeColor['Self-Drive Car']
     }
 
