@@ -4,6 +4,11 @@ import { StopPlace } from "./stopplace";
 import { Address } from "./address";
 import { PointOfInterest } from "./poi";
 
+interface NearbyLocation {
+  distance: number
+  location: Location
+}
+
 export class Location {
   public address: Address | null
   public stopPointRef: string | null
@@ -160,5 +165,39 @@ export class Location {
     }
 
     return feature
+  }
+
+  public computeLocationName(): string | null {
+    if (this.stopPlace) {
+      return this.stopPlace.stopPlaceName;
+    }
+
+    return this.locationName ?? null;
+  }
+
+  public findClosestLocation(otherLocations: Location[]): NearbyLocation | null {
+    const geoPositionA = this.geoPosition;
+    if (geoPositionA === null) {
+      return null;
+    }
+
+    let closestLocation: NearbyLocation | null = null;
+
+    otherLocations.forEach(locationB => {
+      const geoPositionB = locationB.geoPosition;
+      if (geoPositionB === null) {
+        return;
+      }
+
+      const dAB = geoPositionA.distanceFrom(geoPositionB);
+      if ((closestLocation === null) || (dAB < closestLocation.distance)) {
+        closestLocation = {
+          location: locationB,
+          distance: dAB
+        }
+      }
+    });
+
+    return closestLocation;
   }
 }

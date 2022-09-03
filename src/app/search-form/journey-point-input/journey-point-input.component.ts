@@ -73,18 +73,10 @@ export class JourneyPointInputComponent implements OnInit, OnChanges {
     const optionIdx = ev.option.value;
     const location = this.lookupLocations[optionIdx];
 
-    const inputValue = this.computeLocationName(location);
+    const inputValue = location.computeLocationName();
     this.inputControl.setValue(inputValue);
 
     this.selectedLocation.emit(location);
-  }
-
-  public computeLocationName(location: OJP.Location): string {
-    if (location.stopPlace) {
-      return location.stopPlace.stopPlaceName
-    }
-
-    return location.locationName ?? 'n/a'
   }
 
   private fetchJourneyPoints(searchTerm: string) {

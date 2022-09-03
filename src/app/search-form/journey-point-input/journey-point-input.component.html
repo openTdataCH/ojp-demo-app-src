@@ -26,7 +26,7 @@
         <sbb-option
           *ngFor="let lookupLocation of lookupLocations; index as idx"
           [value]="idx">
-          {{ computeLocationName(lookupLocation) }}
+          {{ lookupLocation.computeLocationName() }}
         </sbb-option>
       </sbb-autocomplete>
     </div>

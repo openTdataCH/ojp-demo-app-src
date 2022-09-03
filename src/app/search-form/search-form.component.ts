@@ -1,5 +1,4 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
-import { FormControl, FormGroup } from '@angular/forms';
 
 import { UserTripService } from '../shared/services/user-trip.service'
 import { MapService } from '../shared/services/map.service';
@@ -167,6 +166,8 @@ export class SearchFormComponent implements OnInit {
   onChangeStageAPI(ev: SbbRadioChange) {
     const newAppStage = ev.value as OJP.APP_Stage
     this.userTripService.updateAppStage(newAppStage)
+
+    this.userTripService.refetchEndpointsByName();
   }
 
   onChangeDateTime() {

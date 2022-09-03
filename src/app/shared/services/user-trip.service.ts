@@ -173,6 +173,83 @@ export class UserTripService {
     });
   }
 
+  public refetchEndpointsByName() {
+    const promises: Promise<OJP.Location[] | null>[] = [];
+    const emptyPromise = new Promise<null>((resolve, reject) => {
+      resolve(null);
+    });
+
+    const endpointTypes: OJP.JourneyPointType[] = ['From', 'To']
+    endpointTypes.forEach(endpointType => {
+      const isFrom = endpointType === 'From'
+
+      this.fromTripLocation?.location
+      const tripLocation = isFrom ? this.fromTripLocation : this.toTripLocation;
+      if (tripLocation === null) {
+        promises.push(emptyPromise);
+        return;
+      }
+
+      const locationName = tripLocation.location.computeLocationName();
+      if (locationName === null) {
+        promises.push(emptyPromise);
+        return;
+      }
+
+      const geoPosition = tripLocation.location.geoPosition;
+      if (geoPosition === null) {
+        promises.push(emptyPromise);
+        return;
+      }
+
+      // Search nearby locations, in a bbox of 200x200m
+      const bbox = OJP.GeoPositionBBOX.initFromGeoPosition(geoPosition, 200, 200);
+      const stageConfig = this.getStageConfig();
+      const locationInformationRequest = OJP.LocationInformationRequest.initWithBBOXAndType(
+        stageConfig,
+        bbox.southWest.longitude,
+        bbox.northEast.latitude,
+        bbox.northEast.longitude,
+        bbox.southWest.latitude,
+        'stop',
+        300
+      );
+      const locationInformationPromise = locationInformationRequest.fetchResponse();
+      promises.push(locationInformationPromise)
+    });
+
+    Promise.all(promises).then(locationsData => {
+      endpointTypes.forEach(endpointType => {
+        const isFrom = endpointType === 'From'
+        const locations = isFrom ? locationsData[0] : locationsData[1];
+        if (locations === null) {
+          return;
+        }
+
+        const tripLocation = isFrom ? this.fromTripLocation : this.toTripLocation;
+        if (tripLocation === null) {
+          promises.push(emptyPromise);
+          return;
+        }
+        
+        const nearbyLocation = tripLocation.location.findClosestLocation(locations);
+        if (nearbyLocation === null) {
+          return;
+        }
+
+        if (isFrom) {
+          this.fromTripLocation = new OJP.TripLocationPoint(nearbyLocation.location)
+        } else {
+          this.toTripLocation = new OJP.TripLocationPoint(nearbyLocation.location)
+        }
+
+        this.updatePermalinkAddress();
+        this.locationsUpdated.emit();
+        this.geoLocationsUpdated.emit();
+      })
+    });
+  }
+
   private computeAppStageFromString(appStageS: string): OJP.APP_Stage {
     const appStage = appStageS.toUpperCase() as OJP.APP_Stage
     if (appStage === 'TEST') {
