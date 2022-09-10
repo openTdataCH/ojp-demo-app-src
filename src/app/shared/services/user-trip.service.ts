@@ -54,11 +54,9 @@ export class UserTripService {
     this.currentAppStage = 'PROD'
 
     this.permalinkURLAddress = null
-
-    this.initDefaults()
   }
 
-  private initDefaults() {
+  public initDefaults() {
     const defaultLocationsPlaceRef = {
       "Bern": "8507000",
       "Geneva": "8501008",
