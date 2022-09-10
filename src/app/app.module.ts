@@ -27,9 +27,9 @@ import { TripModeTypeComponent } from './search-form/trip-mode-type/trip-mode-ty
   declarations: [
     AppComponent,
 
+    JourneyPointInputComponent,
     JourneyResultsComponent,
     JourneyResultRowComponent,
-    JourneyPointInputComponent,
     JourneySearchComponent,
     MapComponent,
     ResultTripLegComponent,
