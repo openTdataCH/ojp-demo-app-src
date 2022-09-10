@@ -1,0 +1,36 @@
+{
+  "id": "ojp-service-track-stop",
+  "type": "circle",
+  "source": "[SOURCE_ID]",
+  "filter": [
+    "all",
+    ["==", 
+      ["geometry-type"], "Point"
+    ]
+  ],
+  "layout": {
+  },
+  "paint": {
+    "circle-radius": [
+      "case",
+      ["==", ["get", "point-size"], "large"],
+      6.0,
+      4.0
+    ],
+    "circle-color": [
+      "case",
+      ["==", ["get", "line-type"], "prev"],
+      "#D3D3D3",
+      "#3D69CA"
+    ],
+    "circle-stroke-color": "#FFF",
+    "circle-stroke-width": [
+      "case",
+      ["==", ["get", "point-size"], "large"],
+      3.0,
+      1.0
+    ]
+  }
+}
+
+
