@@ -401,7 +401,7 @@ export class UserTripService {
     const stageS = this.currentAppStage.toLowerCase()
     queryParams.append('stage', stageS)
 
-    this.permalinkURLAddress = '?' + queryParams.toString()
+    this.permalinkURLAddress = 'search?' + queryParams.toString()
   }
 
   private computeInitialDate(): Date {
