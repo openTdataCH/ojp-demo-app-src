@@ -1,7 +1,7 @@
 <div class="row mb-1">
   <div class="col">
     <sbb-accordion>
-      <sbb-expansion-panel>
+      <sbb-expansion-panel [expanded]="true">
         <sbb-expansion-panel-header>Search</sbb-expansion-panel-header>
           <journey-point-input
             (selectedLocation)="onLocationSelected($event, 'From')"
