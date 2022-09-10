@@ -1,23 +1,24 @@
 import xmlbuilder from 'xmlbuilder';
 
 import { GeoPosition } from "../../location/geoposition"
+import { StopEventType } from "../../types/stop-event-type"
 
 export class StopEventRequestParams {
     public stopPlaceRef: string | null
     public geoPosition: GeoPosition | null
     public depArrTime: Date
     public numberOfResults: number
-    public stopEventType: 'departure' | 'arrival'
+    public stopEventType: StopEventType
     public includePreviousCalls: boolean
     public includeOnwardCalls: boolean
     public includeRealtimeData: boolean
 
-    constructor(stopPlaceRef: string | null, geoPosition: GeoPosition | null) {
+    constructor(stopPlaceRef: string | null, geoPosition: GeoPosition | null, stopEventType: StopEventType) {
         this.stopPlaceRef = stopPlaceRef;
         this.geoPosition = geoPosition;
         this.depArrTime = new Date();
         this.numberOfResults = 10;
-        this.stopEventType = 'departure'
+        this.stopEventType = stopEventType
         this.includePreviousCalls = false;
         this.includeOnwardCalls = false;
         this.includeRealtimeData = true;

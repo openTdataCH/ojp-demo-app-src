@@ -7,6 +7,7 @@ import { Location } from '../../location/location'
 
 import { StopEventRequestParams } from './stop-event-request-params';
 import { RequestErrorData } from '../request-error';
+import { StopEventType } from '../../types/stop-event-type';
 
 export class StopEventRequest extends OJPBaseRequest {
     public requestParams: StopEventRequestParams
@@ -67,8 +68,8 @@ export class StopEventRequest extends OJPBaseRequest {
         return mapContextLocations;
     }
 
-    public static initWithStopPlaceRef(stageConfig: StageConfig, stopPlaceRef: string): StopEventRequest {
-        const stopEventRequestParams = new StopEventRequestParams(stopPlaceRef, null);
+    public static initWithStopPlaceRef(stageConfig: StageConfig, stopPlaceRef: string, stopEventType: StopEventType): StopEventRequest {
+        const stopEventRequestParams = new StopEventRequestParams(stopPlaceRef, null, stopEventType);
         const stopEventRequest = new StopEventRequest(stageConfig, stopEventRequestParams);
         return stopEventRequest;
     }
