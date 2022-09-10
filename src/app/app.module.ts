@@ -22,6 +22,7 @@ import { ResultTripLegComponent } from './journey/journey-result-row/result-trip
 import { SearchFormComponent } from './search-form/search-form.component';
 
 import { StationBoardInputComponent } from './station-board/input/station-board-input.component';
+import { StationBoardResultComponent } from './station-board/result/station-board-result.component';
 import { StationBoardSearchComponent } from './station-board/search/station-board-search.component';
 
 import { TripModeTypeComponent } from './search-form/trip-mode-type/trip-mode-type.component';
@@ -41,6 +42,7 @@ import { TripModeTypeComponent } from './search-form/trip-mode-type/trip-mode-ty
     TripModeTypeComponent,
 
     StationBoardInputComponent,
+    StationBoardResultComponent,
     StationBoardSearchComponent,
 
     DebugXmlPopoverComponent,
