@@ -19,6 +19,10 @@ export class AppComponent implements OnInit {
         label: 'Journey Search',
         link: 'search'
       },
+      {
+        label: 'Station Board',
+        link: 'board'
+      },
     ]
   }
 
