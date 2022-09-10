@@ -21,6 +21,7 @@ import { MapComponent } from './map/map.component';
 import { ResultTripLegComponent } from './journey/journey-result-row/result-trip-leg/result-trip-leg.component';
 import { SearchFormComponent } from './search-form/search-form.component';
 
+import { StationBoardComponent } from './station-board/station-board.component';
 import { StationBoardInputComponent } from './station-board/input/station-board-input.component';
 import { StationBoardResultComponent } from './station-board/result/station-board-result.component';
 import { StationBoardSearchComponent } from './station-board/search/station-board-search.component';
@@ -41,6 +42,7 @@ import { TripModeTypeComponent } from './search-form/trip-mode-type/trip-mode-ty
     SearchFormComponent,
     TripModeTypeComponent,
 
+    StationBoardComponent,
     StationBoardInputComponent,
     StationBoardResultComponent,
     StationBoardSearchComponent,
