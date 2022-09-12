@@ -82,7 +82,7 @@ const map_app_map_layers: Record<string, AppMapLayerOptions> = {
     },
     'all_pois': {
         LIR_Restriction_Type: 'poi_all',
-        LIR_POI_Type: ['service', 'shopping'],
+        LIR_POI_Type: ['service', 'shopping', 'leisure', 'catering', 'public', 'parkride', 'accommodation'],
         minZoom: 14,
         layer_ids: [
             'pois-all-circle',
