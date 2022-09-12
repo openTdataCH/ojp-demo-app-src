@@ -3,7 +3,7 @@ import { GeoRestrictionType, GeoRestrictionPoiOSMTag } from "../../types/geo-res
 export interface LocationInformationRequestParams {
   locationName: string
   stopPlaceRef: string
-  geoRestrictionType: GeoRestrictionType
+  geoRestrictionType: GeoRestrictionType | null
   poiOsmTags: GeoRestrictionPoiOSMTag[] | null
   numberOfResults: number
   bboxWest: number
