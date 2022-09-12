@@ -2,7 +2,7 @@ import * as OJP from '../shared/ojp-sdk/index'
 
 export interface AppMapLayerOptions {
     LIR_Restriction_Type: OJP.GeoRestrictionType
-    LIR_POI_Type?: null | OJP.GeoRestrictionPoiOSMTag
+    LIR_POI_Type?: null | OJP.GeoRestrictionPoiOSMTag | OJP.GeoRestrictionPoiOSMTag[]
     minZoom: number
     layer_ids: string[],
     click_layer_ids?: string[] | 'SAME_AS_LAYER_IDS' | null
@@ -77,6 +77,15 @@ const map_app_map_layers: Record<string, AppMapLayerOptions> = {
         minZoom: 12,
         layer_ids: [
             'charging-station-icon',
+        ],
+        click_layer_ids: 'SAME_AS_LAYER_IDS',
+    },
+    'all_pois': {
+        LIR_Restriction_Type: 'poi_all',
+        LIR_POI_Type: ['service', 'shopping'],
+        minZoom: 14,
+        layer_ids: [
+            'pois-all-circle',
         ],
         click_layer_ids: 'SAME_AS_LAYER_IDS',
     },
