@@ -17,7 +17,7 @@ export class AppMapLayer {
 
     private map: mapboxgl.Map
     private geoRestrictionType: OJP.GeoRestrictionType
-    private geoRestrictionPoiOSMTag: OJP.GeoRestrictionPoiOSMTag | null
+    private geoRestrictionPoiOSMTags: OJP.GeoRestrictionPoiOSMTag[] | null
     public minZoom: number
 
     private features: GeoJSON.Feature[];
@@ -32,7 +32,17 @@ export class AppMapLayer {
 
         this.map = map;
         this.geoRestrictionType = appMapLayerOptions.LIR_Restriction_Type;
-        this.geoRestrictionPoiOSMTag = appMapLayerOptions.LIR_POI_Type ?? null;
+        
+        if (appMapLayerOptions.LIR_POI_Type) {
+            if (Array.isArray(appMapLayerOptions.LIR_POI_Type)) {
+                this.geoRestrictionPoiOSMTags = appMapLayerOptions.LIR_POI_Type
+            } else {
+                this.geoRestrictionPoiOSMTags = [appMapLayerOptions.LIR_POI_Type];
+            }
+        } else {
+            this.geoRestrictionPoiOSMTags = null
+        }
+        
         this.minZoom = appMapLayerOptions.minZoom;
         this.features = [];
         this.mapSourceID = layerKey + '-map-src';
@@ -103,7 +113,7 @@ export class AppMapLayer {
             mapBounds.getSouth(),
             this.geoRestrictionType,
             300,
-            this.geoRestrictionPoiOSMTag,
+            this.geoRestrictionPoiOSMTags,
         );
 
         this.lastOJPRequest = request
