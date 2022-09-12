@@ -147,6 +147,12 @@ export class Location {
       featureProperties['topographicPlaceRef'] = this.address?.topographicPlaceRef ?? ''
     }
 
+    if (this.poi) {
+      featureProperties['poi.name'] = this.poi.name;
+      featureProperties['poi.code'] = this.poi.code;
+      featureProperties['poi.osm.tags'] = this.poi.categoryTags.join(',');
+    }
+
     featureProperties['locationName'] = this.locationName ?? '';
 
     for (let attrKey in this.attributes) {
