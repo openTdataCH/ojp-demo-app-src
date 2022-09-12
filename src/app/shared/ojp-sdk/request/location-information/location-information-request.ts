@@ -41,7 +41,7 @@ export class LocationInformationRequest extends OJPBaseRequest {
     bboxSouth: number,
     geoRestrictionType: GeoRestrictionType,
     limit: number = 1000,
-    poiOsmTag: GeoRestrictionPoiOSMTag | null = null
+    poiOsmTags: GeoRestrictionPoiOSMTag[] | null = null
   ): LocationInformationRequest {
     const requestParams = <LocationInformationRequestParams>{
       bboxWest: bboxWest,
@@ -50,7 +50,7 @@ export class LocationInformationRequest extends OJPBaseRequest {
       bboxSouth: bboxSouth,
       numberOfResults: limit,
       geoRestrictionType: geoRestrictionType,
-      poiOsmTag: poiOsmTag
+      poiOsmTags: poiOsmTags
     }
 
     const locationInformationRequest = new LocationInformationRequest(stageConfig, requestParams);
@@ -148,16 +148,31 @@ export class LocationInformationRequest extends OJPBaseRequest {
     const numberOfResults = this.requestParams.numberOfResults ?? 10;
     restrictionsNode.ele('ojp:NumberOfResults', numberOfResults);
 
-    const geoRestrictionType = this.requestParams.geoRestrictionType ?? null;
-    if (geoRestrictionType) {
-      restrictionsNode.ele('ojp:Type', geoRestrictionType);
+    const geoRestrictionTypeS = this.computeRestrictionType();
+    restrictionsNode.ele('ojp:Type', geoRestrictionTypeS);
 
-      if (this.requestParams.poiOsmTag) {
-        const osmTagNode = restrictionsNode.ele('ojp:PointOfInterestFilter').ele('ojp:PointOfInterestCategory').ele('ojp:OsmTag')
-        osmTagNode.ele('ojp:Tag', 'amenity')
-        osmTagNode.ele('ojp:Value', this.requestParams.poiOsmTag)
-      }
+    const isPoiRequest = this.requestParams.geoRestrictionType === 'poi_amenity' || this.requestParams.geoRestrictionType === 'poi_all';
+    if (isPoiRequest && this.requestParams.poiOsmTags) {
+      const poiCategoryNode = restrictionsNode.ele('ojp:PointOfInterestFilter').ele('ojp:PointOfInterestCategory');
+      const poiOsmTagKey = this.requestParams.geoRestrictionType === 'poi_amenity' ? 'amenity' : 'POI'
+      
+      this.requestParams.poiOsmTags.forEach(poiOsmTag => {
+        const osmTagNode = poiCategoryNode.ele('ojp:OsmTag')
+        osmTagNode.ele('ojp:Tag', poiOsmTagKey)
+        osmTagNode.ele('ojp:Value', poiOsmTag)
+      })
     }
   }
 
+  private computeRestrictionType(): string {
+      if (this.requestParams.geoRestrictionType === 'poi_all') {
+        return 'poi'
+      }
+
+      if (this.requestParams.geoRestrictionType === 'poi_amenity') {
+        return 'poi'
+      }
+
+      return this.requestParams.geoRestrictionType;
+  }
 }

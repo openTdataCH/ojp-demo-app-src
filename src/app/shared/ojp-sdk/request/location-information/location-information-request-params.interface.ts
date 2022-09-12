@@ -4,7 +4,7 @@ export interface LocationInformationRequestParams {
   locationName: string
   stopPlaceRef: string
   geoRestrictionType: GeoRestrictionType
-  poiOsmTag: GeoRestrictionPoiOSMTag | null
+  poiOsmTags: GeoRestrictionPoiOSMTag[] | null
   numberOfResults: number
   bboxWest: number
   bboxNorth: number
