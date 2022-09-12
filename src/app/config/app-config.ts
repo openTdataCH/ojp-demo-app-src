@@ -45,7 +45,7 @@ const map_app_map_layers: Record<string, AppMapLayerOptions> = {
         click_layer_ids: 'SAME_AS_LAYER_IDS',
     },
     'sharing_cars': {
-        LIR_Restriction_Type: 'poi',
+        LIR_Restriction_Type: 'poi_amenity',
         LIR_POI_Type: 'car_sharing',
         minZoom: 12,
         layer_ids: [
@@ -54,7 +54,7 @@ const map_app_map_layers: Record<string, AppMapLayerOptions> = {
         click_layer_ids: 'SAME_AS_LAYER_IDS',
     },
     'sharing_bicycles': {
-        LIR_Restriction_Type: 'poi',
+        LIR_Restriction_Type: 'poi_amenity',
         LIR_POI_Type: 'bicycle_rental',
         minZoom: 14,
         layer_ids: [
@@ -63,7 +63,7 @@ const map_app_map_layers: Record<string, AppMapLayerOptions> = {
         click_layer_ids: 'SAME_AS_LAYER_IDS',
     },
     'sharing_scooters': {
-        LIR_Restriction_Type: 'poi',
+        LIR_Restriction_Type: 'poi_amenity',
         LIR_POI_Type: 'escooter_rental',
         minZoom: 14,
         layer_ids: [
@@ -72,7 +72,7 @@ const map_app_map_layers: Record<string, AppMapLayerOptions> = {
         click_layer_ids: 'SAME_AS_LAYER_IDS',
     },
     'charging_stations': {
-        LIR_Restriction_Type: 'poi',
+        LIR_Restriction_Type: 'poi_amenity',
         LIR_POI_Type: 'charging_station',
         minZoom: 12,
         layer_ids: [
