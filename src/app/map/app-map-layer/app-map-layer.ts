@@ -173,6 +173,9 @@ export class AppMapLayer {
         if (locationLngLat === null) { return }
     
         const popupHTML = this.computePopupHTML(location);
+        if (popupHTML === null) {
+            return;
+        }
     
         const popupContainer = document.createElement('div');
         popupContainer.innerHTML = popupHTML;
@@ -199,9 +202,13 @@ export class AppMapLayer {
             .addTo(this.map);
     }
 
-    private computePopupHTML(location: OJP.Location): string {
-        let popupHTML = (document.getElementById('map-endpoint-picker-popup') as HTMLElement).innerHTML;
-    
+    private computePopupHTML(location: OJP.Location): string | null {
+        const popupWrapperDIV = document.getElementById('map-endpoint-picker-popup') as HTMLElement;
+        if (popupWrapperDIV === null) {
+            return null;
+        }
+
+        let popupHTML = popupWrapperDIV.innerHTML;
         const stopPlaceName = location.stopPlace?.stopPlaceName ?? '';
         popupHTML = popupHTML.replace('[GEO_RESTRICTION_TYPE]', this.geoRestrictionType);
     
