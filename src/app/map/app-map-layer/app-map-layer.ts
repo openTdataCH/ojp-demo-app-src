@@ -155,9 +155,9 @@ export class AppMapLayer {
             clickLayerIDs = layersDataConfig.layer_ids;
         }
 
-        const nearbyFeature = this.queryNearbyFeatureByLayerIDs(ev.lngLat, clickLayerIDs);
+        const nearbyFeature = MapHelpers.queryNearbyFeatureByLayerIDs(this.map, ev.lngLat, clickLayerIDs);
         if (nearbyFeature) {
-            const location = OJP.Location.initWithFeature(nearbyFeature);
+            const location = OJP.Location.initWithFeature(nearbyFeature.feature);
             if (location) {
                 this.showPickupPopup(location);
             }
@@ -168,35 +168,14 @@ export class AppMapLayer {
         return false;
     }
 
-    private queryNearbyFeatureByLayerIDs(lngLat: mapboxgl.LngLat, layerIDs: string[]): mapboxgl.MapboxGeoJSONFeature | null {
-        const bboxPx = MapHelpers.bboxPxFromLngLatWidthPx(this.map, lngLat, 30);
-        const features = this.map.queryRenderedFeatures(bboxPx, {
-            layers: layerIDs
-        });
-    
-        let minDistance = 1000;
-        let closestFeature: mapboxgl.MapboxGeoJSONFeature | null = null
-        features.forEach(feature => {
-            const featureLngLat = MapHelpers.computePointLngLatFromFeature(feature);
-            if (featureLngLat === null) {
-                return;
-            }
-    
-            const featureDistance = lngLat.distanceTo(featureLngLat);
-            if (featureDistance < minDistance) {
-                closestFeature = feature
-                minDistance = featureDistance
-            }
-        });
-    
-        return closestFeature;
-    }
-
     private showPickupPopup(location: OJP.Location) {
         const locationLngLat = location.geoPosition?.asLngLat() ?? null;
         if (locationLngLat === null) { return }
     
         const popupHTML = this.computePopupHTML(location);
+        if (popupHTML === null) {
+            return;
+        }
     
         const popupContainer = document.createElement('div');
         popupContainer.innerHTML = popupHTML;
@@ -223,9 +202,13 @@ export class AppMapLayer {
             .addTo(this.map);
     }
 
-    private computePopupHTML(location: OJP.Location): string {
-        let popupHTML = (document.getElementById('map-endpoint-picker-popup') as HTMLElement).innerHTML;
-    
+    private computePopupHTML(location: OJP.Location): string | null {
+        const popupWrapperDIV = document.getElementById('map-endpoint-picker-popup') as HTMLElement;
+        if (popupWrapperDIV === null) {
+            return null;
+        }
+
+        let popupHTML = popupWrapperDIV.innerHTML;
         const stopPlaceName = location.stopPlace?.stopPlaceName ?? '';
         popupHTML = popupHTML.replace('[GEO_RESTRICTION_TYPE]', this.geoRestrictionType);
     

@@ -54,11 +54,9 @@ export class UserTripService {
     this.currentAppStage = 'PROD'
 
     this.permalinkURLAddress = null
-
-    this.initDefaults()
   }
 
-  private initDefaults() {
+  public initDefaults() {
     const defaultLocationsPlaceRef = {
       "Bern": "8507000",
       "Geneva": "8501008",
@@ -401,7 +399,7 @@ export class UserTripService {
     const stageS = this.currentAppStage.toLowerCase()
     queryParams.append('stage', stageS)
 
-    this.permalinkURLAddress = '?' + queryParams.toString()
+    this.permalinkURLAddress = 'search?' + queryParams.toString()
   }
 
   private computeInitialDate(): Date {

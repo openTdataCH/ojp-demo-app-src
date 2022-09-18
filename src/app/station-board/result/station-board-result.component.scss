@@ -1,0 +1,53 @@
+.service-line-number-wrapper {
+    padding: 0px 16px 0px 4px;
+}
+
+.service-line-number {
+    font-size: 24px;
+}
+
+.service-pt-mode {
+    font-size: 12px;
+}
+
+.trip-heading {
+    margin-top: 2px;
+    font-size: 20px;
+}
+
+.trip-info {
+    font-size: 12px;
+}
+
+.stop-platform-wrapper {
+    margin-right: 4px;
+}
+
+.stop-platform-text {
+    font-size: 14px;
+}
+
+.stop-platform {
+    font-size: 18px;
+}
+
+.departure-time {
+    width: 80px;
+    font-size: 20px;
+}
+
+.departure-delay {
+    color: #c45f00;
+}
+
+.trip-debug > span {
+    font-size: 12px;
+}
+
+.card-item {
+    cursor: pointer;
+}
+
+.item-selected {
+    background-color: #F5F5F5;
+}

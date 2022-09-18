@@ -1,0 +1,225 @@
+import { Component, OnInit, Input, ViewChild, Output, EventEmitter } from '@angular/core';
+import { FormControl } from '@angular/forms';
+import { debounceTime, distinctUntilChanged } from 'rxjs/operators'
+
+import * as OJP from '../../shared/ojp-sdk/index'
+
+import { UserTripService } from 'src/app/shared/services/user-trip.service';
+import { SbbAutocompleteSelectedEvent, SbbAutocompleteTrigger } from '@sbb-esta/angular/autocomplete';
+import { MapService } from 'src/app/shared/services/map.service';
+
+interface StopLookup {
+  stopPlaceRef: string
+  stopName: string
+  special_type?: 'around_me' | null
+  distance?: number | null
+  location?: OJP.Location | null
+}
+
+@Component({
+  selector: 'station-board-input',
+  templateUrl: './station-board-input.component.html',
+})
+export class StationBoardInputComponent implements OnInit {
+  @Input() appStageConfig: OJP.StageConfig
+  @ViewChild(SbbAutocompleteTrigger, { static: true }) autocompleteInputTrigger: SbbAutocompleteTrigger | undefined;
+
+  @Output() locationSelected = new EventEmitter<OJP.Location>()
+
+  public searchInputControl: FormControl;
+  public stopLookups: StopLookup[]
+  private currentStopLookup: StopLookup | null
+  public isBusySearching: boolean // TODO - do we actually need this?
+
+   // TODO - this is an workaround to flag that the INPUT was changed programatically
+  //      - tried with .setValue(..., { emitEvent: false }); but didnt work as expected
+  //      - therefore => workaround
+  private hackIgnoreInputChangesFlag: boolean
+
+  constructor(private userTripService: UserTripService, private mapService: MapService) {
+    this.appStageConfig = this.userTripService.getStageConfig('PROD');
+    this.searchInputControl = new FormControl('');
+    this.stopLookups = [StationBoardInputComponent.AroundMeStopLookup]
+    this.currentStopLookup = null
+    this.isBusySearching = false
+    this.hackIgnoreInputChangesFlag = false;
+  }
+
+  private static get AroundMeStopLookup(): StopLookup {
+    const stopLookup = <StopLookup>{
+      stopPlaceRef: 'AROUND_ME',
+      stopName: 'Current Location',
+      special_type: 'around_me',
+      location: null,
+    }
+
+    return stopLookup;
+  }
+
+  ngOnInit(): void {
+    this.searchInputControl.valueChanges.pipe(
+      debounceTime(500),
+      distinctUntilChanged()
+    ).subscribe((searchTerm: string) => {
+      this.onInputChangeAfterIdle();
+    });
+  }
+
+  public renderLookupName(stopLookup: StopLookup): string {
+    let lookupName = stopLookup.stopName;
+    if (stopLookup.distance) {
+      lookupName += ' (' + stopLookup.distance + ' m)';
+    }
+
+    return lookupName;
+  }
+
+  // This event is triggered after some idle time
+  private onInputChangeAfterIdle() {
+    const searchTerm = this.searchInputControl.value.trim();
+
+    if (this.hackIgnoreInputChangesFlag) {
+      this.hackIgnoreInputChangesFlag = false;
+      return;
+    }
+
+    if (searchTerm.length === 0) {
+      this.stopLookups = [StationBoardInputComponent.AroundMeStopLookup];
+      return;
+    }
+
+    if (searchTerm.length < 3) {
+      return;
+    }
+
+    this.fetchLookupLocations(searchTerm);
+  }
+
+  private fetchLookupLocations(searchTerm: string) {
+    this.isBusySearching = true;
+
+    const locationInformationRequest = OJP.LocationInformationRequest.initWithLocationName(this.appStageConfig, searchTerm);
+
+    locationInformationRequest.fetchResponse().then(locations => {
+      this.parseLocations(locations);
+      this.isBusySearching = false;
+    });
+  }
+
+  private parseLocations(locations: OJP.Location[], nearbyGeoPosition: OJP.GeoPosition | null = null) {
+    this.stopLookups = [];
+    
+    locations.forEach(location => {
+      const stopPlaceRef = location.stopPlace?.stopPlaceRef as string;
+      if (stopPlaceRef === null) {
+        return
+      }
+
+      const stopName = location.computeLocationName();
+    
+      const stopLookup = <StopLookup>{
+        stopPlaceRef: stopPlaceRef,
+        stopName: stopName,
+        location: location,
+      };
+
+      if (location.geoPosition && nearbyGeoPosition) {
+        stopLookup.distance = location.geoPosition.distanceFrom(nearbyGeoPosition);
+      }
+
+      this.stopLookups.push(stopLookup);
+    });
+
+    if (nearbyGeoPosition) {
+      // Sort by distance if needed
+      this.stopLookups.sort((a, b) => {
+        if (a.distance === null || a.distance === undefined) {
+          return 0;
+        }
+        if (b.distance === null || b.distance === undefined) {
+          return 0;
+        }
+        return a.distance - b.distance;
+      });
+    }
+
+    this.stopLookups = this.stopLookups.slice(0, 10);
+  }
+
+  public onStopLookupSelected(ev: SbbAutocompleteSelectedEvent) {
+    const stopPlaceRef = ev.option.value as string;
+
+    let stopLookup = this.stopLookups.find(stopLookup => {
+      return stopLookup.stopPlaceRef === stopPlaceRef;
+    }) ?? null;
+
+    if (stopLookup === null) {
+      console.log('WHOOPS - cant find the stop for: ' + stopPlaceRef);
+      return;
+    }
+
+    if (stopLookup.special_type === 'around_me') {
+      this.handleGeolocationLookup();
+      return;
+    }
+
+    this.currentStopLookup = stopLookup
+
+    this.hackIgnoreInputChangesFlag = true;
+    this.searchInputControl.setValue(stopLookup.stopName);
+
+    const location = stopLookup.location;
+    if (location) {
+      this.locationSelected.emit(location);
+    }
+  }
+
+  private handleGeolocationLookup() {
+    if (!navigator.geolocation) {
+      console.log('no navigator.geolocation enabled')
+      return;
+    }
+
+    this.hackIgnoreInputChangesFlag = true;
+    this.searchInputControl.setValue('... looking up location');
+      
+    navigator.geolocation.getCurrentPosition((position: GeolocationPosition) => {
+      this.handleNewGeoPosition(position, locations => {
+        const geoPosition = new OJP.GeoPosition(position.coords.longitude, position.coords.latitude)
+        this.parseLocations(locations, geoPosition);
+    
+        this.autocompleteInputTrigger?.openPanel();
+      });
+    });
+  }
+
+  private handleNewGeoPosition(position: GeolocationPosition, completion: (locations: OJP.Location[]) => void) {
+    const bbox_width = 0.05;
+    const bbox_height = 0.05;
+    const bbox_W = position.coords.longitude - bbox_width / 2;
+    const bbox_E = position.coords.longitude + bbox_width / 2;
+    const bbox_N = position.coords.latitude + bbox_height / 2;
+    const bbox_S = position.coords.latitude - bbox_height / 2;
+    
+    const request = OJP.LocationInformationRequest.initWithBBOXAndType(
+      this.appStageConfig,
+      bbox_W, bbox_N, bbox_E, bbox_S,
+      'stop',
+      300,
+      null,
+    );
+    request.fetchResponse().then(locations => {
+      completion(locations);
+    });
+  }
+
+  public updateLocationText(location: OJP.Location) {
+    const stopPlaceName = location.stopPlace?.stopPlaceName ?? null
+    if (stopPlaceName === null) {
+      return;
+    }
+
+    this.hackIgnoreInputChangesFlag = true;
+    this.searchInputControl.setValue(stopPlaceName);
+  }
+}

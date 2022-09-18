@@ -1,5 +1,10 @@
 import mapboxgl from "mapbox-gl";
 
+interface NearbyFeature {
+  distance: number
+  feature: mapboxgl.MapboxGeoJSONFeature
+}
+
 export class MapHelpers {
   public static formatMapboxLngLatAsLatLng(lnglat: mapboxgl.LngLat): string {
     const lnglatS = lnglat.lat.toFixed(6) + ',' + lnglat.lng.toFixed(6);
@@ -56,4 +61,29 @@ export class MapHelpers {
 
     return true
   }
+
+  public static queryNearbyFeatureByLayerIDs(map: mapboxgl.Map, lngLat: mapboxgl.LngLat, layerIDs: string[]): NearbyFeature | null {
+    const bboxPx = MapHelpers.bboxPxFromLngLatWidthPx(map, lngLat, 30);
+    const features = map.queryRenderedFeatures(bboxPx, {
+      layers: layerIDs
+    });
+
+    let closestFeature: NearbyFeature | null = null
+    features.forEach(feature => {
+      const featureLngLat = MapHelpers.computePointLngLatFromFeature(feature);
+      if (featureLngLat === null) {
+        return;
+      }
+
+      const featureDistance = lngLat.distanceTo(featureLngLat);
+      if ((closestFeature === null) || (featureDistance < closestFeature.distance)) {
+        closestFeature = {
+          feature: feature,
+          distance: featureDistance
+        }
+      }
+    });
+
+    return closestFeature;
+}
 }

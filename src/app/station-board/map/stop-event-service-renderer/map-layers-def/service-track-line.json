@@ -1,0 +1,26 @@
+{
+  "id": "ojp-service-track-line",
+  "type": "line",
+  "source": "[SOURCE_ID]",
+  "filter": [
+    "all",
+    ["==", 
+      ["geometry-type"], "LineString"
+    ]
+  ],
+  "layout": {
+    "line-join": "round",
+    "line-cap": "round"
+  },
+  "paint": {
+    "line-width": 4,
+    "line-opacity": 1.0,
+    "line-color": [
+      "case",
+      ["==", ["get", "line-type"], "prev"],
+      "#D3D3D3",
+      "#3D69CA"
+    ]
+  }
+}
+  

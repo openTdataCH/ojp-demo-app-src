@@ -1,0 +1,25 @@
+<div class="journey-endpoint">
+  <div class="d-flex">
+    <div class="flex-grow-1">
+      <sbb-form-field class="w-100" label="Station">
+        <input
+          sbbInput
+          type="text"
+          [placeholder]="'Type to search for stations'"
+          [formControl]="this.searchInputControl"
+          [sbbAutocomplete]="autocompleteTemplate" />
+      </sbb-form-field>
+      
+      <sbb-autocomplete
+        (optionSelected)="onStopLookupSelected($event)"
+        #autocompleteTemplate="sbbAutocomplete">
+        <sbb-option
+          *ngFor="let stopLookup of this.stopLookups"
+          [value]="stopLookup.stopPlaceRef">
+          {{ renderLookupName(stopLookup) }}
+        </sbb-option>
+      </sbb-autocomplete>
+    </div>
+  </div>
+</div>
+  

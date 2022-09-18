@@ -1,0 +1,45 @@
+<div #stationBoardWrapper>
+  <div *ngFor="let stopEntry of this.stopEventsData; index as idx"
+    class="card card card-item mb-2"
+    [ngClass]="{'item-selected' : idx === this.selectedIDx}"
+    [attr.data-index]="idx">
+    <div class="card-body">
+      <div class="d-flex dep-content align-items-center">
+        <div class="service-line-number-wrapper">
+          <div class="service-line-number text-center">{{ stopEntry.serviceLineNumber }}</div>
+          <div class="trip-info text-center">{{ stopEntry.tripNumber }}</div>
+        </div>
+        
+        <div class="flex-fill dep-center">
+          <div class="trip-heading">{{ stopEntry.tripHeading }}</div>
+          <div *ngIf="stopEntry.stopPlatform" class="stop-platform-text">
+            <div *ngIf="!stopEntry.stopPlatformActual">
+              <div>Pl. {{ stopEntry.stopPlatform }}</div>  
+            </div>
+            <div *ngIf="stopEntry.stopPlatformActual">
+              <div>Pl. <del> {{ stopEntry.stopPlatform }}</del> {{ stopEntry.stopPlatformActual }}</div>
+            </div>
+          </div>
+          <div class="trip-debug">
+            <span>Operator: {{ stopEntry.tripOperator }}</span>
+            - 
+            <span>Type: {{ stopEntry.servicePtMode }}</span>
+          </div>
+        </div>
+        
+        <div class="text-center">
+          <div *ngIf="!stopEntry.departureTime?.stopDelayText">
+            <div class="departure-time">{{ stopEntry.departureTime?.stopTime }}</div>
+          </div>
+          <div *ngIf="stopEntry.departureTime?.stopDelayText">
+            <div *ngIf="stopEntry.departureTime?.stopTime != stopEntry.departureTime?.stopTimeActual">
+              <del>{{ stopEntry.departureTime?.stopTime }}</del>
+            </div>
+            <div class="departure-time">{{ stopEntry.departureTime?.stopTimeActual }}</div>
+            <div class="departure-delay">{{ stopEntry.departureTime?.stopDelayText }}</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

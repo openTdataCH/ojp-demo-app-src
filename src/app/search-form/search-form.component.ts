@@ -65,6 +65,8 @@ export class SearchFormComponent implements OnInit {
   }
 
   ngOnInit() {
+    this.userTripService.initDefaults();
+
     this.userTripService.locationsUpdated.subscribe(nothing => {
       this.updateLocationTexts()
       this.expandSearchPanel()
