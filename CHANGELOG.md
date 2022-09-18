@@ -4,6 +4,13 @@ OJP-Demo URL: https://opentdatach.github.io/ojp-demo-app/
 
 ----
 
+18.September 2022
+- Station Board Tab - see [#49](https://github.com/openTdataCH/ojp-demo-app-src/issues/49), [#PR 60](https://github.com/openTdataCH/ojp-demo-app-src/pull/60)
+    - adds new component `StationBoardComponent`, mounted as separate `SbbTab` on route `/board`
+    - the user can enter a station for lookup 
+    - or supply a StopRef as `stop_id` GET parameter i.e. `/board?stop_id=8503000`
+    - or pick a station from the map
+
 03.September 2022
 - Fixes for TEST LA stage - see [#PR 59](https://github.com/openTdataCH/ojp-demo-app-src/pull/59)
     - limit TripRequest number of results to 1
