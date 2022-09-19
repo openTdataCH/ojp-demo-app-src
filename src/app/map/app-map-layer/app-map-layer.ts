@@ -269,7 +269,7 @@ export class AppMapLayer {
 
         if (feature?.properties) {
             feature.properties[FeaturePropsEnum.OJP_GeoRestrictionType] = this.geoRestrictionType;
-            feature.properties[FeaturePropsEnum.OJP_GeoRestrictionPoiOSMTag] = this.geoRestrictionType;
+            feature.properties[FeaturePropsEnum.OJP_GeoRestrictionPoiOSMTag] = this.geoRestrictionPoiOSMTags?.join(',');
         }
 
         return feature
