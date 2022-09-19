@@ -80,6 +80,69 @@ const map_app_map_layers: Record<string, AppMapLayerOptions> = {
         ],
         click_layer_ids: 'SAME_AS_LAYER_IDS',
     },
+    'pois-service': {
+        LIR_Restriction_Type: 'poi_all',
+        LIR_POI_Type: ['service'],
+        minZoom: 14,
+        layer_ids: [
+            'pois-service',
+        ],
+        click_layer_ids: 'SAME_AS_LAYER_IDS',
+    },
+    'pois-shopping': {
+        LIR_Restriction_Type: 'poi_all',
+        LIR_POI_Type: ['shopping'],
+        minZoom: 14,
+        layer_ids: [
+            'pois-shopping',
+        ],
+        click_layer_ids: 'SAME_AS_LAYER_IDS',
+    },
+    'pois-leisure': {
+        LIR_Restriction_Type: 'poi_all',
+        LIR_POI_Type: ['leisure'],
+        minZoom: 14,
+        layer_ids: [
+            'pois-leisure',
+        ],
+        click_layer_ids: 'SAME_AS_LAYER_IDS',
+    },
+    'pois-catering': {
+        LIR_Restriction_Type: 'poi_all',
+        LIR_POI_Type: ['catering'],
+        minZoom: 14,
+        layer_ids: [
+            'pois-catering',
+        ],
+        click_layer_ids: 'SAME_AS_LAYER_IDS',
+    },
+    'pois-public': {
+        LIR_Restriction_Type: 'poi_all',
+        LIR_POI_Type: ['public'],
+        minZoom: 14,
+        layer_ids: [
+            'pois-public',
+        ],
+        click_layer_ids: 'SAME_AS_LAYER_IDS',
+    },
+    'pois-parkride': {
+        LIR_Restriction_Type: 'poi_all',
+        LIR_POI_Type: ['parkride'],
+        minZoom: 14,
+        layer_ids: [
+            'pois-parkride',
+        ],
+        click_layer_ids: 'SAME_AS_LAYER_IDS',
+    },
+    'pois-accommodation': {
+        LIR_Restriction_Type: 'poi_all',
+        LIR_POI_Type: ['accommodation'],
+        minZoom: 14,
+        layer_ids: [
+            'pois-accommodation',
+        ],
+        click_layer_ids: 'SAME_AS_LAYER_IDS',
+    },
     'all_pois': {
         LIR_Restriction_Type: 'poi_all',
         LIR_POI_Type: ['service', 'shopping', 'leisure', 'catering', 'public', 'parkride', 'accommodation'],

@@ -17,7 +17,15 @@ const map_layers_def: Record<string, mapboxgl.Layer> = {
     'car-rental-icon': carRentalIconLayer as mapboxgl.SymbolLayer,
     'bike-icon': bikeIconLayer as mapboxgl.SymbolLayer,
     'scooter-icon': scooterIconLayer as mapboxgl.SymbolLayer,
+    
     'pois-all-circle': poisAllCircleLayer as mapboxgl.CircleLayer,
+    'pois-service': poisAllCircleLayer as mapboxgl.CircleLayer,
+    'pois-shopping': poisAllCircleLayer as mapboxgl.CircleLayer,
+    'pois-leisure': poisAllCircleLayer as mapboxgl.CircleLayer,
+    'pois-catering': poisAllCircleLayer as mapboxgl.CircleLayer,
+    'pois-public': poisAllCircleLayer as mapboxgl.CircleLayer,
+    'pois-parkride': poisAllCircleLayer as mapboxgl.CircleLayer,
+    'pois-accommodation': poisAllCircleLayer as mapboxgl.CircleLayer,
 }
 
 export const MAP_LAYERS_DEFINITIONS = map_layers_def
