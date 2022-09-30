@@ -223,6 +223,13 @@ export class AppMapLayer {
     }
 
     private computePopupHTML(location: OJP.Location): string | null {
+        if (this.geoRestrictionType === 'poi_all') {
+            const poiPopupHTML = this.computePOIPopupHTML(location);
+            if (poiPopupHTML) {
+                return poiPopupHTML;
+            }
+        }
+
         const popupWrapperDIV = document.getElementById('map-endpoint-picker-popup') as HTMLElement;
         if (popupWrapperDIV === null) {
             return null;
@@ -255,6 +262,31 @@ export class AppMapLayer {
         popupHTML = popupHTML.replace('[GEOJSON_PROPERTIES_TABLE]', tableHTML);
     
         return popupHTML
+    }
+
+    private computePOIPopupHTML(location: OJP.Location): string | null {
+        const popupWrapperDIV = document.getElementById('map-poi-picker-popup') as HTMLElement;
+        if (popupWrapperDIV === null) {
+            return null;
+        }
+
+        const geoJsonProperties = location.geoPosition?.properties ?? null;
+        if (geoJsonProperties === null) {
+            return null;
+        }
+
+        let popupHTML = popupWrapperDIV.innerHTML;
+        popupHTML = popupHTML.replace('[POI_NAME]', geoJsonProperties['poi.name']);
+
+        const tableTRs: string[] = []
+        tableTRs.push('<tr><td>Code</td><td>' + geoJsonProperties['poi.code'].substring(0, 20) + '...</td></tr>');
+        tableTRs.push('<tr><td>Category</td><td>' + geoJsonProperties['poi.category'] + '</td></tr>');
+        tableTRs.push('<tr><td>SubCategory</td><td>' + geoJsonProperties['poi.subcategory'] + '</td></tr>');
+
+        const tableHTML = '<table class="table">' + tableTRs.join('') + '</table>';
+        popupHTML = popupHTML.replace('[GEOJSON_PROPERTIES_TABLE]', tableHTML);
+
+        return popupHTML;
     }
 
     private setSourceFeatures(features: GeoJSON.Feature[]) {
