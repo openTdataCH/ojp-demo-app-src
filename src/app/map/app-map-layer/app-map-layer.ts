@@ -229,7 +229,6 @@ export class AppMapLayer {
         }
 
         let popupHTML = popupWrapperDIV.innerHTML;
-        const stopPlaceName = location.stopPlace?.stopPlaceName ?? '';
         popupHTML = popupHTML.replace('[GEO_RESTRICTION_TYPE]', this.geoRestrictionType);
     
         const featureProperties = location.geoPosition?.properties ?? location.asGeoJSONFeature()?.properties ?? null
