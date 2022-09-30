@@ -17,7 +17,7 @@ export class AppMapLayer {
 
     private map: mapboxgl.Map
     private geoRestrictionType: OJP.GeoRestrictionType
-    private geoRestrictionPoiOSMTags: OJP.GeoRestrictionPoiOSMTag[] | null
+    public geoRestrictionPoiOSMTags: OJP.GeoRestrictionPoiOSMTag[] | null
     public minZoom: number
 
     private features: GeoJSON.Feature[];
