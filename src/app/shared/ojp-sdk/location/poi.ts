@@ -1,6 +1,13 @@
 import { XPathOJP } from "../helpers/xpath-ojp"
 import { GeoRestrictionPoiOSMTag } from "../types/geo-restriction.type"
 
+const mapPoiSubCategoryIcons = <Record<GeoRestrictionPoiOSMTag, string[]>>{
+  service: ['atm', 'hairdresser'],
+  shopping: ['all', 'clothes', 'optician'],
+  catering: ['all'],
+  accommodation: ['all'],
+}
+
 export class PointOfInterest {
   public code: string
   public name: string
@@ -45,5 +52,30 @@ export class PointOfInterest {
 
     const poi = new PointOfInterest(code, name, category, subCategory, categoryTags);
     return poi
+  }
+
+  // The return is a 50px image in ./src/assets/map-style-icons
+  // i.e. ./src/assets/map-style-icons/poi-atm.png
+  // icons from https://www.shareicon.net/author/adiante-apps
+  public computePoiMapIcon(): string {
+    const fallbackIcon = 'poi-unknown';
+
+    if (!(this.category in mapPoiSubCategoryIcons)) {
+      return fallbackIcon;
+    }
+
+    const hasSubCategory = mapPoiSubCategoryIcons[this.category].indexOf(this.subCategory) > -1;
+    if (hasSubCategory) {
+      const mapIcon = 'poi-' + this.category + '-' + this.subCategory;
+      return mapIcon;
+    }
+
+    const hasAllSubCategory = mapPoiSubCategoryIcons[this.category].indexOf('all') > -1;
+    if (hasAllSubCategory) {
+      const mapIcon = 'poi-' + this.category + '-all';
+      return mapIcon;
+    }
+
+    return fallbackIcon;
   }
 }

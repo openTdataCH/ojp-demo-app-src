@@ -150,6 +150,8 @@ export class Location {
     if (this.poi) {
       featureProperties['poi.name'] = this.poi.name;
       featureProperties['poi.code'] = this.poi.code;
+      featureProperties['poi.category'] = this.poi.category;
+      featureProperties['poi.subcategory'] = this.poi.subCategory;
       featureProperties['poi.osm.tags'] = this.poi.categoryTags.join(',');
     }
 
