@@ -88,18 +88,7 @@ export class MapLayersLegendControl implements mapboxgl.IControl {
       appMapLayer.isEnabled = inputEl.checked;
 
       if (layerXmlInfoEl) {
-        layerXmlInfoEl.addEventListener('click', ev => {
-          const lastOJPRequest = appMapLayer.lastOJPRequest
-          if (lastOJPRequest) {
-            const dialogRef = this.debugXmlPopover.open(DebugXmlPopoverComponent, {
-              position: { top: '10px' },
-            });
-            dialogRef.afterOpened().subscribe(() => {
-              const popover = dialogRef.componentInstance as DebugXmlPopoverComponent
-              popover.updateRequestData(lastOJPRequest.lastRequestData)
-            });
-          }
-        })
+        this.addLayerInfoClickHandler(layerXmlInfoEl, appMapLayer);
       }
 
       inputEl.addEventListener('change', ev => {
@@ -119,6 +108,21 @@ export class MapLayersLegendControl implements mapboxgl.IControl {
       };
       this.layersData.push(layerData);
     });
+  }
+
+  private addLayerInfoClickHandler(el: HTMLElement, appMapLayer: AppMapLayer) {
+    el.addEventListener('click', ev => {
+      const lastOJPRequest = appMapLayer.lastOJPRequest
+      if (lastOJPRequest) {
+        const dialogRef = this.debugXmlPopover.open(DebugXmlPopoverComponent, {
+          position: { top: '10px' },
+        });
+        dialogRef.afterOpened().subscribe(() => {
+          const popover = dialogRef.componentInstance as DebugXmlPopoverComponent
+          popover.updateRequestData(lastOJPRequest.lastRequestData)
+        });
+      }
+    })
   }
 
   private handleMapIdleEvents(map: mapboxgl.Map) {
