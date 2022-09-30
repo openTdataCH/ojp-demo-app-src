@@ -68,7 +68,8 @@ export class AppMapLayer {
             return;
         }
 
-        const layerIDs = APP_CONFIG.map_app_map_layers[this.layerKey].layer_ids;
+        const layerConfig = APP_CONFIG.map_app_map_layers[this.layerKey];
+        const layerIDs = layerConfig.layer_ids ?? [this.layerKey];
         layerIDs.forEach(layerID => {
             if (!(layerID in MAP_LAYERS_DEFINITIONS)) {
                 console.error('ERROR - AppMapLayer.addMapSourceAndLayers no layer def for ' + layerID);
@@ -162,7 +163,7 @@ export class AppMapLayer {
             return false;
         }
         if (clickLayerIDs === 'SAME_AS_LAYER_IDS') {
-            clickLayerIDs = layersDataConfig.layer_ids;
+            clickLayerIDs = layersDataConfig.layer_ids ?? [this.layerKey];
         }
 
         const nearbyFeature = MapHelpers.queryNearbyFeatureByLayerIDs(this.map, ev.lngLat, clickLayerIDs);

@@ -4,7 +4,7 @@ export interface AppMapLayerOptions {
     LIR_Restriction_Type: OJP.GeoRestrictionType
     LIR_POI_Type?: null | OJP.GeoRestrictionPoiOSMTag | OJP.GeoRestrictionPoiOSMTag[]
     minZoom: number
-    layer_ids: string[],
+    layer_ids?: string[] | null,
     click_layer_ids?: string[] | 'SAME_AS_LAYER_IDS' | null
 }
 
