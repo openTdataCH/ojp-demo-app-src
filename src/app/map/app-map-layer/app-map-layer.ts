@@ -119,6 +119,8 @@ export class AppMapLayer {
 
         this.lastOJPRequest = request
 
+        const layerConfig = APP_CONFIG.map_app_map_layers[this.layerKey];
+
         request.fetchResponse().then(locations => {
             if (!this.shouldLoadNewFeatures()) {
                 this.removeAllFeatures();
@@ -130,6 +132,11 @@ export class AppMapLayer {
                 const feature = this.computeFeatureFromLocation(location);
                 if (feature === null) {
                     return;
+                }
+
+                if (location.poi && feature.properties && layerConfig.LIR_Restriction_Type === 'poi_all') {
+                    // 50px image in ./src/assets/map-style-icons
+                    feature.properties['style.icon-image'] = location.poi.computePoiMapIcon();
                 }
 
                 features.push(feature);

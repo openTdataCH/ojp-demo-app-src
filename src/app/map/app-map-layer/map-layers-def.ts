@@ -7,7 +7,7 @@ import chargingStationIconLayer from './map-layers-def/poi/charging-station/char
 import carRentalIconLayer from './map-layers-def/poi/car-rental/car-rental-icon.json'
 import bikeIconLayer from './map-layers-def/poi/bicycle-rental/bike-icon.json';
 import scooterIconLayer from './map-layers-def/poi/scooter-rental/scooter-icon.json';
-import poisAllCircleLayer from './map-layers-def/pois-all-circle.json'
+import poisIcon from './map-layers-def/pois-icon.json'
 
 const map_layers_def: Record<string, mapboxgl.Layer> = {
     'stops-circle': stopsCircleLayer as mapboxgl.CircleLayer,
@@ -17,15 +17,7 @@ const map_layers_def: Record<string, mapboxgl.Layer> = {
     'car-rental-icon': carRentalIconLayer as mapboxgl.SymbolLayer,
     'bike-icon': bikeIconLayer as mapboxgl.SymbolLayer,
     'scooter-icon': scooterIconLayer as mapboxgl.SymbolLayer,
-    
-    'pois-all-circle': poisAllCircleLayer as mapboxgl.CircleLayer,
-    'pois-service': poisAllCircleLayer as mapboxgl.CircleLayer,
-    'pois-shopping': poisAllCircleLayer as mapboxgl.CircleLayer,
-    'pois-leisure': poisAllCircleLayer as mapboxgl.CircleLayer,
-    'pois-catering': poisAllCircleLayer as mapboxgl.CircleLayer,
-    'pois-public': poisAllCircleLayer as mapboxgl.CircleLayer,
-    'pois-parkride': poisAllCircleLayer as mapboxgl.CircleLayer,
-    'pois-accommodation': poisAllCircleLayer as mapboxgl.CircleLayer,
+    'poi-all': poisIcon as mapboxgl.SymbolLayer,
 }
 
 export const MAP_LAYERS_DEFINITIONS = map_layers_def
