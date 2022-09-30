@@ -8,7 +8,6 @@ import { AppMapLayer } from "../app-map-layer/app-map-layer";
 
 interface LayerData {
   inputEl: HTMLInputElement | null
-  textEl: HTMLSpanElement | null
   xmlInfoEl: HTMLSpanElement | null
   layer: AppMapLayer
 }
@@ -63,9 +62,8 @@ export class MapLayersLegendControl implements mapboxgl.IControl {
       }
 
       const inputEl = divEl.querySelector('.map-layer-checkbox') as HTMLInputElement
-      const layerTextEl = divEl.querySelector('.layer-text') as HTMLElement
 
-      if (inputEl === null || layerTextEl === null) {
+      if (inputEl === null) {
         return
       }
 
@@ -114,9 +112,8 @@ export class MapLayersLegendControl implements mapboxgl.IControl {
         }
       });
 
-      const layerData = <LayerData>{
-        inputEl: inputEl,
-        textEl: layerTextEl,
+      const layerData: LayerData = {
+        inputEls: [inputEl],
         xmlInfoEl: layerXmlInfoEl,
         layer: appMapLayer,
       };
