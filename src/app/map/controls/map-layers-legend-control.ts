@@ -167,6 +167,14 @@ export class MapLayersLegendControl implements mapboxgl.IControl {
         appMapLayer.geoRestrictionPoiOSMTags = poiOSMTags;
         appMapLayer.isEnabled = poiOSMTags.length > 0;
         appMapLayer.refreshFeatures();
+
+        if (layerData.xmlInfoEl) {
+          if (appMapLayer.isEnabled)  {
+            layerData.xmlInfoEl.classList.remove('d-none');
+          } else {
+            layerData.xmlInfoEl.classList.add('d-none');
+          }
+        }
       });
     });
 
