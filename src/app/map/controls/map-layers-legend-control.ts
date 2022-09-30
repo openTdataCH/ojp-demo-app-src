@@ -165,13 +165,14 @@ export class MapLayersLegendControl implements mapboxgl.IControl {
         });
 
         appMapLayer.geoRestrictionPoiOSMTags = poiOSMTags;
+        appMapLayer.isEnabled = poiOSMTags.length > 0;
         appMapLayer.refreshFeatures();
       });
     });
 
     appMapLayerOptions.LIR_POI_Type = poiOSMTags;
     const appMapLayer = new AppMapLayer(layerKey, map, appMapLayerOptions, this.userTripService);
-    appMapLayer.isEnabled = true;
+    appMapLayer.isEnabled = poiOSMTags.length > 0;
 
     const layerXmlInfoEl = wrapperEl.querySelector('.layer-xml-info') as HTMLInputElement;
     this.addLayerInfoClickHandler(layerXmlInfoEl, appMapLayer);
