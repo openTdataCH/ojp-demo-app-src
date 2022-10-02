@@ -9,6 +9,8 @@ OJP-Demo URL: https://opentdatach.github.io/ojp-demo-app/
     - moved the map layers legend on top-right of the map
     - adds custom POI icons based on category/subcategory
     - enable multiple POI categories via `LocationInformationRequest` requests
+- Improve `OJP:TripRequest` requests for monomodal journeys - [#PR 62](https://github.com/openTdataCH/ojp-demo-app-src/pull/62)
+    - Use `<ojp:NumberOfResults>0</ojp:NumberOfResults>` when monomodal and custom modes are enabled
 
 18.September 2022
 - Station Board Tab - see [#49](https://github.com/openTdataCH/ojp-demo-app-src/issues/49), [#PR 60](https://github.com/openTdataCH/ojp-demo-app-src/pull/60)
