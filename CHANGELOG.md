@@ -4,6 +4,12 @@ OJP-Demo URL: https://opentdatach.github.io/ojp-demo-app/
 
 ----
 
+02.October 2022
+- Map POIs feature - see [#57](https://github.com/openTdataCH/ojp-demo-app-src/issues/57), [#PR 61](https://github.com/openTdataCH/ojp-demo-app-src/pull/61)
+    - moved the map layers legend on top-right of the map
+    - adds custom POI icons based on category/subcategory
+    - enable multiple POI categories via `LocationInformationRequest` requests
+
 18.September 2022
 - Station Board Tab - see [#49](https://github.com/openTdataCH/ojp-demo-app-src/issues/49), [#PR 60](https://github.com/openTdataCH/ojp-demo-app-src/pull/60)
     - adds new component `StationBoardComponent`, mounted as separate `SbbTab` on route `/board`

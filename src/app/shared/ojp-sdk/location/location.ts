@@ -132,12 +132,7 @@ export class Location {
     }
 
     const featureProperties: GeoJSON.GeoJsonProperties = {
-      'locationName': this.locationName ?? ''
     };
-
-    for (let attrKey in this.attributes) {
-      featureProperties['OJP.Attr.' + attrKey] = this.attributes[attrKey]
-    }
 
     const stopPlaceRef = this.stopPlace?.stopPlaceRef ?? null;
     if (stopPlaceRef) {
@@ -150,6 +145,20 @@ export class Location {
       featureProperties['addressCode'] = this.address?.addressCode ?? ''
       featureProperties['addressName'] = this.address?.addressName ?? ''
       featureProperties['topographicPlaceRef'] = this.address?.topographicPlaceRef ?? ''
+    }
+
+    if (this.poi) {
+      featureProperties['poi.name'] = this.poi.name;
+      featureProperties['poi.code'] = this.poi.code;
+      featureProperties['poi.category'] = this.poi.category;
+      featureProperties['poi.subcategory'] = this.poi.subCategory;
+      featureProperties['poi.osm.tags'] = this.poi.categoryTags.join(',');
+    }
+
+    featureProperties['locationName'] = this.locationName ?? '';
+
+    for (let attrKey in this.attributes) {
+      featureProperties['OJP.Attr.' + attrKey] = this.attributes[attrKey]
     }
 
     const feature: GeoJSON.Feature<GeoJSON.Point> = {

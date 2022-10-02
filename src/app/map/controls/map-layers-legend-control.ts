@@ -1,14 +1,15 @@
 import { SbbDialog } from "@sbb-esta/angular/dialog";
 
 import mapboxgl from "mapbox-gl";
-import { APP_CONFIG } from "src/app/config/app-config";
+import { AppMapLayerOptions, APP_CONFIG } from "src/app/config/app-config";
 import { DebugXmlPopoverComponent } from "src/app/search-form/debug-xml-popover/debug-xml-popover.component";
 import { UserTripService } from "src/app/shared/services/user-trip.service";
 import { AppMapLayer } from "../app-map-layer/app-map-layer";
 
+import * as OJP from '../../shared/ojp-sdk/index'
+
 interface LayerData {
-  inputEl: HTMLInputElement | null
-  textEl: HTMLSpanElement | null
+  inputEls: HTMLInputElement[] | null
   xmlInfoEl: HTMLSpanElement | null
   layer: AppMapLayer
 }
@@ -34,6 +35,7 @@ export class MapLayersLegendControl implements mapboxgl.IControl {
     container.innerHTML = (document.getElementById('map-layers-legend-control') as HTMLElement).innerHTML;
 
     this.addLayers(container, map);
+    this.addPOICompositeLayers(container, map);
 
     map.on('zoom', ev => {
       this.onZoomChanged(map);
@@ -63,9 +65,8 @@ export class MapLayersLegendControl implements mapboxgl.IControl {
       }
 
       const inputEl = divEl.querySelector('.map-layer-checkbox') as HTMLInputElement
-      const layerTextEl = divEl.querySelector('.layer-text') as HTMLElement
 
-      if (inputEl === null || layerTextEl === null) {
+      if (inputEl === null) {
         return
       }
 
@@ -90,18 +91,7 @@ export class MapLayersLegendControl implements mapboxgl.IControl {
       appMapLayer.isEnabled = inputEl.checked;
 
       if (layerXmlInfoEl) {
-        layerXmlInfoEl.addEventListener('click', ev => {
-          const lastOJPRequest = appMapLayer.lastOJPRequest
-          if (lastOJPRequest) {
-            const dialogRef = this.debugXmlPopover.open(DebugXmlPopoverComponent, {
-              position: { top: '10px' },
-            });
-            dialogRef.afterOpened().subscribe(() => {
-              const popover = dialogRef.componentInstance as DebugXmlPopoverComponent
-              popover.updateRequestData(lastOJPRequest.lastRequestData)
-            });
-          }
-        })
+        this.addLayerInfoClickHandler(layerXmlInfoEl, appMapLayer);
       }
 
       inputEl.addEventListener('change', ev => {
@@ -114,14 +104,93 @@ export class MapLayersLegendControl implements mapboxgl.IControl {
         }
       });
 
-      const layerData = <LayerData>{
-        inputEl: inputEl,
-        textEl: layerTextEl,
+      const layerData: LayerData = {
+        inputEls: [inputEl],
         xmlInfoEl: layerXmlInfoEl,
         layer: appMapLayer,
       };
       this.layersData.push(layerData);
     });
+  }
+
+  private addLayerInfoClickHandler(el: HTMLElement, appMapLayer: AppMapLayer) {
+    el.addEventListener('click', ev => {
+      const lastOJPRequest = appMapLayer.lastOJPRequest
+      if (lastOJPRequest) {
+        const dialogRef = this.debugXmlPopover.open(DebugXmlPopoverComponent, {
+          position: { top: '10px' },
+        });
+        dialogRef.afterOpened().subscribe(() => {
+          const popover = dialogRef.componentInstance as DebugXmlPopoverComponent
+          popover.updateRequestData(lastOJPRequest.lastRequestData)
+        });
+      }
+    })
+  }
+
+  private addPOICompositeLayers(container: HTMLElement, map: mapboxgl.Map) {
+    container.querySelectorAll('.map-composite-pois').forEach(el => {
+      const wrapperEl = el as HTMLElement;
+      this.addPOICompositeLayer(wrapperEl, map);
+    });
+  }
+
+  private addPOICompositeLayer(wrapperEl: HTMLElement, map: mapboxgl.Map) {
+    const layerKey = 'pois-ALL';
+    const appMapLayerOptions: AppMapLayerOptions = JSON.parse(JSON.stringify(APP_CONFIG.map_app_map_layers[layerKey]));
+
+    const poiOSMTags: OJP.GeoRestrictionPoiOSMTag[] = [];
+    const inputEls: HTMLInputElement[] = [];
+    wrapperEl.querySelectorAll('.map-layer-poi').forEach(el => {
+      const inputEl = el as HTMLInputElement;
+      
+      const poiOSMTag = inputEl.getAttribute('data-osm-tag') as OJP.GeoRestrictionPoiOSMTag;
+      if (poiOSMTag === null) {
+        return;
+      }
+
+      inputEls.push(inputEl);
+
+      if (inputEl.checked) {
+        poiOSMTags.push(poiOSMTag);
+      }
+
+      inputEl.addEventListener('change', ev => {
+        const poiOSMTags: OJP.GeoRestrictionPoiOSMTag[] = [];
+        inputEls.forEach(inputEl => {
+          const poiOSMTag = inputEl.getAttribute('data-osm-tag') as OJP.GeoRestrictionPoiOSMTag;
+          if (inputEl.checked && poiOSMTag) {
+            poiOSMTags.push(poiOSMTag);
+          }
+        });
+
+        appMapLayer.geoRestrictionPoiOSMTags = poiOSMTags;
+        appMapLayer.isEnabled = poiOSMTags.length > 0;
+        appMapLayer.refreshFeatures();
+
+        if (layerData.xmlInfoEl) {
+          if (appMapLayer.isEnabled)  {
+            layerData.xmlInfoEl.classList.remove('d-none');
+          } else {
+            layerData.xmlInfoEl.classList.add('d-none');
+          }
+        }
+      });
+    });
+
+    appMapLayerOptions.LIR_POI_Type = poiOSMTags;
+    const appMapLayer = new AppMapLayer(layerKey, map, appMapLayerOptions, this.userTripService);
+    appMapLayer.isEnabled = poiOSMTags.length > 0;
+
+    const layerXmlInfoEl = wrapperEl.querySelector('.layer-xml-info') as HTMLInputElement;
+    this.addLayerInfoClickHandler(layerXmlInfoEl, appMapLayer);
+
+    const layerData: LayerData = {
+      layer: appMapLayer,
+      inputEls: inputEls,
+      xmlInfoEl: layerXmlInfoEl,
+    };
+    this.layersData.push(layerData);
   }
 
   private handleMapIdleEvents(map: mapboxgl.Map) {
@@ -142,16 +211,15 @@ export class MapLayersLegendControl implements mapboxgl.IControl {
       const layerMinZoomLevel = layerData.layer.minZoom;
       const shouldDisableLayer = map.getZoom() < layerMinZoomLevel;
 
-      const inputEl = layerData.inputEl
-      if (inputEl) {
+      layerData.inputEls?.forEach(inputEl => {
         inputEl.disabled = shouldDisableLayer
+      })
 
-        if (layerData.xmlInfoEl) {
-          if (shouldDisableLayer) {
-            layerData.xmlInfoEl.classList.add('d-none');
-          } else {
-            layerData.xmlInfoEl.classList.remove('d-none');
-          }
+      if (layerData.xmlInfoEl) {
+        if (shouldDisableLayer) {
+          layerData.xmlInfoEl.classList.add('d-none');
+        } else {
+          layerData.xmlInfoEl.classList.remove('d-none');
         }
       }
     });

@@ -259,7 +259,7 @@ export class MapComponent implements OnInit {
       showCompass: false,
       visualizePitch: false
     });
-    map.addControl(navigationControl);
+    map.addControl(navigationControl, 'bottom-right');
 
     const scaleControl = new mapboxgl.ScaleControl({
         maxWidth: 200,
@@ -271,7 +271,7 @@ export class MapComponent implements OnInit {
     map.addControl(debugControl, 'top-left');
 
     const mapLayersLegendControl = new MapLayersLegendControl(map, this.debugXmlPopover, this.userTripService);
-    map.addControl(mapLayersLegendControl, 'bottom-right');
+    map.addControl(mapLayersLegendControl, 'top-right');
   }
 
   private updateMarkerLocation(marker: mapboxgl.Marker, location: OJP.Location | null) {

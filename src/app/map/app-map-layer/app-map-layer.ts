@@ -17,7 +17,7 @@ export class AppMapLayer {
 
     private map: mapboxgl.Map
     private geoRestrictionType: OJP.GeoRestrictionType
-    private geoRestrictionPoiOSMTag: OJP.GeoRestrictionPoiOSMTag | null
+    public geoRestrictionPoiOSMTags: OJP.GeoRestrictionPoiOSMTag[] | null
     public minZoom: number
 
     private features: GeoJSON.Feature[];
@@ -32,7 +32,17 @@ export class AppMapLayer {
 
         this.map = map;
         this.geoRestrictionType = appMapLayerOptions.LIR_Restriction_Type;
-        this.geoRestrictionPoiOSMTag = appMapLayerOptions.LIR_POI_Type ?? null;
+        
+        if (appMapLayerOptions.LIR_POI_Type) {
+            if (Array.isArray(appMapLayerOptions.LIR_POI_Type)) {
+                this.geoRestrictionPoiOSMTags = appMapLayerOptions.LIR_POI_Type
+            } else {
+                this.geoRestrictionPoiOSMTags = [appMapLayerOptions.LIR_POI_Type];
+            }
+        } else {
+            this.geoRestrictionPoiOSMTags = null
+        }
+        
         this.minZoom = appMapLayerOptions.minZoom;
         this.features = [];
         this.mapSourceID = layerKey + '-map-src';
@@ -58,7 +68,8 @@ export class AppMapLayer {
             return;
         }
 
-        const layerIDs = APP_CONFIG.map_app_map_layers[this.layerKey].layer_ids;
+        const layerConfig = APP_CONFIG.map_app_map_layers[this.layerKey];
+        const layerIDs = layerConfig.layer_ids ?? [this.layerKey];
         layerIDs.forEach(layerID => {
             if (!(layerID in MAP_LAYERS_DEFINITIONS)) {
                 console.error('ERROR - AppMapLayer.addMapSourceAndLayers no layer def for ' + layerID);
@@ -93,6 +104,8 @@ export class AppMapLayer {
             return;
         }
 
+        const featuresLimit = this.geoRestrictionType === 'poi_all' ? 1000 : 300;
+
         const mapBounds = this.map.getBounds();
         const stageConfig = this.userTripService.getStageConfig()
         const request = OJP.LocationInformationRequest.initWithBBOXAndType(
@@ -102,11 +115,13 @@ export class AppMapLayer {
             mapBounds.getEast(),
             mapBounds.getSouth(),
             this.geoRestrictionType,
-            300,
-            this.geoRestrictionPoiOSMTag,
+            featuresLimit,
+            this.geoRestrictionPoiOSMTags,
         );
 
         this.lastOJPRequest = request
+
+        const layerConfig = APP_CONFIG.map_app_map_layers[this.layerKey];
 
         request.fetchResponse().then(locations => {
             if (!this.shouldLoadNewFeatures()) {
@@ -119,6 +134,11 @@ export class AppMapLayer {
                 const feature = this.computeFeatureFromLocation(location);
                 if (feature === null) {
                     return;
+                }
+
+                if (location.poi && feature.properties && layerConfig.LIR_Restriction_Type === 'poi_all') {
+                    // 50px image in ./src/assets/map-style-icons
+                    feature.properties['style.icon-image'] = location.poi.computePoiMapIcon();
                 }
 
                 features.push(feature);
@@ -152,7 +172,7 @@ export class AppMapLayer {
             return false;
         }
         if (clickLayerIDs === 'SAME_AS_LAYER_IDS') {
-            clickLayerIDs = layersDataConfig.layer_ids;
+            clickLayerIDs = layersDataConfig.layer_ids ?? [this.layerKey];
         }
 
         const nearbyFeature = MapHelpers.queryNearbyFeatureByLayerIDs(this.map, ev.lngLat, clickLayerIDs);
@@ -203,13 +223,19 @@ export class AppMapLayer {
     }
 
     private computePopupHTML(location: OJP.Location): string | null {
+        if (this.geoRestrictionType === 'poi_all') {
+            const poiPopupHTML = this.computePOIPopupHTML(location);
+            if (poiPopupHTML) {
+                return poiPopupHTML;
+            }
+        }
+
         const popupWrapperDIV = document.getElementById('map-endpoint-picker-popup') as HTMLElement;
         if (popupWrapperDIV === null) {
             return null;
         }
 
         let popupHTML = popupWrapperDIV.innerHTML;
-        const stopPlaceName = location.stopPlace?.stopPlaceName ?? '';
         popupHTML = popupHTML.replace('[GEO_RESTRICTION_TYPE]', this.geoRestrictionType);
     
         const featureProperties = location.geoPosition?.properties ?? location.asGeoJSONFeature()?.properties ?? null
@@ -238,6 +264,31 @@ export class AppMapLayer {
         return popupHTML
     }
 
+    private computePOIPopupHTML(location: OJP.Location): string | null {
+        const popupWrapperDIV = document.getElementById('map-poi-picker-popup') as HTMLElement;
+        if (popupWrapperDIV === null) {
+            return null;
+        }
+
+        const geoJsonProperties = location.geoPosition?.properties ?? null;
+        if (geoJsonProperties === null) {
+            return null;
+        }
+
+        let popupHTML = popupWrapperDIV.innerHTML;
+        popupHTML = popupHTML.replace('[POI_NAME]', geoJsonProperties['poi.name']);
+
+        const tableTRs: string[] = []
+        tableTRs.push('<tr><td>Code</td><td>' + geoJsonProperties['poi.code'].substring(0, 20) + '...</td></tr>');
+        tableTRs.push('<tr><td>Category</td><td>' + geoJsonProperties['poi.category'] + '</td></tr>');
+        tableTRs.push('<tr><td>SubCategory</td><td>' + geoJsonProperties['poi.subcategory'] + '</td></tr>');
+
+        const tableHTML = '<table class="table">' + tableTRs.join('') + '</table>';
+        popupHTML = popupHTML.replace('[GEOJSON_PROPERTIES_TABLE]', tableHTML);
+
+        return popupHTML;
+    }
+
     private setSourceFeatures(features: GeoJSON.Feature[]) {
         this.features = features
     
@@ -259,7 +310,7 @@ export class AppMapLayer {
 
         if (feature?.properties) {
             feature.properties[FeaturePropsEnum.OJP_GeoRestrictionType] = this.geoRestrictionType;
-            feature.properties[FeaturePropsEnum.OJP_GeoRestrictionPoiOSMTag] = this.geoRestrictionType;
+            feature.properties[FeaturePropsEnum.OJP_GeoRestrictionPoiOSMTag] = this.geoRestrictionPoiOSMTags?.join(',');
         }
 
         return feature

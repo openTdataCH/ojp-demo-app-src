@@ -98,3 +98,20 @@ body {
 .sbb-tab-body-content {
   overflow: hidden !important;
 }
+
+.map-layers-header {
+  font-size: 14px;
+}
+
+.content-collapse .bi-plus-circle {
+  display: none;
+}
+.content-collapse.collapsed .bi-plus-circle {
+  display: inline;
+}
+.ccontent-collapse .bi-dash-circle {
+  display: inline;
+}
+.content-collapse.collapsed .bi-dash-circle {
+  display: none;
+}

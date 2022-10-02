@@ -7,6 +7,7 @@ import chargingStationIconLayer from './map-layers-def/poi/charging-station/char
 import carRentalIconLayer from './map-layers-def/poi/car-rental/car-rental-icon.json'
 import bikeIconLayer from './map-layers-def/poi/bicycle-rental/bike-icon.json';
 import scooterIconLayer from './map-layers-def/poi/scooter-rental/scooter-icon.json';
+import poisIcon from './map-layers-def/pois-icon.json'
 
 const map_layers_def: Record<string, mapboxgl.Layer> = {
     'stops-circle': stopsCircleLayer as mapboxgl.CircleLayer,
@@ -16,6 +17,7 @@ const map_layers_def: Record<string, mapboxgl.Layer> = {
     'car-rental-icon': carRentalIconLayer as mapboxgl.SymbolLayer,
     'bike-icon': bikeIconLayer as mapboxgl.SymbolLayer,
     'scooter-icon': scooterIconLayer as mapboxgl.SymbolLayer,
+    'poi-all': poisIcon as mapboxgl.SymbolLayer,
 }
 
 export const MAP_LAYERS_DEFINITIONS = map_layers_def
