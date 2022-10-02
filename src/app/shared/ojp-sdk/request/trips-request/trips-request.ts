@@ -84,11 +84,7 @@ export class TripRequest extends OJPBaseRequest {
 
     const paramsNode = tripRequestNode.ele('ojp:Params');
 
-    let numberOfResults = 5;
-    if (this.stageConfig.key === 'TEST LA') {
-      numberOfResults = 1;
-    }
-
+    const numberOfResults = this.computeNumberOfResultsParam();
     paramsNode.ele('ojp:NumberOfResults', numberOfResults);
 
     paramsNode.ele('ojp:IncludeTrackSections', true)
@@ -145,5 +141,21 @@ export class TripRequest extends OJPBaseRequest {
         }
       });
     }
+  }
+
+  private computeNumberOfResultsParam(): number {
+    if (this.stageConfig.key === 'TEST LA') {
+      return 1;
+    }
+
+    if (this.requestParams.modeType === 'monomodal') {
+      const customModes: IndividualTransportMode[] = ['walking', 'cycle', 'car_self_driving', 'bicycle_rental', 'escooter_rental', 'car_sharing'];
+      const isCustomMode = customModes.indexOf(this.requestParams.transportMode) !== -1;
+      if (isCustomMode) {
+        return 0;
+      }
+    }
+
+    return 5;
   }
 }
