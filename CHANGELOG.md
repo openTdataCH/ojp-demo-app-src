@@ -4,6 +4,9 @@ OJP-Demo URL: https://opentdatach.github.io/ojp-demo-app/
 
 ----
 
+09.October 2022
+- Updated Docs - see [#PR 63](https://github.com/openTdataCH/ojp-demo-app-src/pull/63)
+
 02.October 2022
 - Map POIs feature - see [#57](https://github.com/openTdataCH/ojp-demo-app-src/issues/57), [#PR 61](https://github.com/openTdataCH/ojp-demo-app-src/pull/61)
     - moved the map layers legend on top-right of the map

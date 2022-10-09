@@ -8,7 +8,7 @@ OJP Demo is a [TypeScript](https://www.typescriptlang.org/) web application, com
   - [xpath](https://github.com/goto100/xpath) - DOM3 XPath 1.0 implemention for JavaScript
 - OJP Demo App - this component is using [Angular](https://angular.io/) web-framework components and services for UI rendering. Following additional libraries are used: 
   - [Mapbox GL JS](https://docs.mapbox.com/mapbox-gl-js/api/) - client-side JavaScript library for building web maps
-  - [SBB Angular v.12](https://angular-v12.app.sbb.ch/) - OSS component library from SBB for UI elements like autocomplete, date pickers, etc.
+  - [SBB Angular v.14](https://angular.app.sbb.ch/) - OSS component library from SBB for UI elements like autocomplete, date pickers, etc.
   - [Bootstrap](https://getbootstrap.com/) - OSS web framework for final HTML / CSS appearance
 
 ![image](./img/OJP_Demo_OSS_Components.jpg)
@@ -19,4 +19,5 @@ See also
 ----
 
 CHANGELOG
+- Oct 2022 - updated with StopEvent
 - Feb 2022 - created this document
