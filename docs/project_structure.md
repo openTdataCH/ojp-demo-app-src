@@ -5,21 +5,20 @@
 ```
 ├── app
 
+│   ├── config
+│   │   └── app-config.ts ·····························| App config (stages, map app layers)
+
 │   ├── journey ·······································| 
 │   │   ├── [+] journey-result-row ····················| <journey-result-row> UI component
 │   │   │   └── [+] result-trip-leg ···················|    <result-trip-leg> UI component
-│   │   └── [+] journey-results ·······················| <journey-results> UI component
+│   │   ├── [+] journey-results ·······················| <journey-results> UI component
+        └── [+] journey-search ························| Journeys `SbbTab` UI component
 
 │   ├── map
-│   │   ├── app-layers ································| Map POIs sub-classes of `LocationMapAppLayer`
-│   │   │   ├── [+] address ···························|    ├── `AddressAppLayer` - Address POI layer
-│   │   │   ├── poi
-│   │   │   │   ├── [+] bicycle-rental ················|    ├── `PoiBicycleRentalLayer` Shared Vehicle POI 
-│   │   │   │   └── [+] park-ride ·····················|    ├── `PoiParkRideLayer` P&R POI
-│   │   │   ├── [+] stops ·····························|    └── `StopsAppLayer - Public Transport POI
-│   │   │   ├── location-map-app-layer.ts ·············| `LocationMapAppLayer` - POI layer base class
-│   │   │   ├── map-app-layer.interface.ts ············| `MapAppLayer` - POI layer interface definition
-│   │   │   └── map-poi-type-enum.ts ··················| `MapPoiTypeEnum`, `MapPoiPropertiesEnum` types
+│   │   ├── app-map-layer  ····························| 
+│   │   │   ├──map-layers-def/*/*.json·················| Mapbox Map Layer definitions
+│   │   │   ├── app-map-layer.ts·······················| `AppMapLayer` - POI layer base class
+│   │   │   └── map-layers-def.ts······················| Application map layers definitions
 │   │   ├── controllers ·······························| 
 │   │   │   ├── [+] map-layers-def ····················| Mapbox layer definitions for `TripRenderController`
 │   │   │   └── trip-render-controller.ts ·············| Controller responsible for trips rendering
@@ -28,7 +27,6 @@
 │   │   │   └── map-layers-legend-control.ts ··········| Map UI control with map layers visibility
 │   │   ├── helpers
 │   │   │   └── map.helpers.ts ························| Map static helpers (coords, bounds, etc)
-
 │   │   ├── map.component.html ························| <app-map> UI component
 │   │   ├── map.component.scss ························| "         "
 │   │   └── map.component.ts ··························| "         "
@@ -37,7 +35,7 @@
 │   │   ├── [+] debug-xml-popover ·····················| <debug-xml-popover> UI component (modal)
 │   │   ├── [+] input-xml-popover ·····················| <input-xml-popover> UI component (modal)
 │   │   ├── [+] journey-point-input ···················| <journey-point-input> UI component (autocomplete)
-│   │   ├── [+] trip-mot-type ·························| <trip-mot-type> UI component
+│   │   ├── [+] trip-mode-type ························| <trip-mode-type> UI component
 
 │   │   ├── search-form.component.html ················| <app-search-form> UI component
 │   │   ├── search-form.component.scss ················| <app-search-form> UI component
@@ -49,6 +47,18 @@
 │   │       ├── map.service.ts ························| Angular service for map actions between UI components
 │   │       └── user-trip.service.ts ··················| Angular service for journey state between UI components
 
+│   ├── station-board
+│   │   ├── input
+│   │   │   └── [+] station-board-input ···············| <station-board-input> UI component
+│   │   ├── map
+│   │   │   ├── [+] station-board-map.* ···············| <station-board-map> UI component
+│   │   │   └── [+] stop-event-service-renderer ·······| Map class for rendering the selected service polyline
+│   │   ├── result
+│   │   │   └── [+] station-board-result ··············| <station-board-result> UI component
+│   │   ├── search
+│   │   │   └── [+] station-board-search ··············| <station-board-search> UI component
+│   │   └── [+] station-board ·························| Station Board `SbbTab` UI component
+
 │   ├── app.component.html ····························| <app-root> App main UI component
 │   ├── app.component.scss ····························| "          "
 │   ├── app.component.spec.ts ·························| "          "
@@ -57,6 +67,7 @@
 
 ├── assets
 │   ├── [+] map-icons ·································| Map marker pin icons (A, B, Via)
+│   ├── [+] map-style-icons····························| Map custom POIs icons
 │   ├── [+] pictograms ································| Trip leg pictograms (rail, bus, walk, sharing)
 │   └── opentransportdata.swiss.header-icons.svg ······| Header brand icon
 
@@ -76,7 +87,6 @@
 ```
 ojp-sdk ···············································| ./src/app/shared/ojp-sdk
     ├── config
-    │   ├── config.ts ·································| Config for OJP API stages: PROD, TEST, TEST LA
     │   └── map-colors.ts ·····························| Config for polyline and label trip colors
 
     ├── helpers
@@ -106,6 +116,9 @@ ojp-sdk ····································
     │   ├── location-information
     │   │   ├── location-information-request-params . ·| OJP `LocationInformationRequest` params builder
     │   │   └── location-information-request.ts ·······| OJP `LocationInformationRequest` class based on `OJPBaseRequest`
+    │   ├── stop-event-request
+    │   │   ├── stop-event-request-params.ts ··········| OJP `StopEvent` params builder
+    │   │   └── stop-event-request.ts ·················| OJP `StopEvent` class based on `OJPBaseRequest`
     │   ├── trips-request
     │   │   ├── trips-request-params.ts ···············| OJP `TripRequest` params builder
     │   │   └── trips-request.ts ······················| OJP `TripRequest` class based on `OJPBaseRequest`
@@ -115,6 +128,9 @@ ojp-sdk ····································
 
     ├── shared
     │   └── duration.ts ·······························| OJP `Duration` XML node model
+
+    │   ├── stop-event 
+    │   │   └── stop-event.ts ·························| OJP `StopEvent` XML node model
 
     ├── trip
     │   ├── leg
@@ -151,4 +167,5 @@ See also
 ----
 
 CHANGELOG
+- Oct 2022 - updated with StopEvent
 - Feb 2022 - created this document

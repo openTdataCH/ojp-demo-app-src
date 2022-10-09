@@ -18,31 +18,28 @@
 
 ![image](./img/features/map_drag_marker.jpg)
 
-## Simple Journey
+## Mono-modal Journey
 
-- only the `From` and a `To` endpoint are used.
-- there is no `Via`(intermediary) point
+- by default `Public Transport` is used
+
+![](./img//features/journey_search_monomodal.jpg)
+
+- for other MOTs (Walking, Own Cycle, etc) the `ItModesToCover` will be changed accordingly, i.e. 
+`<ojp:ItModesToCover>walk</ojp:ItModesToCover>` for 
+
 - the response is will contain `ojp:TripResult/ojp:Trip` nodes which are composed of individual, mono-modal `ojp:TripLeg` entries. 
 
 ![image](./img/features/OJPTripRequest-Search-Map_v2.jpg)
 
 - see [request](./request_examples/Gurten_Zuerich-simple-01-request.xml) and [response](./request_examples/Gurten_Zuerich-simple-02-response.xml) XMLs.
 
-## Multi-steps Journey
+## Multi-modal Journey
 
-- along with `From` and `To` we can use one or multiple `Via` points. They can be added for now only via the map (see above)
-- the mode of transport between the points can be enforced:
-    - `Default` will let OJP to decide the best MOT
-    - `Walking` will consider only `ojp:Trip` nodes that have a `ojp:TripLeg` with `walk` mode.
-    - `Self-Driving Car`, `Shared Mobility` will consider only `ojp:Trip` nodes that have a `ojp:TripLeg` with `ojp:Service/ojp:IndividualMode = self-drive-car` or `cycle`.
+- the user can choose custom mode at start, end or both start/end part of the journey.
 
-![image](./img/features/OJPTripRequest-Search-Car-Sharing-Via-Map_v1.jpg)
+![](./img//features/journey_search_multimodal.jpg)
 
-- there are 2 `OJPTripRequest` done after each-other (number of requests = number of via points + 1)
-- first request will keep only the `TripLeg` that satisfy the MOT condition
-- for the 2nd `OJPTripRequest` the prev request `endDateTime` will be used as a start time.
-- the `TripLeg` nodes from the prev requests are prepended to the `TripLeg` nodes of the last `OJPTripRequest`. 
-- the final journey stats (duration, start, end datetimes) are updated
+- i.e. a `Mode at Start` with `Bicyle Sharing` MOT will use custom mode for the first part of the journey and the rest will be done with public transport
 
 ## Inspect OJP request/response XML
 
@@ -59,4 +56,5 @@ The user can upload a custom TripRequest request and response XML.
 ----
 
 CHANGELOG
+- Oct 2022 - updated with mono-, multi- modal journeys
 - Feb 2022 - created this document

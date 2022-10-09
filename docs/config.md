@@ -21,40 +21,44 @@
 - path: [./tsconfig.json](./../tsconfig.json)
 - TypeScript related settings
 
-## OJP SDK Settings
+## OJP Demo App Settings
 
 `config.ts`
 
-- path: [./src/app/shared/ojp-sdk/config/config.ts](./../src/app/shared/ojp-sdk/config/config.ts)
+- path: [./src/app/config/app-config.ts](./../src/app/config/app-config.ts)
 - customize backend stages for the OJP APIs
 - customize endpoints, authorization keys used
-
-## OJP Demo App Settings
+- config of the map layers
 
 `map-colors.ts`
 
 - path: [./src/app/shared/ojp-sdk/config/map-colors.ts](./../src/app/shared/ojp-sdk/config/map-colors.ts)
 - customize the colors used for rendering the result leg colors and map polyline colors
 
-`./src/app/map/app-layers/**/*.ts`
-
-- customize Mapbox layer definitions in `./**/map-layers-def/*.json` files
-- customize application map layers in subclasses of `LocationMapAppLayer`
-
-Example for [AddressAppLayer](./../src/app/map/app-layers/address/address-app-layer.ts)
+Example for map layers config
 
 ```
-export class AddressAppLayer extends LocationMapAppLayer implements MapAppLayer {
-  public static layerKey = 'address'
-  public static geoRestrictionType: OJP.GeoRestrictionType = 'address'
-  public static minZoomLevel = 17.0
-  public static sourceId = 'ojp-address'
+'stops': {
+  LIR_Restriction_Type: 'stop',
+  minZoom: 13,
+  layer_ids: [
+    'stops-circle',
+    'stops-label',
+  ],
+  click_layer_ids: 'SAME_AS_LAYER_IDS',
+},
 ```
 
-- the `OJP.GeoRestrictionType` with value `address` is used to filter the LocationInformationRequest results
-- the map layer is available from zoom level 17.0 and above
+- this layer used to show public transport stops
+- `LIR_Restriction_Type`: what value to be used for `ojp:Restrictions/ojp:Type` inside `LocationInformationRequest` requests
+- `minZoom`: above which map zoom level this map layer is displayed
+- `layer_ids`: which map layer ids will be used for this app layer, in this case there are 2 layers, one for the map points (circles) and one of the labels (text) of the stations
+  - configuration of the layers is in [./src/app/map/app-map-layer/](../src/app/map/app-map-layer)
+  - the Mapbox layer definitions are in [./map-layers-def/**/*.json](../src/app/map/app-map-layer/map-layers-def/**/*.json) files
+- `click_layer_ids`: which layers have click handlers showing a popup
 
 ----
 
 CHANGELOG
+- Oct 2022 - updated config
 - Feb 2022 - created this document
