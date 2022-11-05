@@ -30,6 +30,8 @@ export class StationBoardSearchComponent implements OnInit {
 
   private queryParams: URLSearchParams
 
+  public permalinkURLAddress: string
+
   constructor(public userTripService: UserTripService, private mapService: MapService, private stationBoardService: StationBoardService) {
     this.queryParams = new URLSearchParams(document.location.search);
 
@@ -47,6 +49,8 @@ export class StationBoardSearchComponent implements OnInit {
     
     this.isSearching = false
 
+    this.permalinkURLAddress = '';
+    this.updatePermalinkURLAddress();
   }
 
   ngOnInit(): void {
@@ -64,12 +68,18 @@ export class StationBoardSearchComponent implements OnInit {
   public onLocationSelected(location: OJP.Location) {
     this.searchLocation = location;
     this.mapService.tryToCenterAndZoomToLocation(location)
+
+    this.updatePermalinkURLAddress();
     
     this.resetResultList();
   }
 
   public onDateTimeChanged() {
+    this.updatePermalinkURLAddress();
+  }
 
+  public onTypeChanged() {
+    this.updatePermalinkURLAddress();
   }
 
   public isSearchButtonDisabled(): boolean {
@@ -132,6 +142,37 @@ export class StationBoardSearchComponent implements OnInit {
     return defaultValue;
   }
 
+  private updatePermalinkURLAddress() {
+    const queryParams = new URLSearchParams()
+    if (this.stationBoardType === 'Arrivals') {
+      queryParams.set('type', 'arr');
+    }
+    
+    const stopPlaceRef = this.searchLocation?.stopPlace?.stopPlaceRef ?? null;
+    if (stopPlaceRef) {
+      queryParams.set('stop_id', stopPlaceRef);
+    }
+
+    const nowDateF = OJP.DateHelpers.formatDate(new Date());
+    const searchDateF = OJP.DateHelpers.formatDate(this.searchDate);
+
+    const nowDayF = nowDateF.substring(0, 10);
+    const searchDayF = searchDateF.substring(0, 10);
+    if (searchDayF !== nowDayF) {
+      queryParams.set('day', searchDayF);
+    }
+
+    const nowTimeF = nowDateF.substring(11, 16);
+    const searchTimeF = searchDateF.substring(11, 16);
+    if (nowTimeF !== searchTimeF) {
+      queryParams.set('time', searchTimeF);
+    }
+
+    const urlAddress = 'board?' + queryParams.toString();
+    
+    this.permalinkURLAddress = urlAddress;
+  }
+
   private fetchStopEventsForStopRef(stopPlaceRef: string) {
     const stopEventType: OJP.StopEventType = this.stationBoardType === 'Arrivals' ? 'arrival' : 'departure'
     const stopEventDate = this.computeStopBoardDate();
@@ -166,7 +207,9 @@ export class StationBoardSearchComponent implements OnInit {
 
       const firstLocation = locationsData[0];
       this.searchLocation = firstLocation;
+
       this.mapService.tryToCenterAndZoomToLocation(firstLocation);
+      this.updatePermalinkURLAddress();
 
       if (this.autocompleteInputComponent) {
         this.autocompleteInputComponent.updateLocationText(firstLocation);
@@ -186,6 +229,7 @@ export class StationBoardSearchComponent implements OnInit {
     }
 
     this.resetResultList();
+    this.updatePermalinkURLAddress();
 
     this.searchPanel?.open();
   }
