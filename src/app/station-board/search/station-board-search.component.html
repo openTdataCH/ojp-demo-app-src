@@ -9,6 +9,40 @@
 
         <div class="mb-3 d-flex">
           <div>
+            <sbb-radio-group class="sbb-radio-group-horizontal" [(ngModel)]="this.stationBoardType" (change)="onTypeChanged()">
+              <sbb-radio-button *ngFor="let stationBoardTypeItem of this.stationBoardTypes"
+                [value]="stationBoardTypeItem">
+                {{ stationBoardTypeItem }}
+              </sbb-radio-button>
+            </sbb-radio-group>
+          </div>
+        </div>
+
+        <div class="d-flex">
+          <div>
+            <sbb-form-field label="Choose Day">
+              <sbb-datepicker arrows>
+                <input 
+                  sbbInput  
+                  sbbDateInput
+                  [(ngModel)]="this.searchDate"
+                  (dateChange)="onDateTimeChanged()" />
+              </sbb-datepicker>
+            </sbb-form-field>
+          </div>
+          <div style="margin-left: 8px;">
+            <sbb-form-field label="Time">
+              <input 
+                sbbInput
+                sbbTimeInput
+                [(ngModel)]="this.searchTime"
+                (change)="onDateTimeChanged()" />
+            </sbb-form-field>
+          </div>
+        </div>
+        
+        <div class="mb-3 d-flex">
+          <div>
             <sbb-radio-group class="sbb-radio-group-horizontal" [(ngModel)]="this.appStage">
               <sbb-radio-button *ngFor="let appStageOption of this.appStageOptions" [value]="appStageOption">
                 {{ appStageOption }}

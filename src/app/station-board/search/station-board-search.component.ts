@@ -5,10 +5,8 @@ import * as OJP from '../../shared/ojp-sdk/index'
 
 import { UserTripService } from 'src/app/shared/services/user-trip.service';
 import { MapService } from 'src/app/shared/services/map.service';
-import { StationBoardService } from '../station-board.service';
+import { StationBoardData, StationBoardService } from '../station-board.service';
 import { StationBoardInputComponent } from '../input/station-board-input.component';
-
-type StationBoardType = 'Departures' | 'Arrivals'
 
 @Component({
   selector: 'station-board-search',
@@ -19,32 +17,36 @@ export class StationBoardSearchComponent implements OnInit {
   @ViewChild(StationBoardInputComponent) autocompleteInputComponent: StationBoardInputComponent | undefined;
 
   public appStage: OJP.APP_Stage;
-  public stationBoardType: StationBoardType;
+  public stationBoardType: OJP.StationBoardType;
 
   public searchLocation: OJP.Location | null
+  
   public searchDate: Date
   public searchTime: string
   
   public appStageOptions: OJP.APP_Stage[];
-  public stationBoardTypes: StationBoardType[]
+  public stationBoardTypes: OJP.StationBoardType[]
   public isSearching: boolean
 
   private queryParams: URLSearchParams
 
   constructor(public userTripService: UserTripService, private mapService: MapService, private stationBoardService: StationBoardService) {
+    this.queryParams = new URLSearchParams(document.location.search);
+
     this.appStageOptions = ['PROD', 'TEST', 'TEST LA']
     this.stationBoardTypes = ['Departures', 'Arrivals']
 
     this.appStage = this.appStageOptions[0];
-    this.stationBoardType = this.stationBoardTypes[0];
+    
+    this.stationBoardType = this.computeStationBoardType();
 
     this.searchLocation = null;
-    this.searchDate = new Date()
+
+    this.searchDate = this.computeSearchDateTime();
     this.searchTime = OJP.DateHelpers.formatTimeHHMM(this.searchDate);
     
     this.isSearching = false
 
-    this.queryParams = new URLSearchParams(document.location.search)
   }
 
   ngOnInit(): void {
@@ -63,8 +65,7 @@ export class StationBoardSearchComponent implements OnInit {
     this.searchLocation = location;
     this.mapService.tryToCenterAndZoomToLocation(location)
     
-    // Reset result list
-    this.stationBoardService.stationBoardEntriesUpdated.emit([]);
+    this.resetResultList();
   }
 
   public onDateTimeChanged() {
@@ -92,10 +93,50 @@ export class StationBoardSearchComponent implements OnInit {
     }
   }
 
+  private computeSearchDateTime(): Date {
+    let searchDate = new Date()
+    
+    const userSearchDay = this.queryParams.get('day');
+    if (userSearchDay) {
+      searchDate = new Date(Date.parse(userSearchDay));
+    }
+
+    const userSearchTime = this.queryParams.get('time');
+    const nowDate = new Date();
+    let timeHours = nowDate.getHours();
+    let timeMinutes = nowDate.getMinutes();
+    if (userSearchTime) {
+      const timeParts = userSearchTime.split(':');
+      if (timeParts.length === 2) {
+        timeHours = parseInt(timeParts[0], 10);
+        timeMinutes = parseInt(timeParts[1], 10);
+      }
+    }
+
+    searchDate.setHours(timeHours);
+    searchDate.setMinutes(timeMinutes);
+
+    return searchDate;
+  }
+
+  private computeStationBoardType(): OJP.StationBoardType {
+    const userSearchTypeStationBoardType = this.queryParams.get('type');
+    if (userSearchTypeStationBoardType === 'arr') {
+      return 'Arrivals';
+    }
+    if (userSearchTypeStationBoardType === 'dep') {
+      return 'Departures';
+    }
+
+    const defaultValue: OJP.StationBoardType = 'Departures';
+    return defaultValue;
+  }
+
   private fetchStopEventsForStopRef(stopPlaceRef: string) {
     const stopEventType: OJP.StopEventType = this.stationBoardType === 'Arrivals' ? 'arrival' : 'departure'
+    const stopEventDate = this.computeStopBoardDate();
     const appStageConfig = this.userTripService.getStageConfig(this.appStage);
-    const stopEventRequest = OJP.StopEventRequest.initWithStopPlaceRef(appStageConfig, stopPlaceRef, stopEventType);
+    const stopEventRequest = OJP.StopEventRequest.initWithStopPlaceRef(appStageConfig, stopPlaceRef, stopEventType, stopEventDate);
     stopEventRequest.fetchResponse().then(stopEvents => {
       this.parseStopEvents(stopEvents);
     });
@@ -106,7 +147,11 @@ export class StationBoardSearchComponent implements OnInit {
       this.searchPanel?.close()
     }
 
-    this.stationBoardService.stationBoardEntriesUpdated.emit(stopEvents);
+    const stationBoardData: StationBoardData = {
+      type: this.stationBoardType,
+      items: stopEvents,
+    }
+    this.stationBoardService.stationBoardDataUpdated.emit(stationBoardData);
   }
 
   private lookupStopPlaceRef(stopPlaceRef: string) {
@@ -140,9 +185,31 @@ export class StationBoardSearchComponent implements OnInit {
       this.autocompleteInputComponent.updateLocationText(location);
     }
 
-    // Reset result list
-    this.stationBoardService.stationBoardEntriesUpdated.emit([]);
+    this.resetResultList();
 
     this.searchPanel?.open();
+  }
+
+  private resetResultList() {
+    const stationBoardData: StationBoardData = {
+      type: this.stationBoardType,
+      items: [],
+    }
+    this.stationBoardService.stationBoardDataUpdated.emit(stationBoardData);
+  }
+
+  private computeStopBoardDate(): Date {
+    const departureDate = this.searchDate;
+    
+    const timeParts = this.searchTime.split(':');
+    if (timeParts.length === 2) {
+      const timeHours = parseInt(timeParts[0]);
+      const timeMinutes = parseInt(timeParts[1]);
+
+      departureDate.setHours(timeHours);
+      departureDate.setMinutes(timeMinutes);
+    }
+
+    return departureDate
   }
 }

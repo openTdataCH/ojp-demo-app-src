@@ -13,14 +13,19 @@ export class StationBoardResultComponent implements OnInit, AfterViewInit {
   @ViewChild('stationBoardWrapper') stationBoardWrapperRef: ElementRef | undefined;
   public stopEventsData: OJP.StationBoardModel[]
   public selectedIDx: number | null
+  public stationBoardType: OJP.StationBoardType
 
   constructor(private stationBoardService: StationBoardService) {
     this.stopEventsData = [];
-    this.selectedIDx = null
+    this.selectedIDx = null;
+    this.stationBoardType = 'Departures';
   }
 
   ngOnInit(): void {
-    this.stationBoardService.stationBoardEntriesUpdated.subscribe(stopEvents => {
+    this.stationBoardService.stationBoardDataUpdated.subscribe(stationBoardData => {
+      this.stationBoardType = stationBoardData.type
+
+      const stopEvents = stationBoardData.items;
       this.stopEventsData = [];
       stopEvents.forEach(stopEvent => {
         const stationBoardModel = stopEvent.asStationBoard();
@@ -58,5 +63,13 @@ export class StationBoardResultComponent implements OnInit, AfterViewInit {
 
     const stationBoardEntry = this.stopEventsData[idx];
     this.stationBoardService.stationBoardEntrySelected.emit(stationBoardEntry.stopEvent);
+  }
+
+  public hasDelay(stopEvent: OJP.StationBoardModel): boolean {
+    return stopEvent.mapStationBoardTime[this.stationBoardType].hasDelay;
+  }
+
+  public hasDelayDifferentTime(stopEvent: OJP.StationBoardModel): boolean {
+    return stopEvent.mapStationBoardTime[this.stationBoardType].hasDelayDifferentTime;
   }
 }
