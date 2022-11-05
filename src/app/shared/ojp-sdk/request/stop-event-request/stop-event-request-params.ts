@@ -13,10 +13,10 @@ export class StopEventRequestParams {
     public includeOnwardCalls: boolean
     public includeRealtimeData: boolean
 
-    constructor(stopPlaceRef: string | null, geoPosition: GeoPosition | null, stopEventType: StopEventType) {
+    constructor(stopPlaceRef: string | null, geoPosition: GeoPosition | null, stopEventType: StopEventType, stopEventDate: Date) {
         this.stopPlaceRef = stopPlaceRef;
         this.geoPosition = geoPosition;
-        this.depArrTime = new Date();
+        this.depArrTime = stopEventDate;
         this.numberOfResults = 10;
         this.stopEventType = stopEventType
         this.includePreviousCalls = false;
@@ -40,6 +40,8 @@ export class StopEventRequestParams {
             requestPlaceRefNode.ele('ojp:StopPlaceRef', this.stopPlaceRef);
             requestPlaceRefNode.ele('ojp:LocationName').ele('ojp:Text', '');
         }
+
+        locationNode.ele('ojp:DepArrTime', dateF);
 
         const requestParamsNode = requestNode.ele('ojp:Params');
         requestParamsNode.ele('ojp:NumberOfResults', this.numberOfResults);
