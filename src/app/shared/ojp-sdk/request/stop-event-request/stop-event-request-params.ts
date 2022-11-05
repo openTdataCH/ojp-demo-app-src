@@ -25,12 +25,13 @@ export class StopEventRequestParams {
     }
 
     public buildRequestXML(contextEl: xmlbuilder.XMLElement): string {
+        const dateNowF = new Date().toISOString();
         const dateF = this.depArrTime.toISOString();
         
-        contextEl.ele('RequestTimestamp', dateF);
+        contextEl.ele('RequestTimestamp', dateNowF);
 
         const requestNode = contextEl.ele('ojp:OJPStopEventRequest');
-        requestNode.ele('RequestTimestamp', dateF);
+        requestNode.ele('RequestTimestamp', dateNowF);
 
         const locationNode = requestNode.ele('ojp:Location');
 
