@@ -5,10 +5,15 @@ import { Location } from '../location/location';
 import { StopPointTime } from '../trip';
 import { DateHelpers } from '../helpers/date-helpers';
 
+export type StationBoardType = 'Departures' | 'Arrivals'
+
 interface StationBoardTime {
     stopTime: string
     stopTimeActual: string | null
     stopDelayText: string | null
+    
+    hasDelay: boolean
+    hasDelayDifferentTime: boolean
 }
 
 export interface StationBoardModel {
@@ -19,9 +24,8 @@ export interface StationBoardModel {
     tripNumber: string | null
     tripHeading: string
     tripOperator: string
-    
-    arrivalTime: StationBoardTime | null
-    departureTime: StationBoardTime | null
+
+    mapStationBoardTime: Record<StationBoardType, StationBoardTime>
     
     stopPlatform: string | null
     stopPlatformActual: string | null
@@ -116,7 +120,10 @@ export class StopEvent {
             serviceLineNumber: serviceLineNumber,
             servicePtMode: servicePtMode,
             tripNumber, tripHeading, tripOperator,
-            arrivalTime, departureTime,
+            mapStationBoardTime: {
+                Arrivals: arrivalTime,
+                Departures: departureTime
+            },
             stopPlatform, stopPlatformActual,
         }
 
@@ -137,11 +144,25 @@ export class StopEvent {
         if (stopPointTime === null) {
             return null
         }
+
+        const hasDelay = stopPointTime.delayMinutes !== null;
+        
+        const timetableTimeF = DateHelpers.formatTimeHHMM(stopPointTime.timetableTime);
+        const estimatedTimeF = stopPointTime.estimatedTime ? DateHelpers.formatTimeHHMM(stopPointTime.estimatedTime) : 'n/a';
+        const hasDelayDifferentTime = stopPointTime.estimatedTime ? (timetableTimeF !== estimatedTimeF) : false;
+
+        const stopTime = this.computeStopTime(stopPointTime.timetableTime);
+        if (stopTime === null) {
+            return null;
+        }
     
-        const stopTimeData = <StationBoardTime>{
-            stopTime: this.computeStopTime(stopPointTime.timetableTime ?? null),
+        const stopTimeData: StationBoardTime = {
+            stopTime: stopTime,
             stopTimeActual: this.computeStopTime(stopPointTime.estimatedTime ?? null),
             stopDelayText: this.computeDelayTime(stopPointTime),
+
+            hasDelay: hasDelay,
+            hasDelayDifferentTime: hasDelayDifferentTime,
         }
     
         return stopTimeData;
