@@ -12,10 +12,10 @@ export class PointOfInterest {
   public code: string
   public name: string
   public category: GeoRestrictionPoiOSMTag
-  public subCategory: string
+  public subCategory: string | null
   public categoryTags: string[]
 
-  constructor(code: string, name: string, category: GeoRestrictionPoiOSMTag, subCategory: string, categoryTags: string[]) {
+  constructor(code: string, name: string, category: GeoRestrictionPoiOSMTag, subCategory: string | null, categoryTags: string[]) {
     this.code = code
     this.name = name
     this.category = category
@@ -30,25 +30,42 @@ export class PointOfInterest {
     if (!(code && name)) {
       return null;
     }
-    
+
     const categoryTags: string[] = []
+    const categoryTagKeys: string[] = []
+    
     const categoryNodes = XPathOJP.queryNodes('ojp:PointOfInterest/ojp:PointOfInterestCategory', contextNode);
     categoryNodes.forEach(categoryNode => {
       const categoryTag = XPathOJP.queryText('ojp:OsmTag/ojp:Value', categoryNode);
       if (categoryTag) {
         categoryTags.push(categoryTag);
       }
+
+      const categoryTagKey = XPathOJP.queryText('ojp:OsmTag/ojp:Tag', categoryNode);
+      if (categoryTagKey) {
+        categoryTagKeys.push(categoryTagKey);
+      }
     })
 
-    // HACK - the subCategory is the first item
-    // - we expect exactly 2 <ojp:PointOfInterestCategory> nodes
-    if (categoryTags.length != 2) {
-      debugger;
-      return null;
+    let category: GeoRestrictionPoiOSMTag | null = null;
+    let subCategory: string | null = null;
+
+    if (categoryTags.length === 2) {
+      // ojp:Tag = 'POI'
+      // HACK - for POI ojp:Tag the subCategory is the first item
+      // - we expect exactly 2 <ojp:PointOfInterestCategory> nodes
+      category = categoryTags[1] as GeoRestrictionPoiOSMTag;
+      subCategory = categoryTags[0];
     }
 
-    const category = categoryTags[1] as GeoRestrictionPoiOSMTag;
-    const subCategory = categoryTags[0];
+    if (categoryTags.length === 1) {
+      // ojp:Tag = 'amenity'
+      category = categoryTags[0] as GeoRestrictionPoiOSMTag;
+    }
+
+    if (category === null) {
+      return null
+    }
 
     const poi = new PointOfInterest(code, name, category, subCategory, categoryTags);
     return poi
@@ -64,7 +81,7 @@ export class PointOfInterest {
       return fallbackIcon;
     }
 
-    const hasSubCategory = mapPoiSubCategoryIcons[this.category].indexOf(this.subCategory) > -1;
+    const hasSubCategory = this.subCategory && (mapPoiSubCategoryIcons[this.category].indexOf(this.subCategory) > -1);
     if (hasSubCategory) {
       const mapIcon = 'poi-' + this.category + '-' + this.subCategory;
       return mapIcon;

@@ -4,6 +4,11 @@ OJP-Demo URL: https://opentdatach.github.io/ojp-demo-app/
 
 ----
 
+06.November 2022
+- Quick fixes - [#PR 69](https://github.com/openTdataCH/ojp-demo-app-src/pull/69)
+    - align date/time controls in journey search tab
+    - fix errors shown in the case of amenity POIs which dont have subCategory
+
 09.October 2022
 - Updated Docs - see [#PR 63](https://github.com/openTdataCH/ojp-demo-app-src/pull/63)
 
