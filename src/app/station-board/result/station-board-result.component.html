@@ -28,15 +28,15 @@
         </div>
         
         <div class="text-center">
-          <div *ngIf="!stopEntry.departureTime?.stopDelayText">
-            <div class="departure-time">{{ stopEntry.departureTime?.stopTime }}</div>
+          <div *ngIf="!hasDelay(stopEntry)">
+            <div class="departure-time">{{ stopEntry.mapStationBoardTime[stationBoardType].stopTime }}</div>
           </div>
-          <div *ngIf="stopEntry.departureTime?.stopDelayText">
-            <div *ngIf="stopEntry.departureTime?.stopTime != stopEntry.departureTime?.stopTimeActual">
-              <del>{{ stopEntry.departureTime?.stopTime }}</del>
+          <div *ngIf="hasDelay(stopEntry)">
+            <div *ngIf="hasDelayDifferentTime(stopEntry)">
+              <del>{{ stopEntry.mapStationBoardTime[stationBoardType].stopTime }}</del>
             </div>
-            <div class="departure-time">{{ stopEntry.departureTime?.stopTimeActual }}</div>
-            <div class="departure-delay">{{ stopEntry.departureTime?.stopDelayText }}</div>
+            <div class="departure-time">{{ stopEntry.mapStationBoardTime[stationBoardType].stopTimeActual }}</div>
+            <div class="departure-delay">{{ stopEntry.mapStationBoardTime[stationBoardType].stopDelayText }}</div>
           </div>
         </div>
       </div>

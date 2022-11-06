@@ -68,8 +68,8 @@ export class StopEventRequest extends OJPBaseRequest {
         return mapContextLocations;
     }
 
-    public static initWithStopPlaceRef(stageConfig: StageConfig, stopPlaceRef: string, stopEventType: StopEventType): StopEventRequest {
-        const stopEventRequestParams = new StopEventRequestParams(stopPlaceRef, null, stopEventType);
+    public static initWithStopPlaceRef(stageConfig: StageConfig, stopPlaceRef: string, stopEventType: StopEventType, stopEventDate: Date): StopEventRequest {
+        const stopEventRequestParams = new StopEventRequestParams(stopPlaceRef, null, stopEventType, stopEventDate);
         const stopEventRequest = new StopEventRequest(stageConfig, stopEventRequestParams);
         return stopEventRequest;
     }

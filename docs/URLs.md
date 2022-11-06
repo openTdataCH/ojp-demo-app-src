@@ -34,11 +34,16 @@ OJP-Demo URL: https://opentdatach.github.io/ojp-demo-app/
 
 | Param  | Example (decoded) | Description |
 |--|--|--|
+|type| `arr`, `dep` | Station board type, arrivals or departure, default value is `dep` (departures) |
 |stop_id| `8503000` for Zürich HB | [DiDok](https://opentransportdata.swiss/de/dataset/didok) valid `StopRef` ids |
+|day| `2022-12-01` for 1.Dec 2022 | Day used for the station board; if not given, the current day will be used |
+|time| `14:20` | Time used for the station board; if not given, the current time will be used |
+
 
 ## Examples
 
 - [Zürich HB](https://opentdatach.github.io/ojp-demo-app/board?stop_id=8503000) departures.
+- [Bern Bahnhof](https://opentdatach.github.io/ojp-demo-app/board?type=arr&stop_id=8576646&time=15:00) arrivals for 15:00 in the current day.
 
 ----
 
