@@ -75,6 +75,15 @@ export class StationBoardSearchComponent implements OnInit {
   }
 
   public onDateTimeChanged() {
+    const timeParts = this.searchTime.split(':');
+    if (timeParts.length === 2) {
+      const timeHours = parseInt(timeParts[0], 10);
+      const timeMinutes = parseInt(timeParts[1], 10);
+      
+      this.searchDate.setHours(timeHours);
+      this.searchDate.setMinutes(timeMinutes);
+    }
+
     this.updatePermalinkURLAddress();
   }
 
