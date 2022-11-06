@@ -8,6 +8,10 @@ OJP-Demo URL: https://opentdatach.github.io/ojp-demo-app/
 - Quick fixes - [#PR 69](https://github.com/openTdataCH/ojp-demo-app-src/pull/69)
     - align date/time controls in journey search tab
     - fix errors shown in the case of amenity POIs which dont have subCategory
+- Station Board Controls - [#PR 70](https://github.com/openTdataCH/ojp-demo-app-src/pull/70)
+    - OJP SDK StopEvent - adds helpers for delay info, add support for datetime (see below)
+    - adds control for custom station board date / time - [#65 Date and Time picker for "Station Board"](https://github.com/openTdataCH/ojp-demo-app-src/issues/65)
+    - adds control for arrivals / departures - [#66 New radio button for departures/arrivals switch at StationBoard](https://github.com/openTdataCH/ojp-demo-app-src/issues/66)
 
 09.October 2022
 - Updated Docs - see [#PR 63](https://github.com/openTdataCH/ojp-demo-app-src/pull/63)
