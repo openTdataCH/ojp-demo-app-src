@@ -47,6 +47,11 @@ export class TripRequest extends OJPBaseRequest {
     const tripRequestNode = this.serviceRequestNode.ele('ojp:OJPTripRequest');
     tripRequestNode.ele('RequestTimestamp', dateF)
 
+    const modeType = this.requestParams.modeType;
+    const isMonomodal = modeType === 'monomodal';
+
+    const transportMode = this.requestParams.transportMode;
+
     const tripEndpoints: JourneyPointType[] = ["From", "To"]
     tripEndpoints.forEach(tripEndpoint => {
       const isFrom = tripEndpoint === 'From';
@@ -79,6 +84,14 @@ export class TripRequest extends OJPBaseRequest {
       if (isFrom) {
         const dateF = this.requestParams.departureDate.toISOString();
         endPointNode.ele('ojp:DepArrTime', dateF);
+
+        // https://github.com/openTdataCH/ojp-demo-app-src/issues/64
+        // Allow maxduration for more than 40m for walking / cycle monomodal routes
+        if (isMonomodal && (transportMode === 'walk' || transportMode === 'cycle')) {
+          const transportModeOptionsNode = endPointNode.ele('ojp:IndividualTransportOptions');
+          transportModeOptionsNode.ele('ojp:Mode', transportMode);
+          transportModeOptionsNode.ele('ojp:MaxDuration', 'PT3000M');
+        }
       }
     });
 
@@ -92,11 +105,8 @@ export class TripRequest extends OJPBaseRequest {
     paramsNode.ele('ojp:IncludeTurnDescription', true)
     paramsNode.ele('ojp:IncludeIntermediateStops', true)
 
-    const modeType = this.requestParams.modeType
-    const transportMode = this.requestParams.transportMode
-
-    if (modeType === 'monomodal') {
-      if (transportMode === 'walking') {
+    if (isMonomodal) {
+      if (transportMode === 'walk') {
         paramsNode.ele('ojp:ItModesToCover', 'walk');
       }
 
@@ -149,7 +159,7 @@ export class TripRequest extends OJPBaseRequest {
     }
 
     if (this.requestParams.modeType === 'monomodal') {
-      const customModes: IndividualTransportMode[] = ['walking', 'cycle', 'car_self_driving', 'bicycle_rental', 'escooter_rental', 'car_sharing'];
+      const customModes: IndividualTransportMode[] = ['walk', 'cycle', 'car_self_driving', 'bicycle_rental', 'escooter_rental', 'car_sharing'];
       const isCustomMode = customModes.indexOf(this.requestParams.transportMode) !== -1;
       if (isCustomMode) {
         return 0;
