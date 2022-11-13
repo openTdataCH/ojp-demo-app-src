@@ -47,7 +47,7 @@ export class TripModeTypeComponent implements OnInit {
         modeType: 'monomodal',
         transportModes: [
           'public_transport',
-          'walking',
+          'walk',
           'cycle',
           'car_self_driving',
           'bicycle_rental',
@@ -58,7 +58,7 @@ export class TripModeTypeComponent implements OnInit {
       {
         modeType: 'mode_at_start',
         transportModes: [
-          'walking',
+          'walk',
           'cycle',
           'car_self_driving',
           'bicycle_rental',
@@ -69,7 +69,7 @@ export class TripModeTypeComponent implements OnInit {
       {
         modeType: 'mode_at_end',
         transportModes: [
-          'walking',
+          'walk',
           'bicycle_rental',
           'escooter_rental',
           'car_sharing'
@@ -78,7 +78,7 @@ export class TripModeTypeComponent implements OnInit {
       {
         modeType: 'mode_at_start_end',
         transportModes: [
-          'walking',
+          'walk',
           'bicycle_rental',
           'escooter_rental',
           'car_sharing'
@@ -217,7 +217,7 @@ export class TripModeTypeComponent implements OnInit {
   public computeTripTransportModeText(transportMode: OJP.IndividualTransportMode): string {
     const MapIndividualTransportMode: Record<OJP.IndividualTransportMode, string> = {
       public_transport: 'Public Transport',
-      walking: 'Walking',
+      walk: 'Walking',
       cycle: 'Own Bicycle',
       escooter_rental: 'eScooter Sharing',
       car_sharing: 'Car Sharing',

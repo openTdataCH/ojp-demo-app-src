@@ -68,7 +68,7 @@ export class TripContinousLeg extends TripLeg {
     }
 
     if (legModeS === 'walk') {
-      return 'walking'
+      return 'walk'
     }
 
     if (legModeS === 'self-drive-car') {
@@ -98,7 +98,7 @@ export class TripContinousLeg extends TripLeg {
   }
 
   public isWalking(): boolean {
-    return this.legTransportMode === 'walking';
+    return this.legTransportMode === 'walk';
   }
 
   protected override computeSpecificJSONFeatures(): GeoJSON.Feature[] {
