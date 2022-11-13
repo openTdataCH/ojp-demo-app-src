@@ -75,7 +75,7 @@ export class Trip {
       legs.push(tripLeg);
     })
 
-    if (transportMode === 'walking') {
+    if (transportMode === 'walk') {
       const firstNonWalkingLeg = legs.find(leg => {
         return leg.legType !== 'ContinousLeg'
       })

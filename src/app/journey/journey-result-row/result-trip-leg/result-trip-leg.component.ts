@@ -95,7 +95,7 @@ export class ResultTripLegComponent implements OnInit {
   }
 
   private computeLegLeadTextContinousLeg(continuousLeg: OJP.TripContinousLeg): string {
-    if (continuousLeg.legTransportMode === 'walking') {
+    if (continuousLeg.legTransportMode === 'walk') {
       return 'Walk';
     }
 
