@@ -4,6 +4,9 @@ OJP-Demo URL: https://opentdatach.github.io/ojp-demo-app/
 
 ----
 
+13.November 2022
+- Fix monomodal cycle/walk requests - [#PR 73](https://github.com/openTdataCH/ojp-demo-app-src/pull/73), [Correct Request for cycling path #64](https://github.com/openTdataCH/ojp-demo-app-src/issues/64)
+
 06.November 2022
 - Quick fixes - [#PR 69](https://github.com/openTdataCH/ojp-demo-app-src/pull/69)
     - align date/time controls in journey search tab
