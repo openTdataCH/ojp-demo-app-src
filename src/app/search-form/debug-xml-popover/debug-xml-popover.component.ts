@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import * as OJP from 'ojp-sdk'
+import { XML_Helpers } from 'src/app/helpers/xml-helpers';
 
 @Component({
   selector: 'debug-xml-popover',
@@ -16,13 +17,13 @@ export class DebugXmlPopoverComponent {
 
   updateRequestData(requestData: OJP.RequestData | null) {
     if (requestData && requestData.requestXmlS) {
-      this.requestXmlS = OJP.XML_Helpers.prettyPrintXML(requestData.requestXmlS)
+      this.requestXmlS = XML_Helpers.prettyPrintXML(requestData.requestXmlS)
     } else {
       this.requestXmlS = 'n/a'
     }
 
     if (requestData && requestData.responseXmlS) {
-      this.responseXmlS = OJP.XML_Helpers.prettyPrintXML(requestData.responseXmlS)
+      this.responseXmlS = XML_Helpers.prettyPrintXML(requestData.responseXmlS)
     } else {
       this.responseXmlS = 'n/a'
     }
