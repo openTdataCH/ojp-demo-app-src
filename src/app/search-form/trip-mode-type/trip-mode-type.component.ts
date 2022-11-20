@@ -1,7 +1,7 @@
 import { Component, Input, OnInit, ViewChild, ElementRef } from '@angular/core';
 import { SbbDialog } from '@sbb-esta/angular/dialog';
 
-import * as OJP from '../../shared/ojp-sdk/index'
+import * as OJP from 'ojp-sdk'
 
 import { DebugXmlPopoverComponent } from '../debug-xml-popover/debug-xml-popover.component';
 

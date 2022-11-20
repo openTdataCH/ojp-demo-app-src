@@ -6,7 +6,7 @@ import { DebugXmlPopoverComponent } from "src/app/search-form/debug-xml-popover/
 import { UserTripService } from "src/app/shared/services/user-trip.service";
 import { AppMapLayer } from "../app-map-layer/app-map-layer";
 
-import * as OJP from '../../shared/ojp-sdk/index'
+import * as OJP from 'ojp-sdk'
 
 interface LayerData {
   inputEls: HTMLInputElement[] | null

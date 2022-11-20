@@ -4,7 +4,7 @@ import { FormControl } from '@angular/forms';
 
 import { SbbAutocompleteSelectedEvent } from '@sbb-esta/angular/autocomplete';
 
-import * as OJP from '../../shared/ojp-sdk/index'
+import * as OJP from 'ojp-sdk'
 import { MapService } from 'src/app/shared/services/map.service';
 import { UserTripService } from 'src/app/shared/services/user-trip.service';
 

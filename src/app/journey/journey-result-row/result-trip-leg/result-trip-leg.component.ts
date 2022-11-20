@@ -1,7 +1,7 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { MapService } from 'src/app/shared/services/map.service';
 
-import * as OJP from '../../../shared/ojp-sdk/index'
+import * as OJP from 'ojp-sdk'
 
 interface LegLocationData {
   locationText: string,

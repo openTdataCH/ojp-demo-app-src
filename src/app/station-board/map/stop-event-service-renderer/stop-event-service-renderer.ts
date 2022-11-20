@@ -1,6 +1,6 @@
 import mapboxgl from "mapbox-gl";
 
-import * as OJP from '../../../shared/ojp-sdk/index'
+import * as OJP from 'ojp-sdk'
 
 import serviceTrackLineLayerJSON from './map-layers-def/service-track-line.json'
 import serviceTrackStopLayerJSON from './map-layers-def/service-track-stop.json'

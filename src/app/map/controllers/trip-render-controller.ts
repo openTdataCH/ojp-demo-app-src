@@ -1,6 +1,6 @@
 import mapboxgl from "mapbox-gl";
 
-import * as OJP from '../../shared/ojp-sdk/index'
+import * as OJP from 'ojp-sdk'
 
 import tripLegBeelineLayerJSON from './map-layers-def/ojp-trip-leg-beeline.json'
 import tripTimedLegEndpointCircleLayerJSON from './map-layers-def/ojp-trip-timed-leg-endpoint-circle.json'
