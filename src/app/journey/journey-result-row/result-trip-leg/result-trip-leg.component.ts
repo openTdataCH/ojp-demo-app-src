@@ -102,7 +102,7 @@ export class ResultTripLegComponent implements OnInit {
     }
 
     if (continuousLeg.isSharedMobility()) {
-      return 'Shared Mobility';
+      return 'Ride';
     }
 
     return 'Walk (DEFAULT)';
