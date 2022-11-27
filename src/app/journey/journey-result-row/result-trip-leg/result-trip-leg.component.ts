@@ -253,7 +253,7 @@ export class ResultTripLegComponent implements OnInit {
       }
 
       if (continousLeg.isSharedMobility()) {
-        return 'velo-sharing'
+        return 'velo-scooter-sharing'
       }
 
       return 'picto-walk'
