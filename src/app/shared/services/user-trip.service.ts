@@ -3,7 +3,7 @@ import { EventEmitter, Injectable } from '@angular/core'
 import { APP_CONFIG } from 'src/app/config/app-config'
 import { MapService } from './map.service'
 
-import * as OJP from '../ojp-sdk/index'
+import * as OJP from 'ojp-sdk'
 
 type LocationUpdateSource = 'SearchForm' | 'MapDragend' | 'MapPopupClick'
 

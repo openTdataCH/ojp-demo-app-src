@@ -28,7 +28,8 @@
     "xmlbuilder": "^15.1.1",
     "xmldom": "git://github.com/xmldom/xmldom#0.7.0",
     "xpath": "0.0.32",
-    "zone.js": "~0.11.4"
+    "zone.js": "~0.11.4",
+    "ojp-sdk": "0.9.0"
   },
   "devDependencies": {
     "@angular-devkit/build-angular": "^14.0.6",

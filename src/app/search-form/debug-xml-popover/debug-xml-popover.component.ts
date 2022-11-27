@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
-import { XML_Helpers } from 'src/app/shared/ojp-sdk/helpers/xml-helpers';
-import * as OJP from '../../shared/ojp-sdk/index'
+import * as OJP from 'ojp-sdk'
+import { XML_Helpers } from 'src/app/helpers/xml-helpers';
 
 @Component({
   selector: 'debug-xml-popover',

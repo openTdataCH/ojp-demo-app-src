@@ -1,9 +1,7 @@
 import { Component, Input, OnInit } from '@angular/core';
-import { GeoPosition } from 'src/app/shared/ojp-sdk/location/geoposition';
 import { MapService } from 'src/app/shared/services/map.service';
 
-import * as OJP from '../../../shared/ojp-sdk/index'
-import { MapLegTypeColor } from '../../../shared/ojp-sdk/index';
+import * as OJP from 'ojp-sdk'
 
 interface LegLocationData {
   locationText: string,
@@ -141,10 +139,10 @@ export class ResultTripLegComponent implements OnInit {
     legFeatures.forEach(feature => {
       const featureBBOX = feature.bbox;
       if (featureBBOX) {
-        const bboxSW = new GeoPosition(featureBBOX[0], featureBBOX[1])
+        const bboxSW = new OJP.GeoPosition(featureBBOX[0], featureBBOX[1])
         bbox.extend(bboxSW)
 
-        const bboxNE = new GeoPosition(featureBBOX[2], featureBBOX[3])
+        const bboxNE = new OJP.GeoPosition(featureBBOX[2], featureBBOX[3])
         bbox.extend(bboxNE)
       }
     })
@@ -174,7 +172,7 @@ export class ResultTripLegComponent implements OnInit {
   }
 
   private computeLegColor(): string {
-    return this.leg?.computeLegColor() ?? MapLegTypeColor.TimedLeg
+    return this.leg?.computeLegColor() ?? OJP.MapLegTypeColor.TimedLeg
   }
 
   private initLegInfo(leg: OJP.TripLeg) {

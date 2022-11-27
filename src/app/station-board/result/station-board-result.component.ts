@@ -1,6 +1,6 @@
 import { AfterViewInit, Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 
-import * as OJP from '../../shared/ojp-sdk/index'
+import * as OJP from 'ojp-sdk'
 
 import { StationBoardService } from '../station-board.service';
 

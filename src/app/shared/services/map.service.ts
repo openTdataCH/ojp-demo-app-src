@@ -1,6 +1,6 @@
 import { Injectable, EventEmitter } from '@angular/core'
 import mapboxgl from 'mapbox-gl';
-import * as OJP from '../ojp-sdk/index'
+import * as OJP from 'ojp-sdk'
 
 export interface IMapBoundsData {
   bounds: mapboxgl.LngLatBounds

@@ -3,7 +3,7 @@ import { SbbDialog } from "@sbb-esta/angular/dialog";
 
 import mapboxgl from 'mapbox-gl'
 
-import * as OJP from '../shared/ojp-sdk/index'
+import * as OJP from 'ojp-sdk'
 import { MapService } from '../shared/services/map.service';
 import { UserTripService } from '../shared/services/user-trip.service';
 

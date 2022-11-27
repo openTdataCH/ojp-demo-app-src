@@ -2,7 +2,7 @@ import { Component, OnInit, Input, ViewChild, Output, EventEmitter } from '@angu
 import { FormControl } from '@angular/forms';
 import { debounceTime, distinctUntilChanged } from 'rxjs/operators'
 
-import * as OJP from '../../shared/ojp-sdk/index'
+import * as OJP from 'ojp-sdk'
 
 import { UserTripService } from 'src/app/shared/services/user-trip.service';
 import { SbbAutocompleteSelectedEvent, SbbAutocompleteTrigger } from '@sbb-esta/angular/autocomplete';
