@@ -6,7 +6,7 @@ OJP-Demo URL: https://opentdatach.github.io/ojp-demo-app/
 
 27.November 2022
 - Use OJP SDK - [#PR 75](https://github.com/openTdataCH/ojp-demo-app-src/pull/75), [Create OJP SDK package #46](https://github.com/openTdataCH/ojp-demo-app-src/issues/46)
-- Hamronize Mobility Text - [#PR 75](https://github.com/openTdataCH/ojp-demo-app-src/pull/75), [Create OJP SDK package #46](https://github.com/openTdataCH/ojp-demo-app-src/issues/46)
+- Hamronize Mobility Text - [#PR 76](https://github.com/openTdataCH/ojp-demo-app-src/pull/76), [Create OJP SDK package #46](https://github.com/openTdataCH/ojp-demo-app-src/issues/46)
 
 13.November 2022
 - Fix monomodal cycle/walk requests - [#PR 73](https://github.com/openTdataCH/ojp-demo-app-src/pull/73), [Correct Request for cycling path #64](https://github.com/openTdataCH/ojp-demo-app-src/issues/64)
