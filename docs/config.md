@@ -30,11 +30,6 @@
 - customize endpoints, authorization keys used
 - config of the map layers
 
-`map-colors.ts`
-
-- path: [./src/app/shared/ojp-sdk/config/map-colors.ts](./../src/app/shared/ojp-sdk/config/map-colors.ts)
-- customize the colors used for rendering the result leg colors and map polyline colors
-
 Example for map layers config
 
 ```
