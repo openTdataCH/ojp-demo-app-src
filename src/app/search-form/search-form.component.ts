@@ -311,4 +311,8 @@ export class SearchFormComponent implements OnInit {
     this.userTripService.updateParamsFromTrip(firstTrip)
     this.updateLocationTexts()
   }
+
+  public swapEndpoints() {
+    this.userTripService.switchEndpoints();
+  }
 }

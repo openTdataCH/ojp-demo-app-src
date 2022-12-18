@@ -248,6 +248,16 @@ export class UserTripService {
     });
   }
 
+  public switchEndpoints() {
+    const locationAux = Object.assign({}, this.fromTripLocation);
+    this.fromTripLocation = Object.assign({}, this.toTripLocation);
+    this.toTripLocation = Object.assign({}, locationAux);
+
+    this.updatePermalinkAddress();
+    this.locationsUpdated.emit();
+    this.geoLocationsUpdated.emit();
+  }
+
   private computeAppStageFromString(appStageS: string): APP_Stage {
     const availableStages: APP_Stage[] = ['INT', 'LA Beta', 'PROD', 'TEST'];
 
