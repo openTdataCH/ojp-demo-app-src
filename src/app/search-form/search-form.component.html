@@ -3,24 +3,42 @@
     <sbb-accordion>
       <sbb-expansion-panel [expanded]="true">
         <sbb-expansion-panel-header>Search</sbb-expansion-panel-header>
-          <journey-point-input
-            (selectedLocation)="onLocationSelected($event, 'From')"
-            [endpointType]="'From'"
-            [inputValue]="fromLocationText"
-            [placeholder]="'From'">
-          </journey-point-input>
+          <div class="d-flex">
+            <div class="flex-grow-1 journey-endpoint">
+              <journey-point-input
+                (selectedLocation)="onLocationSelected($event, 'From')"
+                [endpointType]="'From'"
+                [inputValue]="fromLocationText"
+                [placeholder]="'From'">
+              </journey-point-input>
+            </div>
+          </div>
 
           <trip-mode-type
             *ngFor="let modeType of this.userTripService.journeyTripsPlaceholder; index as idx"
             [tripModeTypeIdx]="idx">
           </trip-mode-type>
 
-          <journey-point-input
-            (selectedLocation)="onLocationSelected($event, 'To')"
-            [endpointType]="'To'"
-            [inputValue]="toLocationText"
-            [placeholder]="'To'">
-          </journey-point-input>
+          <div class="d-flex align-items-center">
+            <div class="flex-grow-1 journey-endpoint">
+              <journey-point-input
+                (selectedLocation)="onLocationSelected($event, 'To')"
+                [endpointType]="'To'"
+                [inputValue]="toLocationText"
+                [placeholder]="'To'">
+              </journey-point-input>
+            </div>
+
+            <div class="swap-endpoints">
+              <button sbb-secondary-button
+                data-bs-toggle="collapse" 
+                (click)="swapEndpoints()"
+                aria-expanded="false">
+                  <sbb-icon svgIcon="kom:arrow-change-horizontal-medium"></sbb-icon>
+              </button>
+            </div>
+          </div>
+          
 
           <div class="d-flex">
             <div>
@@ -59,7 +77,7 @@
               </sbb-radio-group>
             </div>
           </div>
-          
+
           <div class="d-flex">
             <div style="margin-right: 4px;">
               <button
@@ -80,7 +98,7 @@
             <div class="ms-auto">
                 <button 
                 class="btn btn-secondary" 
-                (click)="this.loadInputTripXMLPopover()"
+                (click)="loadInputTripXMLPopover()"
                 type="button">
                 Debug XML
               </button>
