@@ -7,6 +7,8 @@ OJP-Demo URL: https://opentdatach.github.io/ojp-demo-app/
 18.December 2022
 - Use new API stage - [#PR 78](https://github.com/openTdataCH/ojp-demo-app-src/pull/78), [Demo-App add INT as system to select #72](https://github.com/openTdataCH/ojp-demo-app-src/issues/72)
 - Adds debug XML for station board - [#PR 79](https://github.com/openTdataCH/ojp-demo-app-src/pull/79), [Stationboard could use some extensions #67](https://github.com/openTdataCH/ojp-demo-app-src/issues/67)
+- Adds switch for search endpoints - [#PR 80](https://github.com/openTdataCH/ojp-demo-app-src/pull/79), [Switch Origin<>Destination #48](https://github.com/openTdataCH/ojp-demo-app-src/issues/48)
+
 
 27.November 2022
 - Use OJP SDK - [#PR 75](https://github.com/openTdataCH/ojp-demo-app-src/pull/75), [Create OJP SDK package #46](https://github.com/openTdataCH/ojp-demo-app-src/issues/46)
