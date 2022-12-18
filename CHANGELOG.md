@@ -4,6 +4,9 @@ OJP-Demo URL: https://opentdatach.github.io/ojp-demo-app/
 
 ----
 
+18.December 2022
+- Use new API stage - [#PR 78](https://github.com/openTdataCH/ojp-demo-app-src/pull/78), [Demo-App add INT as system to select #72](https://github.com/openTdataCH/ojp-demo-app-src/issues/72)
+
 27.November 2022
 - Use OJP SDK - [#PR 75](https://github.com/openTdataCH/ojp-demo-app-src/pull/75), [Create OJP SDK package #46](https://github.com/openTdataCH/ojp-demo-app-src/issues/46)
 - Harmonize Mobility Text - [#PR 76](https://github.com/openTdataCH/ojp-demo-app-src/pull/76), [Wrong text for mobility description #71](https://github.com/openTdataCH/ojp-demo-app-src/issues/71)

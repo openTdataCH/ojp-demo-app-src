@@ -7,6 +7,7 @@ import { UserTripService } from 'src/app/shared/services/user-trip.service';
 import { MapService } from 'src/app/shared/services/map.service';
 import { StationBoardData, StationBoardService } from '../station-board.service';
 import { StationBoardInputComponent } from '../input/station-board-input.component';
+import { APP_Stage } from 'src/app/config/app-config';
 
 @Component({
   selector: 'station-board-search',
@@ -16,7 +17,7 @@ export class StationBoardSearchComponent implements OnInit {
   @ViewChild(SbbExpansionPanel, { static: true }) searchPanel: SbbExpansionPanel | undefined;
   @ViewChild(StationBoardInputComponent) autocompleteInputComponent: StationBoardInputComponent | undefined;
 
-  public appStage: OJP.APP_Stage;
+  public appStage: APP_Stage;
   public stationBoardType: OJP.StationBoardType;
 
   public searchLocation: OJP.Location | null
@@ -24,7 +25,7 @@ export class StationBoardSearchComponent implements OnInit {
   public searchDate: Date
   public searchTime: string
   
-  public appStageOptions: OJP.APP_Stage[];
+  public appStageOptions: APP_Stage[];
   public stationBoardTypes: OJP.StationBoardType[]
   public isSearching: boolean
 
@@ -35,7 +36,7 @@ export class StationBoardSearchComponent implements OnInit {
   constructor(public userTripService: UserTripService, private mapService: MapService, private stationBoardService: StationBoardService) {
     this.queryParams = new URLSearchParams(document.location.search);
 
-    this.appStageOptions = ['PROD', 'TEST', 'TEST LA']
+    this.appStageOptions = ['PROD', 'INT', 'TEST', 'LA Beta'];
     this.stationBoardTypes = ['Departures', 'Arrivals']
 
     this.appStage = this.appStageOptions[0];

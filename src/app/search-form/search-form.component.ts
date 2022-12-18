@@ -10,6 +10,7 @@ import { SbbNotificationToast } from '@sbb-esta/angular/notification-toast';
 import { SbbRadioChange } from '@sbb-esta/angular/radio-button';
 
 import * as OJP from 'ojp-sdk'
+import { APP_Stage } from '../config/app-config';
 
 @Component({
   selector: 'app-search-form',
@@ -22,7 +23,7 @@ export class SearchFormComponent implements OnInit {
   public fromLocationText: string
   public toLocationText: string
 
-  public appStageOptions: OJP.APP_Stage[] = []
+  public appStageOptions: APP_Stage[] = []
 
   public isSearching: boolean
 
@@ -50,7 +51,7 @@ export class SearchFormComponent implements OnInit {
     this.fromLocationText = ''
     this.toLocationText = ''
 
-    this.appStageOptions = ['PROD', 'TEST', 'TEST LA']
+    this.appStageOptions = ['PROD', 'INT', 'TEST', 'LA Beta']
 
     this.isSearching = false
 
@@ -166,7 +167,7 @@ export class SearchFormComponent implements OnInit {
   }
 
   onChangeStageAPI(ev: SbbRadioChange) {
-    const newAppStage = ev.value as OJP.APP_Stage
+    const newAppStage = ev.value as APP_Stage
     this.userTripService.updateAppStage(newAppStage)
 
     this.userTripService.refetchEndpointsByName();
