@@ -1,5 +1,7 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
+
 import { SbbExpansionPanel } from '@sbb-esta/angular/accordion';
+import { SbbDialog } from '@sbb-esta/angular/dialog';
 
 import * as OJP from 'ojp-sdk'
 
@@ -8,10 +10,12 @@ import { MapService } from 'src/app/shared/services/map.service';
 import { StationBoardData, StationBoardService } from '../station-board.service';
 import { StationBoardInputComponent } from '../input/station-board-input.component';
 import { APP_Stage } from 'src/app/config/app-config';
+import { DebugXmlPopoverComponent } from 'src/app/search-form/debug-xml-popover/debug-xml-popover.component';
 
 @Component({
   selector: 'station-board-search',
   templateUrl: './station-board-search.component.html',
+  styleUrls: ['./station-board-search.component.scss']
 })
 export class StationBoardSearchComponent implements OnInit {
   @ViewChild(SbbExpansionPanel, { static: true }) searchPanel: SbbExpansionPanel | undefined;
@@ -33,7 +37,14 @@ export class StationBoardSearchComponent implements OnInit {
 
   public permalinkURLAddress: string
 
-  constructor(public userTripService: UserTripService, private mapService: MapService, private stationBoardService: StationBoardService) {
+  public requestData: OJP.RequestData | null;
+
+  constructor(
+    private debugXmlPopover: SbbDialog, 
+    private mapService: MapService, 
+    private stationBoardService: StationBoardService,
+    public userTripService: UserTripService,
+  ) {
     this.queryParams = new URLSearchParams(document.location.search);
 
     this.appStageOptions = ['PROD', 'INT', 'TEST', 'LA Beta'];
@@ -52,6 +63,8 @@ export class StationBoardSearchComponent implements OnInit {
 
     this.permalinkURLAddress = '';
     this.updatePermalinkURLAddress();
+
+    this.requestData = null;
   }
 
   ngOnInit(): void {
@@ -189,6 +202,7 @@ export class StationBoardSearchComponent implements OnInit {
     const appStageConfig = this.userTripService.getStageConfig(this.appStage);
     const stopEventRequest = OJP.StopEventRequest.initWithStopPlaceRef(appStageConfig, stopPlaceRef, stopEventType, stopEventDate);
     stopEventRequest.fetchResponse().then(stopEvents => {
+      this.requestData = stopEventRequest.lastRequestData;
       this.parseStopEvents(stopEvents);
     });
   }
@@ -265,5 +279,15 @@ export class StationBoardSearchComponent implements OnInit {
     }
 
     return departureDate
+  }
+
+  public showRequestXmlPopover() {
+    const dialogRef = this.debugXmlPopover.open(DebugXmlPopoverComponent, {
+      position: { top: '10px' },
+    });
+    dialogRef.afterOpened().subscribe(() => {
+      const popover = dialogRef.componentInstance as DebugXmlPopoverComponent
+      popover.updateRequestData(this.requestData);
+    });
   }
 }
