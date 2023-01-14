@@ -159,14 +159,16 @@ export class UserTripService {
       this.geoLocationsUpdated.emit();
       this.updatePermalinkAddress();
 
-      const shouldZoomToBounds = this.queryParams.has('from') || this.queryParams.has('to')
-      if (shouldZoomToBounds && !this.mapService.initialMapCenter) {
-        const mapData = {
-          bounds: bbox.asLngLatBounds()
+      if (bbox.isValid()) {
+        const shouldZoomToBounds = this.queryParams.has('from') || this.queryParams.has('to')
+        if (shouldZoomToBounds && !this.mapService.initialMapCenter) {
+          const mapData = {
+            bounds: bbox.asLngLatBounds()
+          }
+          this.mapService.newMapBoundsRequested.emit(mapData);
         }
-        this.mapService.newMapBoundsRequested.emit(mapData);
       }
-
+      
       this.defaultsInited.emit();
     });
   }
