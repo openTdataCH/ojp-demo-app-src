@@ -57,6 +57,11 @@ export class UserTripService {
   }
 
   public initDefaults() {
+    let appStageS = this.queryParams.get('stage')
+    if (appStageS) {
+      this.currentAppStage = this.computeAppStageFromString(appStageS)
+    }
+
     const defaultLocationsPlaceRef = {
       "Bern": "8507000",
       "Geneva": "8501008",
@@ -128,11 +133,6 @@ export class UserTripService {
       });
     } else {
       this.tripTransportModes = ['public_transport'];
-    }
-
-    let appStageS = this.queryParams.get('stage')
-    if (appStageS) {
-      this.currentAppStage = this.computeAppStageFromString(appStageS)
     }
 
     Promise.all(promises).then(locationsData => {
