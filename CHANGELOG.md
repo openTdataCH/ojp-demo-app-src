@@ -5,7 +5,7 @@ OJP-Demo URL: https://opentdatach.github.io/ojp-demo-app/
 ----
 
 14.January 2023
-- fix to use the stage from query string - [#PR 77](https://github.com/openTdataCH/ojp-demo-app-src/pull/77)
+- fix to use the stage from query string - [#PR 84](https://github.com/openTdataCH/ojp-demo-app-src/pull/84)
 
 18.December 2022
 - Use new API stage - [#PR 78](https://github.com/openTdataCH/ojp-demo-app-src/pull/78), [Demo-App add INT as system to select #72](https://github.com/openTdataCH/ojp-demo-app-src/issues/72)
