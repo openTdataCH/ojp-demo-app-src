@@ -159,14 +159,16 @@ export class UserTripService {
       this.geoLocationsUpdated.emit();
       this.updatePermalinkAddress();
 
-      const shouldZoomToBounds = this.queryParams.has('from') || this.queryParams.has('to')
-      if (shouldZoomToBounds && !this.mapService.initialMapCenter) {
-        const mapData = {
-          bounds: bbox.asLngLatBounds()
+      if (bbox.isValid()) {
+        const shouldZoomToBounds = this.queryParams.has('from') || this.queryParams.has('to')
+        if (shouldZoomToBounds && !this.mapService.initialMapCenter) {
+          const mapData = {
+            bounds: bbox.asLngLatBounds()
+          }
+          this.mapService.newMapBoundsRequested.emit(mapData);
         }
-        this.mapService.newMapBoundsRequested.emit(mapData);
       }
-
+      
       this.defaultsInited.emit();
     });
   }
@@ -260,10 +262,14 @@ export class UserTripService {
 
   private computeAppStageFromString(appStageS: string): APP_Stage {
     const availableStages: APP_Stage[] = ['INT', 'LA Beta', 'PROD', 'TEST'];
+    const availableStagesLower: string[] = availableStages.map(stage => {
+      return stage.toLowerCase();
+    });
 
     const appStage = appStageS.trim() as APP_Stage;
-    if (availableStages.indexOf(appStage) !== -1) {
-      return appStage;
+    const stageIDX = availableStagesLower.indexOf(appStage.toLowerCase());
+    if (stageIDX !== -1) {
+      return availableStages[stageIDX];
     }
 
     return 'PROD';
