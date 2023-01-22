@@ -110,13 +110,7 @@ export class SearchFormComponent implements OnInit {
         return
       }
 
-      let locationText: string = ''
-      const stopPlaceName = location.stopPlace?.stopPlaceName ?? null
-      if (stopPlaceName) {
-        locationText = stopPlaceName
-      } else {
-        locationText = location.geoPosition?.asLatLngString() ?? ''
-      }
+      let locationText = location.computeLocationName() ?? '';
 
       if (endpointType === 'From') {
         this.fromLocationText = locationText

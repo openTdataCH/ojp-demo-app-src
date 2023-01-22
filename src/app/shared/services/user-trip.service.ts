@@ -77,11 +77,24 @@ export class UserTripService {
 
     const promises: Promise<OJP.Location[]>[] = [];
 
+    const stageConfig = this.getStageConfig();
+
     const endpointTypes: OJP.JourneyPointType[] = ['From', 'To']
     endpointTypes.forEach(endpointType => {
       const isFrom = endpointType === 'From'
 
-      const stopPlaceRef = isFrom ? fromPlaceRef : toPlaceRef
+      let stopPlaceRef = isFrom ? fromPlaceRef : toPlaceRef
+      
+      // LA Beta hack, strip everything before |
+      if (this.currentAppStage === 'LA Beta') {
+        const stopPlaceRefMatches = stopPlaceRef.match(/^[^\|]+?\|(.+?)$/);
+        if (stopPlaceRefMatches) {
+          stopPlaceRef = stopPlaceRefMatches[1];
+        } else {
+          console.error('ERROR LA Beta - CANT match stopPlaceRef');
+        }
+      }
+
       const coordsLocation = OJP.Location.initFromLiteralCoords(stopPlaceRef);
       if (coordsLocation) {
         const coordsPromise = new Promise<OJP.Location[]>((resolve, reject) => {
@@ -89,7 +102,6 @@ export class UserTripService {
         });
         promises.push(coordsPromise);
       } else {
-        const stageConfig = this.getStageConfig();
         const locationInformationRequest = OJP.LocationInformationRequest.initWithStopPlaceRef(stageConfig, stopPlaceRef)
         const locationInformationPromise = locationInformationRequest.fetchResponse();
         promises.push(locationInformationPromise)
@@ -186,12 +198,6 @@ export class UserTripService {
       this.fromTripLocation?.location
       const tripLocation = isFrom ? this.fromTripLocation : this.toTripLocation;
       if (tripLocation === null) {
-        promises.push(emptyPromise);
-        return;
-      }
-
-      const locationName = tripLocation.location.computeLocationName();
-      if (locationName === null) {
         promises.push(emptyPromise);
         return;
       }

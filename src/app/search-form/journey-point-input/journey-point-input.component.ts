@@ -59,6 +59,9 @@ export class JourneyPointInputComponent implements OnInit, OnChanges {
   ngOnChanges(changes: SimpleChanges) {
     if ('inputValue' in changes) {
       const newInputValue = changes['inputValue'].currentValue;
+      if (newInputValue === '') {
+        return;
+      }  
       this.inputControl.setValue(newInputValue, { emitEvent: false });
     }
   }
