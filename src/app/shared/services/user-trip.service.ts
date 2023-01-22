@@ -190,12 +190,6 @@ export class UserTripService {
         return;
       }
 
-      const locationName = tripLocation.location.computeLocationName();
-      if (locationName === null) {
-        promises.push(emptyPromise);
-        return;
-      }
-
       const geoPosition = tripLocation.location.geoPosition;
       if (geoPosition === null) {
         promises.push(emptyPromise);
