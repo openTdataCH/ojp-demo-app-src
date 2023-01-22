@@ -4,6 +4,10 @@ OJP-Demo URL: https://opentdatach.github.io/ojp-demo-app/
 
 ----
 
+22.January 2023
+- adds fix for LA Beta stage to handle StopPlaceRefs from query string
+- adds support for TopographicPlace in OJP.Location - see OJP SDK [#7](https://github.com/openTdataCH/ojp-js/pull/7)
+
 14.January 2023
 - fix to use the stage from query string - [#PR 84](https://github.com/openTdataCH/ojp-demo-app-src/pull/84)
 
