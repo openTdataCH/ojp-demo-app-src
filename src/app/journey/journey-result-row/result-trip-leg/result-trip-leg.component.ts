@@ -10,21 +10,26 @@ interface LegLocationData {
   delayText: string | null,
 }
 
+type LegTemplate = 'walk' | 'timed' | 'taxi';
+
 interface LegInfoDataModel {
   legColor: string,
   legIconPath: string,
   leadingText: string,
   
   hasGuidance: boolean,
-  guidanceTextLines: string[],
+  guidanceTextLines: string[]
+  bookingArrangements: OJP.BookingArrangement[]
   
   isWalking: boolean,
-  walkingDurationText: string,
-  walkingDistanceText: string,
+  durationText: string,
+  distanceText: string,
   
   isTimed: boolean,
   fromLocationData: LegLocationData,
   toLocationData: LegLocationData,
+
+  legTemplate: LegTemplate
 }
 
 @Component({
@@ -105,7 +110,11 @@ export class ResultTripLegComponent implements OnInit {
       return 'Ride';
     }
 
-    return 'Walk (DEFAULT)';
+    if (continuousLeg.isTaxi()) {
+      return 'Taxi';
+    }
+
+    return 'PLACEHOLDER - NEW MOT?';
   }
 
   computeLegPillClassName(): string {
@@ -217,14 +226,40 @@ export class ResultTripLegComponent implements OnInit {
       isWalking = continousLeg.isWalking()
 
       if (isWalking) {
-        this.legInfoDataModel.walkingDistanceText = continousLeg.formatDistance()
+        this.legInfoDataModel.distanceText = continousLeg.formatDistance()
       }
     }
-    this.legInfoDataModel.isWalking = isWalking
+    this.legInfoDataModel.isWalking = isWalking;
 
-    if (isWalking) {
-      this.legInfoDataModel.walkingDurationText = leg.legDuration?.formatDuration() ?? ''
-    }
+    this.legInfoDataModel.legTemplate = (() => {
+      const degaultLegTemplate: LegTemplate = 'timed';
+      if (isWalking) {
+        return 'walk';
+      }
+      if (isContinous) {
+        const continousLeg = leg as OJP.TripContinousLeg;
+        if (continousLeg.isTaxi()) {
+          return 'taxi';
+        }
+      }
+      
+      return degaultLegTemplate;
+    })();
+
+    this.legInfoDataModel.bookingArrangements = (() => {
+      if (!isContinous) {
+        return [];
+      }
+
+      const continousLeg = leg as OJP.TripContinousLeg;
+      if (continousLeg.serviceBooking === null) {
+        return [];
+      }
+
+      return continousLeg.serviceBooking.bookingArrangements;
+    })();
+
+    this.legInfoDataModel.durationText = leg.legDuration?.formatDuration() ?? ''
 
     this.legInfoDataModel.hasGuidance = this.legInfoDataModel.guidanceTextLines.length > 0
 
@@ -254,6 +289,10 @@ export class ResultTripLegComponent implements OnInit {
 
       if (continousLeg.isSharedMobility()) {
         return 'velo-scooter-sharing'
+      }
+
+      if (continousLeg.isTaxi()) {
+        return 'taxi';
       }
 
       return 'picto-walk'
