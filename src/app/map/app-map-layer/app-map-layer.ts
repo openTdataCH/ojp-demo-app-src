@@ -175,24 +175,37 @@ export class AppMapLayer {
             clickLayerIDs = layersDataConfig.layer_ids ?? [this.layerKey];
         }
 
-        const nearbyFeature = MapHelpers.queryNearbyFeatureByLayerIDs(this.map, ev.lngLat, clickLayerIDs);
-        if (nearbyFeature) {
-            const location = OJP.Location.initWithFeature(nearbyFeature.feature);
-            if (location) {
-                this.showPickupPopup(location);
-            }
-      
-            return true
+        const nearbyFeatures = MapHelpers.queryNearbyFeatureByLayerIDs(this.map, ev.lngLat, clickLayerIDs);
+        if (nearbyFeatures.length === 0) {
+            return false;
         }
 
-        return false;
+        const locations: OJP.Location[] = [];
+        nearbyFeatures.forEach(nearbyFeature => {
+            const location = OJP.Location.initWithFeature(nearbyFeature.feature);
+            if (location) {
+                locations.push(location);
+            }
+        });
+
+        if (locations.length === 0) {
+            return false;
+        }
+
+        this.showPopup(locations);
+        return true;
     }
 
-    private showPickupPopup(location: OJP.Location) {
+    private showPopup(locations: OJP.Location[]) {
+        if (locations.length === 0) {
+            return;
+        }
+
+        const location = locations[0];
         const locationLngLat = location.geoPosition?.asLngLat() ?? null;
         if (locationLngLat === null) { return }
     
-        const popupHTML = this.computePopupHTML(location);
+        const popupHTML = this.computePopupHTML(locations);
         if (popupHTML === null) {
             return;
         }
@@ -222,9 +235,15 @@ export class AppMapLayer {
             .addTo(this.map);
     }
 
-    private computePopupHTML(location: OJP.Location): string | null {
+    private computePopupHTML(locations: OJP.Location[]): string | null {
+        if (locations.length === 0) {
+            return null;
+        }
+
+        const firstLocation = locations[0];
+
         if (this.geoRestrictionType === 'poi_all') {
-            const poiPopupHTML = this.computePOIPopupHTML(location);
+            const poiPopupHTML = this.computePOIPopupHTML(firstLocation);
             if (poiPopupHTML) {
                 return poiPopupHTML;
             }
@@ -238,7 +257,7 @@ export class AppMapLayer {
         let popupHTML = popupWrapperDIV.innerHTML;
         popupHTML = popupHTML.replace('[GEO_RESTRICTION_TYPE]', this.geoRestrictionType);
     
-        const featureProperties = location.geoPosition?.properties ?? location.asGeoJSONFeature()?.properties ?? null
+        const featureProperties = firstLocation.geoPosition?.properties ?? firstLocation.asGeoJSONFeature()?.properties ?? null
         if (featureProperties == null) {
             popupHTML = popupHTML.replace('[GEOJSON_PROPERTIES_TABLE]', 'ERROR: cant read GeoJSON properties');
             return popupHTML;
