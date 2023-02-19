@@ -4,6 +4,9 @@ OJP-Demo URL: https://opentdatach.github.io/ojp-demo-app/
 
 ----
 
+19.February 2023
+- display relevant info for charging stations - [#PR 89](https://github.com/openTdataCH/ojp-demo-app-src/pull/89), [Showing multiple Charging Points of One Charging Station #68](https://github.com/openTdataCH/ojp-demo-app-src/issues/68)
+
 22.January 2023
 - adds fix for LA Beta stage to handle StopPlaceRefs from query string
 - adds support for TopographicPlace in OJP.Location - see OJP SDK [#7](https://github.com/openTdataCH/ojp-js/pull/7)
