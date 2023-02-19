@@ -6,6 +6,7 @@ OJP-Demo URL: https://opentdatach.github.io/ojp-demo-app/
 
 19.February 2023
 - display relevant info for charging stations - [PR #89](https://github.com/openTdataCH/ojp-demo-app-src/pull/89), [Showing multiple Charging Points of One Charging Station #68](https://github.com/openTdataCH/ojp-demo-app-src/issues/68)
+- display taxi and booking arrangements - [OJP demo app extension #87](https://github.com/openTdataCH/ojp-demo-app-src/issues/87)
 - extends the SDK for more OnDemand bus modes - [OJP SDK - PR #10](https://github.com/openTdataCH/ojp-js/pull/10)
 
 22.January 2023
