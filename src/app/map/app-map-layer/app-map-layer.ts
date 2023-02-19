@@ -175,7 +175,7 @@ export class AppMapLayer {
             clickLayerIDs = layersDataConfig.layer_ids ?? [this.layerKey];
         }
 
-        const nearbyFeatures = MapHelpers.queryNearbyFeatureByLayerIDs(this.map, ev.lngLat, clickLayerIDs);
+        const nearbyFeatures = MapHelpers.queryNearbyFeaturesByLayerIDs(this.map, ev.lngLat, clickLayerIDs);
         if (nearbyFeatures.length === 0) {
             return false;
         }

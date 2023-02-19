@@ -62,28 +62,34 @@ export class MapHelpers {
     return true
   }
 
-  public static queryNearbyFeatureByLayerIDs(map: mapboxgl.Map, lngLat: mapboxgl.LngLat, layerIDs: string[]): NearbyFeature | null {
+  public static queryNearbyFeaturesByLayerIDs(map: mapboxgl.Map, lngLat: mapboxgl.LngLat, layerIDs: string[]): NearbyFeature[] {
     const bboxPx = MapHelpers.bboxPxFromLngLatWidthPx(map, lngLat, 30);
     const features = map.queryRenderedFeatures(bboxPx, {
       layers: layerIDs
     });
 
-    let closestFeature: NearbyFeature | null = null
+    let nearbyFeatures: NearbyFeature[] = [];
+    let minDistance: number | null = null;
     features.forEach(feature => {
       const featureLngLat = MapHelpers.computePointLngLatFromFeature(feature);
       if (featureLngLat === null) {
         return;
       }
 
-      const featureDistance = lngLat.distanceTo(featureLngLat);
-      if ((closestFeature === null) || (featureDistance < closestFeature.distance)) {
-        closestFeature = {
-          feature: feature,
-          distance: featureDistance
-        }
+      const featureDistance = Math.round(lngLat.distanceTo(featureLngLat));
+      if ((minDistance !== null) && (featureDistance > minDistance)) {
+        return;
       }
+
+      minDistance = featureDistance;
+
+      const nearbyFeature: NearbyFeature = {
+        feature: feature,
+        distance: featureDistance
+      };
+      nearbyFeatures.push(nearbyFeature);
     });
 
-    return closestFeature;
-}
+    return nearbyFeatures;
+  }
 }

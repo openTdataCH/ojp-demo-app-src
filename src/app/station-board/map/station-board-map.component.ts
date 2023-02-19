@@ -132,9 +132,10 @@ export class StationBoardMapComponent implements OnInit {
     });
 
     map.on('click', ev => {
-      const nearbyFeature = MapHelpers.queryNearbyFeatureByLayerIDs(map, ev.lngLat, ['stops-circle', 'stops-label']);
-      if (nearbyFeature?.feature) {
-        this.stationBoardService.stationOnMapClicked.emit(nearbyFeature?.feature);
+      const nearbyFeatures = MapHelpers.queryNearbyFeaturesByLayerIDs(map, ev.lngLat, ['stops-circle', 'stops-label']);
+      if (nearbyFeatures.length > 0) {
+        const nearbyFeature = nearbyFeatures[0];
+        this.stationBoardService.stationOnMapClicked.emit(nearbyFeature.feature);
       }
     });
   }
