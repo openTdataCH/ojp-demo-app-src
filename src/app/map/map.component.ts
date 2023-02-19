@@ -85,7 +85,7 @@ export class MapComponent implements OnInit {
 
     this.mapService.newMapBoundsRequested.subscribe(mapData => {
       this.mapLoadingPromise?.then(map => {
-        const newBounds = mapData.bounds
+        const newBounds = mapData.bounds;
         const padding = mapData.padding ?? 100
         const onlyIfOutside = mapData.onlyIfOutside ?? false
 
@@ -96,7 +96,17 @@ export class MapComponent implements OnInit {
           }
         }
 
-        map.fitBounds(newBounds, {
+        // TODO - check wht Mapbox is complaining
+        // map.fitBounds(newBounds, {
+        //   padding: padding,
+        //   duration: 0
+        // })
+
+        // without this hack we get
+        // ERROR Error: Uncaught (in promise): Error: `LngLatLike` argument must be specified as a LngLat instance, an object {lng: <lng>, lat: <lat>}, an object {lon: <lng>, lat: <lat>}, or an array of [<lng>, <lat>]
+        // Error: `LngLatLike` argument must be specified as a LngLat instance, an object {lng: <lng>, lat: <lat>}, an object {lon: <lng>, lat: <lat>}, or an array of [<lng>, <lat>]
+        const fixedBounds: mapboxgl.LngLatBoundsLike = [newBounds.getWest(), newBounds.getSouth(), newBounds.getEast(), newBounds.getNorth()];
+        map.fitBounds(fixedBounds, {
           padding: padding,
           duration: 0
         })
