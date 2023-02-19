@@ -249,6 +249,15 @@ export class AppMapLayer {
             }
         }
 
+        const chargingStationType: OJP.GeoRestrictionPoiOSMTag = 'charging_station';
+        const isChargingStation = ((this.geoRestrictionType === 'poi_amenity') && this.geoRestrictionPoiOSMTags?.indexOf(chargingStationType) !== -1);
+        if (isChargingStation) {
+            const chargingStationHTML = this.computeChargingStationPopupHTML(locations);
+            if (chargingStationHTML) {
+                return chargingStationHTML;
+            }
+        }
+
         const popupWrapperDIV = document.getElementById('map-endpoint-picker-popup') as HTMLElement;
         if (popupWrapperDIV === null) {
             return null;
