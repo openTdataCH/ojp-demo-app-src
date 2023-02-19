@@ -69,8 +69,7 @@ export class SearchFormComponent implements OnInit {
     this.userTripService.initDefaults();
 
     this.userTripService.locationsUpdated.subscribe(nothing => {
-      this.updateLocationTexts()
-      this.expandSearchPanel()
+      this.updateLocationTexts();
     })
 
     this.userTripService.tripsUpdated.subscribe(trips => {
