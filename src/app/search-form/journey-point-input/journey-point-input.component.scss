@@ -1,5 +1,16 @@
 .endpoint-label {
   font-size: 12px;
+  display: flex;
+  flex-direction: row;
+  svg {
+    margin: auto 3px;
+  }
+  sbb-tooltip {
+    --sbb-icon-size-default: 16px;
+    margin: auto 3px auto auto;
+    height: var(--sbb-icon-size-default);
+    width: var(--sbb-icon-size-default);
+  }
 }
 
 .endpoint-label:hover {

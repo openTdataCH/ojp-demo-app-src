@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import {Component, OnInit, ViewChild} from '@angular/core';
 
 import { UserTripService } from '../shared/services/user-trip.service'
 import { MapService } from '../shared/services/map.service';
@@ -10,7 +10,7 @@ import { SbbNotificationToast } from '@sbb-esta/angular/notification-toast';
 import { SbbRadioChange } from '@sbb-esta/angular/radio-button';
 
 import * as OJP from 'ojp-sdk'
-import { APP_Stage } from '../config/app-config';
+import {APP_CONFIG, APP_Stage} from '../config/app-config';
 
 @Component({
   selector: 'app-search-form',
@@ -19,6 +19,7 @@ import { APP_Stage } from '../config/app-config';
 })
 export class SearchFormComponent implements OnInit {
   @ViewChild(SbbExpansionPanel, { static: true }) searchPanel: SbbExpansionPanel | undefined;
+  public systemsNotAvailable: String[] = []
 
   public fromLocationText: string
   public toLocationText: string
@@ -51,7 +52,7 @@ export class SearchFormComponent implements OnInit {
     this.fromLocationText = ''
     this.toLocationText = ''
 
-    this.appStageOptions = ['PROD', 'INT', 'TEST', 'LA Beta']
+    this.appStageOptions = ['PROD', 'INT', 'TEST', 'LA Beta', 'GR TEST']
 
     this.isSearching = false
 
@@ -66,6 +67,7 @@ export class SearchFormComponent implements OnInit {
   }
 
   ngOnInit() {
+    this.systemsHealthCheck()
     this.userTripService.initDefaults();
 
     this.userTripService.locationsUpdated.subscribe(nothing => {
@@ -124,7 +126,7 @@ export class SearchFormComponent implements OnInit {
     let mockBaseFolder = 'assets/mocks/ojp-trips-response/';
 
     let mockURL = 'n/a';
-    
+
     mockURL = mockBaseFolder + 'on-demand-response.xml';
 
     const responsePromise = fetch(mockURL);
@@ -165,6 +167,7 @@ export class SearchFormComponent implements OnInit {
     this.userTripService.updateAppStage(newAppStage)
 
     this.userTripService.refetchEndpointsByName();
+    this.systemsHealthCheck()
   }
 
   onChangeDateTime() {
@@ -173,7 +176,7 @@ export class SearchFormComponent implements OnInit {
 
   private computeFormDepartureDate(): Date {
     const departureDate = this.searchDate;
-    
+
     const timeParts = this.searchTime.split(':');
     if (timeParts.length === 2) {
       const timeHours = parseInt(timeParts[0]);
@@ -290,7 +293,7 @@ export class SearchFormComponent implements OnInit {
 
     this.isSearching = false
     this.userTripService.lastJourneyResponse = null
-    this.userTripService.updateTrips(tripResponse.trips) 
+    this.userTripService.updateTrips(tripResponse.trips)
 
     this.collapseSearchPanel()
     this.updateSearchForm(tripResponse)
@@ -308,5 +311,19 @@ export class SearchFormComponent implements OnInit {
 
   public swapEndpoints() {
     this.userTripService.switchEndpoints();
+  }
+
+  private systemsHealthCheck() {
+    let stageConfig = this.userTripService.getStageConfig()
+    if (stageConfig.key !== ('GR TEST' as APP_Stage)) return
+    fetch(stageConfig.apiEndpoint + '/health', {
+      method: 'GET',
+      headers: {
+        Accept: 'application/json',
+        Bearer: stageConfig.authBearerKey
+      },
+    }).then(async response => {
+      this.systemsNotAvailable = (await response.json()).unavailableSystems as String[]
+    });
   }
 }

@@ -9,7 +9,8 @@
                 (selectedLocation)="onLocationSelected($event, 'From')"
                 [endpointType]="'From'"
                 [inputValue]="fromLocationText"
-                [placeholder]="'From'">
+                [placeholder]="'From'"
+                [systemsNotAvailable]="systemsNotAvailable">
               </journey-point-input>
             </div>
           </div>
@@ -25,27 +26,28 @@
                 (selectedLocation)="onLocationSelected($event, 'To')"
                 [endpointType]="'To'"
                 [inputValue]="toLocationText"
-                [placeholder]="'To'">
+                [placeholder]="'To'"
+                [systemsNotAvailable]="systemsNotAvailable">
               </journey-point-input>
             </div>
 
             <div class="swap-endpoints">
               <button sbb-secondary-button
-                data-bs-toggle="collapse" 
+                data-bs-toggle="collapse"
                 (click)="swapEndpoints()"
                 aria-expanded="false">
                   <sbb-icon svgIcon="kom:arrow-change-horizontal-medium"></sbb-icon>
               </button>
             </div>
           </div>
-          
+
 
           <div class="d-flex">
             <div>
               <sbb-form-field label="Choose Day">
                 <sbb-datepicker arrows>
-                  <input 
-                    sbbInput  
+                  <input
+                    sbbInput
                     sbbDateInput
                     [(ngModel)]="this.searchDate"
                     (dateChange)="onChangeDateTime()" />
@@ -54,7 +56,7 @@
             </div>
             <div style="margin-left: 8px;">
               <sbb-form-field label="Time">
-                <input 
+                <input
                   sbbInput
                   sbbTimeInput
                   [(ngModel)]="this.searchTime"
@@ -62,7 +64,7 @@
               </sbb-form-field>
             </div>
           </div>
-          
+
           <div class="mb-2 d-flex">
             <div>
               <sbb-radio-group class="sbb-radio-group-horizontal">
@@ -96,8 +98,8 @@
             </div>
 
             <div class="ms-auto">
-                <button 
-                class="btn btn-secondary" 
+                <button
+                class="btn btn-secondary"
                 (click)="loadInputTripXMLPopover()"
                 type="button">
                 Debug XML
@@ -105,7 +107,7 @@
             </div>
 
           </div>
-        
+
       </sbb-expansion-panel>
     </sbb-accordion>
   </div>

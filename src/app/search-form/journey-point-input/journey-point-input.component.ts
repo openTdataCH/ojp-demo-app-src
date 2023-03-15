@@ -22,6 +22,7 @@ export class JourneyPointInputComponent implements OnInit, OnChanges {
   @Input() placeholder: string = '';
   @Input() endpointType: OJP.JourneyPointType = 'From';
   @Input() inputValue: string = '';
+  @Input() systemsNotAvailable: String[] = [];
   @Output() selectedLocation = new EventEmitter<OJP.Location>()
 
   constructor(private mapService: MapService, private userTripService: UserTripService) {
@@ -61,8 +62,11 @@ export class JourneyPointInputComponent implements OnInit, OnChanges {
       const newInputValue = changes['inputValue'].currentValue;
       if (newInputValue === '') {
         return;
-      }  
+      }
       this.inputControl.setValue(newInputValue, { emitEvent: false });
+    }
+    if ('systemsNotAvailable' in changes) {
+      this.systemsNotAvailable = changes['systemsNotAvailable'].currentValue;
     }
   }
 
