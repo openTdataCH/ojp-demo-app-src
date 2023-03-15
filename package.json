@@ -24,13 +24,13 @@
     "bootstrap-icons": "1.9.1",
     "mapbox-gl": "^2.3.0",
     "npm": "^9.4.2",
-    "ojp-sdk": "0.9.3",
     "rxjs": "~7.5.0",
     "tslib": "^2.3.0",
     "xmlbuilder": "^15.1.1",
     "xmldom": "git://github.com/xmldom/xmldom#0.7.0",
     "xpath": "0.0.32",
-    "zone.js": "~0.11.4"
+    "zone.js": "~0.11.4",
+    "ojp-sdk": "0.9.5"
   },
   "devDependencies": {
     "@angular-devkit/build-angular": "^14.0.6",

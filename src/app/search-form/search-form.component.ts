@@ -71,8 +71,7 @@ export class SearchFormComponent implements OnInit {
     this.userTripService.initDefaults();
 
     this.userTripService.locationsUpdated.subscribe(nothing => {
-      this.updateLocationTexts()
-      this.expandSearchPanel()
+      this.updateLocationTexts();
     })
 
     this.userTripService.tripsUpdated.subscribe(trips => {
@@ -147,15 +146,18 @@ export class SearchFormComponent implements OnInit {
 
         if (tripsResponse.trips.length > 0) {
           const firstTrip = tripsResponse.trips[0];
-          const bbox = firstTrip.computeBBOX();
-
-          const mapData = {
-            bounds: bbox.asLngLatBounds()
-          }
-          this.mapService.newMapBoundsRequested.emit(mapData);
+          this.zoomToTrip(firstTrip);
         }
       });
     });
+  }
+
+  private zoomToTrip(trip: OJP.Trip) {
+    const bbox = trip.computeBBOX();
+    const mapData = {
+      bounds: bbox.asLngLatBounds()
+    }
+    this.mapService.newMapBoundsRequested.emit(mapData);
   }
 
   onLocationSelected(location: OJP.Location, originType: OJP.JourneyPointType) {
@@ -288,15 +290,19 @@ export class SearchFormComponent implements OnInit {
     });
   }
 
-  private handleCustomTripResponse(tripResponse: OJP.TripsResponse) {
+  private handleCustomTripResponse(tripsResponse: OJP.TripsResponse) {
     this.requestDuration = 'USER XML';
 
     this.isSearching = false
     this.userTripService.lastJourneyResponse = null
-    this.userTripService.updateTrips(tripResponse.trips)
+    this.userTripService.updateTrips(tripsResponse.trips)
 
-    this.collapseSearchPanel()
-    this.updateSearchForm(tripResponse)
+    this.updateSearchForm(tripsResponse);
+
+    if (tripsResponse.trips.length > 0) {
+      const firstTrip = tripsResponse.trips[0];
+      this.zoomToTrip(firstTrip);
+    }
   }
 
   private updateSearchForm(tripResponse: OJP.TripsResponse) {

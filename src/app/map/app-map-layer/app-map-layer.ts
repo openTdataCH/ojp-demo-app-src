@@ -175,24 +175,37 @@ export class AppMapLayer {
             clickLayerIDs = layersDataConfig.layer_ids ?? [this.layerKey];
         }
 
-        const nearbyFeature = MapHelpers.queryNearbyFeatureByLayerIDs(this.map, ev.lngLat, clickLayerIDs);
-        if (nearbyFeature) {
-            const location = OJP.Location.initWithFeature(nearbyFeature.feature);
-            if (location) {
-                this.showPickupPopup(location);
-            }
-      
-            return true
+        const nearbyFeatures = MapHelpers.queryNearbyFeaturesByLayerIDs(this.map, ev.lngLat, clickLayerIDs);
+        if (nearbyFeatures.length === 0) {
+            return false;
         }
 
-        return false;
+        const locations: OJP.Location[] = [];
+        nearbyFeatures.forEach(nearbyFeature => {
+            const location = OJP.Location.initWithFeature(nearbyFeature.feature);
+            if (location) {
+                locations.push(location);
+            }
+        });
+
+        if (locations.length === 0) {
+            return false;
+        }
+
+        this.showPopup(locations);
+        return true;
     }
 
-    private showPickupPopup(location: OJP.Location) {
+    private showPopup(locations: OJP.Location[]) {
+        if (locations.length === 0) {
+            return;
+        }
+
+        const location = locations[0];
         const locationLngLat = location.geoPosition?.asLngLat() ?? null;
         if (locationLngLat === null) { return }
     
-        const popupHTML = this.computePopupHTML(location);
+        const popupHTML = this.computePopupHTML(locations);
         if (popupHTML === null) {
             return;
         }
@@ -222,11 +235,26 @@ export class AppMapLayer {
             .addTo(this.map);
     }
 
-    private computePopupHTML(location: OJP.Location): string | null {
+    private computePopupHTML(locations: OJP.Location[]): string | null {
+        if (locations.length === 0) {
+            return null;
+        }
+
+        const firstLocation = locations[0];
+
         if (this.geoRestrictionType === 'poi_all') {
-            const poiPopupHTML = this.computePOIPopupHTML(location);
+            const poiPopupHTML = this.computePOIPopupHTML(firstLocation);
             if (poiPopupHTML) {
                 return poiPopupHTML;
+            }
+        }
+
+        const chargingStationType: OJP.GeoRestrictionPoiOSMTag = 'charging_station';
+        const isChargingStation = ((this.geoRestrictionType === 'poi_amenity') && this.geoRestrictionPoiOSMTags?.indexOf(chargingStationType) !== -1);
+        if (isChargingStation) {
+            const chargingStationHTML = this.computeChargingStationPopupHTML(locations);
+            if (chargingStationHTML) {
+                return chargingStationHTML;
             }
         }
 
@@ -238,7 +266,7 @@ export class AppMapLayer {
         let popupHTML = popupWrapperDIV.innerHTML;
         popupHTML = popupHTML.replace('[GEO_RESTRICTION_TYPE]', this.geoRestrictionType);
     
-        const featureProperties = location.geoPosition?.properties ?? location.asGeoJSONFeature()?.properties ?? null
+        const featureProperties = firstLocation.geoPosition?.properties ?? firstLocation.asGeoJSONFeature()?.properties ?? null
         if (featureProperties == null) {
             popupHTML = popupHTML.replace('[GEOJSON_PROPERTIES_TABLE]', 'ERROR: cant read GeoJSON properties');
             return popupHTML;
@@ -284,6 +312,74 @@ export class AppMapLayer {
         tableTRs.push('<tr><td>SubCategory</td><td>' + geoJsonProperties['poi.subcategory'] + '</td></tr>');
 
         const tableHTML = '<table class="table">' + tableTRs.join('') + '</table>';
+        popupHTML = popupHTML.replace('[GEOJSON_PROPERTIES_TABLE]', tableHTML);
+
+        return popupHTML;
+    }
+
+    // TODO - use a child class - ChargingStationAppMapLayer
+    private computeChargingStationPopupHTML(locations: OJP.Location[]): string | null {
+        const popupWrapperDIV = document.getElementById('map-poi-picker-popup') as HTMLElement;
+        if (popupWrapperDIV === null) {
+            return null;
+        }
+
+        if (locations.length === 0) {
+            return null;
+        }
+
+        const firstLocation = locations[0];
+        const firstLocationProperties = firstLocation.geoPosition?.properties ?? null;
+        if (firstLocationProperties === null) {
+            return null;
+        }
+
+        // it could be that we get different POI category
+        if (firstLocationProperties['poi.category'] !== 'charging_station') {
+            return null;
+        }
+
+        const tableTRs: string[] = [];
+        tableTRs.push('<tr><td style="width:50px;">Name</td><td>' + firstLocationProperties['poi.name'] + ' - ' + firstLocationProperties['locationName'] + '</td></tr>');
+        
+        let codeCleaned = firstLocationProperties['poi.code'];
+        codeCleaned = codeCleaned.replace(firstLocationProperties['poi.name'], '');
+        codeCleaned = codeCleaned.replace(firstLocationProperties['locationName'], '');
+        tableTRs.push('<tr><td>Code</td><td>' + codeCleaned + '</td></tr>');
+
+        const statusLIs: string[] = [];
+        locations.forEach((location, idx) => {
+            const featureProperties = location.geoPosition?.properties ?? null;
+            if (featureProperties === null) {
+                return;
+            }
+
+            const locationStatus = (() => {
+                const featureLocationStatus = featureProperties['OJP.Attr.locationStatus'].toUpperCase();
+                let className = 'bg-success';
+                let locationStatusText = featureLocationStatus.toLowerCase();
+                if (featureLocationStatus === 'AVAILABALE') {
+                    locationStatusText = 'available';
+                }
+                if (featureLocationStatus === 'OCCUPIED') {
+                    className = 'bg-danger';
+                }
+                if (featureLocationStatus === 'UNKNOWN') {
+                    className = 'bg-secondary';
+                }
+
+                return '<span class="badge rounded-pill ' + className + '">' + locationStatusText + '</span>';
+            })();
+            const statusLI = '<li>' + locationStatus + ' ' + featureProperties['OJP.Attr.Code'] + '</li>';
+            statusLIs.push(statusLI);
+        });
+
+        tableTRs.push('<tr><td colspan="2"><p>Chargers (' + locations.length + ')</p><ul>' + statusLIs.join('') + '</ul></td></tr>');
+
+        let popupHTML = popupWrapperDIV.innerHTML;
+        popupHTML = popupHTML.replace('[POI_NAME]', 'Charging Station');
+
+        const tableHTML = '<table class="table popup-charging-station">' + tableTRs.join('') + '</table>';
         popupHTML = popupHTML.replace('[GEOJSON_PROPERTIES_TABLE]', tableHTML);
 
         return popupHTML;

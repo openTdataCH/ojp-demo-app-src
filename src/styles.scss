@@ -78,7 +78,7 @@ body {
 }
 
 .popup-picker-header {
-  font-size: 14px;
+  font-size: 16px;
 }
 
 .layer-xml-info {
@@ -114,4 +114,21 @@ body {
 }
 .content-collapse.collapsed .bi-dash-circle {
   display: none;
+}
+
+.popup-charging-station p1 {
+  font-size: 14px;
+}
+
+.popup-charging-station ul {
+  margin-top: 4px;
+  margin-bottom: 4px;
+}
+
+.popup-charging-station li {
+  font-size: 12px;
+}
+
+.popup-charging-station .badge {
+  font-size: 12px;
 }
