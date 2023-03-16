@@ -1,4 +1,4 @@
-import * as OJP from 'ojp-sdk'
+import OJP from 'ojp-sdk'
 
 export interface AppMapLayerOptions {
   LIR_Restriction_Type: OJP.GeoRestrictionType
