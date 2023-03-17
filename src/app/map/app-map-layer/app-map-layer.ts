@@ -250,15 +250,30 @@ export class AppMapLayer {
         if (nearbyFeatures.length === 0) {
             return false;
         }
+        const nearbyFeature = nearbyFeatures[0];
+        if (nearbyFeature.feature.properties === null) {
+            return false;
+        }
 
-        const locations: OJP.Location[] = [];
-        nearbyFeatures.forEach(nearbyFeature => {
-            const location = OJP.Location.initWithFeature(nearbyFeature.feature);
-            if (location) {
-                locations.push(location);
+        let locationsIdxS: string = nearbyFeature.feature.properties['locations_idx'] ?? '';
+        locationsIdxS = locationsIdxS.trim();
+        if (locationsIdxS === '') {
+            return false;
+        }
+
+        // Use a map because the mapbox nearbyFeatures might be duplicated
+        const mapLocations: Record<number, OJP.Location> = [];
+        
+        const locationsIdx = locationsIdxS.split(',');
+        locationsIdx.forEach(idxS => {
+            const idx = parseInt(idxS, 10);
+            const location = this.currentLocations[idx] ?? null;
+            if (location && !(idx in mapLocations)) {
+                mapLocations[idx] = location;
             }
         });
 
+        const locations = Object.values(mapLocations);
         if (locations.length === 0) {
             return false;
         }
@@ -268,10 +283,6 @@ export class AppMapLayer {
     }
 
     private showPopup(locations: OJP.Location[]) {
-        if (locations.length === 0) {
-            return;
-        }
-
         const location = locations[0];
         const locationLngLat = location.geoPosition?.asLngLat() ?? null;
         if (locationLngLat === null) { return }
@@ -295,7 +306,7 @@ export class AppMapLayer {
             if (endpointType === null) {
                 return;
             }
-    
+
             this.userTripService.updateTripEndpoint(location, endpointType, 'MapPopupClick');
     
             popup.remove();
