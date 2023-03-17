@@ -27,6 +27,8 @@ export class AppMapLayer {
     public isEnabled: boolean
     public lastOJPRequest: OJP.LocationInformationRequest | null
 
+    protected currentLocations: OJP.Location[];
+
     constructor(layerKey: string, map: mapboxgl.Map, appMapLayerOptions: AppMapLayerOptions, userTripService: UserTripService) {
         this.layerKey = layerKey;
 
@@ -52,6 +54,8 @@ export class AppMapLayer {
         this.lastOJPRequest = null;
 
         this.addMapSourceAndLayers();
+
+        this.currentLocations = [];
     }
 
     private addMapSourceAndLayers() {
@@ -121,26 +125,78 @@ export class AppMapLayer {
         this.lastOJPRequest = request
 
         const layerConfig = APP_CONFIG.map_app_map_layers[this.layerKey];
-
         request.fetchResponse().then(locations => {
             if (!this.shouldLoadNewFeatures()) {
                 this.removeAllFeatures();
             }
 
-            const features: GeoJSON.Feature[] = []
+            const locationsDiscarded: OJP.Location[] = [];
+            const mapFeatures: Record<string, GeoJSON.Feature> = {};
 
-            locations.forEach(location => {
-                const feature = this.computeFeatureFromLocation(location);
-                if (feature === null) {
+            locations.forEach((location, idx) => {
+                if (location.geoPosition === null) {
                     return;
                 }
 
-                if (location.poi && feature.properties && layerConfig.LIR_Restriction_Type === 'poi_all') {
-                    // 50px image in ./src/assets/map-style-icons
-                    feature.properties['style.icon-image'] = location.poi.computePoiMapIcon();
+                if (layerConfig.LIR_Restriction_Type === 'poi_amenity') {
+                    const layerPoiType = layerConfig.LIR_POI_Type;
+                    const poiCategory = location.poi?.category ?? null;
+                    if (layerPoiType !== poiCategory) {
+                        locationsDiscarded.push(location);
+                        return;
+                    }
                 }
 
-                features.push(feature);
+                const locationKey = location.geoPosition.asLatLngString();
+                if (!(locationKey in mapFeatures)) {
+                    const feature: GeoJSON.Feature = {
+                        type: 'Feature',
+                        properties: {
+                            locations_idx: [],
+                        },
+                        geometry: {
+                            type: 'Point',
+                            coordinates: location.geoPosition.asPosition(),
+                        }
+                    }
+
+                    mapFeatures[locationKey] = feature;
+                }
+
+                const feature = mapFeatures[locationKey] ?? null;
+                if (feature === null || feature.properties === null) {
+                    return;
+                }
+
+                const locationsIdx: number[] = feature.properties['locations_idx'];
+                locationsIdx.push(idx);
+            });
+
+            if (locationsDiscarded.length > 0) {
+                // console.log('Following locations are discarded for the POI request ' + layerConfig.LIR_POI_Type);
+                // console.log(locationsDiscarded);
+            }
+
+            this.currentLocations = locations;
+            
+            const features = Object.values(mapFeatures);
+            features.forEach(feature => {
+                if (feature.properties === null) {
+                    return;
+                }
+
+                const locations_idx = feature.properties['locations_idx'] as number[];
+                const featureLocations: OJP.Location[] = []
+                locations_idx.forEach(idx => {
+                    const location = locations[idx] ?? null;
+                    if (location) {
+                        featureLocations.push(location);
+                    }
+                })
+
+                feature.properties['locations_idx'] = locations_idx.join(',');
+
+                this.annotateFeatureFromLocations(feature, featureLocations);
             });
 
             this.setSourceFeatures(features);
@@ -157,6 +213,18 @@ export class AppMapLayer {
         }
     
         this.setSourceFeatures([]);
+    }
+
+    private setSourceFeatures(features: GeoJSON.Feature[]) {
+        this.features = features
+    
+        const source = this.map.getSource(this.mapSourceID) as mapboxgl.GeoJSONSource
+        const featureCollection = <GeoJSON.FeatureCollection>{
+            'type': 'FeatureCollection',
+            'features': features
+        }
+        
+        source.setData(featureCollection)
     }
 
     protected annotateFeatureFromLocations(feature: GeoJSON.Feature, locations: OJP.Location[]) {
