@@ -5,6 +5,7 @@ import { AppMapLayerOptions, APP_CONFIG } from "src/app/config/app-config";
 import { DebugXmlPopoverComponent } from "src/app/search-form/debug-xml-popover/debug-xml-popover.component";
 import { UserTripService } from "src/app/shared/services/user-trip.service";
 import { AppMapLayer } from "../app-map-layer/app-map-layer";
+import { AppMapLayerFactory } from "../app-map-layer/app-map-layer/app-map-layer-factory";
 
 import * as OJP from 'ojp-sdk'
 
@@ -87,7 +88,7 @@ export class MapLayersLegendControl implements mapboxgl.IControl {
         return;
       }
 
-      const appMapLayer = new AppMapLayer(layerKey, map, appMapLayerOptions, this.userTripService);
+      const appMapLayer = AppMapLayerFactory.init(layerKey, map, appMapLayerOptions, this.userTripService);
       appMapLayer.isEnabled = inputEl.checked;
 
       if (layerXmlInfoEl) {
@@ -179,7 +180,7 @@ export class MapLayersLegendControl implements mapboxgl.IControl {
     });
 
     appMapLayerOptions.LIR_POI_Type = poiOSMTags;
-    const appMapLayer = new AppMapLayer(layerKey, map, appMapLayerOptions, this.userTripService);
+    const appMapLayer = AppMapLayerFactory.init(layerKey, map, appMapLayerOptions, this.userTripService);
     appMapLayer.isEnabled = poiOSMTags.length > 0;
 
     const layerXmlInfoEl = wrapperEl.querySelector('.layer-xml-info') as HTMLInputElement;
