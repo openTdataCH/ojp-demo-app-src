@@ -1,0 +1,16 @@
+{
+  "id": "[LAYER_ID]",
+  "source": "[SOURCE_ID]",
+  "type": "symbol",
+  "minzoom": 15,
+  "layout": {
+    "text-field": "{sharedVehicle.provider}",
+    "text-allow-overlap": true,
+    "text-size": 12,
+    "text-offset": [0.0, 1.2]
+  },
+  "paint": {
+    "text-halo-color": "rgba(241, 231, 231, 1)",
+    "text-halo-width": 1
+  }
+}
