@@ -49,7 +49,7 @@ export class TripModeTypeComponent implements OnInit {
           'public_transport',
           'walk',
           'cycle',
-          'car_self_driving',
+          'self-drive-car',
           'bicycle_rental',
           'escooter_rental',
           'car_sharing'
@@ -60,7 +60,7 @@ export class TripModeTypeComponent implements OnInit {
         transportModes: [
           'walk',
           'cycle',
-          'car_self_driving',
+          'self-drive-car',
           'bicycle_rental',
           'escooter_rental',
           'car_sharing'
@@ -221,7 +221,7 @@ export class TripModeTypeComponent implements OnInit {
       cycle: 'Own Bicycle',
       escooter_rental: 'eScooter Sharing',
       car_sharing: 'Car Sharing',
-      car_self_driving: 'Own Car',
+      "self-drive-car": 'Own Car',
       bicycle_rental: 'Bicycle Sharing',
       charging_station: 'Charging Stations',
       taxi: 'Taxi',
