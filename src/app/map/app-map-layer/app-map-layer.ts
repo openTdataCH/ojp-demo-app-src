@@ -159,6 +159,10 @@ export class AppMapLayer {
         this.setSourceFeatures([]);
     }
 
+    protected annotateFeatureFromLocations(feature: GeoJSON.Feature, locations: OJP.Location[]) {
+        // extend / override
+    }
+
     public handleMapClick(ev: mapboxgl.MapMouseEvent): boolean {
         if (!this.shouldLoadNewFeatures()) {
             return false;
@@ -234,7 +238,7 @@ export class AppMapLayer {
             .addTo(this.map);
     }
 
-    private computePopupHTML(locations: OJP.Location[]): string | null {
+    protected computePopupHTML(locations: OJP.Location[]): string | null {
         if (locations.length === 0) {
             return null;
         }
