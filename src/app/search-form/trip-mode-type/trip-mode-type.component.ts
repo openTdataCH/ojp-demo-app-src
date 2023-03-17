@@ -63,7 +63,6 @@ export class TripModeTypeComponent implements OnInit {
           'self-drive-car',
           'bicycle_rental',
           'escooter_rental',
-          'car_sharing'
         ]
       },
       {
@@ -71,7 +70,6 @@ export class TripModeTypeComponent implements OnInit {
         transportModes: [
           'walk',
           'bicycle_rental',
-          'escooter_rental',
           'car_sharing'
         ]
       },
@@ -80,8 +78,6 @@ export class TripModeTypeComponent implements OnInit {
         transportModes: [
           'walk',
           'bicycle_rental',
-          'escooter_rental',
-          'car_sharing'
         ]
       }
     ]
