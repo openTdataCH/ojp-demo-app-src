@@ -1,6 +1,7 @@
 <div class="map_wrapper" id="map_canvas"></div>
 
 <div class="d-none">
+    <!-- Popup shown when right-click mouse -->
     <div id="map-endpoint-coords-picker-popup">
         <div class="popup-picker p-2">
             <div class="popup-picker-header mb-2">
@@ -13,18 +14,22 @@
             </div>
         </div>
     </div>
+    
+    <!-- Popup shown for stops -->
     <div id="map-endpoint-stop-picker-popup">
         <div class="popup-picker p-2">
             <div class="popup-picker-header mb-2">
                 [STOP_NAME] ([STOP_ID])
             </div>
             <div class="popup-picker-body">
-                <button type="button" class="btn btn-primary btn-sm" data-endpoint-type="From">From</button> <button
-                    type="button" class="btn btn-primary btn-sm" data-endpoint-type="To">To</button> <button
-                    type="button" class="btn btn-primary btn-sm" data-endpoint-type="Via">Via</button>
+                <button type="button" class="btn btn-primary btn-sm" data-endpoint-type="From">From</button>
+                <button type="button" class="btn btn-primary btn-sm" data-endpoint-type="To">To</button>
+                <button type="button" class="btn btn-primary btn-sm" data-endpoint-type="Via">Via</button>
             </div>
         </div>
     </div>
+
+    <!-- Generic Popup -->
     <div id="map-endpoint-picker-popup">
         <div class="popup-picker p-2">
             <div class="popup-picker-header mb-2">
@@ -33,12 +38,14 @@
             <div class="popup-picker-body">
                 [GEOJSON_PROPERTIES_TABLE]
 
-                <button type="button" class="btn btn-primary btn-sm" data-endpoint-type="From">From</button> <button
-                    type="button" class="btn btn-primary btn-sm" data-endpoint-type="To">To</button> <button
-                    type="button" class="btn btn-primary btn-sm" data-endpoint-type="Via">Via</button>
+                <button type="button" class="btn btn-primary btn-sm" data-endpoint-type="From">From</button>
+                <button type="button" class="btn btn-primary btn-sm" data-endpoint-type="To">To</button> 
+                <button type="button" class="btn btn-primary btn-sm" data-endpoint-type="Via">Via</button>
             </div>
         </div>
     </div>
+
+    <!-- POI (all) Popup -->
     <div id="map-poi-picker-popup">
         <div class="popup-picker p-2">
             <div class="popup-picker-header mb-2">
@@ -47,9 +54,9 @@
             <div class="popup-picker-body">
                 [GEOJSON_PROPERTIES_TABLE]
 
-                <button type="button" class="btn btn-primary btn-sm" data-endpoint-type="From">From</button> <button
-                    type="button" class="btn btn-primary btn-sm" data-endpoint-type="To">To</button> <button
-                    type="button" class="btn btn-primary btn-sm" data-endpoint-type="Via">Via</button>
+                <button type="button" class="btn btn-primary btn-sm" data-endpoint-type="From">From</button>
+                <button type="button" class="btn btn-primary btn-sm" data-endpoint-type="To">To</button> 
+                <button type="button" class="btn btn-primary btn-sm" data-endpoint-type="Via">Via</button>
             </div>
         </div>
     </div>
