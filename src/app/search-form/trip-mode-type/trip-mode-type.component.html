@@ -6,7 +6,7 @@
         <sbb-label>Choose Multimodal / Monomodal</sbb-label>
           <sbb-select
           [(ngModel)]="this.tripModeType"
-          (selectionChange)="this.onTripModeChange()">
+          (selectionChange)="onTripModeChange()">
           <sbb-option
             *ngFor="let tripTransportMode of this.tripTransportModeData"
             [value]="tripTransportMode.modeType">{{ this.computeTripModeTypeText(tripTransportMode.modeType) }}</sbb-option>
