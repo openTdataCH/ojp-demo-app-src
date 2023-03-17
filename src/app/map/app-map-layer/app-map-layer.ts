@@ -2,8 +2,8 @@ import mapboxgl from "mapbox-gl";
 
 import * as OJP from 'ojp-sdk'
 
-import { AppMapLayerOptions, APP_CONFIG } from "src/app/config/app-config";
-import { UserTripService } from "src/app/shared/services/user-trip.service";
+import { AppMapLayerOptions, APP_CONFIG } from '../../config/app-config'
+import { UserTripService } from "../../shared/services/user-trip.service";
 import { MapHelpers } from "../helpers/map.helpers";
 import { MAP_LAYERS_DEFINITIONS } from "./map-layers-def";
 
