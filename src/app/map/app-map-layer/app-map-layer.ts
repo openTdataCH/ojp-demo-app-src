@@ -107,9 +107,8 @@ export class AppMapLayer {
         const featuresLimit = this.geoRestrictionType === 'poi_all' ? 1000 : 300;
 
         const mapBounds = this.map.getBounds();
-        const stageConfig = this.userTripService.getStageConfig()
         const request = OJP.LocationInformationRequest.initWithBBOXAndType(
-            stageConfig,
+            this.userTripService.getStageConfig(),
             mapBounds.getWest(),
             mapBounds.getNorth(),
             mapBounds.getEast(),
