@@ -235,6 +235,9 @@ export class SearchFormComponent implements OnInit {
           type: 'info',
           verticalPosition: 'top',
         })
+      } else {
+        const firstTrip = trips[0];
+        this.zoomToTrip(firstTrip);
       }
 
       const endRequestDate = new Date();
