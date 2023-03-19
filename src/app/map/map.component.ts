@@ -249,7 +249,6 @@ export class MapComponent implements OnInit {
       const btnEl = ev.target as HTMLButtonElement;
       const endpointType = btnEl.getAttribute('data-endpoint-type') as OJP.JourneyPointType;
       if (endpointType === null) {
-        console.error('expected data-endpoint-type attribute');
         return;
       }
 

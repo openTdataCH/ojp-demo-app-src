@@ -6,7 +6,10 @@ OJP-Demo URL: https://opentdatach.github.io/ojp-demo-app/
 
 19.March 2023
 - use latest [OJP JS](https://github.com/openTdataCH/ojp-js) version
-- improve mono-/multi- modal trip request parameters - [PR #95](https://github.com/openTdataCH/ojp-demo-app-src/pull/95) [NumberOfResult should not be 0 #81](https://github.com/openTdataCH/ojp-demo-app-src/issues/81)
+- improve mono-/multi- modal trip request parameters - [PR #95](https://github.com/openTdataCH/ojp-demo-app-src/pull/95), [NumberOfResult should not be 0 #81](https://github.com/openTdataCH/ojp-demo-app-src/issues/81)
+- improve map layers - [PR #96](https://github.com/openTdataCH/ojp-demo-app-src/pull/96), [Number of Bikes at Bikestations #88](https://github.com/openTdataCH/ojp-demo-app-src/issues/88)
+  - add customized popups for shared mobility POI layers
+  - show number of shared mobility vehicles in the popup / map
 
 19.February 2023
 - display relevant info for charging stations - [PR #89](https://github.com/openTdataCH/ojp-demo-app-src/pull/89), [Showing multiple Charging Points of One Charging Station #68](https://github.com/openTdataCH/ojp-demo-app-src/issues/68)
