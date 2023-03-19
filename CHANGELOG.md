@@ -4,6 +4,9 @@ OJP-Demo URL: https://opentdatach.github.io/ojp-demo-app/
 
 ----
 
+19.March 2023
+- improve mono-/multi- modal trip request parameters - [NumberOfResult should not be 0 #81](https://github.com/openTdataCH/ojp-demo-app-src/issues/81)
+
 19.February 2023
 - display relevant info for charging stations - [PR #89](https://github.com/openTdataCH/ojp-demo-app-src/pull/89), [Showing multiple Charging Points of One Charging Station #68](https://github.com/openTdataCH/ojp-demo-app-src/issues/68)
 - display taxi and booking arrangements - [PR #90](https://github.com/openTdataCH/ojp-demo-app-src/pull/90), [OJP demo app extension #87](https://github.com/openTdataCH/ojp-demo-app-src/issues/87)
