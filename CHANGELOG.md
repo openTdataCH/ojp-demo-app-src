@@ -10,7 +10,8 @@ OJP-Demo URL: https://opentdatach.github.io/ojp-demo-app/
 - improve map layers - [PR #96](https://github.com/openTdataCH/ojp-demo-app-src/pull/96), [Number of Bikes at Bikestations #88](https://github.com/openTdataCH/ojp-demo-app-src/issues/88)
   - add customized popups for shared mobility POI layers
   - show number of shared mobility vehicles in the popup / map
-- group the autocomplete `Location` results by: stops, POIs, TopographicPlaces, Addresses - [Distinguish POI and StopPoint #74](https://github.com/openTdataCH/ojp-demo-app-src/issues/74)
+- group the autocomplete `Location` results by: stops, POIs, TopographicPlaces, Addresses - [PR #97](https://github.com/openTdataCH/ojp-demo-app-src/pull/97), [Distinguish POI and StopPoint #74](https://github.com/openTdataCH/ojp-demo-app-src/issues/74)
+- filter autocomplete to show only stops in StationBoard tab - [PR #98](https://github.com/openTdataCH/ojp-demo-app-src/pull/98)
 
 19.February 2023
 - display relevant info for charging stations - [PR #89](https://github.com/openTdataCH/ojp-demo-app-src/pull/89), [Showing multiple Charging Points of One Charging Station #68](https://github.com/openTdataCH/ojp-demo-app-src/issues/68)
