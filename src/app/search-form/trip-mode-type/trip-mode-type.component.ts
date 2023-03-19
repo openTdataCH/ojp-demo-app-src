@@ -49,7 +49,7 @@ export class TripModeTypeComponent implements OnInit {
           'public_transport',
           'walk',
           'cycle',
-          'car_self_driving',
+          'self-drive-car',
           'bicycle_rental',
           'escooter_rental',
           'car_sharing'
@@ -60,10 +60,9 @@ export class TripModeTypeComponent implements OnInit {
         transportModes: [
           'walk',
           'cycle',
-          'car_self_driving',
+          'self-drive-car',
           'bicycle_rental',
           'escooter_rental',
-          'car_sharing'
         ]
       },
       {
@@ -71,7 +70,6 @@ export class TripModeTypeComponent implements OnInit {
         transportModes: [
           'walk',
           'bicycle_rental',
-          'escooter_rental',
           'car_sharing'
         ]
       },
@@ -80,8 +78,6 @@ export class TripModeTypeComponent implements OnInit {
         transportModes: [
           'walk',
           'bicycle_rental',
-          'escooter_rental',
-          'car_sharing'
         ]
       }
     ]
@@ -159,7 +155,12 @@ export class TripModeTypeComponent implements OnInit {
     }
 
     this.tripTransportModes = JSON.parse(JSON.stringify(tripTransportModeData.transportModes));
-    this.tripTransportMode = this.tripTransportModes[0];
+    
+    // Preserve the transport mode when switching the trip mode
+    const hasTransportMode = this.tripTransportModes.indexOf(this.tripTransportMode) !== -1;
+    if (!hasTransportMode) {
+      this.tripTransportMode = this.tripTransportModes[0];
+    }
 
     this.userTripService.updateTripMode(this.tripModeType, this.tripTransportMode, this.tripModeTypeIdx);
     this.userTripService.updateTripLocationCustomMode(this.tripModeTypeIdx);
@@ -221,7 +222,7 @@ export class TripModeTypeComponent implements OnInit {
       cycle: 'Own Bicycle',
       escooter_rental: 'eScooter Sharing',
       car_sharing: 'Car Sharing',
-      car_self_driving: 'Own Car',
+      "self-drive-car": 'Own Car',
       bicycle_rental: 'Bicycle Sharing',
       charging_station: 'Charging Stations',
       taxi: 'Taxi',
