@@ -211,15 +211,23 @@ export class UserTripService {
       // Search nearby locations, in a bbox of 200x200m
       const bbox = OJP.GeoPositionBBOX.initFromGeoPosition(geoPosition, 200, 200);
       const stageConfig = this.getStageConfig();
-      const locationInformationRequest = OJP.LocationInformationRequest.initWithBBOXAndType(
-        stageConfig,
-        bbox.southWest.longitude,
-        bbox.northEast.latitude,
-        bbox.northEast.longitude,
-        bbox.southWest.latitude,
-        'stop',
-        300
+      let locationInformationRequest;
+      if (stageConfig.key as APP_Stage === "GR TEST"){
+        locationInformationRequest = OJP.LocationInformationRequest.initWithLocationName(
+          stageConfig,
+          tripLocation.location.locationName ?? (isFrom ? 'Bern' : 'Zürich')
       );
+      } else {
+        locationInformationRequest = OJP.LocationInformationRequest.initWithBBOXAndType(
+          stageConfig,
+          bbox.southWest.longitude,
+          bbox.northEast.latitude,
+          bbox.northEast.longitude,
+          bbox.southWest.latitude,
+          'stop',
+          300
+        );
+      }
       const locationInformationPromise = locationInformationRequest.fetchResponse();
       promises.push(locationInformationPromise)
     });
