@@ -1,3 +1,4 @@
+import * as GeoJSON from 'geojson'
 import mapboxgl from "mapbox-gl";
 
 import * as OJP from 'ojp-sdk'
