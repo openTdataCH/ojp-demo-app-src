@@ -4,6 +4,7 @@ import { APP_CONFIG, APP_Stage } from 'src/app/config/app-config'
 import { MapService } from './map.service'
 
 import * as OJP from 'ojp-sdk'
+import mapboxgl from 'mapbox-gl'
 
 type LocationUpdateSource = 'SearchForm' | 'MapDragend' | 'MapPopupClick'
 
@@ -174,8 +175,9 @@ export class UserTripService {
       if (bbox.isValid()) {
         const shouldZoomToBounds = this.queryParams.has('from') || this.queryParams.has('to')
         if (shouldZoomToBounds && !this.mapService.initialMapCenter) {
+          const bounds = new mapboxgl.LngLatBounds(bbox.asFeatureBBOX())
           const mapData = {
-            bounds: bbox.asLngLatBounds()
+            bounds: bounds
           }
           this.mapService.newMapBoundsRequested.emit(mapData);
         }

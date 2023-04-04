@@ -10,6 +10,8 @@ import { SbbNotificationToast } from '@sbb-esta/angular/notification-toast';
 import { SbbRadioChange } from '@sbb-esta/angular/radio-button';
 
 import * as OJP from 'ojp-sdk'
+import mapboxgl from 'mapbox-gl'
+
 import { APP_Stage } from '../config/app-config';
 
 @Component({
@@ -153,8 +155,10 @@ export class SearchFormComponent implements OnInit {
 
   private zoomToTrip(trip: OJP.Trip) {
     const bbox = trip.computeBBOX();
+    const bounds = new mapboxgl.LngLatBounds(bbox.asFeatureBBOX())
+
     const mapData = {
-      bounds: bbox.asLngLatBounds()
+      bounds: bounds,
     }
     this.mapService.newMapBoundsRequested.emit(mapData);
   }

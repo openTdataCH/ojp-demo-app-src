@@ -1,3 +1,5 @@
+import mapboxgl from 'mapbox-gl'
+
 import { AppMapLayerOptions } from '../../../config/app-config'
 import { UserTripService } from "../../../shared/services/user-trip.service";
 
