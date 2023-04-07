@@ -1,3 +1,5 @@
+import * as GeoJSON from 'geojson'
+
 import * as OJP from 'ojp-sdk'
 
 import { AppMapLayer } from "../app-map-layer";

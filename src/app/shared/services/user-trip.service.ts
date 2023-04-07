@@ -1,9 +1,10 @@
 import { EventEmitter, Injectable } from '@angular/core'
 
-import { APP_CONFIG, APP_Stage } from 'src/app/config/app-config'
+import { APP_CONFIG } from 'src/app/config/app-config'
 import { MapService } from './map.service'
 
 import * as OJP from 'ojp-sdk'
+import mapboxgl from 'mapbox-gl'
 
 type LocationUpdateSource = 'SearchForm' | 'MapDragend' | 'MapPopupClick'
 
@@ -23,7 +24,7 @@ export class UserTripService {
   
   public lastJourneyResponse: OJP.JourneyResponse | null
   public departureDate: Date
-  public currentAppStage: APP_Stage
+  public currentAppStage: OJP.APP_Stage
 
   public permalinkURLAddress: string | null
 
@@ -174,8 +175,9 @@ export class UserTripService {
       if (bbox.isValid()) {
         const shouldZoomToBounds = this.queryParams.has('from') || this.queryParams.has('to')
         if (shouldZoomToBounds && !this.mapService.initialMapCenter) {
+          const bounds = new mapboxgl.LngLatBounds(bbox.asFeatureBBOX())
           const mapData = {
-            bounds: bbox.asLngLatBounds()
+            bounds: bounds
           }
           this.mapService.newMapBoundsRequested.emit(mapData);
         }
@@ -266,13 +268,13 @@ export class UserTripService {
     this.geoLocationsUpdated.emit();
   }
 
-  private computeAppStageFromString(appStageS: string): APP_Stage {
-    const availableStages: APP_Stage[] = ['INT', 'LA Beta', 'PROD', 'TEST'];
+  private computeAppStageFromString(appStageS: string): OJP.APP_Stage {
+    const availableStages: OJP.APP_Stage[] = ['INT', 'LA Beta', 'PROD', 'TEST'];
     const availableStagesLower: string[] = availableStages.map(stage => {
       return stage.toLowerCase();
     });
 
-    const appStage = appStageS.trim() as APP_Stage;
+    const appStage = appStageS.trim() as OJP.APP_Stage;
     const stageIDX = availableStagesLower.indexOf(appStage.toLowerCase());
     if (stageIDX !== -1) {
       return availableStages[stageIDX];
@@ -434,18 +436,20 @@ export class UserTripService {
     return tripDateTime
   }
 
-  public getStageConfig(forStage: APP_Stage = this.currentAppStage): OJP.StageConfig {
-    const stageConfig = APP_CONFIG.app_stages[forStage] ?? null
+  public getStageConfig(forStage: OJP.APP_Stage = this.currentAppStage): OJP.StageConfig {
+    const stageConfig = APP_CONFIG.app_stages.find(stage => {
+      return stage.key === forStage
+    }) ?? null;
 
     if (stageConfig === null) {
       console.error('ERROR - cant find stage' + forStage + ' using PROD');
-      return APP_CONFIG.app_stages['PROD']
+      return OJP.DEFAULT_STAGE;
     }
     
     return stageConfig
   }
 
-  public updateAppStage(newStage: APP_Stage) {
+  public updateAppStage(newStage: OJP.APP_Stage) {
     this.currentAppStage = newStage
     this.updatePermalinkAddress()
   }

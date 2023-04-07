@@ -10,7 +10,7 @@ import { SbbNotificationToast } from '@sbb-esta/angular/notification-toast';
 import { SbbRadioChange } from '@sbb-esta/angular/radio-button';
 
 import * as OJP from 'ojp-sdk'
-import { APP_Stage } from '../config/app-config';
+import mapboxgl from 'mapbox-gl'
 
 @Component({
   selector: 'app-search-form',
@@ -23,7 +23,7 @@ export class SearchFormComponent implements OnInit {
   public fromLocationText: string
   public toLocationText: string
 
-  public appStageOptions: APP_Stage[] = []
+  public appStageOptions: OJP.APP_Stage[] = []
 
   public isSearching: boolean
 
@@ -153,8 +153,10 @@ export class SearchFormComponent implements OnInit {
 
   private zoomToTrip(trip: OJP.Trip) {
     const bbox = trip.computeBBOX();
+    const bounds = new mapboxgl.LngLatBounds(bbox.asFeatureBBOX())
+
     const mapData = {
-      bounds: bbox.asLngLatBounds()
+      bounds: bounds,
     }
     this.mapService.newMapBoundsRequested.emit(mapData);
   }
@@ -164,7 +166,7 @@ export class SearchFormComponent implements OnInit {
   }
 
   onChangeStageAPI(ev: SbbRadioChange) {
-    const newAppStage = ev.value as APP_Stage
+    const newAppStage = ev.value as OJP.APP_Stage
     this.userTripService.updateAppStage(newAppStage)
 
     this.userTripService.refetchEndpointsByName();
