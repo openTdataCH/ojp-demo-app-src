@@ -12,8 +12,6 @@ import { SbbRadioChange } from '@sbb-esta/angular/radio-button';
 import * as OJP from 'ojp-sdk'
 import mapboxgl from 'mapbox-gl'
 
-import { APP_Stage } from '../config/app-config';
-
 @Component({
   selector: 'app-search-form',
   templateUrl: './search-form.component.html',
@@ -25,7 +23,7 @@ export class SearchFormComponent implements OnInit {
   public fromLocationText: string
   public toLocationText: string
 
-  public appStageOptions: APP_Stage[] = []
+  public appStageOptions: OJP.APP_Stage[] = []
 
   public isSearching: boolean
 
@@ -168,7 +166,7 @@ export class SearchFormComponent implements OnInit {
   }
 
   onChangeStageAPI(ev: SbbRadioChange) {
-    const newAppStage = ev.value as APP_Stage
+    const newAppStage = ev.value as OJP.APP_Stage
     this.userTripService.updateAppStage(newAppStage)
 
     this.userTripService.refetchEndpointsByName();

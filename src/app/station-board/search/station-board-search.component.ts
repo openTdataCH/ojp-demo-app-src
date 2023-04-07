@@ -11,7 +11,6 @@ import { UserTripService } from 'src/app/shared/services/user-trip.service';
 import { MapService } from 'src/app/shared/services/map.service';
 import { StationBoardData, StationBoardService } from '../station-board.service';
 import { StationBoardInputComponent } from '../input/station-board-input.component';
-import { APP_Stage } from 'src/app/config/app-config';
 import { DebugXmlPopoverComponent } from 'src/app/search-form/debug-xml-popover/debug-xml-popover.component';
 
 @Component({
@@ -23,7 +22,7 @@ export class StationBoardSearchComponent implements OnInit {
   @ViewChild(SbbExpansionPanel, { static: true }) searchPanel: SbbExpansionPanel | undefined;
   @ViewChild(StationBoardInputComponent) autocompleteInputComponent: StationBoardInputComponent | undefined;
 
-  public appStage: APP_Stage;
+  public appStage: OJP.APP_Stage;
   public stationBoardType: OJP.StationBoardType;
 
   public searchLocation: OJP.Location | null
@@ -31,7 +30,7 @@ export class StationBoardSearchComponent implements OnInit {
   public searchDate: Date
   public searchTime: string
   
-  public appStageOptions: APP_Stage[];
+  public appStageOptions: OJP.APP_Stage[];
   public stationBoardTypes: OJP.StationBoardType[]
   public isSearching: boolean
 
