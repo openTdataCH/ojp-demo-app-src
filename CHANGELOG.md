@@ -4,6 +4,10 @@ OJP-Demo URL: https://opentdatach.github.io/ojp-demo-app/
 
 ----
 
+07.April 2023
+- use latest [OJP JS](https://github.com/openTdataCH/ojp-js) version
+- cleanup external libs inclusion
+
 19.March 2023
 - use latest [OJP JS](https://github.com/openTdataCH/ojp-js) version
 - improve mono-/multi- modal trip request parameters - [PR #95](https://github.com/openTdataCH/ojp-demo-app-src/pull/95), [NumberOfResult should not be 0 #81](https://github.com/openTdataCH/ojp-demo-app-src/issues/81)
