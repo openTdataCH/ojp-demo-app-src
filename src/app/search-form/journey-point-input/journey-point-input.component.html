@@ -33,6 +33,6 @@
   <sbb-option
     *ngFor="let lookupLocation of lookupLocations; index as idx"
     [value]="idx">
-    {{ lookupLocation.computeLocationName() }}
+    {{ lookupLocation.computeLocationName() }} <b *ngIf="lookupLocation?.originSystem">({{lookupLocation.originSystem}})</b>
   </sbb-option>
 </sbb-autocomplete>
