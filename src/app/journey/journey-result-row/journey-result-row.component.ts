@@ -5,7 +5,7 @@ import * as OJP from 'ojp-sdk'
 
 interface TripHeaderStats {
   title: string,
-  tripChangesInfo: string, 
+  tripChangesInfo: string,
   tripFromTime: string,
   tripToTime: string,
   tripDurationS: string,
@@ -48,7 +48,7 @@ export class JourneyResultRowComponent implements OnInit {
 
   private initTripHeaderStats(trip: OJP.Trip) {
     this.tripHeaderStats.title = 'Trip ' + ((this.idx ?? 0) + 1)
-      
+
     if (trip.stats.transferNo === 0) {
       this.tripHeaderStats.tripChangesInfo = 'direct'
     } else if (trip.stats.transferNo === 1) {
@@ -62,5 +62,26 @@ export class JourneyResultRowComponent implements OnInit {
 
     this.tripHeaderStats.tripDurationS = trip.stats.duration.formatDuration()
     this.tripHeaderStats.tripDistanceS = OJP.DateHelpers.formatDistance(trip.stats.distanceMeters)
+    const dayDiff = JourneyResultRowComponent.getDayOffset(trip.stats.endDatetime, trip.stats.startDatetime)
+    if(dayDiff > 0){
+      this.tripHeaderStats.tripToTime = '(+' + dayDiff + 'd) ' + this.tripHeaderStats.tripToTime;
+    }
+  }
+
+  private static getDayOffset(start: Date, end: Date){
+    return Math.ceil(
+      Math.abs(
+        new Date(Date.UTC(
+          end.getUTCFullYear(),
+          end.getUTCMonth(),
+          end.getUTCDate()
+        )).valueOf() -
+        new Date(Date.UTC(
+          start.getUTCFullYear(),
+          start.getUTCMonth(),
+          start.getUTCDate()
+        )).valueOf()
+      ) / (1000 * 3600 * 24)
+    )
   }
 }
