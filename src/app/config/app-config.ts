@@ -33,7 +33,7 @@ const app_stages: Record<APP_Stage, OJP.StageConfig> = {
   },
   'GR TEST': {
     key: 'GR TEST',
-    apiEndpoint: 'http://localhost:8080/testXML',
+    apiEndpoint: 'http://localhost:8080/ojp',
     authBearerKey: 'test',
   },
 }
