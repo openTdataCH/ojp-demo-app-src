@@ -8,35 +8,35 @@ export interface AppMapLayerOptions {
   click_layer_ids?: string[] | 'SAME_AS_LAYER_IDS' | null
 }
 
-export type APP_Stage = 'PROD' | 'INT' | 'TEST' | 'LA Beta' | 'GR TEST'
+export type APP_STAGE = OJP.Default_APP_Stage | 'GR TEST'
 
-const app_stages: Record<APP_Stage, OJP.StageConfig> = {
-  'PROD': {
+const app_stages: OJP.StageConfig[] = [
+  {
     key: 'PROD',
     apiEndpoint: 'https://api.opentransportdata.swiss/ojp2020',
     authBearerKey: '57c5dbbbf1fe4d0001000018e0f7158cb2b347e3a6745e3ef949e7bf',
   },
-  'INT': {
+  {
     key: 'INT',
     apiEndpoint: 'https://odpch-test.cloud.tyk.io/ojp-passiv-int/',
     authBearerKey: '57c5dadd5e6307000100005e473137db130241e5866ecdbce5f74ccb',
   },
-  'TEST': {
+  {
     key: 'TEST',
     apiEndpoint: 'https://odpch-test.cloud.tyk.io/ojp-test/',
     authBearerKey: '57c5dadd5e6307000100005ead6b87d5ec4f48d3ad5f9414e92907d4',
   },
-  'LA Beta': {
+  {
     key: 'LA Beta',
     apiEndpoint: 'https://odpch-test.cloud.tyk.io/la_test_active_server/',
     authBearerKey: '57c5dadd5e6307000100005e0e0520340d05419b8c1f13c17a20a8ab',
   },
-  'GR TEST': {
+  {
     key: 'GR TEST',
     apiEndpoint: 'http://localhost:8080/ojp',
     authBearerKey: 'test',
   },
-}
+]
 
 const map_app_map_layers: Record<string, AppMapLayerOptions> = {
   'stops': {

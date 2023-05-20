@@ -10,7 +10,7 @@ import { SbbNotificationToast } from '@sbb-esta/angular/notification-toast';
 import { SbbRadioChange } from '@sbb-esta/angular/radio-button';
 
 import * as OJP from 'ojp-sdk'
-import {APP_CONFIG, APP_Stage} from '../config/app-config';
+import { APP_STAGE } from '../config/app-config';
 import mapboxgl from 'mapbox-gl'
 
 @Component({
@@ -25,7 +25,7 @@ export class SearchFormComponent implements OnInit {
   public fromLocationText: string
   public toLocationText: string
 
-  public appStageOptions: APP_Stage[] = []
+  public appStageOptions: APP_STAGE[] = []
 
   public isSearching: boolean
 
@@ -167,7 +167,7 @@ export class SearchFormComponent implements OnInit {
   }
 
   onChangeStageAPI(ev: SbbRadioChange) {
-    const newAppStage = ev.value as APP_Stage
+    const newAppStage = ev.value as APP_STAGE
     this.userTripService.updateAppStage(newAppStage)
 
     this.userTripService.refetchEndpointsByName();
@@ -323,7 +323,7 @@ export class SearchFormComponent implements OnInit {
 
   private systemsHealthCheck() {
     let stageConfig = this.userTripService.getStageConfig()
-    if (stageConfig.key !== ('GR TEST' as APP_Stage)) return
+    if (stageConfig.key !== ('GR TEST' as APP_STAGE)) return
     fetch(stageConfig.apiEndpoint + '/health', {
       method: 'GET',
       headers: {
