@@ -33,7 +33,7 @@ const app_stages: OJP.StageConfig[] = [
   },
   {
     key: 'GR TEST',
-    apiEndpoint: 'http://localhost:8080/ojp',
+    apiEndpoint: 'https://tools.odpch.ch/ojp-gr-api',
     authBearerKey: 'test',
   },
 ]
