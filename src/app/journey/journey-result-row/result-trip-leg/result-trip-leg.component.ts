@@ -1,6 +1,7 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { MapService } from 'src/app/shared/services/map.service';
 
+import mapboxgl from 'mapbox-gl'
 import * as OJP from 'ojp-sdk'
 
 interface LegLocationData {
@@ -162,7 +163,7 @@ export class ResultTripLegComponent implements OnInit {
       return
     }
 
-    const bounds = bbox.asLngLatBounds();
+    const bounds = new mapboxgl.LngLatBounds(bbox.asFeatureBBOX())
 
     const minDistanceM = 20
     const hasSmallBBOX = bounds.getSouthWest().distanceTo(bounds.getNorthEast()) < minDistanceM

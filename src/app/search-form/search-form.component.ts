@@ -11,6 +11,7 @@ import { SbbRadioChange } from '@sbb-esta/angular/radio-button';
 
 import * as OJP from 'ojp-sdk'
 import {APP_CONFIG, APP_Stage} from '../config/app-config';
+import mapboxgl from 'mapbox-gl'
 
 @Component({
   selector: 'app-search-form',
@@ -154,8 +155,9 @@ export class SearchFormComponent implements OnInit {
 
   private zoomToTrip(trip: OJP.Trip) {
     const bbox = trip.computeBBOX();
+    const bounds = new mapboxgl.LngLatBounds(bbox.asFeatureBBOX())
     const mapData = {
-      bounds: bbox.asLngLatBounds()
+      bounds: bounds
     }
     this.mapService.newMapBoundsRequested.emit(mapData);
   }
