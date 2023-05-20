@@ -8,6 +8,9 @@ import * as OJP from 'ojp-sdk'
 import { MapService } from 'src/app/shared/services/map.service';
 import { UserTripService } from 'src/app/shared/services/user-trip.service';
 
+type MapLocations = Record<OJP.LocationType, OJP.Location[]>
+type OptionLocationType = [OJP.LocationType, string]
+
 @Component({
   selector: 'journey-point-input',
   templateUrl: './journey-point-input.component.html',
@@ -17,7 +20,8 @@ export class JourneyPointInputComponent implements OnInit, OnChanges {
   private shouldFetchNewData = true
 
   public inputControl = new FormControl('');
-  public lookupLocations: OJP.Location[];
+  public mapLookupLocations: MapLocations
+  public optionLocationTypes: OptionLocationType[]
 
   @Input() placeholder: string = '';
   @Input() endpointType: OJP.JourneyPointType = 'From';
@@ -26,7 +30,15 @@ export class JourneyPointInputComponent implements OnInit, OnChanges {
   @Output() selectedLocation = new EventEmitter<OJP.Location>()
 
   constructor(private mapService: MapService, private userTripService: UserTripService) {
-    this.lookupLocations = []
+    this.mapLookupLocations = {} as MapLocations
+    this.resetMapLocations()
+
+    this.optionLocationTypes = [
+      ['stop', 'Stops'],
+      ['poi', 'POIs'],
+      ['topographicPlace', 'Topographic Places'],
+      ['address', 'Addresses'],
+    ]
   }
 
   ngOnInit() {
@@ -48,7 +60,9 @@ export class JourneyPointInputComponent implements OnInit, OnChanges {
 
       const coordsLocation = OJP.Location.initFromLiteralCoords(searchTerm);
       if (coordsLocation) {
-        this.lookupLocations = []
+        
+        this.resetMapLocations()
+        
         this.handleCoordsPick(coordsLocation)
         return
       }
@@ -77,8 +91,15 @@ export class JourneyPointInputComponent implements OnInit, OnChanges {
   onOptionSelected(ev: SbbAutocompleteSelectedEvent) {
     this.shouldFetchNewData = false
 
-    const optionIdx = ev.option.value;
-    const location = this.lookupLocations[optionIdx];
+    const optionIdParts = ev.option.value.split('.');
+    if (optionIdParts.length !== 2) {
+      return;
+    }
+    
+    const locationType = optionIdParts[0] as OJP.LocationType;
+    const locationIdx = parseInt(optionIdParts[1], 10);
+
+    const location = this.mapLookupLocations[locationType][locationIdx];
 
     const inputValue = location.computeLocationName();
     this.inputControl.setValue(inputValue);
@@ -90,9 +111,17 @@ export class JourneyPointInputComponent implements OnInit, OnChanges {
     let stageConfig = this.userTripService.getStageConfig()
 
     const locationInformationRequest = OJP.LocationInformationRequest.initWithLocationName(stageConfig, searchTerm);
-
     locationInformationRequest.fetchResponse().then(locations => {
-      this.lookupLocations = locations;
+      this.resetMapLocations()
+      
+      locations.forEach(location => {
+        const locationType = location.getLocationType();
+        if (locationType === null) {
+          return;
+        }
+
+        this.mapLookupLocations[locationType].push(location);
+      })
     });
   }
 
@@ -112,5 +141,14 @@ export class JourneyPointInputComponent implements OnInit, OnChanges {
     this.inputControl.setValue(inputValue);
 
     this.selectedLocation.emit(location);
+  }
+
+  private resetMapLocations() {
+    this.mapLookupLocations = {
+      address: [],
+      poi: [],
+      stop: [],
+      topographicPlace: [],
+    }
   }
 }

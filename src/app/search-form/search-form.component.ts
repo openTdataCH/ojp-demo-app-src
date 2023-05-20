@@ -135,7 +135,8 @@ export class SearchFormComponent implements OnInit {
 
     responsePromise.then(response => {
       response.text().then(responseText => {
-        const tripsResponse = OJP.TripsResponse.initWithXML(responseText, 'monomodal', 'public_transport');
+        const tripModeType = this.userTripService.tripModeTypes[0];
+        const tripsResponse = OJP.TripsResponse.initWithXML(responseText, tripModeType, 'public_transport');
 
         console.log('MOCK RESPONSE from ' + mockURL);
         console.log(tripsResponse);
@@ -239,6 +240,9 @@ export class SearchFormComponent implements OnInit {
           type: 'info',
           verticalPosition: 'top',
         })
+      } else {
+        const firstTrip = trips[0];
+        this.zoomToTrip(firstTrip);
       }
 
       const endRequestDate = new Date();
@@ -270,7 +274,8 @@ export class SearchFormComponent implements OnInit {
       popover.tripCustomRequestSaved.subscribe((tripsResponseXML) => {
         this.lastCustomTripRequestXML = popover.inputTripRequestXmlS
 
-        const tripResponse = OJP.TripsResponse.initWithXML(tripsResponseXML, 'monomodal', 'public_transport')
+        const tripModeType = this.userTripService.tripModeTypes[0];
+        const tripResponse = OJP.TripsResponse.initWithXML(tripsResponseXML, tripModeType, 'public_transport')
         if (tripResponse.trips.length === 0) {
           popover.inputTripRequestResponseXmlS = tripsResponseXML
           return
@@ -281,7 +286,8 @@ export class SearchFormComponent implements OnInit {
       })
 
       popover.tripCustomResponseSaved.subscribe((tripsResponseXML) => {
-        const tripResponse = OJP.TripsResponse.initWithXML(tripsResponseXML, 'monomodal', 'public_transport')
+        const tripModeType = this.userTripService.tripModeTypes[0];
+        const tripResponse = OJP.TripsResponse.initWithXML(tripsResponseXML, tripModeType, 'public_transport')
         if (tripResponse.trips.length === 0) {
           return
         }

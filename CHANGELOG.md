@@ -4,6 +4,19 @@ OJP-Demo URL: https://opentdatach.github.io/ojp-demo-app/
 
 ----
 
+07.April 2023
+- use latest [OJP JS](https://github.com/openTdataCH/ojp-js) version - see [#102](https://github.com/openTdataCH/ojp-demo-app-src/pull/102)
+- cleanup external libs inclusion
+
+19.March 2023
+- use latest [OJP JS](https://github.com/openTdataCH/ojp-js) version
+- improve mono-/multi- modal trip request parameters - [PR #95](https://github.com/openTdataCH/ojp-demo-app-src/pull/95), [NumberOfResult should not be 0 #81](https://github.com/openTdataCH/ojp-demo-app-src/issues/81)
+- improve map layers - [PR #96](https://github.com/openTdataCH/ojp-demo-app-src/pull/96), [Number of Bikes at Bikestations #88](https://github.com/openTdataCH/ojp-demo-app-src/issues/88)
+  - add customized popups for shared mobility POI layers
+  - show number of shared mobility vehicles in the popup / map
+- group the autocomplete `Location` results by: stops, POIs, TopographicPlaces, Addresses - [PR #97](https://github.com/openTdataCH/ojp-demo-app-src/pull/97), [Distinguish POI and StopPoint #74](https://github.com/openTdataCH/ojp-demo-app-src/issues/74)
+- filter autocomplete to show only stops in StationBoard tab - [PR #98](https://github.com/openTdataCH/ojp-demo-app-src/pull/98)
+
 19.February 2023
 - display relevant info for charging stations - [PR #89](https://github.com/openTdataCH/ojp-demo-app-src/pull/89), [Showing multiple Charging Points of One Charging Station #68](https://github.com/openTdataCH/ojp-demo-app-src/issues/68)
 - display taxi and booking arrangements - [PR #90](https://github.com/openTdataCH/ojp-demo-app-src/pull/90), [OJP demo app extension #87](https://github.com/openTdataCH/ojp-demo-app-src/issues/87)

@@ -62,6 +62,8 @@ const map_app_map_layers: Record<string, AppMapLayerOptions> = {
     minZoom: 12,
     layer_ids: [
       'car-rental-icon',
+      'car-rental-text-number',
+      'car-rental-text-provider',
     ],
     click_layer_ids: 'SAME_AS_LAYER_IDS',
   },
@@ -71,6 +73,8 @@ const map_app_map_layers: Record<string, AppMapLayerOptions> = {
     minZoom: 14,
     layer_ids: [
       'bike-icon',
+      'bike-text-number',
+      'bike-text-provider',
     ],
     click_layer_ids: 'SAME_AS_LAYER_IDS',
   },
@@ -80,6 +84,8 @@ const map_app_map_layers: Record<string, AppMapLayerOptions> = {
     minZoom: 14,
     layer_ids: [
       'scooter-icon',
+      'scooter-text-number',
+      'scooter-text-provider',
     ],
     click_layer_ids: 'SAME_AS_LAYER_IDS',
   },
@@ -89,6 +95,8 @@ const map_app_map_layers: Record<string, AppMapLayerOptions> = {
     minZoom: 12,
     layer_ids: [
       'charging-station-icon',
+      'charging-station-text-number',
+      'charging-station-text-provider',
     ],
     click_layer_ids: 'SAME_AS_LAYER_IDS',
   },

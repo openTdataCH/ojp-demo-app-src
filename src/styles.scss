@@ -78,7 +78,7 @@ body {
 }
 
 .popup-picker-header {
-  font-size: 16px;
+  font-size: 15px;
 }
 
 .layer-xml-info {
@@ -120,15 +120,28 @@ body {
   font-size: 14px;
 }
 
-.popup-charging-station ul {
-  margin-top: 4px;
+.popup-charging-station ul, .popup-shared-mobility ul {
+  margin-top: 2px;
   margin-bottom: 4px;
 }
 
-.popup-charging-station li {
+.popup-charging-station li, .popup-shared-mobility li {
   font-size: 12px;
 }
 
 .popup-charging-station .badge {
   font-size: 12px;
+}
+
+.popup-shared-mobility {
+  margin-bottom: 8px;
+}
+
+.popup-shared-mobility ul {
+  margin-left: 0px;
+}
+
+.popup-shared-mobility li {
+  margin-top: 0px;
+  padding-left: 0px;
 }

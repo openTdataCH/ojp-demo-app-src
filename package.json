@@ -26,9 +26,6 @@
     "npm": "^9.4.2",
     "rxjs": "~7.5.0",
     "tslib": "^2.3.0",
-    "xmlbuilder": "^15.1.1",
-    "xmldom": "git://github.com/xmldom/xmldom#0.7.0",
-    "xpath": "0.0.32",
     "zone.js": "~0.11.4",
     "ojp-sdk": "0.9.13"
   },

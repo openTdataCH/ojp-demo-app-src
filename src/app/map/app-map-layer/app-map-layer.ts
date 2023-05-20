@@ -1,9 +1,10 @@
+import * as GeoJSON from 'geojson'
 import mapboxgl from "mapbox-gl";
 
 import * as OJP from 'ojp-sdk'
 
-import { AppMapLayerOptions, APP_CONFIG } from "src/app/config/app-config";
-import { UserTripService } from "src/app/shared/services/user-trip.service";
+import { AppMapLayerOptions, APP_CONFIG } from '../../config/app-config'
+import { UserTripService } from "../../shared/services/user-trip.service";
 import { MapHelpers } from "../helpers/map.helpers";
 import { MAP_LAYERS_DEFINITIONS } from "./map-layers-def";
 
@@ -26,6 +27,8 @@ export class AppMapLayer {
 
     public isEnabled: boolean
     public lastOJPRequest: OJP.LocationInformationRequest | null
+
+    protected currentLocations: OJP.Location[];
 
     constructor(layerKey: string, map: mapboxgl.Map, appMapLayerOptions: AppMapLayerOptions, userTripService: UserTripService) {
         this.layerKey = layerKey;
@@ -52,6 +55,8 @@ export class AppMapLayer {
         this.lastOJPRequest = null;
 
         this.addMapSourceAndLayers();
+
+        this.currentLocations = [];
     }
 
     private addMapSourceAndLayers() {
@@ -107,9 +112,8 @@ export class AppMapLayer {
         const featuresLimit = this.geoRestrictionType === 'poi_all' ? 1000 : 300;
 
         const mapBounds = this.map.getBounds();
-        const stageConfig = this.userTripService.getStageConfig()
         const request = OJP.LocationInformationRequest.initWithBBOXAndType(
-            stageConfig,
+            this.userTripService.getStageConfig(),
             mapBounds.getWest(),
             mapBounds.getNorth(),
             mapBounds.getEast(),
@@ -122,26 +126,78 @@ export class AppMapLayer {
         this.lastOJPRequest = request
 
         const layerConfig = APP_CONFIG.map_app_map_layers[this.layerKey];
-
         request.fetchResponse().then(locations => {
             if (!this.shouldLoadNewFeatures()) {
                 this.removeAllFeatures();
             }
 
-            const features: GeoJSON.Feature[] = []
+            const locationsDiscarded: OJP.Location[] = [];
+            const mapFeatures: Record<string, GeoJSON.Feature> = {};
 
-            locations.forEach(location => {
-                const feature = this.computeFeatureFromLocation(location);
-                if (feature === null) {
+            locations.forEach((location, idx) => {
+                if (location.geoPosition === null) {
                     return;
                 }
 
-                if (location.poi && feature.properties && layerConfig.LIR_Restriction_Type === 'poi_all') {
-                    // 50px image in ./src/assets/map-style-icons
-                    feature.properties['style.icon-image'] = location.poi.computePoiMapIcon();
+                if (layerConfig.LIR_Restriction_Type === 'poi_amenity') {
+                    const layerPoiType = layerConfig.LIR_POI_Type;
+                    const poiCategory = location.poi?.category ?? null;
+                    if (layerPoiType !== poiCategory) {
+                        locationsDiscarded.push(location);
+                        return;
+                    }
                 }
 
-                features.push(feature);
+                const locationKey = location.geoPosition.asLatLngString();
+                if (!(locationKey in mapFeatures)) {
+                    const feature: GeoJSON.Feature = {
+                        type: 'Feature',
+                        properties: {
+                            locations_idx: [],
+                        },
+                        geometry: {
+                            type: 'Point',
+                            coordinates: location.geoPosition.asPosition(),
+                        }
+                    }
+
+                    mapFeatures[locationKey] = feature;
+                }
+
+                const feature = mapFeatures[locationKey] ?? null;
+                if (feature === null || feature.properties === null) {
+                    return;
+                }
+
+                const locationsIdx: number[] = feature.properties['locations_idx'];
+                locationsIdx.push(idx);
+            });
+
+            if (locationsDiscarded.length > 0) {
+                // console.log('Following locations are discarded for the POI request ' + layerConfig.LIR_POI_Type);
+                // console.log(locationsDiscarded);
+            }
+
+            this.currentLocations = locations;
+            
+            const features = Object.values(mapFeatures);
+            features.forEach(feature => {
+                if (feature.properties === null) {
+                    return;
+                }
+
+                const locations_idx = feature.properties['locations_idx'] as number[];
+                const featureLocations: OJP.Location[] = []
+                locations_idx.forEach(idx => {
+                    const location = locations[idx] ?? null;
+                    if (location) {
+                        featureLocations.push(location);
+                    }
+                })
+
+                feature.properties['locations_idx'] = locations_idx.join(',');
+
+                this.annotateFeatureFromLocations(feature, featureLocations);
             });
 
             this.setSourceFeatures(features);
@@ -158,6 +214,22 @@ export class AppMapLayer {
         }
     
         this.setSourceFeatures([]);
+    }
+
+    private setSourceFeatures(features: GeoJSON.Feature[]) {
+        this.features = features
+    
+        const source = this.map.getSource(this.mapSourceID) as mapboxgl.GeoJSONSource
+        const featureCollection = <GeoJSON.FeatureCollection>{
+            'type': 'FeatureCollection',
+            'features': features
+        }
+        
+        source.setData(featureCollection)
+    }
+
+    protected annotateFeatureFromLocations(feature: GeoJSON.Feature, locations: OJP.Location[]) {
+        // extend / override
     }
 
     public handleMapClick(ev: mapboxgl.MapMouseEvent): boolean {
@@ -179,15 +251,30 @@ export class AppMapLayer {
         if (nearbyFeatures.length === 0) {
             return false;
         }
+        const nearbyFeature = nearbyFeatures[0];
+        if (nearbyFeature.feature.properties === null) {
+            return false;
+        }
 
-        const locations: OJP.Location[] = [];
-        nearbyFeatures.forEach(nearbyFeature => {
-            const location = OJP.Location.initWithFeature(nearbyFeature.feature);
-            if (location) {
-                locations.push(location);
+        let locationsIdxS: string = nearbyFeature.feature.properties['locations_idx'] ?? '';
+        locationsIdxS = locationsIdxS.trim();
+        if (locationsIdxS === '') {
+            return false;
+        }
+
+        // Use a map because the mapbox nearbyFeatures might be duplicated
+        const mapLocations: Record<number, OJP.Location> = [];
+        
+        const locationsIdx = locationsIdxS.split(',');
+        locationsIdx.forEach(idxS => {
+            const idx = parseInt(idxS, 10);
+            const location = this.currentLocations[idx] ?? null;
+            if (location && !(idx in mapLocations)) {
+                mapLocations[idx] = location;
             }
         });
 
+        const locations = Object.values(mapLocations);
         if (locations.length === 0) {
             return false;
         }
@@ -197,10 +284,6 @@ export class AppMapLayer {
     }
 
     private showPopup(locations: OJP.Location[]) {
-        if (locations.length === 0) {
-            return;
-        }
-
         const location = locations[0];
         const locationLngLat = location.geoPosition?.asLngLat() ?? null;
         if (locationLngLat === null) { return }
@@ -224,7 +307,7 @@ export class AppMapLayer {
             if (endpointType === null) {
                 return;
             }
-    
+
             this.userTripService.updateTripEndpoint(location, endpointType, 'MapPopupClick');
     
             popup.remove();
@@ -235,28 +318,12 @@ export class AppMapLayer {
             .addTo(this.map);
     }
 
-    private computePopupHTML(locations: OJP.Location[]): string | null {
+    protected computePopupHTML(locations: OJP.Location[]): string | null {
         if (locations.length === 0) {
             return null;
         }
 
         const firstLocation = locations[0];
-
-        if (this.geoRestrictionType === 'poi_all') {
-            const poiPopupHTML = this.computePOIPopupHTML(firstLocation);
-            if (poiPopupHTML) {
-                return poiPopupHTML;
-            }
-        }
-
-        const chargingStationType: OJP.GeoRestrictionPoiOSMTag = 'charging_station';
-        const isChargingStation = ((this.geoRestrictionType === 'poi_amenity') && this.geoRestrictionPoiOSMTags?.indexOf(chargingStationType) !== -1);
-        if (isChargingStation) {
-            const chargingStationHTML = this.computeChargingStationPopupHTML(locations);
-            if (chargingStationHTML) {
-                return chargingStationHTML;
-            }
-        }
 
         const popupWrapperDIV = document.getElementById('map-endpoint-picker-popup') as HTMLElement;
         if (popupWrapperDIV === null) {
@@ -290,142 +357,5 @@ export class AppMapLayer {
         popupHTML = popupHTML.replace('[GEOJSON_PROPERTIES_TABLE]', tableHTML);
     
         return popupHTML
-    }
-
-    private computePOIPopupHTML(location: OJP.Location): string | null {
-        const popupWrapperDIV = document.getElementById('map-poi-picker-popup') as HTMLElement;
-        if (popupWrapperDIV === null) {
-            return null;
-        }
-
-        const geoJsonProperties = location.geoPosition?.properties ?? null;
-        if (geoJsonProperties === null) {
-            return null;
-        }
-
-        let popupHTML = popupWrapperDIV.innerHTML;
-        popupHTML = popupHTML.replace('[POI_NAME]', geoJsonProperties['poi.name']);
-
-        const tableTRs: string[] = []
-        tableTRs.push('<tr><td>Code</td><td>' + geoJsonProperties['poi.code'].substring(0, 20) + '...</td></tr>');
-        tableTRs.push('<tr><td>Category</td><td>' + geoJsonProperties['poi.category'] + '</td></tr>');
-        tableTRs.push('<tr><td>SubCategory</td><td>' + geoJsonProperties['poi.subcategory'] + '</td></tr>');
-
-        const tableHTML = '<table class="table">' + tableTRs.join('') + '</table>';
-        popupHTML = popupHTML.replace('[GEOJSON_PROPERTIES_TABLE]', tableHTML);
-
-        return popupHTML;
-    }
-
-    // TODO - use a child class - ChargingStationAppMapLayer
-    private computeChargingStationPopupHTML(locations: OJP.Location[]): string | null {
-        const popupWrapperDIV = document.getElementById('map-poi-picker-popup') as HTMLElement;
-        if (popupWrapperDIV === null) {
-            return null;
-        }
-
-        if (locations.length === 0) {
-            return null;
-        }
-
-        const firstLocation = locations[0];
-        const firstLocationProperties = firstLocation.geoPosition?.properties ?? null;
-        if (firstLocationProperties === null) {
-            return null;
-        }
-
-        // it could be that we get different POI category
-        if (firstLocationProperties['poi.category'] !== 'charging_station') {
-            return null;
-        }
-
-        const tableTRs: string[] = [];
-        tableTRs.push('<tr><td style="width:50px;">Name</td><td>' + firstLocationProperties['poi.name'] + ' - ' + firstLocationProperties['locationName'] + '</td></tr>');
-        
-        let codeCleaned = firstLocationProperties['poi.code'];
-        codeCleaned = codeCleaned.replace(firstLocationProperties['poi.name'], '');
-        codeCleaned = codeCleaned.replace(firstLocationProperties['locationName'], '');
-        tableTRs.push('<tr><td>Code</td><td>' + codeCleaned + '</td></tr>');
-
-        const statusLIs: string[] = [];
-        locations.forEach((location, idx) => {
-            const featureProperties = location.geoPosition?.properties ?? null;
-            if (featureProperties === null) {
-                return;
-            }
-
-            const locationStatus = (() => {
-                const featureLocationStatus = featureProperties['OJP.Attr.locationStatus'].toUpperCase();
-                let className = 'bg-success';
-                let locationStatusText = featureLocationStatus.toLowerCase();
-                if (featureLocationStatus === 'AVAILABALE') {
-                    locationStatusText = 'available';
-                }
-                if (featureLocationStatus === 'OCCUPIED') {
-                    className = 'bg-danger';
-                }
-                if (featureLocationStatus === 'UNKNOWN') {
-                    className = 'bg-secondary';
-                }
-
-                return '<span class="badge rounded-pill ' + className + '">' + locationStatusText + '</span>';
-            })();
-            const statusLI = '<li>' + locationStatus + ' ' + featureProperties['OJP.Attr.Code'] + '</li>';
-            statusLIs.push(statusLI);
-        });
-
-        tableTRs.push('<tr><td colspan="2"><p>Chargers (' + locations.length + ')</p><ul>' + statusLIs.join('') + '</ul></td></tr>');
-
-        let popupHTML = popupWrapperDIV.innerHTML;
-        popupHTML = popupHTML.replace('[POI_NAME]', 'Charging Station');
-
-        const tableHTML = '<table class="table popup-charging-station">' + tableTRs.join('') + '</table>';
-        popupHTML = popupHTML.replace('[GEOJSON_PROPERTIES_TABLE]', tableHTML);
-
-        return popupHTML;
-    }
-
-    private setSourceFeatures(features: GeoJSON.Feature[]) {
-        this.features = features
-    
-        const source = this.map.getSource(this.mapSourceID) as mapboxgl.GeoJSONSource
-        const featureCollection = <GeoJSON.FeatureCollection>{
-            'type': 'FeatureCollection',
-            'features': features
-        }
-        
-        source.setData(featureCollection)
-    }
-
-    private computeFeatureFromLocation(location: OJP.Location): GeoJSON.Feature | null {
-        const feature = location.asGeoJSONFeature();
-
-        if (this.geoRestrictionType === 'stop') {
-            this._patchStopFeature(feature);
-        }
-
-        if (feature?.properties) {
-            feature.properties[FeaturePropsEnum.OJP_GeoRestrictionType] = this.geoRestrictionType;
-            feature.properties[FeaturePropsEnum.OJP_GeoRestrictionPoiOSMTag] = this.geoRestrictionPoiOSMTags?.join(',');
-        }
-
-        return feature
-    }
-
-    private _patchStopFeature(feature: GeoJSON.Feature | null): void {
-        if (feature === null || feature.properties === null) {
-            return;
-        }
-    
-        const featureStopPlaceRef = feature.properties['stopPlace.stopPlaceRef'] as string;
-        let featureStopPlaceRefLabel = featureStopPlaceRef.slice();
-    
-        // TEST LA issue - long ids are too long - trim the Mapbox layer label if needed
-        const maxCharsNo = 32;
-        if (featureStopPlaceRefLabel.length > maxCharsNo) {
-            featureStopPlaceRefLabel = featureStopPlaceRef.substring(0, maxCharsNo) + '...';
-        }
-    
-        feature.properties['stopPlace.stopPlaceRefLabel'] = featureStopPlaceRefLabel;
     }
 }

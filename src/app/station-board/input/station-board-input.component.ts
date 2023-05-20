@@ -98,7 +98,8 @@ export class StationBoardInputComponent implements OnInit {
   private fetchLookupLocations(searchTerm: string) {
     this.isBusySearching = true;
 
-    const locationInformationRequest = OJP.LocationInformationRequest.initWithLocationName(this.appStageConfig, searchTerm);
+    const geoRestrictionType: OJP.GeoRestrictionType = 'stop';
+    const locationInformationRequest = OJP.LocationInformationRequest.initWithLocationName(this.appStageConfig, searchTerm, geoRestrictionType);
 
     locationInformationRequest.fetchResponse().then(locations => {
       this.parseLocations(locations);

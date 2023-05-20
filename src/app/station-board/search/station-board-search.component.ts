@@ -1,16 +1,18 @@
+import * as GeoJSON from 'geojson'
+
+import * as OJP from 'ojp-sdk'
+
 import { Component, OnInit, ViewChild } from '@angular/core';
 
 import { SbbExpansionPanel } from '@sbb-esta/angular/accordion';
 import { SbbDialog } from '@sbb-esta/angular/dialog';
 
-import * as OJP from 'ojp-sdk'
-
 import { UserTripService } from 'src/app/shared/services/user-trip.service';
 import { MapService } from 'src/app/shared/services/map.service';
 import { StationBoardData, StationBoardService } from '../station-board.service';
 import { StationBoardInputComponent } from '../input/station-board-input.component';
-import { APP_STAGE } from 'src/app/config/app-config';
 import { DebugXmlPopoverComponent } from 'src/app/search-form/debug-xml-popover/debug-xml-popover.component';
+import { APP_STAGE } from 'src/app/config/app-config';
 
 @Component({
   selector: 'station-board-search',

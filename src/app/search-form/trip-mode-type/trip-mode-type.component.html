@@ -3,10 +3,10 @@
   <div class="d-flex align-items-center via-mot">
     <div class="flex-grow-1">
       <sbb-form-field class="w-100">
-        <sbb-label>Choose Multimodal / Monomodal</sbb-label>
+        <sbb-label>Choose Monomodal / Multimodal</sbb-label>
           <sbb-select
           [(ngModel)]="this.tripModeType"
-          (selectionChange)="this.onTripModeChange()">
+          (selectionChange)="onTripModeChange()">
           <sbb-option
             *ngFor="let tripTransportMode of this.tripTransportModeData"
             [value]="tripTransportMode.modeType">{{ this.computeTripModeTypeText(tripTransportMode.modeType) }}</sbb-option>

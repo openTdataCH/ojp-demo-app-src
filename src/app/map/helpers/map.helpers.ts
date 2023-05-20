@@ -1,3 +1,4 @@
+import * as GeoJSON from 'geojson'
 import mapboxgl from "mapbox-gl";
 
 interface NearbyFeature {
@@ -89,6 +90,8 @@ export class MapHelpers {
       };
       nearbyFeatures.push(nearbyFeature);
     });
+
+    nearbyFeatures.sort((a,b) => a.distance - b.distance);
 
     return nearbyFeatures;
   }

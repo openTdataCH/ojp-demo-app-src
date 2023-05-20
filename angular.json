@@ -38,7 +38,11 @@
               "./node_modules/bootstrap/dist/js/bootstrap.bundle.min.js"
             ],
             "allowedCommonJsDependencies": [
-              "xmlbuilder"
+              "xmlbuilder",
+              "mapbox-gl",
+              "xpath",
+              "cross-fetch",
+              "@xmldom/xmldom"
             ]
           },
           "configurations": {
