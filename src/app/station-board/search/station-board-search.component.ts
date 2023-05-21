@@ -13,6 +13,8 @@ import { StationBoardData, StationBoardService } from '../station-board.service'
 import { StationBoardInputComponent } from '../input/station-board-input.component';
 import { DebugXmlPopoverComponent } from 'src/app/search-form/debug-xml-popover/debug-xml-popover.component';
 
+import { APP_STAGE } from '../../config/app-config'
+
 @Component({
   selector: 'station-board-search',
   templateUrl: './station-board-search.component.html',
@@ -22,7 +24,7 @@ export class StationBoardSearchComponent implements OnInit {
   @ViewChild(SbbExpansionPanel, { static: true }) searchPanel: SbbExpansionPanel | undefined;
   @ViewChild(StationBoardInputComponent) autocompleteInputComponent: StationBoardInputComponent | undefined;
 
-  public appStage: OJP.APP_Stage;
+  public appStage: APP_STAGE;
   public stationBoardType: OJP.StationBoardType;
 
   public searchLocation: OJP.Location | null
@@ -30,7 +32,7 @@ export class StationBoardSearchComponent implements OnInit {
   public searchDate: Date
   public searchTime: string
   
-  public appStageOptions: OJP.APP_Stage[];
+  public appStageOptions: APP_STAGE[];
   public stationBoardTypes: OJP.StationBoardType[]
   public isSearching: boolean
 
