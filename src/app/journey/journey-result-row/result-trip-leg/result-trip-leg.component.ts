@@ -319,7 +319,7 @@ export class ResultTripLegComponent implements OnInit {
       const stopPoint = isFrom ? timedLeg.fromStopPoint : timedLeg.toStopPoint
       
       const stopPointTime = isFrom ? stopPoint.departureData : stopPoint.arrivalData
-      const depTime = stopPointTime?.estimatedTime ?? stopPointTime?.timetableTime
+      const depTime = stopPointTime?.timetableTime
       if (depTime) {
         locationData.timeText = OJP.DateHelpers.formatTimeHHMM(depTime)
 

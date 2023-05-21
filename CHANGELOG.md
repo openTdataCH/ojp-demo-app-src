@@ -4,8 +4,15 @@ OJP-Demo URL: https://opentdatach.github.io/ojp-demo-app/
 
 ----
 
+21.May 2023
+- use latest [OJP JS](https://github.com/openTdataCH/ojp-js) version
+- adjust display times - [#93 Change display time in case of delay](https://github.com/openTdataCH/ojp-demo-app-src/issues/93)
+- display `Nextbike` shared mobility POIs
+- bring back removed travel modes - [#99 Missing e-Scooter Mode](https://github.com/openTdataCH/ojp-demo-app-src/issues/99)
+- enable taxi travel mode - [#87 OJP demo app extension](https://github.com/openTdataCH/ojp-demo-app-src/issues/87)
+
 07.April 2023
-- use latest [OJP JS](https://github.com/openTdataCH/ojp-js) version - see [#102](https://github.com/openTdataCH/ojp-demo-app-src/pull/102)
+- use latest [OJP JS](https://github.com/openTdataCH/ojp-js) version
 - cleanup external libs inclusion
 
 19.March 2023

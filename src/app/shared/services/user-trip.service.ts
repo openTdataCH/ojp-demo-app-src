@@ -1,6 +1,6 @@
 import { EventEmitter, Injectable } from '@angular/core'
 
-import { APP_CONFIG } from 'src/app/config/app-config'
+import { APP_CONFIG, APP_STAGE } from '../../config/app-config'
 import { MapService } from './map.service'
 
 import * as OJP from 'ojp-sdk'
@@ -24,7 +24,7 @@ export class UserTripService {
   
   public lastJourneyResponse: OJP.JourneyResponse | null
   public departureDate: Date
-  public currentAppStage: OJP.APP_Stage
+  public currentAppStage: APP_STAGE
 
   public permalinkURLAddress: string | null
 
@@ -268,13 +268,13 @@ export class UserTripService {
     this.geoLocationsUpdated.emit();
   }
 
-  private computeAppStageFromString(appStageS: string): OJP.APP_Stage {
-    const availableStages: OJP.APP_Stage[] = ['INT', 'LA Beta', 'PROD', 'TEST'];
+  private computeAppStageFromString(appStageS: string): APP_STAGE {
+    const availableStages: APP_STAGE[] = ['INT', 'LA Beta', 'PROD', 'TEST'];
     const availableStagesLower: string[] = availableStages.map(stage => {
       return stage.toLowerCase();
     });
 
-    const appStage = appStageS.trim() as OJP.APP_Stage;
+    const appStage = appStageS.trim() as APP_STAGE;
     const stageIDX = availableStagesLower.indexOf(appStage.toLowerCase());
     if (stageIDX !== -1) {
       return availableStages[stageIDX];
@@ -436,7 +436,7 @@ export class UserTripService {
     return tripDateTime
   }
 
-  public getStageConfig(forStage: OJP.APP_Stage = this.currentAppStage): OJP.StageConfig {
+  public getStageConfig(forStage: APP_STAGE = this.currentAppStage): OJP.StageConfig {
     const stageConfig = APP_CONFIG.app_stages.find(stage => {
       return stage.key === forStage
     }) ?? null;
@@ -449,7 +449,7 @@ export class UserTripService {
     return stageConfig
   }
 
-  public updateAppStage(newStage: OJP.APP_Stage) {
+  public updateAppStage(newStage: APP_STAGE) {
     this.currentAppStage = newStage
     this.updatePermalinkAddress()
   }

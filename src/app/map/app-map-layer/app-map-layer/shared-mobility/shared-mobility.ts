@@ -66,6 +66,10 @@ export class SharedMobility {
         if (location.locationName === 'Publiebike') {
           return ['PubliBike', 'E-Bike']
         }
+
+        if (location.locationName === 'Nextbike') {
+          return ['Nextbike', 'Bike']
+        }
       }
 
       if (code.startsWith('2em_cars')) {

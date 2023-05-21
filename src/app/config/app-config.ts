@@ -1,5 +1,7 @@
 import * as OJP from 'ojp-sdk'
 
+export type APP_STAGE = OJP.Default_APP_Stage
+
 export interface AppMapLayerOptions {
     LIR_Restriction_Type: OJP.GeoRestrictionType
     LIR_POI_Type?: null | OJP.GeoRestrictionPoiOSMTag | OJP.GeoRestrictionPoiOSMTag[]
