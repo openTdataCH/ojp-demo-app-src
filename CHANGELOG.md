@@ -4,6 +4,9 @@ OJP-Demo URL: https://opentdatach.github.io/ojp-demo-app/
 
 ----
 
+23.May 2023
+- use latest [OJP JS](https://github.com/openTdataCH/ojp-js) version
+
 21.May 2023
 - use latest [OJP JS](https://github.com/openTdataCH/ojp-js) version
 - adjust display times - [#93 Change display time in case of delay](https://github.com/openTdataCH/ojp-demo-app-src/issues/93)
