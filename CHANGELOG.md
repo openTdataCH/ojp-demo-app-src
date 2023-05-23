@@ -6,6 +6,7 @@ OJP-Demo URL: https://opentdatach.github.io/ojp-demo-app/
 
 23.May 2023
 - use latest [OJP JS](https://github.com/openTdataCH/ojp-js) version
+  - `ojp:DepArrTime` param is back
 
 21.May 2023
 - use latest [OJP JS](https://github.com/openTdataCH/ojp-js) version
