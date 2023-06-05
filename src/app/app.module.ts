@@ -29,6 +29,8 @@ import { StationBoardSearchComponent } from './station-board/search/station-boar
 
 import { TripModeTypeComponent } from './search-form/trip-mode-type/trip-mode-type.component';
 
+import { EmbedSearchComponent } from './embed/embed-search.component';
+import { EmbedStationBoardComponent } from './embed/embed-station-board.component';
 import { WebFooterComponent } from './shared/components/web-footer';
 import { WebHeaderComponent } from './shared/components/web-header';
 
@@ -56,6 +58,8 @@ import { WebHeaderComponent } from './shared/components/web-header';
     
     WebFooterComponent,
     WebHeaderComponent,
+    EmbedSearchComponent,
+    EmbedStationBoardComponent,
   ],
   imports: [
     BrowserModule,
