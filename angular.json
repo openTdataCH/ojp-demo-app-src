@@ -24,8 +24,20 @@
             "tsConfig": "tsconfig.app.json",
             "inlineStyleLanguage": "scss",
             "assets": [
-              "src/favicon.ico",
-              "src/assets"
+              {
+                "glob": "favicon.ico",
+                "input": "src/",
+                "output": "/"
+              },
+              {
+                "glob": "**/*",
+                "input": "src/assets/",
+                "ignore": [
+                  "**/mocks/**/*",
+                  "**/mocks-local/**/*"
+                ],
+                "output": "/assets/"
+              }
             ],
             "styles": [
               "node_modules/@sbb-esta/angular/typography.css",
