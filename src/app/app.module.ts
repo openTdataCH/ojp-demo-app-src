@@ -29,6 +29,8 @@ import { StationBoardSearchComponent } from './station-board/search/station-boar
 
 import { TripModeTypeComponent } from './search-form/trip-mode-type/trip-mode-type.component';
 
+import { WebFooterComponent } from './shared/components/web-footer';
+import { WebHeaderComponent } from './shared/components/web-header';
 
 @NgModule({
   declarations: [
@@ -51,6 +53,9 @@ import { TripModeTypeComponent } from './search-form/trip-mode-type/trip-mode-ty
 
     DebugXmlPopoverComponent,
     InputXmlPopoverComponent,
+    
+    WebFooterComponent,
+    WebHeaderComponent,
   ],
   imports: [
     BrowserModule,

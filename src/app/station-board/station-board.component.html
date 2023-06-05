@@ -1,9 +1,24 @@
-<div class="row">
-    <div class="col-md-4">
-        <station-board-search></station-board-search>
-        <station-board-result></station-board-result>
-    </div>
-    <div class="col-md-8">
-        <station-board-map></station-board-map>
-    </div>
+<div class="container">
+  <web-header></web-header>
+
+  <div class="app-root">
+    <nav sbb-tab-nav-bar [tabPanel]="tabPanel">
+      <a sbb-tab-link [active]="'false'" [routerLink]="'../search'">Journey Search</a>
+      <a sbb-tab-link [active]="'true'">Station Board</a>
+    </nav>
+
+    <sbb-tab-nav-panel #tabPanel>
+      <div class="row">
+        <div class="col-md-4">
+          <station-board-search></station-board-search>
+          <station-board-result></station-board-result>
+        </div>
+        <div class="col-md-8">
+          <station-board-map></station-board-map>
+        </div>
+      </div>
+    </sbb-tab-nav-panel>
+  </div>
+
+  <web-footer></web-footer>
 </div>

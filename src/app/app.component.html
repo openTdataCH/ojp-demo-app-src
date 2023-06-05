@@ -1,16 +1,1 @@
-<div class="app-root">
-  <nav sbb-tab-nav-bar [tabPanel]="tabPanel">
-    <a sbb-tab-link *ngFor="let appTab of this.appTabs"
-      [routerLink]="appTab.link"
-      routerLinkActive
-      #rla="routerLinkActive"
-      [active]="rla.isActive"
-    >
-      {{appTab.label}}
-    </a>
-  </nav>
-  
-  <sbb-tab-nav-panel #tabPanel>
-    <router-outlet></router-outlet>
-  </sbb-tab-nav-panel>
-</div>
+<router-outlet></router-outlet>
