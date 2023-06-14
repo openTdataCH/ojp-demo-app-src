@@ -7,6 +7,7 @@ import * as OJP from 'ojp-sdk'
 interface LegLocationData {
   locationText: string,
   platformText: string | null,
+  actualPlatformText: string | null,
   timeText: string | null,
   delayText: string | null,
 }
@@ -336,6 +337,7 @@ export class ResultTripLegComponent implements OnInit {
       }
 
       locationData.platformText = stopPoint.plannedPlatform
+      locationData.actualPlatformText = stopPoint.actualPlatform
     }
 
     return locationData
@@ -351,5 +353,4 @@ export class ResultTripLegComponent implements OnInit {
 
     this.mapService.tryToCenterAndZoomToLocation(location)
   }
-
 }
