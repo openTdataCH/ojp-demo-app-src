@@ -27,6 +27,7 @@ export class UserTripService {
   public currentAppStage: APP_STAGE
 
   public permalinkURLAddress: string | null
+  public embedLinkURLAddress: string | null
 
   public defaultsInited = new EventEmitter<void>();
   public locationsUpdated = new EventEmitter<void>();
@@ -55,6 +56,7 @@ export class UserTripService {
     this.currentAppStage = 'PROD'
 
     this.permalinkURLAddress = null
+    this.embedLinkURLAddress = null
   }
 
   public initDefaults() {
@@ -422,6 +424,17 @@ export class UserTripService {
     queryParams.append('stage', stageS)
 
     this.permalinkURLAddress = 'search?' + queryParams.toString()
+
+    const embedQueryParams = new URLSearchParams();
+    const keepKeys = ['from', 'to'];
+    keepKeys.forEach(key => {
+      const value = queryParams.get(key);
+      if (value !== null) {
+        embedQueryParams.append(key, value);
+      }
+    })
+    embedQueryParams.append('do_search', 'yes');
+    this.embedLinkURLAddress = 'embed/search?' + embedQueryParams.toString();    
   }
 
   private computeInitialDate(): Date {

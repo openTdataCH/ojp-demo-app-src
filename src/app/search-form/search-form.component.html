@@ -111,7 +111,7 @@
   </div>
 </div>
 
-<div class="row mb-2">
+<div class="row mb-2" *ngIf="this.isEmbed === false">
   <div class="col">
     <div class="d-flex flex-row-reverse">
       <div *ngIf="requestDuration !== null">
@@ -120,6 +120,10 @@
       <div style="width: 7px"></div>
       <div *ngIf="this.userTripService.permalinkURLAddress !== null">
         <a href="{{ this.userTripService.permalinkURLAddress }}" target="_blank">Permalink</a>
+      </div>
+      <div *ngIf="this.userTripService.embedLinkURLAddress !== null" clas="text-center" style="width: 7px; margin-left: 4px;"> | </div>
+      <div *ngIf="this.userTripService.embedLinkURLAddress !== null">
+        <a href="{{ this.userTripService.embedLinkURLAddress }}" target="_blank">Embed</a>
       </div>
     </div>
   </div>

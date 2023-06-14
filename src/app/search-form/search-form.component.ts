@@ -13,6 +13,7 @@ import * as OJP from 'ojp-sdk'
 import mapboxgl from 'mapbox-gl'
 
 import { APP_STAGE } from '../config/app-config';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-search-form',
@@ -35,6 +36,8 @@ export class SearchFormComponent implements OnInit {
 
   private lastCustomTripRequestXML: string | null
 
+  public isEmbed: boolean
+
   public searchDate: Date
   public searchTime: string
 
@@ -43,6 +46,7 @@ export class SearchFormComponent implements OnInit {
   constructor(
     private notificationToast: SbbNotificationToast,
     private tripXmlPopover: SbbDialog,
+    private router: Router,
     public userTripService: UserTripService,
     public mapService: MapService
   ) {
@@ -65,6 +69,7 @@ export class SearchFormComponent implements OnInit {
 
     this.useMocks = false
 
+    this.isEmbed = this.router.url.indexOf('/embed/') !== -1;
   }
 
   ngOnInit() {
