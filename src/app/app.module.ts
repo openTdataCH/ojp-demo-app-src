@@ -21,6 +21,8 @@ import { MapComponent } from './map/map.component';
 import { ResultTripLegComponent } from './journey/journey-result-row/result-trip-leg/result-trip-leg.component';
 import { SearchFormComponent } from './search-form/search-form.component';
 
+import { CustomStopEventXMLPopoverComponent } from './station-board/search/custom-stop-event-xml-popover/custom-stop-event-xml-popover.component';
+
 import { StationBoardComponent } from './station-board/station-board.component';
 import { StationBoardInputComponent } from './station-board/input/station-board-input.component';
 import { StationBoardMapComponent } from './station-board/map/station-board-map.component';
@@ -29,6 +31,10 @@ import { StationBoardSearchComponent } from './station-board/search/station-boar
 
 import { TripModeTypeComponent } from './search-form/trip-mode-type/trip-mode-type.component';
 
+import { EmbedSearchComponent } from './embed/embed-search.component';
+import { EmbedStationBoardComponent } from './embed/embed-station-board.component';
+import { WebFooterComponent } from './shared/components/web-footer';
+import { WebHeaderComponent } from './shared/components/web-header';
 
 @NgModule({
   declarations: [
@@ -51,6 +57,12 @@ import { TripModeTypeComponent } from './search-form/trip-mode-type/trip-mode-ty
 
     DebugXmlPopoverComponent,
     InputXmlPopoverComponent,
+    CustomStopEventXMLPopoverComponent,
+    
+    WebFooterComponent,
+    WebHeaderComponent,
+    EmbedSearchComponent,
+    EmbedStationBoardComponent,
   ],
   imports: [
     BrowserModule,

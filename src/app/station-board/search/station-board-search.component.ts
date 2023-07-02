@@ -6,12 +6,14 @@ import { Component, OnInit, ViewChild } from '@angular/core';
 
 import { SbbExpansionPanel } from '@sbb-esta/angular/accordion';
 import { SbbDialog } from '@sbb-esta/angular/dialog';
+import { SbbNotificationToast } from '@sbb-esta/angular/notification-toast';
 
 import { UserTripService } from 'src/app/shared/services/user-trip.service';
 import { MapService } from 'src/app/shared/services/map.service';
 import { StationBoardData, StationBoardService } from '../station-board.service';
 import { StationBoardInputComponent } from '../input/station-board-input.component';
-import { DebugXmlPopoverComponent } from 'src/app/search-form/debug-xml-popover/debug-xml-popover.component';
+import { DebugXmlPopoverComponent } from '../../search-form/debug-xml-popover/debug-xml-popover.component';
+import { CustomStopEventXMLPopoverComponent } from './custom-stop-event-xml-popover/custom-stop-event-xml-popover.component';
 
 import { APP_STAGE } from '../../config/app-config'
 
@@ -24,7 +26,6 @@ export class StationBoardSearchComponent implements OnInit {
   @ViewChild(SbbExpansionPanel, { static: true }) searchPanel: SbbExpansionPanel | undefined;
   @ViewChild(StationBoardInputComponent) autocompleteInputComponent: StationBoardInputComponent | undefined;
 
-  public appStage: APP_STAGE;
   public stationBoardType: OJP.StationBoardType;
 
   public searchLocation: OJP.Location | null
@@ -40,10 +41,12 @@ export class StationBoardSearchComponent implements OnInit {
 
   public permalinkURLAddress: string
 
-  public requestData: OJP.RequestData | null;
+  public currentRequestData: OJP.RequestData;
 
   constructor(
-    private debugXmlPopover: SbbDialog, 
+    private notificationToast: SbbNotificationToast,
+    private debugXmlPopover: SbbDialog,
+    private customXmlPopover: SbbDialog,
     private mapService: MapService, 
     private stationBoardService: StationBoardService,
     public userTripService: UserTripService,
@@ -53,8 +56,6 @@ export class StationBoardSearchComponent implements OnInit {
     this.appStageOptions = ['PROD', 'INT', 'TEST', 'LA Beta'];
     this.stationBoardTypes = ['Departures', 'Arrivals']
 
-    this.appStage = this.appStageOptions[0];
-    
     this.stationBoardType = this.computeStationBoardType();
 
     this.searchLocation = null;
@@ -67,12 +68,27 @@ export class StationBoardSearchComponent implements OnInit {
     this.permalinkURLAddress = '';
     this.updatePermalinkURLAddress();
 
-    this.requestData = null;
+    this.currentRequestData = {
+      requestXmlS: null,
+      requestDatetime: null,
+      responseXmlS: null,
+      responseDatetime: null
+    };
   }
 
   ngOnInit(): void {
+    const userStage = this.queryParams.get('stage');
+    if (userStage) {
+      const newAppStage = this.computeAppStageFromString(userStage);
+      if (newAppStage) {
+        this.userTripService.updateAppStage(newAppStage)
+      }
+    }
+
     const userStopID = this.queryParams.get('stop_id');
     if (userStopID) {
+      this.updateCurrentRequestData(userStopID);
+
       this.fetchStopEventsForStopRef(userStopID);
       this.lookupStopPlaceRef(userStopID);
     }
@@ -82,7 +98,26 @@ export class StationBoardSearchComponent implements OnInit {
     })
   }
 
+  private computeAppStageFromString(appStageS: string): APP_STAGE | null {
+    const availableStagesLower: string[] = this.appStageOptions.map(stage => {
+      return stage.toLowerCase();
+    });
+
+    const appStage = appStageS.trim() as APP_STAGE;
+    const stageIDX = availableStagesLower.indexOf(appStage.toLowerCase());
+    if (stageIDX !== -1) {
+      return this.appStageOptions[stageIDX];
+    }
+
+    return null;
+  }
+
   public onLocationSelected(location: OJP.Location) {
+    const stopPlaceRef = location.stopPlace?.stopPlaceRef ?? null;
+    if (stopPlaceRef) {
+      this.updateCurrentRequestData(stopPlaceRef);
+    }
+
     this.searchLocation = location;
     this.mapService.tryToCenterAndZoomToLocation(location)
 
@@ -121,12 +156,15 @@ export class StationBoardSearchComponent implements OnInit {
   }
 
   public searchButtonClicked() {
+    this.notificationToast.dismiss();
+
     const stopPlaceRef = this.searchLocation?.stopPlace?.stopPlaceRef ?? null;
     if (stopPlaceRef === null) {
       console.error('ERROR - no stopPlaceRef available');
-    } else {
-      this.fetchStopEventsForStopRef(stopPlaceRef);
+      return;
     }
+
+    this.fetchStopEventsForStopRef(stopPlaceRef);
   }
 
   private computeSearchDateTime(): Date {
@@ -200,14 +238,23 @@ export class StationBoardSearchComponent implements OnInit {
   }
 
   private fetchStopEventsForStopRef(stopPlaceRef: string) {
-    const stopEventType: OJP.StopEventType = this.stationBoardType === 'Arrivals' ? 'arrival' : 'departure'
-    const stopEventDate = this.computeStopBoardDate();
-    const appStageConfig = this.userTripService.getStageConfig(this.appStage);
-    const stopEventRequest = OJP.StopEventRequest.initWithStopPlaceRef(appStageConfig, stopPlaceRef, stopEventType, stopEventDate);
+    const stopEventRequest = this.computeStopEventRequest(stopPlaceRef);
+    
     stopEventRequest.fetchResponse().then(stopEvents => {
-      this.requestData = stopEventRequest.lastRequestData;
+      if (stopEventRequest.lastRequestData) {
+        this.currentRequestData = stopEventRequest.lastRequestData;
+      }
       this.parseStopEvents(stopEvents);
     });
+  }
+
+  private computeStopEventRequest(stopPlaceRef: string): OJP.StopEventRequest {
+    const stopEventType: OJP.StopEventType = this.stationBoardType === 'Arrivals' ? 'arrival' : 'departure'
+    const stopEventDate = this.computeStopBoardDate();
+    const appStageConfig = this.userTripService.getStageConfig();
+    const stopEventRequest = OJP.StopEventRequest.initWithStopPlaceRef(appStageConfig, stopPlaceRef, stopEventType, stopEventDate);
+
+    return stopEventRequest;
   }
 
   private parseStopEvents(stopEvents: OJP.StopEvent[]): void {
@@ -223,7 +270,7 @@ export class StationBoardSearchComponent implements OnInit {
   }
 
   private lookupStopPlaceRef(stopPlaceRef: string) {
-    const stageConfig = this.userTripService.getStageConfig(this.appStage);
+    const stageConfig = this.userTripService.getStageConfig();
     const locationInformationRequest = OJP.LocationInformationRequest.initWithStopPlaceRef(stageConfig, stopPlaceRef)
     const promise = locationInformationRequest.fetchResponse();
     promise.then(locationsData => {
@@ -290,7 +337,66 @@ export class StationBoardSearchComponent implements OnInit {
     });
     dialogRef.afterOpened().subscribe(() => {
       const popover = dialogRef.componentInstance as DebugXmlPopoverComponent
-      popover.updateRequestData(this.requestData);
+      popover.updateRequestData(this.currentRequestData);
     });
+  }
+
+  onChangeStageAPI(ev: any) {
+    const newAppStage = ev.value as APP_STAGE
+    this.userTripService.updateAppStage(newAppStage)
+  }
+
+  public loadCustomXMLPopover() {
+    const dialogRef = this.customXmlPopover.open(CustomStopEventXMLPopoverComponent, {
+      position: { top: '20px' },
+    });
+    dialogRef.afterOpened().subscribe(() => {
+      this.notificationToast.dismiss();
+
+      const popover = dialogRef.componentInstance as CustomStopEventXMLPopoverComponent
+
+      if (this.currentRequestData.requestXmlS === null) {
+        const stopPlaceRefZH = '8503000';
+        const stopEventRequest = this.computeStopEventRequest(stopPlaceRefZH);
+        this.currentRequestData.requestXmlS = stopEventRequest.computeRequestXmlString();
+      }
+
+      popover.customRequestXMLs = this.currentRequestData.requestXmlS;
+
+      popover.customRequestSaved.subscribe((responseXML) => {
+        dialogRef.close()
+        this.handleCustomResponse(responseXML);
+      })
+
+      popover.customResponseSaved.subscribe((responseXML) => {
+        dialogRef.close()
+        this.handleCustomResponse(responseXML);
+      })
+    });
+  }
+
+  private handleCustomResponse(responseXML: string) {
+    this.currentRequestData.responseDatetime = new Date();
+    this.currentRequestData.responseXmlS = responseXML;
+
+    const stopEvents = OJP.StopEventRequest.handleResponseData(responseXML, null);
+
+    if (stopEvents.length > 0) {
+      this.mapService.tryToCenterAndZoomToLocation(stopEvents[0].stopPoint.location)
+    } else {
+      this.notificationToast.open('No StopEvents found', {
+        type: 'error',
+        verticalPosition: 'top',
+      });
+    }
+    
+    this.parseStopEvents(stopEvents);
+  }
+
+  private updateCurrentRequestData(stopRef: string): void {
+    const stopEventRequest = this.computeStopEventRequest(stopRef);
+
+    this.currentRequestData.requestDatetime = new Date();
+    this.currentRequestData.requestXmlS = stopEventRequest.computeRequestXmlString();
   }
 }

@@ -6,13 +6,12 @@
         
         <div class="d-flex align-items-center">
           <div class="flex-grow-1">
-            <station-board-input (locationSelected)="onLocationSelected($event)" 
-              [appStageConfig]="this.userTripService.getStageConfig(this.appStage)">
+            <station-board-input (locationSelected)="onLocationSelected($event)">
             </station-board-input>
           </div>
           
           <div
-            *ngIf="this.requestData"
+            *ngIf="this.currentRequestData.requestXmlS"
             class="xml-info"
             (click)="this.showRequestXmlPopover()"
           >
@@ -56,8 +55,11 @@
         
         <div class="mb-3 d-flex">
           <div>
-            <sbb-radio-group class="sbb-radio-group-horizontal" [(ngModel)]="this.appStage">
-              <sbb-radio-button *ngFor="let appStageOption of this.appStageOptions" [value]="appStageOption">
+            <sbb-radio-group class="sbb-radio-group-horizontal">
+              <sbb-radio-button *ngFor="let appStageOption of this.appStageOptions" 
+                [value]="appStageOption"
+                [checked]="this.userTripService.currentAppStage == appStageOption"
+                (change)="onChangeStageAPI($event)">
                 {{ appStageOption }}
               </sbb-radio-button>
             </sbb-radio-group>
@@ -65,7 +67,7 @@
         </div>
 
         <div class="d-flex">
-          <div>
+          <div style="margin-right: 4px;">
             <button
               class="btn btn-primary"
               type="button"
@@ -77,6 +79,15 @@
                 aria-hidden="true"
                 *ngIf="this.isSearching"></span>
               Search
+            </button>
+          </div>
+
+          <div class="ms-auto">
+            <button
+              class="btn btn-secondary"
+              (click)="loadCustomXMLPopover()"
+              type="button">
+              Custom XML
             </button>
           </div>
         </div>

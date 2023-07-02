@@ -1,10 +1,25 @@
-<div class="row">
-    <div class="col-md-4">
-        <app-search-form></app-search-form>
-        <journey-results></journey-results>
-    </div>
-    <div class="col-md-8">
-        <app-map></app-map>
-    </div>
-</div>
+<div class="container">
+  <web-header></web-header>
 
+  <div class="app-root">
+    <nav sbb-tab-nav-bar [tabPanel]="tabPanel">
+      <a sbb-tab-link [active]="'true'">Journey Search</a>
+      <a sbb-tab-link [active]="'false'" [routerLink]="'../board'">Station Board</a>
+    </nav>
+
+    <sbb-tab-nav-panel #tabPanel>
+      <div class="row">
+        <div class="col-md-4">
+          <app-search-form></app-search-form>
+          <journey-results></journey-results>
+        </div>
+        <div class="col-md-8">
+          <app-map></app-map>
+        </div>
+      </div>
+    </sbb-tab-nav-panel>
+  
+  </div>
+
+  <web-footer></web-footer>
+</div>

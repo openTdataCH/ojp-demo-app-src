@@ -1,0 +1,124 @@
+<div class="d-none">
+  <div id="map-debug-control">
+    <div>
+      <span class="fw-bold">Center</span>: <span id="map_debug_center">n/a</span>
+    </div>
+    <div>
+      <span class="fw-bold">Zoom</span>: <span id="map_debug_zoom">n/a</span>
+    </div>
+  </div>
+  
+  <div id="map-layers-legend-control">
+    <div class="map-layers-legend-wrapper">
+      <div class="d-flex flex-row">
+        <div class="flex-grow-1 map-layers-header">Toggle Map Layers</div>
+        <div>
+          <a class="content-collapse align-middle" href="#map_layers_body" data-bs-toggle="collapse" aria-expanded="true" aria-controls="map_layers_body">
+            <i class="bi bi-plus-circle"></i>
+            <i class="bi bi-dash-circle"></i>
+          </a>
+        </div>
+      </div>
+      <div class="collapse show" id="map_layers_body">
+        <div class="map-layer-data mb-2" data-map-layer-key="stops">
+          <input type="checkbox" class="map-layer-checkbox align-middle" checked> <span class="layer-text">Stops
+            (z13+)</span> <span class="layer-xml-info badge bg-info text-dark">XML</span>
+        </div>
+
+        <div class="map-layer-data mb-2" data-map-layer-key="addresses">
+          <input type="checkbox" class="map-layer-checkbox align-middle"> <span class="layer-text">Addresses
+            (z17+)</span> <span class="layer-xml-info badge bg-info text-dark">XML</span>
+        </div>
+
+        <div class="d-flex flex-row">
+          <div class="flex-grow-1">Shared Mobility</div>
+          <div>
+            <a class="content-collapse collapsed align-middle" href="#map_layers_mobility_body" data-bs-toggle="collapse" aria-expanded="true" aria-controls="map_layers_mobility_body">
+              <i class="bi bi-plus-circle"></i>
+              <i class="bi bi-dash-circle"></i>
+            </a>
+          </div>
+        </div>
+
+        <div class="collapse mb-2" id="map_layers_mobility_body" style="margin-left: 8px;">
+          <div class="map-layer-data" data-map-layer-key="sharing_cars">
+            <input type="checkbox" class="map-layer-checkbox align-middle"> <span class="layer-text">Shared Cars
+              (z12+)</span> <span class="layer-xml-info badge bg-info text-dark">XML</span>
+          </div>
+          <div class="map-layer-data" data-map-layer-key="sharing_bicycles">
+            <input type="checkbox" class="map-layer-checkbox align-middle"> <span class="layer-text">Shared Bicycles
+              (z14+)</span> <span class="layer-xml-info badge bg-info text-dark">XML</span>
+          </div>
+          <div class="map-layer-data" data-map-layer-key="sharing_scooters">
+            <input type="checkbox" class="map-layer-checkbox align-middle"> <span class="layer-text">Shared Scooters
+              (z14+)</span> <span class="layer-xml-info badge bg-info text-dark">XML</span>
+          </div>
+          <div class="map-layer-data" data-map-layer-key="charging_stations">
+            <input type="checkbox" class="map-layer-checkbox align-middle"> <span class="layer-text">Charging
+              Stations (z12+)</span> <span class="layer-xml-info badge bg-info text-dark">XML</span>
+          </div>
+        </div>
+
+        <div class="map-composite-pois">
+          <div class="d-flex flex-row">
+            <div class="flex-grow-1">Other POIs (z16+) <span class="layer-xml-info badge bg-info text-dark">XML</span></div>
+            <div>
+              <a class="content-collapse collapsed align-middle" href="#map_layers_pois_body" data-bs-toggle="collapse" aria-expanded="true" aria-controls="map_layers_pois_body">
+                <i class="bi bi-plus-circle"></i>
+                <i class="bi bi-dash-circle"></i>
+              </a>
+            </div>
+          </div>
+
+          <div class="collapse mb-2" style="margin-left: 8px;" id="map_layers_pois_body">
+            <div>
+              <input type="checkbox" class="map-layer-poi align-middle" data-osm-tag="service"> 
+              <span class="layer-text">Service</span>
+            </div>
+            <div>
+              <input type="checkbox" class="map-layer-poi align-middle" data-osm-tag="shopping"> 
+              <span class="layer-text">Shopping</span>
+            </div>
+            <div>
+              <input type="checkbox" class="map-layer-poi align-middle" data-osm-tag="leisure"> 
+              <span class="layer-text">Leisure</span>
+            </div>
+            <div>
+              <input type="checkbox" class="map-layer-poi align-middle" data-osm-tag="catering"> 
+              <span class="layer-text">Catering</span>
+            </div>
+            <div>
+              <input type="checkbox" class="map-layer-poi align-middle" data-osm-tag="public"> 
+              <span class="layer-text">Public</span>
+            </div>
+            <div>
+              <input type="checkbox" class="map-layer-poi align-middle" data-osm-tag="parkride"> 
+              <span class="layer-text">Parkride</span>
+            </div>
+            <div>
+              <input type="checkbox" class="map-layer-poi align-middle" data-osm-tag="accommodation"> 
+              <span class="layer-text">Accommodation</span>
+            </div>
+          </div>
+        </div>
+      
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="row bg-ojp-blue text-white">
+  <div class="bg-ojp-orange w-100" style="height: 5px"></div>
+  <div class="col">
+    <div class="footer">
+      <div>
+        © <a href="https://opentransportdata.swiss/en/" target="_blank">Open-Data-Plattform Mobilität Schweiz</a> 2021 - 2023
+      </div>
+      <div>
+        Last Update: <a href="https://github.com/openTdataCH/ojp-demo-app-src/blob/main/CHANGELOG.md" target="_blank">02.July 2023</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="row" style="height: 16px"></div>
