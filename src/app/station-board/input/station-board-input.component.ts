@@ -2,11 +2,11 @@ import { Component, OnInit, Input, ViewChild, Output, EventEmitter } from '@angu
 import { FormControl } from '@angular/forms';
 import { debounceTime, distinctUntilChanged } from 'rxjs/operators'
 
+import { SbbAutocompleteSelectedEvent, SbbAutocompleteTrigger } from '@sbb-esta/angular/autocomplete';
+
 import * as OJP from 'ojp-sdk'
 
 import { UserTripService } from 'src/app/shared/services/user-trip.service';
-import { SbbAutocompleteSelectedEvent, SbbAutocompleteTrigger } from '@sbb-esta/angular/autocomplete';
-import { MapService } from 'src/app/shared/services/map.service';
 
 interface StopLookup {
   stopPlaceRef: string
@@ -21,7 +21,6 @@ interface StopLookup {
   templateUrl: './station-board-input.component.html',
 })
 export class StationBoardInputComponent implements OnInit {
-  @Input() appStageConfig: OJP.StageConfig
   @ViewChild(SbbAutocompleteTrigger, { static: true }) autocompleteInputTrigger: SbbAutocompleteTrigger | undefined;
 
   @Output() locationSelected = new EventEmitter<OJP.Location>()
@@ -36,8 +35,7 @@ export class StationBoardInputComponent implements OnInit {
   //      - therefore => workaround
   private hackIgnoreInputChangesFlag: boolean
 
-  constructor(private userTripService: UserTripService, private mapService: MapService) {
-    this.appStageConfig = this.userTripService.getStageConfig('PROD');
+  constructor(private userTripService: UserTripService) {
     this.searchInputControl = new FormControl('');
     this.stopLookups = [StationBoardInputComponent.AroundMeStopLookup]
     this.currentStopLookup = null
@@ -99,7 +97,8 @@ export class StationBoardInputComponent implements OnInit {
     this.isBusySearching = true;
 
     const geoRestrictionType: OJP.GeoRestrictionType = 'stop';
-    const locationInformationRequest = OJP.LocationInformationRequest.initWithLocationName(this.appStageConfig, searchTerm, geoRestrictionType);
+    const stageConfig = this.userTripService.getStageConfig();
+    const locationInformationRequest = OJP.LocationInformationRequest.initWithLocationName(stageConfig, searchTerm, geoRestrictionType);
 
     locationInformationRequest.fetchResponse().then(locations => {
       this.parseLocations(locations);
@@ -202,8 +201,10 @@ export class StationBoardInputComponent implements OnInit {
     const bbox_N = position.coords.latitude + bbox_height / 2;
     const bbox_S = position.coords.latitude - bbox_height / 2;
     
+    const stageConfig = this.userTripService.getStageConfig();
+
     const request = OJP.LocationInformationRequest.initWithBBOXAndType(
-      this.appStageConfig,
+      stageConfig,
       bbox_W, bbox_N, bbox_E, bbox_S,
       'stop',
       300,

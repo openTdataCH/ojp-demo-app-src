@@ -1,0 +1,46 @@
+<div sbbDialogTitle>Custom StopEvent Request / Response XML</div>
+<div sbbDialogContent>
+  <div style="width: 500px">
+    <div class="d-flex justify-content-between">
+      <div>StopEvent Request XML</div>
+      <div><a target="_blank" href="https://opentransportdata.swiss/en/cookbook/ojp-stopeventservice/">Cookbook opentransportdata.swiss</a></div>
+    </div>
+    <textarea class="w-100" rows="7" [(ngModel)]="this.customRequestXMLs"></textarea>
+    <div class="d-flex">
+      <button 
+        class="btn btn-primary" 
+        (click)="this.parseCustomRequestXML()"
+        [disabled]="this.isRunningRequest"
+        type="button">
+        <span
+          class="spinner-border spinner-border-sm"
+          role="status"
+          aria-hidden="true"
+          *ngIf="this.isRunningRequest"
+        ></span>
+        Execute OJP StopEvent Request
+      </button>
+    </div>
+    <hr/>
+    <div class="d-flex justify-content-between">
+      <div>StopEvent Request Response XML</div>
+    </div>
+    <textarea class="w-100" rows="7" [(ngModel)]="this.customResponseXMLs"></textarea>
+    <div class="d-flex">
+      <button
+      type="button"
+      class="btn btn-primary"
+      (click)="parseCustomResponseXML()">
+      Display StopEvents
+    </button>    
+    </div>
+  </div>
+</div>
+<div sbbDialogActions>
+  <button
+    type="button"
+    class="btn btn-secondary"
+    sbbDialogClose>
+    Close
+  </button>
+</div>

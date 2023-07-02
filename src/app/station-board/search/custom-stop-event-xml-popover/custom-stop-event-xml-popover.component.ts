@@ -1,0 +1,41 @@
+import { Component, EventEmitter, Output } from '@angular/core';
+import { UserTripService } from 'src/app/shared/services/user-trip.service';
+
+import * as OJP from 'ojp-sdk'
+
+@Component({
+  selector: 'custom-stop-event-popover',
+  templateUrl: './custom-stop-event-xml-popover.component.html',
+})
+export class CustomStopEventXMLPopoverComponent {
+  public customRequestXMLs: string
+  public customResponseXMLs: string
+
+  public isRunningRequest: boolean
+
+  @Output() customRequestSaved = new EventEmitter<string>()
+  @Output() customResponseSaved = new EventEmitter<string>()
+
+  constructor(private userTripService: UserTripService) {
+    this.customRequestXMLs = '... wait'
+    this.customResponseXMLs = 'Paste custom OJP StopEventRequest Response XML here...'
+
+    this.isRunningRequest = false
+  }
+
+  public parseCustomRequestXML() {
+    this.isRunningRequest = true
+
+    const stageConfig = this.userTripService.getStageConfig()
+    const ojpRequest = new OJP.OJPBaseRequest(stageConfig)
+    
+    ojpRequest.fetchOJPResponse(this.customRequestXMLs, (responseText, error) => {
+      this.isRunningRequest = false
+      this.customRequestSaved.emit(responseText)
+    });
+  }
+
+  public parseCustomResponseXML() {
+    this.customResponseSaved.emit(this.customResponseXMLs)
+  }
+}
