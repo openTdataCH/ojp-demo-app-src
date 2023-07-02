@@ -4,6 +4,15 @@ OJP-Demo URL: https://opentdatach.github.io/ojp-demo-app/
 
 ----
 
+02.July 2023
+- use latest [OJP JS](https://github.com/openTdataCH/ojp-js) version
+  - `NumberOfResultsAfter` is now default in the OJP.TripRequest calls
+  - use `PrivateModeFilter` for the OJP APIs calls - see [#2 - Routing with station board for car transport service](https://github.com/openTdataCH/ojp-demo-app/issues/2)
+- allow Station Board to debug `OJP.StopEventRequest` request + response API calls - see [#2 - Routing with station board for car transport service](https://github.com/openTdataCH/ojp-demo-app/issues/2)
+- adds `embed/search` and `embed/board` paths for [#45 - Embed OJP Demo in other websites](https://github.com/openTdataCH/ojp-demo-app-src/issues/45)
+- display correct real-time information - see [#93 - Change display time in case of delay](https://github.com/openTdataCH/ojp-demo-app-src/issues/93) + display adjusted platform, if changed
+- optimize app build size (remove mocks from the deploy bundle)
+
 23.May 2023
 - use latest [OJP JS](https://github.com/openTdataCH/ojp-js) version
   - `ojp:DepArrTime` param is back
