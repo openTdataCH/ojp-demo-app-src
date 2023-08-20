@@ -4,6 +4,9 @@ OJP-Demo URL: https://opentdatach.github.io/ojp-demo-app/
 
 ----
 
+20.August 2023
+- update OJP API stages / keys
+
 02.July 2023
 - use latest [OJP JS](https://github.com/openTdataCH/ojp-js) version
   - `NumberOfResultsAfter` is now default in the OJP.TripRequest calls
