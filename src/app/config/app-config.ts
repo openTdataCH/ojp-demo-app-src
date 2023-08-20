@@ -11,26 +11,26 @@ export interface AppMapLayerOptions {
 }
 
 const app_stages: OJP.StageConfig[] = [
-    {
-      key: 'PROD',
-      apiEndpoint: 'https://api.opentransportdata.swiss/ojp2020',
-      authBearerKey: '57c5dbbbf1fe4d0001000018e0f7158cb2b347e3a6745e3ef949e7bf',
-    },
-    {
-        key: 'INT',
-        apiEndpoint: 'https://odpch-test.cloud.tyk.io/ojp-passiv-int/',
-        authBearerKey: '57c5dadd5e6307000100005e473137db130241e5866ecdbce5f74ccb',
-    },
-    {
-      key: 'TEST',
-      apiEndpoint: 'https://odpch-test.cloud.tyk.io/ojp-test/',
-      authBearerKey: '57c5dadd5e6307000100005ead6b87d5ec4f48d3ad5f9414e92907d4',
-    },
-    {
-      key: 'LA Beta',
-      apiEndpoint: 'https://odpch-test.cloud.tyk.io/la_test_active_server/',
-      authBearerKey: '57c5dadd5e6307000100005e0e0520340d05419b8c1f13c17a20a8ab',
-    },
+  {
+    key: 'PROD',
+    apiEndpoint: 'https://api.opentransportdata.swiss/ojp2020',
+    authBearerKey: 'eyJvcmciOiI2NDA2NTFhNTIyZmEwNTAwMDEyOWJiZTEiLCJpZCI6Ijk0YTFhNjExYjM5ZjQ4MWNiMGI5MjFiNTgyNmM1ZGFjIiwiaCI6Im11cm11cjEyOCJ9',
+  },
+  {
+    key: 'INT',
+    apiEndpoint: 'https://odpch-api.clients.liip.ch/ojp-passiv-int',
+    authBearerKey: 'eyJvcmciOiI2M2Q4ODhiMDNmZmRmODAwMDEzMDIwODkiLCJpZCI6ImJkOTNmYzA1ZGMwYzQwM2Q4MWYzMmFhNWMxNWZjMjU2IiwiaCI6Im11cm11cjEyOCJ9',
+  },
+  {
+    key: 'TEST',
+    apiEndpoint: 'https://odpch-api.clients.liip.ch/ojp-test',
+    authBearerKey: 'eyJvcmciOiI2M2Q4ODhiMDNmZmRmODAwMDEzMDIwODkiLCJpZCI6ImZlYWJiMjEzZDcyZTRhYmM5N2RhYWJiZDM5YWZmZWIwIiwiaCI6Im11cm11cjEyOCJ9',
+  },
+  {
+    key: 'LA Beta',
+    apiEndpoint: 'https://api.opentransportdata.swiss/ojp-la-aktiv',
+    authBearerKey: 'eyJvcmciOiI2NDA2NTFhNTIyZmEwNTAwMDEyOWJiZTEiLCJpZCI6ImE5ZDFkYmI4YWVjMDRiYjFiZjA2ZmUyNmZmZTk2YTY2IiwiaCI6Im11cm11cjEyOCJ9',
+  },
 ]
 
 const map_app_map_layers: Record<string, AppMapLayerOptions> = {
