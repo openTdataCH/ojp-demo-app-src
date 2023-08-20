@@ -5,7 +5,7 @@ OJP-Demo URL: https://opentdatach.github.io/ojp-demo-app/
 ----
 
 20.August 2023
-- update OJP API stages / keys
+- update OJP API stages / keys - see [#107 - Change OJP URLs and add new Tyk-Keys](https://github.com/openTdataCH/ojp-demo-app-src/issues/107)
 
 02.July 2023
 - use latest [OJP JS](https://github.com/openTdataCH/ojp-js) version
