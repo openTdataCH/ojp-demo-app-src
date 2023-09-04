@@ -62,7 +62,6 @@ export class TripModeTypeComponent implements OnInit {
         transportModes: [
           'walk',
           'cycle',
-          'self-drive-car',
           'bicycle_rental',
           'escooter_rental',
           'taxi',
