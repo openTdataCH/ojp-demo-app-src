@@ -5,7 +5,7 @@ OJP-Demo URL: https://opentdatach.github.io/ojp-demo-app/
 ----
 
 04.September 2023
-- adds limousine mode support - [OJP demo app extension #87](https://github.com/openTdataCH/ojp-demo-app-src/issues/87)
+- adds limousine mode support - [PR #112](https://github.com/openTdataCH/ojp-demo-app-src/pull/112), [OJP demo app extension #87](https://github.com/openTdataCH/ojp-demo-app-src/issues/87)
 
 20.August 2023
 - update OJP API stages / keys - see [#107 - Change OJP URLs and add new Tyk-Keys](https://github.com/openTdataCH/ojp-demo-app-src/issues/107)
