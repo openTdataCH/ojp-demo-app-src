@@ -5,6 +5,7 @@ OJP-Demo URL: https://opentdatach.github.io/ojp-demo-app/
 ----
 
 04.September 2023
+- use latest [OJP JS](https://github.com/openTdataCH/ojp-js) version
 - adds limousine mode support - [PR #112](https://github.com/openTdataCH/ojp-demo-app-src/pull/112), [OJP demo app extension #87](https://github.com/openTdataCH/ojp-demo-app-src/issues/87)
 - removes `own car` when using `Mode at Start` - [Mode not correct in request #109](https://github.com/openTdataCH/ojp-demo-app-src/issues/109)
 
