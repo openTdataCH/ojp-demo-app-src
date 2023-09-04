@@ -54,6 +54,7 @@ export class TripModeTypeComponent implements OnInit {
           'escooter_rental',
           'car_sharing',
           'taxi',
+          'others-drive-car',
         ]
       },
       {
@@ -65,6 +66,7 @@ export class TripModeTypeComponent implements OnInit {
           'bicycle_rental',
           'escooter_rental',
           'taxi',
+          'others-drive-car',
         ]
       },
       {
@@ -75,6 +77,7 @@ export class TripModeTypeComponent implements OnInit {
           'escooter_rental',
           'car_sharing',
           'taxi',
+          'others-drive-car',
         ]
       },
       {
@@ -231,6 +234,7 @@ export class TripModeTypeComponent implements OnInit {
       bicycle_rental: 'Bicycle Sharing',
       charging_station: 'Charging Stations',
       taxi: 'Taxi',
+      'others-drive-car': 'Limousine',
     }
 
     const text = MapIndividualTransportMode[transportMode] ?? 'n/a';

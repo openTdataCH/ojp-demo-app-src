@@ -113,6 +113,10 @@ export class ResultTripLegComponent implements OnInit {
     }
 
     if (continuousLeg.isTaxi()) {
+      if (continuousLeg.legTransportMode === 'others-drive-car') {
+        return 'Limo';
+      }
+      
       return 'Taxi';
     }
 
