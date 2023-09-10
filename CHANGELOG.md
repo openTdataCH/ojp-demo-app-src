@@ -4,6 +4,10 @@ OJP-Demo URL: https://opentdatach.github.io/ojp-demo-app/
 
 ----
 
+10.September 2023
+- use latest [OJP JS](https://github.com/openTdataCH/ojp-js) version
+- add [SIRI-SX](https://opentransportdata.swiss/en/siri-sx/) messages support - [displaying events and incidents #3](https://github.com/openTdataCH/ojp-demo-app/issues/3), [PR #113](https://github.com/openTdataCH/ojp-demo-app-src/pull/113)
+
 04.September 2023
 - use latest [OJP JS](https://github.com/openTdataCH/ojp-js) version
 - adds limousine mode support - [PR #112](https://github.com/openTdataCH/ojp-demo-app-src/pull/112), [OJP demo app extension #87](https://github.com/openTdataCH/ojp-demo-app-src/issues/87)

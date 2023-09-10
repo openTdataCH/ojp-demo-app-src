@@ -31,6 +31,9 @@ interface LegInfoDataModel {
   fromLocationData: LegLocationData,
   toLocationData: LegLocationData,
 
+  hasSituations: boolean
+  situations: OJP.PtSituationElement[]
+
   legTemplate: LegTemplate
 }
 
@@ -275,6 +278,16 @@ export class ResultTripLegComponent implements OnInit {
     this.legInfoDataModel.isTimed = leg.legType === 'TimedLeg'
     this.legInfoDataModel.fromLocationData = this.computeLocationData(leg, 'From')
     this.legInfoDataModel.toLocationData = this.computeLocationData(leg, 'To')
+
+    this.legInfoDataModel.situations = (() => {
+      if (leg.legType !== 'TimedLeg') {
+        return [];
+      }
+
+      const timedLeg = leg as OJP.TripTimedLeg;
+      return timedLeg.service.siriSituations;
+    })();
+    this.legInfoDataModel.hasSituations = this.legInfoDataModel.situations.length > 0;
   }
 
   private computeLegIconFilename(leg: OJP.TripLeg): string {

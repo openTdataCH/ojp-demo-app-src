@@ -66,8 +66,27 @@
     </div>
   </div>
 
-  <div class="mb-2">
-    <div class="border-bottom" style="height: 8px; margin-left: 4px;"></div>
+  <div class="mb-2 d-flex flex-row align-items-center">
+    <div class="flex-grow-1 leg-location location-hover">
+      <div class="border-bottom" style="height: 8px; margin-left: 4px;"></div>
+    </div>
+    <div class="flex-grow-0 situation-info" *ngIf="this.legInfoDataModel.hasSituations">
+      <sbb-tooltip svgIcon="fpl:info">
+        <div *ngFor="let situation of this.legInfoDataModel.situations; index as idx">
+          <p>
+            <strong>{{ situation.situationContent.summary }}</strong>
+          </p>
+          <div>
+            {{ situation.situationContent.description }}
+          </div>
+          <ul class="tooltip-list">
+            <li *ngFor="let detailText of situation.situationContent.details">
+              {{ detailText }}
+            </li>
+          </ul>
+        </div>
+      </sbb-tooltip>
+    </div>
   </div>
 
   <div class="d-flex flex-row align-items-center">
@@ -112,7 +131,7 @@
           </ul>
         </sbb-tooltip>
 
-        <div class="mb-2" *ngIf="this.legInfoDataModel.hasGuidance == false">
+        <div *ngIf="this.legInfoDataModel.hasGuidance == false">
           <div class="border-bottom" style="height: 8px; margin-left: 4px; margin-right: 8px;"></div>
         </div>
       
@@ -122,6 +141,7 @@
         >{{ this.legInfoDataModel.toLocationData.locationText }}</div>
       </div>
     </div>
+    
     <div class="flex-grow-0 leg-time leg-right-side">
       <div>{{ this.legInfoDataModel.durationText }}</div>
     </div>
