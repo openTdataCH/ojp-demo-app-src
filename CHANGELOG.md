@@ -7,6 +7,7 @@ OJP-Demo URL: https://opentdatach.github.io/ojp-demo-app/
 08.October 2023
 - use latest [OJP JS](https://github.com/openTdataCH/ojp-js) version
 - implement embed popovers for [#45 - Embed OJP Demo in other websites](https://github.com/openTdataCH/ojp-demo-app-src/issues/45), [PR #115](https://github.com/openTdataCH/ojp-demo-app-src/pull/115)
+- display more POI layers [adapt POI categories #5](https://github.com/openTdataCH/ojp-demo-app/issues/5)
 
 10.September 2023
 - use latest [OJP JS](https://github.com/openTdataCH/ojp-js) version
