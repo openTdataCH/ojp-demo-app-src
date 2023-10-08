@@ -398,9 +398,15 @@ export class UserTripService {
       if (stopPlaceRef) {
         queryParams.append(queryParamKey, stopPlaceRef)
       } else {
-        const geoPositionLngLatS = tripLocationPoint?.location.geoPosition?.asLatLngString(true) ?? null
+        let geoPositionLngLatS = tripLocationPoint?.location.geoPosition?.asLatLngString(true) ?? null
         if (geoPositionLngLatS) {
+          const locatioName = tripLocationPoint?.location.computeLocationName();
+          if (locatioName) {
+            geoPositionLngLatS = locatioName + '(' + geoPositionLngLatS + ')'
+          }
+
           queryParams.append(queryParamKey, geoPositionLngLatS)
+          
         }
       }
     })
