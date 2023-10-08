@@ -285,20 +285,23 @@ export class UserTripService {
     return 'PROD';
   }
 
-  updateTripEndpoint(location: OJP.Location, endpointType: OJP.JourneyPointType, updateSource: LocationUpdateSource) {
-    let tripLocationRef: OJP.TripLocationPoint | null = null
+  updateTripEndpoint(location: OJP.Location | null, endpointType: OJP.JourneyPointType, updateSource: LocationUpdateSource) {
     if (endpointType === 'From') {
-      tripLocationRef = this.fromTripLocation
+      if (location) {
+        this.fromTripLocation = new OJP.TripLocationPoint(location)
+      } else {
+        this.fromTripLocation = null
+      }
     }
     if (endpointType === 'To') {
-      tripLocationRef = this.toTripLocation
-    }
-    
-    if (tripLocationRef) {
-      tripLocationRef.location = location
+      if (location) {
+        this.toTripLocation = new OJP.TripLocationPoint(location)
+      } else {
+        this.toTripLocation = null
+      }
     }
 
-    if (endpointType === 'Via') {
+    if (location && endpointType === 'Via') {
       const viaTripLocation = new OJP.TripLocationPoint(location)
       this.viaTripLocations.push(viaTripLocation)
       
