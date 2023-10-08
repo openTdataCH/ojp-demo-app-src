@@ -36,7 +36,7 @@ export class JourneyPointInputComponent implements OnInit, OnChanges {
   @Input() placeholder: string = '';
   @Input() endpointType: OJP.JourneyPointType = 'From';
   @Input() inputValue: string = '';
-  @Output() selectedLocation = new EventEmitter<OJP.Location>()
+  @Output() selectedLocation = new EventEmitter<OJP.Location | null>()
 
   constructor(private mapService: MapService, private userTripService: UserTripService) {
     this.mapLookupLocations = {} as MapLocations
@@ -60,7 +60,12 @@ export class JourneyPointInputComponent implements OnInit, OnChanges {
       }
 
       if (!this.shouldFetchNewData) {
-        return
+        return;
+      }
+
+      if (searchTerm.trim().length === 0) {
+        this.selectedLocation.emit(null);
+        return;
       }
 
       if (searchTerm.length < 2) {

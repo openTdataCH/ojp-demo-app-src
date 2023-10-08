@@ -168,7 +168,7 @@ export class SearchFormComponent implements OnInit {
     this.mapService.newMapBoundsRequested.emit(mapData);
   }
 
-  onLocationSelected(location: OJP.Location, originType: OJP.JourneyPointType) {
+  onLocationSelected(location: OJP.Location | null, originType: OJP.JourneyPointType) {
     this.userTripService.updateTripEndpoint(location, originType, 'SearchForm')
   }
 
@@ -211,7 +211,10 @@ export class SearchFormComponent implements OnInit {
 
     const journeyRequestParams = this.userTripService.computeJourneyRequestParams()
     if (journeyRequestParams === null) {
-      console.error('Whooops, JourneyRequestParams cant be null');
+      this.notificationToast.open('Please check from/to input points', {
+        type: 'error',
+        verticalPosition: 'top',
+      });
       return
     }
 
