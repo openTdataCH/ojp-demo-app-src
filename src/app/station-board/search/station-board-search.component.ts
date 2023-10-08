@@ -16,6 +16,8 @@ import { DebugXmlPopoverComponent } from '../../search-form/debug-xml-popover/de
 import { CustomStopEventXMLPopoverComponent } from './custom-stop-event-xml-popover/custom-stop-event-xml-popover.component';
 
 import { APP_STAGE } from '../../config/app-config'
+import { EmbedStationBoardPopoverComponent } from './embed-station-board-popover/embed-station-board-popover.component';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'station-board-search',
@@ -43,6 +45,9 @@ export class StationBoardSearchComponent implements OnInit {
 
   public currentRequestData: OJP.RequestData;
 
+  public headerText: string = 'Search'
+  public isEmbed: boolean
+
   constructor(
     private notificationToast: SbbNotificationToast,
     private debugXmlPopover: SbbDialog,
@@ -50,6 +55,8 @@ export class StationBoardSearchComponent implements OnInit {
     private mapService: MapService, 
     private stationBoardService: StationBoardService,
     public userTripService: UserTripService,
+    private embedHTMLPopover: SbbDialog,
+    private router: Router,
   ) {
     this.queryParams = new URLSearchParams(document.location.search);
 
@@ -74,6 +81,11 @@ export class StationBoardSearchComponent implements OnInit {
       responseXmlS: null,
       responseDatetime: null
     };
+
+    this.isEmbed = this.router.url.indexOf('/embed/') !== -1;
+    if (this.isEmbed) {
+      this.headerText = this.stationBoardType;
+    }
   }
 
   ngOnInit(): void {
@@ -122,6 +134,7 @@ export class StationBoardSearchComponent implements OnInit {
     this.mapService.tryToCenterAndZoomToLocation(location)
 
     this.updatePermalinkURLAddress();
+    this.updateHeaderText();
     
     this.resetResultList();
   }
@@ -232,7 +245,7 @@ export class StationBoardSearchComponent implements OnInit {
       queryParams.set('time', searchTimeF);
     }
 
-    const urlAddress = 'board?' + queryParams.toString();
+    const urlAddress = document.location.pathname.replace('/embed', '') + '?' + queryParams.toString();
     
     this.permalinkURLAddress = urlAddress;
   }
@@ -284,11 +297,29 @@ export class StationBoardSearchComponent implements OnInit {
 
       this.mapService.tryToCenterAndZoomToLocation(firstLocation);
       this.updatePermalinkURLAddress();
+      this.updateHeaderText();
 
       if (this.autocompleteInputComponent) {
         this.autocompleteInputComponent.updateLocationText(firstLocation);
       }
     });
+  }
+
+  private updateHeaderText() {
+    if (!this.isEmbed) {
+      return;
+    }
+
+    if (this.searchLocation === null) {
+      return;
+    }
+
+    const locationName = this.searchLocation.computeLocationName();
+    if (locationName === null) {
+      return;
+    }
+
+    this.headerText = locationName + ' ' + this.stationBoardType;
   }
 
   private handleMapClick(feature: GeoJSON.Feature) {
@@ -398,5 +429,18 @@ export class StationBoardSearchComponent implements OnInit {
 
     this.currentRequestData.requestDatetime = new Date();
     this.currentRequestData.requestXmlS = stopEventRequest.computeRequestXmlString();
+  }
+
+  public loadEmbedHTMLPopover() {
+    const dialogRef = this.embedHTMLPopover.open(EmbedStationBoardPopoverComponent, {
+      position: { top: '20px' },
+    });
+
+    dialogRef.afterOpened().subscribe(() => {
+      const popover = dialogRef.componentInstance as EmbedStationBoardPopoverComponent;
+      if (this.searchLocation) {
+        popover.updateEmbedHTML(this.searchLocation);
+      }
+    })
   }
 }
