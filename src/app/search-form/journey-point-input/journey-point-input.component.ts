@@ -1,15 +1,23 @@
 import { debounceTime, distinctUntilChanged } from 'rxjs/operators'
 import { Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges } from '@angular/core';
-import { FormControl } from '@angular/forms';
+import { FormControl, FormGroupDirective, NgForm, Validators } from '@angular/forms';
 
 import { SbbAutocompleteSelectedEvent } from '@sbb-esta/angular/autocomplete';
 
 import * as OJP from 'ojp-sdk'
 import { MapService } from 'src/app/shared/services/map.service';
 import { UserTripService } from 'src/app/shared/services/user-trip.service';
+import { SbbErrorStateMatcher } from '@sbb-esta/angular/core';
 
 type MapLocations = Record<OJP.LocationType, OJP.Location[]>
 type OptionLocationType = [OJP.LocationType, string]
+
+export class ErrorStateMatcher implements SbbErrorStateMatcher {
+  isErrorState(control: FormControl | null, form: FormGroupDirective | NgForm | null): boolean {
+    const isSubmitted = form && form.submitted;
+    return !!(control && control.invalid && (control.dirty || control.touched || isSubmitted));
+  }
+}
 
 @Component({
   selector: 'journey-point-input',
@@ -19,7 +27,9 @@ type OptionLocationType = [OJP.LocationType, string]
 export class JourneyPointInputComponent implements OnInit, OnChanges {
   private shouldFetchNewData = true
 
-  public inputControl = new FormControl('');
+  public inputControl = new FormControl('', [Validators.required]);
+  public inputControlMatcher = new ErrorStateMatcher();
+
   public mapLookupLocations: MapLocations
   public optionLocationTypes: OptionLocationType[]
 
