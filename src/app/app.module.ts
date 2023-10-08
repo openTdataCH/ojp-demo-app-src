@@ -12,6 +12,8 @@ import { SbbModule } from './sbb.module';
 
 import { DebugXmlPopoverComponent } from './search-form/debug-xml-popover/debug-xml-popover.component';
 import { InputXmlPopoverComponent } from './search-form/input-xml-popover/input-xml-popover.component';
+import { EmbedSearchPopoverComponent } from './search-form/embed-search-popover/embed-search-popover.component';
+import { EmbedStationBoardPopoverComponent } from './station-board/search/embed-station-board-popover/embed-station-board-popover.component';
 
 import { JourneyPointInputComponent } from './search-form/journey-point-input/journey-point-input.component';
 import { JourneyResultsComponent } from './journey/journey-results/journey-results.component';
@@ -58,6 +60,8 @@ import { WebHeaderComponent } from './shared/components/web-header';
     DebugXmlPopoverComponent,
     InputXmlPopoverComponent,
     CustomStopEventXMLPopoverComponent,
+    EmbedSearchPopoverComponent,
+    EmbedStationBoardPopoverComponent,
     
     WebFooterComponent,
     WebHeaderComponent,
