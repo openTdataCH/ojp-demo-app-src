@@ -26,8 +26,8 @@ export class UserTripService {
   public departureDate: Date
   public currentAppStage: APP_STAGE
 
-  public permalinkURLAddress: string | null
-  public embedLinkURLAddress: string | null
+  public permalinkRelativeURL: string | null
+  public embedQueryParams = new URLSearchParams()
 
   public defaultsInited = new EventEmitter<void>();
   public locationsUpdated = new EventEmitter<void>();
@@ -55,8 +55,7 @@ export class UserTripService {
     this.departureDate = this.computeInitialDate()
     this.currentAppStage = 'PROD'
 
-    this.permalinkURLAddress = null
-    this.embedLinkURLAddress = null
+    this.permalinkRelativeURL = null
   }
 
   public initDefaults() {
@@ -432,7 +431,7 @@ export class UserTripService {
     const stageS = this.currentAppStage.toLowerCase()
     queryParams.append('stage', stageS)
 
-    this.permalinkURLAddress = 'search?' + queryParams.toString()
+    this.permalinkRelativeURL = document.location.pathname.replace('/embed', '') + '?' + queryParams.toString();
 
     const embedQueryParams = new URLSearchParams();
     const keepKeys = ['from', 'to'];
@@ -442,8 +441,8 @@ export class UserTripService {
         embedQueryParams.append(key, value);
       }
     })
-    embedQueryParams.append('do_search', 'yes');
-    this.embedLinkURLAddress = 'embed/search?' + embedQueryParams.toString();    
+
+    this.embedQueryParams = embedQueryParams;
   }
 
   private computeInitialDate(): Date {
