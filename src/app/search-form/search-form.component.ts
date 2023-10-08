@@ -41,6 +41,8 @@ export class SearchFormComponent implements OnInit {
   public searchDate: Date
   public searchTime: string
 
+  public headerText: string
+
   private useMocks: boolean
 
   constructor(
@@ -69,6 +71,8 @@ export class SearchFormComponent implements OnInit {
 
     this.useMocks = false
 
+    this.headerText = 'Search'
+    
     this.isEmbed = this.router.url.indexOf('/embed/') !== -1;
   }
 
@@ -108,6 +112,7 @@ export class SearchFormComponent implements OnInit {
 
   private updateLocationTexts() {
     const endpointTypes: OJP.JourneyPointType[] = ['From', 'To'];
+    const fromToTextParts: string[] = [];
     endpointTypes.forEach(endpointType => {
       const tripLocationPoint = endpointType === 'From' ? this.userTripService.fromTripLocation : this.userTripService.toTripLocation
       const location = tripLocationPoint?.location ?? null
@@ -119,11 +124,32 @@ export class SearchFormComponent implements OnInit {
       let locationText = location.computeLocationName() ?? '';
 
       if (endpointType === 'From') {
-        this.fromLocationText = locationText
+        this.fromLocationText = locationText.trim()
       } else {
-        this.toLocationText = locationText
+        this.toLocationText = locationText.trim()
       }
+
+      fromToTextParts.push(locationText);
     })
+
+    if (this.isEmbed) {
+      const textParts: string[] = [];
+      if (this.fromLocationText === '') {
+        textParts.push('From Location');
+      } else {
+        textParts.push(this.fromLocationText);
+      }
+
+      textParts.push('-');
+
+      if (this.toLocationText === '') {
+        textParts.push('To Location');
+      } else {
+        textParts.push(this.toLocationText);
+      }
+
+      this.headerText = textParts.join(' ');
+    }
   }
 
   private initLocationsFromMocks() {
