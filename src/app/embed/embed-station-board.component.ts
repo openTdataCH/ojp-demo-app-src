@@ -7,7 +7,7 @@ import { Component, OnInit } from '@angular/core';
 })
 export class EmbedStationBoardComponent implements OnInit {
   constructor() {
-    console.log('jajja');
+
   }
 
   ngOnInit() {

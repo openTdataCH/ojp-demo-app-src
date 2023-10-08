@@ -1,5 +1,6 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { MapService } from 'src/app/shared/services/map.service';
+import { Router } from '@angular/router';
 
 import mapboxgl from 'mapbox-gl'
 import * as OJP from 'ojp-sdk'
@@ -47,8 +48,11 @@ export class ResultTripLegComponent implements OnInit {
 
   legInfoDataModel: LegInfoDataModel
 
-  constructor(private mapService: MapService) {
+  public isEmbed: boolean
+
+  constructor(private mapService: MapService, private router: Router) {
     this.legInfoDataModel = <LegInfoDataModel>{}
+    this.isEmbed = this.router.url.indexOf('/embed/') !== -1;
   }
 
   ngOnInit() {

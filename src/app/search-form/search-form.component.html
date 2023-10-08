@@ -2,124 +2,144 @@
   <div class="col">
     <sbb-accordion>
       <sbb-expansion-panel [expanded]="true">
-        <sbb-expansion-panel-header>Search</sbb-expansion-panel-header>
-          <div class="d-flex">
-            <div class="flex-grow-1 journey-endpoint">
-              <journey-point-input
-                (selectedLocation)="onLocationSelected($event, 'From')"
-                [endpointType]="'From'"
-                [inputValue]="fromLocationText"
-                [placeholder]="'From'">
-              </journey-point-input>
-            </div>
-          </div>
-
-          <trip-mode-type
-            *ngFor="let modeType of this.userTripService.journeyTripsPlaceholder; index as idx"
-            [tripModeTypeIdx]="idx">
-          </trip-mode-type>
-
-          <div class="d-flex align-items-center">
-            <div class="flex-grow-1 journey-endpoint">
-              <journey-point-input
-                (selectedLocation)="onLocationSelected($event, 'To')"
-                [endpointType]="'To'"
-                [inputValue]="toLocationText"
-                [placeholder]="'To'">
-              </journey-point-input>
-            </div>
-
-            <div class="swap-endpoints">
-              <button sbb-secondary-button
-                data-bs-toggle="collapse" 
-                (click)="swapEndpoints()"
-                aria-expanded="false">
-                  <sbb-icon svgIcon="kom:arrow-change-horizontal-medium"></sbb-icon>
-              </button>
-            </div>
-          </div>
-          
-
-          <div class="d-flex">
-            <div>
-              <sbb-form-field label="Choose Day">
-                <sbb-datepicker arrows>
-                  <input 
-                    sbbInput  
-                    sbbDateInput
-                    [(ngModel)]="this.searchDate"
-                    (dateChange)="onChangeDateTime()" />
-                </sbb-datepicker>
-              </sbb-form-field>
-            </div>
-            <div style="margin-left: 8px;">
-              <sbb-form-field label="Time">
-                <input 
-                  sbbInput
-                  sbbTimeInput
-                  [(ngModel)]="this.searchTime"
-                  (change)="onChangeDateTime()" />
-              </sbb-form-field>
-            </div>
-          </div>
-          
-          <div class="mb-2 d-flex">
-            <div>
-              <sbb-radio-group class="sbb-radio-group-horizontal">
-                <sbb-radio-button
-                  *ngFor="let appStageOption of this.appStageOptions"
-                  [value]="appStageOption"
-                  [checked]="this.userTripService.currentAppStage == appStageOption"
-                  (change)="onChangeStageAPI($event)"
-                >
-                  {{ appStageOption }}
-                </sbb-radio-button>
-              </sbb-radio-group>
-            </div>
-          </div>
-
-          <div class="d-flex">
-            <div style="margin-right: 4px;">
-              <button
-                class="btn btn-primary"
-                type="button"
-                (click)="handleTapOnSearch()"
-                [disabled]="shouldDisableSearchButton()">
-                <span
-                  class="spinner-border spinner-border-sm"
-                  role="status"
-                  aria-hidden="true"
-                  *ngIf="isSearching"
-                ></span>
-                Search Journeys
-              </button>
-            </div>
-
-            <div class="ms-auto">
-                <button 
-                class="btn btn-secondary" 
-                (click)="loadInputTripXMLPopover()"
-                type="button">
-                Debug XML
-              </button>
-            </div>
-
-          </div>
-        
+        <sbb-expansion-panel-header>{{ this.headerText }}</sbb-expansion-panel-header>
+        <ng-container *ngTemplateOutlet="searchContent"></ng-container>
       </sbb-expansion-panel>
     </sbb-accordion>
   </div>
 </div>
 
-<div class="row mb-2">
+<ng-template #searchContent>
+  <div class="d-flex">
+    <div class="flex-grow-1 journey-endpoint">
+      <journey-point-input
+        (selectedLocation)="onLocationSelected($event, 'From')"
+        [endpointType]="'From'"
+        [inputValue]="fromLocationText"
+        [placeholder]="'From'">
+      </journey-point-input>
+    </div>
+  </div>
+
+  <ng-container *ngIf="!this.isEmbed">
+    <trip-mode-type 
+      *ngFor="let modeType of this.userTripService.journeyTripsPlaceholder; index as idx"
+      [tripModeTypeIdx]="idx">
+    </trip-mode-type>
+  </ng-container>
+
+  <div class="d-flex align-items-center">
+    <div class="flex-grow-1 journey-endpoint">
+      <journey-point-input
+        (selectedLocation)="onLocationSelected($event, 'To')"
+        [endpointType]="'To'"
+        [inputValue]="toLocationText"
+        [placeholder]="'To'">
+      </journey-point-input>
+    </div>
+
+    <div class="swap-endpoints">
+      <button sbb-secondary-button
+        data-bs-toggle="collapse"
+        (click)="swapEndpoints()"
+        aria-expanded="false">
+          <sbb-icon svgIcon="kom:arrow-change-horizontal-medium"></sbb-icon>
+      </button>
+    </div>
+  </div>
+
+  <div class="d-flex">
+    <div>
+      <sbb-form-field label="Choose Day">
+        <sbb-datepicker arrows>
+          <input
+            sbbInput
+            sbbDateInput
+            [(ngModel)]="this.searchDate"
+            (dateChange)="onChangeDateTime()" />
+        </sbb-datepicker>
+      </sbb-form-field>
+    </div>
+    <div style="margin-left: 8px;">
+      <sbb-form-field label="Time">
+        <input
+          sbbInput
+          sbbTimeInput
+          [(ngModel)]="this.searchTime"
+          (change)="onChangeDateTime()" />
+      </sbb-form-field>
+    </div>
+  </div>
+
+  <div class="mb-2 d-flex" *ngIf="this.isEmbed === false">
+    <div>
+      <sbb-radio-group class="sbb-radio-group-horizontal">
+        <sbb-radio-button
+          *ngFor="let appStageOption of this.appStageOptions"
+          [value]="appStageOption"
+          [checked]="this.userTripService.currentAppStage == appStageOption"
+          (change)="onChangeStageAPI($event)"
+        >
+          {{ appStageOption }}
+        </sbb-radio-button>
+      </sbb-radio-group>
+    </div>
+  </div>
+
+  <div class="d-flex">
+    <div style="margin-right: 4px;">
+      <button
+        class="btn btn-primary"
+        type="button"
+        (click)="handleTapOnSearch()"
+        [disabled]="shouldDisableSearchButton()">
+        <span
+          class="spinner-border spinner-border-sm"
+          role="status"
+          aria-hidden="true"
+          *ngIf="isSearching"
+        ></span>
+        Search Journeys
+      </button>
+    </div>
+
+    <div class="ms-auto" *ngIf="!this.isEmbed">
+        <button
+        class="btn btn-secondary"
+        (click)="loadInputTripXMLPopover()"
+        type="button">
+        Debug XML
+      </button>
+    </div>
+
+  </div>
+</ng-template>
+
+<div class="row mb-2" *ngIf="!this.isEmbed">
   <div class="col">
     <div class="d-flex flex-row-reverse">
       <div *ngIf="requestDuration !== null">
         <span class="badge bg-success">{{ this.requestDuration }}</span>
       </div>
       <div style="width: 7px"></div>
-      <div *ngIf="this.userTripService.permalinkURLAddress !== null">
-        <a href="{{ this.userTripService.permalinkURLAddress }}" target="_blank">Permalink</a>
+      <ng-container *ngIf="this.userTripService.permalinkRelativeURL !== null">
+        <div>
+          <a href="{{ this.userTripService.permalinkRelativeURL }}" target="_blank">Permalink</a>
+        </div>
+        <div clas="text-center" style="width: 7px; margin-left: 4px;"> | </div>
+        <div>
+          <a target="_blank" (click)="loadEmbedHTMLPopover()" class="text-decoration-underline" role="button">Embed</a>
+        </div>
+      </ng-container>
+    </div>
+  </div>
+</div>
+
+<div class="row mb-2" *ngIf="this.isEmbed && this.userTripService.permalinkRelativeURL !== null">
+  <div class="col">
+    <div class="d-flex flex-row-reverse">
+      <div>
+        <a href="{{ this.userTripService.permalinkRelativeURL }}" target="_blank">Open in OJP Demo App</a>
       </div>
     </div>
   </div>

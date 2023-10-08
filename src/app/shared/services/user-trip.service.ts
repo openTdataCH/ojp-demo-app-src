@@ -26,7 +26,8 @@ export class UserTripService {
   public departureDate: Date
   public currentAppStage: APP_STAGE
 
-  public permalinkURLAddress: string | null
+  public permalinkRelativeURL: string | null
+  public embedQueryParams = new URLSearchParams()
 
   public defaultsInited = new EventEmitter<void>();
   public locationsUpdated = new EventEmitter<void>();
@@ -54,7 +55,7 @@ export class UserTripService {
     this.departureDate = this.computeInitialDate()
     this.currentAppStage = 'PROD'
 
-    this.permalinkURLAddress = null
+    this.permalinkRelativeURL = null
   }
 
   public initDefaults() {
@@ -283,20 +284,23 @@ export class UserTripService {
     return 'PROD';
   }
 
-  updateTripEndpoint(location: OJP.Location, endpointType: OJP.JourneyPointType, updateSource: LocationUpdateSource) {
-    let tripLocationRef: OJP.TripLocationPoint | null = null
+  updateTripEndpoint(location: OJP.Location | null, endpointType: OJP.JourneyPointType, updateSource: LocationUpdateSource) {
     if (endpointType === 'From') {
-      tripLocationRef = this.fromTripLocation
+      if (location) {
+        this.fromTripLocation = new OJP.TripLocationPoint(location)
+      } else {
+        this.fromTripLocation = null
+      }
     }
     if (endpointType === 'To') {
-      tripLocationRef = this.toTripLocation
-    }
-    
-    if (tripLocationRef) {
-      tripLocationRef.location = location
+      if (location) {
+        this.toTripLocation = new OJP.TripLocationPoint(location)
+      } else {
+        this.toTripLocation = null
+      }
     }
 
-    if (endpointType === 'Via') {
+    if (location && endpointType === 'Via') {
       const viaTripLocation = new OJP.TripLocationPoint(location)
       this.viaTripLocations.push(viaTripLocation)
       
@@ -393,9 +397,15 @@ export class UserTripService {
       if (stopPlaceRef) {
         queryParams.append(queryParamKey, stopPlaceRef)
       } else {
-        const geoPositionLngLatS = tripLocationPoint?.location.geoPosition?.asLatLngString(true) ?? null
+        let geoPositionLngLatS = tripLocationPoint?.location.geoPosition?.asLatLngString(true) ?? null
         if (geoPositionLngLatS) {
+          const locatioName = tripLocationPoint?.location.computeLocationName();
+          if (locatioName) {
+            geoPositionLngLatS = locatioName + '(' + geoPositionLngLatS + ')'
+          }
+
           queryParams.append(queryParamKey, geoPositionLngLatS)
+          
         }
       }
     })
@@ -421,7 +431,18 @@ export class UserTripService {
     const stageS = this.currentAppStage.toLowerCase()
     queryParams.append('stage', stageS)
 
-    this.permalinkURLAddress = 'search?' + queryParams.toString()
+    this.permalinkRelativeURL = document.location.pathname.replace('/embed', '') + '?' + queryParams.toString();
+
+    const embedQueryParams = new URLSearchParams();
+    const keepKeys = ['from', 'to'];
+    keepKeys.forEach(key => {
+      const value = queryParams.get(key);
+      if (value !== null) {
+        embedQueryParams.append(key, value);
+      }
+    })
+
+    this.embedQueryParams = embedQueryParams;
   }
 
   private computeInitialDate(): Date {

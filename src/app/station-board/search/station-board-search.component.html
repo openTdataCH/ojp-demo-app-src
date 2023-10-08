@@ -2,7 +2,7 @@
   <div class="col">
     <sbb-accordion>
       <sbb-expansion-panel [expanded]="true">
-        <sbb-expansion-panel-header>Search</sbb-expansion-panel-header>
+        <sbb-expansion-panel-header>{{ this.headerText }}</sbb-expansion-panel-header>
         
         <div class="d-flex align-items-center">
           <div class="flex-grow-1">
@@ -11,7 +11,7 @@
           </div>
           
           <div
-            *ngIf="this.currentRequestData.requestXmlS"
+            *ngIf="this.currentRequestData.requestXmlS && !this.isEmbed"
             class="xml-info"
             (click)="this.showRequestXmlPopover()"
           >
@@ -19,7 +19,7 @@
           </div>
         </div>
 
-        <div class="mb-3 d-flex">
+        <div class="mb-3 d-flex" *ngIf="!this.isEmbed">
           <div>
             <sbb-radio-group class="sbb-radio-group-horizontal" [(ngModel)]="this.stationBoardType" (change)="onTypeChanged()">
               <sbb-radio-button *ngFor="let stationBoardTypeItem of this.stationBoardTypes"
@@ -53,7 +53,7 @@
           </div>
         </div>
         
-        <div class="mb-3 d-flex">
+        <div class="mb-3 d-flex" *ngIf="!this.isEmbed">
           <div>
             <sbb-radio-group class="sbb-radio-group-horizontal">
               <sbb-radio-button *ngFor="let appStageOption of this.appStageOptions" 
@@ -82,7 +82,7 @@
             </button>
           </div>
 
-          <div class="ms-auto">
+          <div class="ms-auto" *ngIf="!this.isEmbed">
             <button
               class="btn btn-secondary"
               (click)="loadCustomXMLPopover()"
@@ -97,10 +97,29 @@
   </div>
 </div>
 
-<div class="row mb-2">
+<div class="row mb-2" *ngIf="this.isEmbed">
   <div class="col">
     <div class="d-flex flex-row-reverse">
-      <a href="{{ this.permalinkURLAddress }}" target="_blank">Permalink</a>
+      <div>
+        <a href="{{ this.permalinkURLAddress }}" target="_blank">Open in OJP Demo App</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<div class="row mb-2" *ngIf="!this.isEmbed">
+  <div class="col">
+    <div class="d-flex flex-row-reverse">
+      <div>
+        <a href="{{ this.permalinkURLAddress }}" target="_blank">Permalink</a>
+      </div>
+      <ng-container *ngIf="this.searchLocation !== null">
+        <div clas="text-center" style="width: 7px; margin-left: 4px;"> | </div>
+        <div>
+          <a target="_blank" (click)="loadEmbedHTMLPopover()" class="text-decoration-underline" role="button">Embed</a>
+        </div>
+      </ng-container>  
     </div>
   </div>
 </div>

@@ -6,7 +6,7 @@
       (click)="handleTapOnPill()"
     >{{ this.legInfoDataModel.leadingText }}</div>
   </div>
-  <div class="flex-grow-0 leg-right-side">
+  <div class="flex-grow-0 leg-right-side" *ngIf="this.isEmbed === false">
     <div
       class="badge leg-pill pill-hover bg-primary"
       (click)="handleTapOnPill()"

@@ -64,10 +64,6 @@
 }
 // END
 
-.map-layer-data > * {
-  margin-right: 2px;
-}
-
 .map-control {
   background-color: #fff;
   padding: 8px;
@@ -87,6 +83,10 @@
 
 .map-layers-legend-wrapper {
   width: 200px;
+}
+
+.layer-text {
+  margin-left: 4px;
 }
 
 // HACK - use !important to avoid horizontal bar

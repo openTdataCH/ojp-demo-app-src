@@ -3,6 +3,7 @@ import { Component, OnInit, ViewChild } from '@angular/core';
 import { UserTripService } from '../shared/services/user-trip.service'
 import { MapService } from '../shared/services/map.service';
 import { InputXmlPopoverComponent } from './input-xml-popover/input-xml-popover.component';
+import { EmbedSearchPopoverComponent } from './embed-search-popover/embed-search-popover.component';
 
 import { SbbDialog } from "@sbb-esta/angular/dialog";
 import { SbbExpansionPanel } from '@sbb-esta/angular/accordion';
@@ -13,6 +14,7 @@ import * as OJP from 'ojp-sdk'
 import mapboxgl from 'mapbox-gl'
 
 import { APP_STAGE } from '../config/app-config';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-search-form',
@@ -35,14 +37,20 @@ export class SearchFormComponent implements OnInit {
 
   private lastCustomTripRequestXML: string | null
 
+  public isEmbed: boolean
+
   public searchDate: Date
   public searchTime: string
+
+  public headerText: string
 
   private useMocks: boolean
 
   constructor(
     private notificationToast: SbbNotificationToast,
     private tripXmlPopover: SbbDialog,
+    private embedHTMLPopover: SbbDialog,
+    private router: Router,
     public userTripService: UserTripService,
     public mapService: MapService
   ) {
@@ -65,6 +73,9 @@ export class SearchFormComponent implements OnInit {
 
     this.useMocks = false
 
+    this.headerText = 'Search'
+    
+    this.isEmbed = this.router.url.indexOf('/embed/') !== -1;
   }
 
   ngOnInit() {
@@ -103,6 +114,7 @@ export class SearchFormComponent implements OnInit {
 
   private updateLocationTexts() {
     const endpointTypes: OJP.JourneyPointType[] = ['From', 'To'];
+    const fromToTextParts: string[] = [];
     endpointTypes.forEach(endpointType => {
       const tripLocationPoint = endpointType === 'From' ? this.userTripService.fromTripLocation : this.userTripService.toTripLocation
       const location = tripLocationPoint?.location ?? null
@@ -114,11 +126,32 @@ export class SearchFormComponent implements OnInit {
       let locationText = location.computeLocationName() ?? '';
 
       if (endpointType === 'From') {
-        this.fromLocationText = locationText
+        this.fromLocationText = locationText.trim()
       } else {
-        this.toLocationText = locationText
+        this.toLocationText = locationText.trim()
       }
+
+      fromToTextParts.push(locationText);
     })
+
+    if (this.isEmbed) {
+      const textParts: string[] = [];
+      if (this.fromLocationText === '') {
+        textParts.push('From Location');
+      } else {
+        textParts.push(this.fromLocationText);
+      }
+
+      textParts.push('-');
+
+      if (this.toLocationText === '') {
+        textParts.push('To Location');
+      } else {
+        textParts.push(this.toLocationText);
+      }
+
+      this.headerText = textParts.join(' ');
+    }
   }
 
   private initLocationsFromMocks() {
@@ -163,7 +196,7 @@ export class SearchFormComponent implements OnInit {
     this.mapService.newMapBoundsRequested.emit(mapData);
   }
 
-  onLocationSelected(location: OJP.Location, originType: OJP.JourneyPointType) {
+  onLocationSelected(location: OJP.Location | null, originType: OJP.JourneyPointType) {
     this.userTripService.updateTripEndpoint(location, originType, 'SearchForm')
   }
 
@@ -206,7 +239,10 @@ export class SearchFormComponent implements OnInit {
 
     const journeyRequestParams = this.userTripService.computeJourneyRequestParams()
     if (journeyRequestParams === null) {
-      console.error('Whooops, JourneyRequestParams cant be null');
+      this.notificationToast.open('Please check from/to input points', {
+        type: 'error',
+        verticalPosition: 'top',
+      });
       return
     }
 
@@ -324,5 +360,16 @@ export class SearchFormComponent implements OnInit {
 
   public swapEndpoints() {
     this.userTripService.switchEndpoints();
+  }
+
+  public loadEmbedHTMLPopover() {
+    const dialogRef = this.embedHTMLPopover.open(EmbedSearchPopoverComponent, {
+      position: { top: '20px' },
+    });
+
+    dialogRef.afterOpened().subscribe(() => {
+      const popover = dialogRef.componentInstance as EmbedSearchPopoverComponent
+      // handle popover vars
+    })
   }
 }
