@@ -3,6 +3,7 @@ import { Component, OnInit, ViewChild } from '@angular/core';
 import { UserTripService } from '../shared/services/user-trip.service'
 import { MapService } from '../shared/services/map.service';
 import { InputXmlPopoverComponent } from './input-xml-popover/input-xml-popover.component';
+import { EmbedSearchPopoverComponent } from './embed-search-popover/embed-search-popover.component';
 
 import { SbbDialog } from "@sbb-esta/angular/dialog";
 import { SbbExpansionPanel } from '@sbb-esta/angular/accordion';
@@ -48,6 +49,7 @@ export class SearchFormComponent implements OnInit {
   constructor(
     private notificationToast: SbbNotificationToast,
     private tripXmlPopover: SbbDialog,
+    private embedHTMLPopover: SbbDialog,
     private router: Router,
     public userTripService: UserTripService,
     public mapService: MapService
@@ -358,5 +360,16 @@ export class SearchFormComponent implements OnInit {
 
   public swapEndpoints() {
     this.userTripService.switchEndpoints();
+  }
+
+  public loadEmbedHTMLPopover() {
+    const dialogRef = this.embedHTMLPopover.open(EmbedSearchPopoverComponent, {
+      position: { top: '20px' },
+    });
+
+    dialogRef.afterOpened().subscribe(() => {
+      const popover = dialogRef.componentInstance as EmbedSearchPopoverComponent
+      // handle popover vars
+    })
   }
 }
