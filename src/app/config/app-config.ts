@@ -95,7 +95,28 @@ const map_app_map_layers: Record<string, AppMapLayerOptions> = {
         ],
         click_layer_ids: 'SAME_AS_LAYER_IDS',
     },
-
+    'sbb_services': {
+      LIR_Restriction_Type: 'poi_amenity',
+      LIR_POI_Type: 'sbb_services',
+      minZoom: 12,
+      layer_ids: [
+        'charging-station-icon',
+        'charging-station-text-number',
+        'charging-station-text-provider',
+      ],
+      click_layer_ids: 'SAME_AS_LAYER_IDS',
+    },
+    'pois_other': {
+      LIR_Restriction_Type: 'poi_amenity',
+      LIR_POI_Type: 'other',
+      minZoom: 12,
+      layer_ids: [
+        'charging-station-icon',
+        'charging-station-text-number',
+        'charging-station-text-provider',
+      ],
+      click_layer_ids: 'SAME_AS_LAYER_IDS',
+    }, 
     'pois-ALL': {
         LIR_Restriction_Type: 'poi_all',
         LIR_POI_Type: ['service', 'shopping', 'leisure', 'catering', 'public', 'parkride', 'accommodation'],
