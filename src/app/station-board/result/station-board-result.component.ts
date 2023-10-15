@@ -72,4 +72,8 @@ export class StationBoardResultComponent implements OnInit, AfterViewInit {
   public hasDelayDifferentTime(stopEvent: OJP.StationBoardModel): boolean {
     return stopEvent.mapStationBoardTime[this.stationBoardType].hasDelayDifferentTime;
   }
+
+  public hasSituations(stopEvent: OJP.StationBoardModel): boolean {
+    return stopEvent.stopSituations.length > 0;
+  }
 }

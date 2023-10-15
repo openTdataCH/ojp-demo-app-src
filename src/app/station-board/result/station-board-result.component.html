@@ -38,6 +38,23 @@
             <div class="departure-time">{{ stopEntry.mapStationBoardTime[stationBoardType].stopTimeActual }}</div>
             <div class="departure-delay">{{ stopEntry.mapStationBoardTime[stationBoardType].stopDelayText }}</div>
           </div>
+          <div *ngIf="hasSituations(stopEntry)">
+            <sbb-tooltip svgIcon="fpl:info">
+              <div *ngFor="let situation of stopEntry.stopSituations; index as idx">
+                <p>
+                  <strong>{{ situation.situationContent.summary }}</strong>
+                </p>
+                <div>
+                  {{ situation.situationContent.description }}
+                </div>
+                <ul class="tooltip-list">
+                  <li *ngFor="let detailText of situation.situationContent.details">
+                    {{ detailText }}
+                  </li>
+                </ul>
+              </div>
+            </sbb-tooltip>
+          </div>
         </div>
       </div>
     </div>
