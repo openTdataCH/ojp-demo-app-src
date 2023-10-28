@@ -98,6 +98,7 @@ export class UserTripService {
       }
 
       const coordsLocation = OJP.Location.initFromLiteralCoords(stopPlaceRef);
+
       if (coordsLocation) {
         const coordsPromise = new Promise<OJP.Location[]>((resolve, reject) => {
           resolve([coordsLocation]);
@@ -405,7 +406,6 @@ export class UserTripService {
           }
 
           queryParams.append(queryParamKey, geoPositionLngLatS)
-          
         }
       }
     })
