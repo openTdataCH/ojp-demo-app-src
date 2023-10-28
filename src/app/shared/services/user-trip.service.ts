@@ -98,6 +98,7 @@ export class UserTripService {
       }
 
       const coordsLocation = OJP.Location.initFromLiteralCoords(stopPlaceRef);
+
       if (coordsLocation) {
         const coordsPromise = new Promise<OJP.Location[]>((resolve, reject) => {
           resolve([coordsLocation]);
@@ -399,13 +400,13 @@ export class UserTripService {
       } else {
         let geoPositionLngLatS = tripLocationPoint?.location.geoPosition?.asLatLngString(true) ?? null
         if (geoPositionLngLatS) {
-          const locatioName = tripLocationPoint?.location.computeLocationName();
-          if (locatioName) {
-            geoPositionLngLatS = locatioName + '(' + geoPositionLngLatS + ')'
+          const includeLiteralCoords = false;
+          const locationName = tripLocationPoint?.location.computeLocationName(includeLiteralCoords);
+          if (locationName) {
+            geoPositionLngLatS = geoPositionLngLatS + '(' + locationName + ')'
           }
 
           queryParams.append(queryParamKey, geoPositionLngLatS)
-          
         }
       }
     })

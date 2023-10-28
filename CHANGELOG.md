@@ -4,6 +4,10 @@ OJP-Demo URL: https://opentdatach.github.io/ojp-demo-app/
 
 ----
 
+28.October 2023
+- use latest [OJP JS](https://github.com/openTdataCH/ojp-js) version
+- fix handling of coordinates in permalinks - [PR #118](https://github.com/openTdataCH/ojp-demo-app-src/pull/118)
+
 15.October 2023
 - use latest [OJP JS](https://github.com/openTdataCH/ojp-js) version
 - add [SIRI-SX](https://opentransportdata.swiss/en/siri-sx/) messages in station board - [displaying situations on the station board #7](https://github.com/openTdataCH/ojp-demo-app/issues/7), [PR #117](https://github.com/openTdataCH/ojp-demo-app-src/pull/117)

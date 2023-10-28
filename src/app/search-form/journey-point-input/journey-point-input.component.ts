@@ -74,7 +74,6 @@ export class JourneyPointInputComponent implements OnInit, OnChanges {
 
       const coordsLocation = OJP.Location.initFromLiteralCoords(searchTerm);
       if (coordsLocation) {
-        
         this.resetMapLocations()
         
         this.handleCoordsPick(coordsLocation)
