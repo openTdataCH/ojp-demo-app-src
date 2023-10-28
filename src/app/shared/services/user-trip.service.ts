@@ -400,9 +400,10 @@ export class UserTripService {
       } else {
         let geoPositionLngLatS = tripLocationPoint?.location.geoPosition?.asLatLngString(true) ?? null
         if (geoPositionLngLatS) {
-          const locatioName = tripLocationPoint?.location.computeLocationName();
-          if (locatioName) {
-            geoPositionLngLatS = locatioName + '(' + geoPositionLngLatS + ')'
+          const includeLiteralCoords = false;
+          const locationName = tripLocationPoint?.location.computeLocationName(includeLiteralCoords);
+          if (locationName) {
+            geoPositionLngLatS = geoPositionLngLatS + '(' + locationName + ')'
           }
 
           queryParams.append(queryParamKey, geoPositionLngLatS)
