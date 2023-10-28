@@ -6,7 +6,7 @@ OJP-Demo URL: https://opentdatach.github.io/ojp-demo-app/
 
 28.October 2023
 - use latest [OJP JS](https://github.com/openTdataCH/ojp-js) version
-- fix handling of coordinates in permalinks
+- fix handling of coordinates in permalinks - [PR #118](https://github.com/openTdataCH/ojp-demo-app-src/pull/118)
 
 15.October 2023
 - use latest [OJP JS](https://github.com/openTdataCH/ojp-js) version
