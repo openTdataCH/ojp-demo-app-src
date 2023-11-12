@@ -246,6 +246,11 @@ export class SearchFormComponent implements OnInit {
       return
     }
 
+    if (this.userTripService.currentAppStage === 'LA Beta') {
+      // https://github.com/openTdataCH/ojp-demo-app-src/issues/108#issuecomment-1620364322
+      journeyRequestParams.useNumberOfResultsAfter = false
+    }
+    
     this.notificationToast.dismiss()
 
     const stageConfig = this.userTripService.getStageConfig()
