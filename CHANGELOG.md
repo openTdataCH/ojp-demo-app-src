@@ -4,6 +4,10 @@ OJP-Demo URL: https://opentdatach.github.io/ojp-demo-app/
 
 ----
 
+09.January 2024
+- use latest [OJP JS](https://github.com/openTdataCH/ojp-js) SDK version
+- display also trips without `ojp:Trip/ojp:Distance`, compute it from individual legs via `TrackSection`
+
 12.November 2023
 - add `NumberOfResults`support `LA Beta` stage - [NumberOfResultsAfter not valid without NumberOfResultsBefore #108](https://github.com/openTdataCH/ojp-demo-app-src/issues/108#issuecomment-1737492842), [PR #119](https://github.com/openTdataCH/ojp-demo-app-src/pull/119)
 
