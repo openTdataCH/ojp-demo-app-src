@@ -167,21 +167,20 @@ export class SearchFormComponent implements OnInit {
 
     responsePromise.then(response => {
       response.text().then(responseText => {
-        const tripModeType = this.userTripService.tripModeTypes[0];
-        const tripsResponse = OJP.TripsResponse.initWithXML(responseText, tripModeType, 'public_transport');
+        const tripsResponse = new OJP.TripsResponse();
+        tripsResponse.parseXML(responseText, (parseStatus, isComplete) => {
+          if (!isComplete) {
+            const totalTripsNo = tripsResponse.parserTripsNo;
+            if (parseStatus === 'TripRequest.TripsNo') {
+              console.log('TripsNo => ' + totalTripsNo);
+            }
 
-        console.log('MOCK RESPONSE from ' + mockURL);
-        console.log(tripsResponse);
-
-        this.handleCustomTripResponse(tripsResponse);
-        const friendlyNameParts = mockURL.split('/');
-        const friendlyName = friendlyNameParts[friendlyNameParts.length - 1];
-        this.requestDuration = 'MOCK from ' + friendlyName;
-
-        if (tripsResponse.trips.length > 0) {
-          const firstTrip = tripsResponse.trips[0];
-          this.zoomToTrip(firstTrip);
-        }
+            if (parseStatus === 'TripRequest.Trip') {
+              console.log('New Trip => ' + tripsResponse.trips.length + '/' + totalTripsNo);
+              this.handleCustomTripResponse(tripsResponse);
+            }
+          }
+        });
       });
     });
   }
