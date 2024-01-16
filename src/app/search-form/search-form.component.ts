@@ -257,40 +257,59 @@ export class SearchFormComponent implements OnInit {
 
     this.isSearching = true
     const startRequestDate = new Date();
-    journeyRequest.fetchResponse((trips, error) => {
+
+    journeyRequest.fetchResponse((journeyResponse, isComplete, journeyResponseStatus, error) => {
       if (error) {
         this.notificationToast.open(error.message, {
           type: 'error',
           verticalPosition: 'top',
         })
 
-        this.isSearching = false
-        this.userTripService.lastJourneyResponse = null
+        this.isSearching = false;
+        this.userTripService.lastJourneyResponse = null;
 
         this.requestDuration = null;
 
-        this.userTripService.updateTrips([])
+        this.userTripService.updateTrips([]);
 
-        return
+        return;
       }
 
-      if (trips.length === 0) {
-        this.notificationToast.open('No trips found', {
-          type: 'info',
-          verticalPosition: 'top',
-        })
+      const trips = journeyResponse.sections.flatMap(el => el.response.trips);
+
+      if (isComplete) {
+        if (trips.length === 0) {
+          this.notificationToast.open('No trips found', {
+            type: 'info',
+            verticalPosition: 'top',
+          })
+        }
+        
+        const endRequestDate = new Date();
+        const requestDuration = ((endRequestDate.getTime() - startRequestDate.getTime()) / 1000).toFixed(2);
+        this.requestDuration = requestDuration + ' sec';
+  
+        this.isSearching = false;
+        this.userTripService.lastJourneyResponse = journeyRequest.lastJourneyResponse;
+        this.userTripService.updateTrips(trips);
+
+        if (trips.length > 0) {
+          // it could be that the trips order changed, zoom again to the first one
+          const firstTrip = trips[0];
+          this.zoomToTrip(firstTrip);
+        }
       } else {
-        const firstTrip = trips[0];
-        this.zoomToTrip(firstTrip);
+        const totalTripsNo = journeyResponse.sections.reduce((acc, section) => acc + section.response.parserTripsNo, 0);
+        if (journeyResponseStatus === 'TripRequest.Trip') {
+          this.userTripService.updateTrips(trips);
+
+          if (trips.length === 1) {
+            // zoom to first trip
+            const firstTrip = trips[0];
+            this.zoomToTrip(firstTrip);
+          }
+        }
       }
-
-      const endRequestDate = new Date();
-      const requestDuration = ((endRequestDate.getTime() - startRequestDate.getTime()) / 1000).toFixed(2);
-      this.requestDuration = requestDuration + ' sec';
-
-      this.isSearching = false
-      this.userTripService.lastJourneyResponse = journeyRequest.lastJourneyResponse
-      this.userTripService.updateTrips(trips)
     })
   }
 
@@ -313,26 +332,29 @@ export class SearchFormComponent implements OnInit {
       popover.tripCustomRequestSaved.subscribe((tripsResponseXML) => {
         this.lastCustomTripRequestXML = popover.inputTripRequestXmlS
 
-        const tripModeType = this.userTripService.tripModeTypes[0];
-        const tripResponse = OJP.TripsResponse.initWithXML(tripsResponseXML, tripModeType, 'public_transport')
-        if (tripResponse.trips.length === 0) {
-          popover.inputTripRequestResponseXmlS = tripsResponseXML
-          return
-        }
+        const tripResponse = new OJP.TripsResponse();
+        tripResponse.parseXML(tripsResponseXML, (message, isComplete) => {
+          if (isComplete) {
+            popover.inputTripRequestResponseXmlS = tripsResponseXML;
 
-        dialogRef.close()
-        this.handleCustomTripResponse(tripResponse)
+            dialogRef.close();
+            this.handleCustomTripResponse(tripResponse);
+          }
+        });
       })
 
       popover.tripCustomResponseSaved.subscribe((tripsResponseXML) => {
         const tripModeType = this.userTripService.tripModeTypes[0];
-        const tripResponse = OJP.TripsResponse.initWithXML(tripsResponseXML, tripModeType, 'public_transport')
-        if (tripResponse.trips.length === 0) {
-          return
-        }
 
-        dialogRef.close()
-        this.handleCustomTripResponse(tripResponse)
+        const tripResponse = new OJP.TripsResponse();
+        tripResponse.parseXML(tripsResponseXML, (message, isComplete) => {
+          if (isComplete) {
+            popover.inputTripRequestResponseXmlS = tripsResponseXML;
+
+            dialogRef.close();
+            this.handleCustomTripResponse(tripResponse);
+          }
+        });
       })
     });
   }
@@ -346,7 +368,8 @@ export class SearchFormComponent implements OnInit {
 
     this.updateSearchForm(tripsResponse);
 
-    if (tripsResponse.trips.length > 0) {
+    const zoomToTrip = tripsResponse.trips.length === 1;
+    if (zoomToTrip) {
       const firstTrip = tripsResponse.trips[0];
       this.zoomToTrip(firstTrip);
     }
