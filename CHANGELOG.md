@@ -4,6 +4,10 @@ OJP-Demo URL: https://opentdatach.github.io/ojp-demo-app/
 
 ----
 
+15.January 2024
+- use latest [OJP JS](https://github.com/openTdataCH/ojp-js) SDK version
+- switch to SDK SAX parsing
+
 09.January 2024
 - use latest [OJP JS](https://github.com/openTdataCH/ojp-js) SDK version
 - display also trips without `ojp:Trip/ojp:Distance`, compute it from individual legs via `TrackSection` - [PR #126](https://github.com/openTdataCH/ojp-demo-app-src/pull/126)
