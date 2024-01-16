@@ -6,7 +6,7 @@ OJP-Demo URL: https://opentdatach.github.io/ojp-demo-app/
 
 15.January 2024
 - use latest [OJP JS](https://github.com/openTdataCH/ojp-js) SDK version
-- switch to SDK SAX parsing
+- use SDK SAX parser - [PR #127](https://github.com/openTdataCH/ojp-demo-app-src/pull/127)
 
 09.January 2024
 - use latest [OJP JS](https://github.com/openTdataCH/ojp-js) SDK version
