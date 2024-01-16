@@ -441,18 +441,21 @@ export class StationBoardSearchComponent implements OnInit {
     this.currentRequestData.responseDatetime = new Date();
     this.currentRequestData.responseXmlS = responseXML;
 
-    const stopEvents = OJP.StopEventRequest.handleResponseData(responseXML, null);
+    const stopEventsResponse = new OJP.StopEventResponse();
+    stopEventsResponse.parseXML(responseXML, (message) => {
+      const stopEvents = stopEventsResponse.stopEvents;
 
-    if (stopEvents.length > 0) {
-      this.mapService.tryToCenterAndZoomToLocation(stopEvents[0].stopPoint.location)
-    } else {
-      this.notificationToast.open('No StopEvents found', {
-        type: 'error',
-        verticalPosition: 'top',
-      });
-    }
-    
-    this.parseStopEvents(stopEvents);
+      if (stopEvents.length > 0) {
+        this.mapService.tryToCenterAndZoomToLocation(stopEvents[0].stopPoint.location)
+      } else {
+        this.notificationToast.open('No StopEvents found', {
+          type: 'error',
+          verticalPosition: 'top',
+        });
+      }
+      
+      this.parseStopEvents(stopEvents);
+    });
   }
 
   private updateCurrentRequestData(stopRef: string): void {
