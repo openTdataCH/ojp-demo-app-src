@@ -46,7 +46,9 @@ export class StationBoardSearchComponent implements OnInit {
   public currentRequestData: OJP.RequestData;
 
   public headerText: string = 'Search'
-  public isEmbed: boolean
+
+  private useMocks = false;
+  public isEmbed: boolean;
 
   constructor(
     private notificationToast: SbbNotificationToast,
@@ -81,6 +83,9 @@ export class StationBoardSearchComponent implements OnInit {
       responseXmlS: null,
       responseDatetime: null
     };
+
+    const queryParams = new URLSearchParams(document.location.search);
+    this.useMocks = queryParams.get('use_mocks') === 'yes';
 
     this.isEmbed = this.router.url.indexOf('/embed/') !== -1;
     if (this.isEmbed) {
@@ -251,13 +256,39 @@ export class StationBoardSearchComponent implements OnInit {
   }
 
   private fetchStopEventsForStopRef(stopPlaceRef: string) {
+    if (this.useMocks && document.location.hostname === 'localhost') {
+      this.fetchStopEventFromMocks();
+      return;
+    }
+
     const stopEventRequest = this.computeStopEventRequest(stopPlaceRef);
-    
+
     stopEventRequest.fetchResponse().then(stopEvents => {
       if (stopEventRequest.lastRequestData) {
         this.currentRequestData = stopEventRequest.lastRequestData;
       }
       this.parseStopEvents(stopEvents);
+    });
+  }
+
+  private fetchStopEventFromMocks() {
+    const mockURL = '/path/to/mock.xml';
+
+    const responsePromise = fetch(mockURL);
+
+    console.log('USE MOCKS: ' + mockURL);
+
+    responsePromise.then(response => {
+      response.text().then(responseText => {
+        const stopEventResponse = new OJP.StopEventResponse();
+        stopEventResponse.parseXML(responseText, (message) => {
+          if (message === 'StopEvent.DONE') {
+            this.parseStopEvents(stopEventResponse.stopEvents);
+          } else {
+            console.error('TODO: handle error STTAION BOARD');
+          }
+        });
+      });
     });
   }
 
@@ -410,18 +441,21 @@ export class StationBoardSearchComponent implements OnInit {
     this.currentRequestData.responseDatetime = new Date();
     this.currentRequestData.responseXmlS = responseXML;
 
-    const stopEvents = OJP.StopEventRequest.handleResponseData(responseXML, null);
+    const stopEventsResponse = new OJP.StopEventResponse();
+    stopEventsResponse.parseXML(responseXML, (message) => {
+      const stopEvents = stopEventsResponse.stopEvents;
 
-    if (stopEvents.length > 0) {
-      this.mapService.tryToCenterAndZoomToLocation(stopEvents[0].stopPoint.location)
-    } else {
-      this.notificationToast.open('No StopEvents found', {
-        type: 'error',
-        verticalPosition: 'top',
-      });
-    }
-    
-    this.parseStopEvents(stopEvents);
+      if (stopEvents.length > 0) {
+        this.mapService.tryToCenterAndZoomToLocation(stopEvents[0].stopPoint.location)
+      } else {
+        this.notificationToast.open('No StopEvents found', {
+          type: 'error',
+          verticalPosition: 'top',
+        });
+      }
+      
+      this.parseStopEvents(stopEvents);
+    });
   }
 
   private updateCurrentRequestData(stopRef: string): void {
