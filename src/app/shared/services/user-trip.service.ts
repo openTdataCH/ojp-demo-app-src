@@ -53,7 +53,7 @@ export class UserTripService {
     
     this.lastJourneyResponse = null
     this.departureDate = this.computeInitialDate()
-    this.currentAppStage = 'PROD'
+    this.currentAppStage = 'V2-INT';
 
     this.permalinkRelativeURL = null
   }
