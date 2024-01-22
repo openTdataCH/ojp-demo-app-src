@@ -330,7 +330,7 @@ export class ResultTripLegComponent implements OnInit {
     let location = isFrom ? leg.fromLocation : leg.toLocation
 
     const locationData = <LegLocationData>{
-      locationText: location.locationName ?? '',
+      locationText: location.computeLocationName() ?? '',
       platformText: null,
       timeText: null,
       delayText: null,
