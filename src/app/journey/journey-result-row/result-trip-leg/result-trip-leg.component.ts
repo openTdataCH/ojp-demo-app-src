@@ -357,8 +357,12 @@ export class ResultTripLegComponent implements OnInit {
         }
       }
 
-      locationData.platformText = stopPoint.plannedPlatform
-      locationData.actualPlatformText = stopPoint.actualPlatform
+      locationData.platformText = stopPoint.plannedPlatform;
+      if (stopPoint.actualPlatform === stopPoint.plannedPlatform) {
+        locationData.actualPlatformText = null;
+      } else {
+        locationData.actualPlatformText = stopPoint.actualPlatform;
+      }
     }
 
     return locationData
