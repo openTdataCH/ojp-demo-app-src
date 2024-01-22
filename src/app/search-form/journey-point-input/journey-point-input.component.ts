@@ -117,21 +117,21 @@ export class JourneyPointInputComponent implements OnInit, OnChanges {
     this.selectedLocation.emit(location);
   }
 
-  private fetchJourneyPoints(searchTerm: string) {
+  private async fetchJourneyPoints(searchTerm: string) {
     let stageConfig = this.userTripService.getStageConfig()
 
-    const locationInformationRequest = OJP.LocationInformationRequest.initWithLocationName(stageConfig, searchTerm);
-    locationInformationRequest.fetchResponse().then(locations => {
-      this.resetMapLocations()
-      
-      locations.forEach(location => {
-        const locationType = location.getLocationType();
-        if (locationType === null) {
-          return;
-        }
+    const request = OJP.LocationInformationRequest.initWithLocationName(stageConfig, searchTerm);
+    const response = await request.fetchResponse();
 
-        this.mapLookupLocations[locationType].push(location);
-      })
+    this.resetMapLocations();
+      
+    response.locations.forEach(location => {
+      const locationType = location.getLocationType();
+      if (locationType === null) {
+        return;
+      }
+
+      this.mapLookupLocations[locationType].push(location);
     });
   }
 

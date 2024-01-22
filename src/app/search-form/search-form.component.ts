@@ -1,5 +1,7 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 
+import { DateHelpers } from '../helpers/date-helpers';
+
 import { UserTripService } from '../shared/services/user-trip.service'
 import { MapService } from '../shared/services/map.service';
 import { InputXmlPopoverComponent } from './input-xml-popover/input-xml-popover.component';
@@ -33,7 +35,7 @@ export class SearchFormComponent implements OnInit {
 
   public tripRequestFormattedXML: string
   public tripResponseFormattedXML: string
-  public requestDuration: string | null
+  public requestDurationF: string | null
 
   private lastCustomTripRequestXML: string | null
 
@@ -63,11 +65,11 @@ export class SearchFormComponent implements OnInit {
 
     this.appStageOptions = ['PROD', 'INT', 'TEST', 'LA Beta']
 
-    this.isSearching = false
+    this.isSearching = false;
 
     this.tripRequestFormattedXML = 'RequestXML'
     this.tripResponseFormattedXML = 'ResponseXML'
-    this.requestDuration = null
+    this.requestDurationF = null;
 
     this.lastCustomTripRequestXML = null
 
@@ -96,7 +98,7 @@ export class SearchFormComponent implements OnInit {
 
     this.userTripService.searchParamsReset.subscribe(() => {
       this.expandSearchPanel()
-      this.requestDuration = null
+      this.requestDurationF = null
     });
 
     this.userTripService.defaultsInited.subscribe(nothing => {
@@ -154,49 +156,25 @@ export class SearchFormComponent implements OnInit {
     }
   }
 
-  private initLocationsFromMocks() {
-    let mockBaseFolder = 'assets/mocks/ojp-trips-response/';
+  private async initLocationsFromMocks() {
+    const mockURL = '/path/to/mock';
 
-    let mockURL = 'n/a';
-    
-    mockURL = mockBaseFolder + 'on-demand-response.xml';
-
-    const responsePromise = fetch(mockURL);
-
-    console.log('USE MOCKS: ' + mockURL);
-
-    responsePromise.then(response => {
-      response.text().then(responseText => {
-        const tripsResponse = new OJP.TripsResponse();
-        tripsResponse.parseXML(responseText, (parseStatus, isComplete) => {
-          if (!isComplete) {
-            const totalTripsNo = tripsResponse.parserTripsNo;
-            if (parseStatus === 'TripRequest.TripsNo') {
-              console.log('TripsNo => ' + totalTripsNo);
-            }
-
-            if (parseStatus === 'TripRequest.Trip') {
-              console.log('New Trip => ' + tripsResponse.trips.length + '/' + totalTripsNo);
-              this.handleCustomTripResponse(tripsResponse);
-            }
-          }
-        });
-      });
+    const mockText = await (await fetch(mockURL)).text();
+    const request = OJP.TripRequest.initWithResponseMock(mockText);
+    request.fetchResponseWithCallback((response) => {
+      if (response.message === 'TripRequest.TripsNo') {
+        console.log('DEBUG: TripsNo => ' + response.tripsNo);
+      }
+      if (response.message === 'TripRequest.Trip') {
+        console.log('DEBUG: New Trip => ' + response.trips.length + '/' + response.tripsNo);
+        if (response.trips.length === 1) {
+          this.handleCustomTripResponse(response.trips);
+        }
+      }
+      if (response.message === 'TripRequest.DONE') {
+        this.handleCustomTripResponse(response.trips);
+      }
     });
-  }
-
-  private zoomToTrip(trip: OJP.Trip) {
-    const bbox = trip.computeBBOX();
-    if (bbox.isValid() === false) {
-      return;
-    }
-
-    const bounds = new mapboxgl.LngLatBounds(bbox.asFeatureBBOX())
-
-    const mapData = {
-      bounds: bounds,
-    }
-    this.mapService.newMapBoundsRequested.emit(mapData);
   }
 
   onLocationSelected(location: OJP.Location | null, originType: OJP.JourneyPointType) {
@@ -237,10 +215,17 @@ export class SearchFormComponent implements OnInit {
     return false
   }
 
-  handleTapOnSearch() {
+  public handleTapOnSearch() {
     this.userTripService.updateDepartureDateTime(this.computeFormDepartureDate())
 
-    const journeyRequestParams = this.userTripService.computeJourneyRequestParams()
+    const journeyRequestParams = OJP.JourneyRequestParams.initWithLocationsAndDate(
+      this.userTripService.fromTripLocation,
+      this.userTripService.toTripLocation,
+      this.userTripService.viaTripLocations,
+      this.userTripService.tripModeTypes,
+      this.userTripService.tripTransportModes,
+      this.userTripService.departureDate,
+    );
     if (journeyRequestParams === null) {
       this.notificationToast.open('Please check from/to input points', {
         type: 'error',
@@ -257,44 +242,44 @@ export class SearchFormComponent implements OnInit {
     this.notificationToast.dismiss()
 
     const stageConfig = this.userTripService.getStageConfig()
-    const journeyRequest = new OJP.JourneyRequest(stageConfig, journeyRequestParams)
+    const journeyRequest = new OJP.JourneyRequest(stageConfig, journeyRequestParams);
 
-    this.isSearching = true
-    const startRequestDate = new Date();
+    this.isSearching = true;
 
-    journeyRequest.fetchResponse((journeyResponse, isComplete, journeyResponseStatus, error) => {
-      if (error) {
-        this.notificationToast.open(error.message, {
+    journeyRequest.fetchResponse((response) => {
+
+      if (response.error) {
+        this.notificationToast.open(response.error.message, {
           type: 'error',
           verticalPosition: 'top',
         })
 
         this.isSearching = false;
-        this.userTripService.lastJourneyResponse = null;
+        this.userTripService.journeyTripRequests = [];
 
-        this.requestDuration = null;
+        this.requestDurationF = null;
 
         this.userTripService.updateTrips([]);
 
         return;
       }
 
-      const trips = journeyResponse.sections.flatMap(el => el.response.trips);
-
-      if (isComplete) {
+      const trips = response.sections.flatMap(el => el.trips);
+      
+      if (response.message === 'JourneyRequest.DONE') {
         if (trips.length === 0) {
           this.notificationToast.open('No trips found', {
             type: 'info',
             verticalPosition: 'top',
           })
         }
-        
-        const endRequestDate = new Date();
-        const requestDuration = ((endRequestDate.getTime() - startRequestDate.getTime()) / 1000).toFixed(2);
-        this.requestDuration = requestDuration + ' sec';
+
+        const requestInfo = journeyRequest.tripRequests[0].requestInfo;
+        const requestNetworkDuration = DateHelpers.computeExecutionTime(requestInfo.requestDateTime, requestInfo.responseDateTime);
+        const requestParseDuration = DateHelpers.computeExecutionTime(requestInfo.responseDateTime, requestInfo.parseDateTime);
+        this.requestDurationF = (requestNetworkDuration + requestParseDuration).toFixed(2) + ' sec';
   
         this.isSearching = false;
-        this.userTripService.lastJourneyResponse = journeyRequest.lastJourneyResponse;
         this.userTripService.updateTrips(trips);
 
         if (trips.length > 0) {
@@ -303,10 +288,10 @@ export class SearchFormComponent implements OnInit {
           this.zoomToTrip(firstTrip);
         }
       } else {
-        const totalTripsNo = journeyResponse.sections.reduce((acc, section) => acc + section.response.parserTripsNo, 0);
-        if (journeyResponseStatus === 'TripRequest.Trip') {
-          this.userTripService.updateTrips(trips);
+        this.userTripService.journeyTripRequests = journeyRequest.tripRequests;
 
+        if (response.message === 'TripRequest.Trip') {
+          this.userTripService.updateTrips(trips);
           if (trips.length === 1) {
             // zoom to first trip
             const firstTrip = trips[0];
@@ -317,6 +302,18 @@ export class SearchFormComponent implements OnInit {
     })
   }
 
+  private zoomToTrip(trip: OJP.Trip) {
+    const bbox = trip.computeBBOX();
+    if (bbox.isValid() === false) {
+      return;
+    }
+
+    const bounds = new mapboxgl.LngLatBounds(bbox.asFeatureBBOX())
+    const mapData = {
+      bounds: bounds
+    }
+    this.mapService.newMapBoundsRequested.emit(mapData);
+  }
   private expandSearchPanel() {
     this.searchPanel?.open()
   }
@@ -331,62 +328,46 @@ export class SearchFormComponent implements OnInit {
     });
     dialogRef.afterOpened().subscribe(() => {
       const popover = dialogRef.componentInstance as InputXmlPopoverComponent
-      popover.inputTripRequestXmlS = this.userTripService.computeTripRequestXML(this.computeFormDepartureDate())
+      popover.inputTripRequestXML = this.userTripService.computeTripRequestXML(this.computeFormDepartureDate());
 
-      popover.tripCustomRequestSaved.subscribe((tripsResponseXML) => {
-        this.lastCustomTripRequestXML = popover.inputTripRequestXmlS
+      const handleCustomXMLResponse = (tripsResponseXML: string) => {
+        this.lastCustomTripRequestXML = popover.inputTripRequestXML;
 
-        const tripResponse = new OJP.TripsResponse();
-        tripResponse.parseXML(tripsResponseXML, (message, isComplete) => {
-          if (isComplete) {
-            popover.inputTripRequestResponseXmlS = tripsResponseXML;
-
-            dialogRef.close();
-            this.handleCustomTripResponse(tripResponse);
-          }
+        const request = OJP.TripRequest.initWithResponseMock(tripsResponseXML);
+        request.fetchResponse().then(response => {
+          popover.inputTripRequestResponseXML = tripsResponseXML;
+          dialogRef.close();
+          this.handleCustomTripResponse(response.trips);
         });
-      })
+      };
 
-      popover.tripCustomResponseSaved.subscribe((tripsResponseXML) => {
-        const tripModeType = this.userTripService.tripModeTypes[0];
-
-        const tripResponse = new OJP.TripsResponse();
-        tripResponse.parseXML(tripsResponseXML, (message, isComplete) => {
-          if (isComplete) {
-            popover.inputTripRequestResponseXmlS = tripsResponseXML;
-
-            dialogRef.close();
-            this.handleCustomTripResponse(tripResponse);
-          }
-        });
-      })
+      popover.tripCustomRequestSaved.subscribe(handleCustomXMLResponse);
+      popover.tripCustomResponseSaved.subscribe(handleCustomXMLResponse);
     });
   }
 
-  private handleCustomTripResponse(tripsResponse: OJP.TripsResponse) {
-    this.requestDuration = 'USER XML';
+  private handleCustomTripResponse(trips: OJP.Trip[]) {
+    this.requestDurationF = 'USER XML';
+    this.isSearching = false;
+    
+    this.userTripService.updateTrips(trips);
+    this.updateSearchForm(trips);
 
-    this.isSearching = false
-    this.userTripService.lastJourneyResponse = null
-    this.userTripService.updateTrips(tripsResponse.trips) 
-
-    this.updateSearchForm(tripsResponse);
-
-    const zoomToTrip = tripsResponse.trips.length === 1;
+    const zoomToTrip = trips.length > 0;
     if (zoomToTrip) {
-      const firstTrip = tripsResponse.trips[0];
+      const firstTrip = trips[0];
       this.zoomToTrip(firstTrip);
     }
   }
 
-  private updateSearchForm(tripResponse: OJP.TripsResponse) {
-    const firstTrip = tripResponse.trips[0]
-    if (firstTrip === null) {
-      return
+  private updateSearchForm(trips: OJP.Trip[]) {
+    if (trips.length === 0) {
+      return;
     }
+    const firstTrip = trips[0];
 
-    this.userTripService.updateParamsFromTrip(firstTrip)
-    this.updateLocationTexts()
+    this.userTripService.updateParamsFromTrip(firstTrip);
+    this.updateLocationTexts();
   }
 
   public swapEndpoints() {

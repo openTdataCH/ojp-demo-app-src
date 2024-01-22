@@ -11,9 +11,9 @@
           </div>
           
           <div
-            *ngIf="this.currentRequestData.requestXmlS && !this.isEmbed"
+            *ngIf="this.currentRequestInfo?.requestXML && !this.isEmbed"
             class="xml-info"
-            (click)="this.showRequestXmlPopover()"
+            (click)="showRequestXmlPopover()"
           >
             <span class="layer-xml-info badge bg-info text-dark">XML</span>
           </div>

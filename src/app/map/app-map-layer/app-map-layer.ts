@@ -103,7 +103,7 @@ export class AppMapLayer {
         return true
     }
 
-    public refreshFeatures() {
+    public async refreshFeatures() {
         if (!this.shouldLoadNewFeatures()) {
             this.removeAllFeatures();
             return;
@@ -123,88 +123,83 @@ export class AppMapLayer {
             this.geoRestrictionPoiOSMTags,
         );
 
-        this.lastOJPRequest = request
+        this.lastOJPRequest = request;
 
         const layerConfig = APP_CONFIG.map_app_map_layers[this.layerKey];
-        request.fetchResponse().then(locations => {
-            if (!this.shouldLoadNewFeatures()) {
-                this.removeAllFeatures();
-            }
+        const response = await request.fetchResponse();
 
-            const locationsDiscarded: OJP.Location[] = [];
-            const mapFeatures: Record<string, GeoJSON.Feature> = {};
-
-            locations.forEach((location, idx) => {
-                if (location.geoPosition === null) {
-                    return;
-                }
-
-                if (layerConfig.LIR_Restriction_Type === 'poi_amenity') {
-                    const layerPoiType = layerConfig.LIR_POI_Type;
-                    const poiCategory = location.poi?.category ?? null;
-                    if (layerPoiType !== poiCategory) {
-                        locationsDiscarded.push(location);
-                        return;
-                    }
-                }
-
-                const locationKey = location.geoPosition.asLatLngString();
-                if (!(locationKey in mapFeatures)) {
-                    const feature: GeoJSON.Feature = {
-                        type: 'Feature',
-                        properties: {
-                            locations_idx: [],
-                        },
-                        geometry: {
-                            type: 'Point',
-                            coordinates: location.geoPosition.asPosition(),
-                        }
-                    }
-
-                    mapFeatures[locationKey] = feature;
-                }
-
-                const feature = mapFeatures[locationKey] ?? null;
-                if (feature === null || feature.properties === null) {
-                    return;
-                }
-
-                const locationsIdx: number[] = feature.properties['locations_idx'];
-                locationsIdx.push(idx);
-            });
-
-            if (locationsDiscarded.length > 0) {
-                // console.log('Following locations are discarded for the POI request ' + layerConfig.LIR_POI_Type);
-                // console.log(locationsDiscarded);
-            }
-
-            this.currentLocations = locations;
-            
-            const features = Object.values(mapFeatures);
-            features.forEach(feature => {
-                if (feature.properties === null) {
-                    return;
-                }
-
-                const locations_idx = feature.properties['locations_idx'] as number[];
-                const featureLocations: OJP.Location[] = []
-                locations_idx.forEach(idx => {
-                    const location = locations[idx] ?? null;
-                    if (location) {
-                        featureLocations.push(location);
-                    }
-                })
-
-                feature.properties['locations_idx'] = locations_idx.join(',');
-
-                this.annotateFeatureFromLocations(feature, featureLocations);
-            });
-
-            this.setSourceFeatures(features);
-        }).catch(error => {
+        if (response.message === 'ERROR') {
             console.log('AppMapLayer: ' + this.layerKey + ' backend ERROR');
-            console.log(error);
+            console.log(response);
+            return;
+        }
+
+        const locationsDiscarded: OJP.Location[] = [];
+        const mapFeatures: Record<string, GeoJSON.Feature> = {};
+
+        response.locations.forEach((location, idx) => {
+            if (location.geoPosition === null) {
+                return;
+            }
+
+            if (layerConfig.LIR_Restriction_Type === 'poi_amenity') {
+                const layerPoiType = layerConfig.LIR_POI_Type;
+                const poiCategory = location.poi?.category ?? null;
+                if (layerPoiType !== poiCategory) {
+                    locationsDiscarded.push(location);
+                    return;
+                }
+            }
+
+            const locationKey = location.geoPosition.asLatLngString();
+            if (!(locationKey in mapFeatures)) {
+                const feature: GeoJSON.Feature = {
+                    type: 'Feature',
+                    properties: {
+                        locations_idx: [],
+                    },
+                    geometry: {
+                        type: 'Point',
+                        coordinates: location.geoPosition.asPosition(),
+                    }
+                }
+
+                mapFeatures[locationKey] = feature;
+            }
+
+            const feature = mapFeatures[locationKey] ?? null;
+            if (feature === null || feature.properties === null) {
+                return;
+            }
+
+            const locationsIdx: number[] = feature.properties['locations_idx'];
+            locationsIdx.push(idx);
         });
+
+
+        this.currentLocations = response.locations;
+        
+        const features = Object.values(mapFeatures);
+        features.forEach(feature => {
+            if (feature.properties === null) {
+                return;
+            }
+
+            const locations_idx = feature.properties['locations_idx'] as number[];
+            const featureLocations: OJP.Location[] = []
+            locations_idx.forEach(idx => {
+                const location = response.locations[idx] ?? null;
+                if (location) {
+                    featureLocations.push(location);
+                }
+            })
+
+            feature.properties['locations_idx'] = locations_idx.join(',');
+
+            this.annotateFeatureFromLocations(feature, featureLocations);
+        });
+
+        this.setSourceFeatures(features);
     }
 
     public removeAllFeatures() {
