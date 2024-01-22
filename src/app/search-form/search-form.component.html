@@ -118,8 +118,8 @@
 <div class="row mb-2" *ngIf="!this.isEmbed">
   <div class="col">
     <div class="d-flex flex-row-reverse">
-      <div *ngIf="requestDuration !== null">
-        <span class="badge bg-success">{{ this.requestDuration }}</span>
+      <div *ngIf="this.requestDurationF !== null">
+        <span class="badge bg-success">{{ this.requestDurationF }}</span>
       </div>
       <div style="width: 7px"></div>
       <ng-container *ngIf="this.userTripService.permalinkRelativeURL !== null">

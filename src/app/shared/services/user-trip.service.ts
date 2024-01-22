@@ -21,8 +21,8 @@ export class UserTripService {
   
   public tripModeTypes: OJP.TripModeType[]
   public tripTransportModes: OJP.IndividualTransportMode[]
-  
-  public lastJourneyResponse: OJP.JourneyResponse | null
+
+  public journeyTripRequests: OJP.TripRequest[]
   public departureDate: Date
   public currentAppStage: APP_STAGE
 
@@ -50,8 +50,9 @@ export class UserTripService {
     this.journeyTripsPlaceholder = ['-']
     this.tripModeTypes = ['monomodal']
     this.tripTransportModes = ['public_transport']
+
+    this.journeyTripRequests = [];
     
-    this.lastJourneyResponse = null
     this.departureDate = this.computeInitialDate()
     this.currentAppStage = 'V2-INT';
 
@@ -100,14 +101,19 @@ export class UserTripService {
       const coordsLocation = OJP.Location.initFromLiteralCoords(stopPlaceRef);
 
       if (coordsLocation) {
-        const coordsPromise = new Promise<OJP.Location[]>((resolve, reject) => {
+        const coordsPromise = new Promise<OJP.Location[]>((resolve) => {
           resolve([coordsLocation]);
         });
         promises.push(coordsPromise);
       } else {
-        const locationInformationRequest = OJP.LocationInformationRequest.initWithStopPlaceRef(stageConfig, stopPlaceRef)
-        const locationInformationPromise = locationInformationRequest.fetchResponse();
-        promises.push(locationInformationPromise)
+        let locationInformationRequest = OJP.LocationInformationRequest.initWithStopPlaceRef(stageConfig, stopPlaceRef);
+        // Check if is location name instead of stopId / sloid
+        if (typeof stopPlaceRef === 'string' && /^[A-Z]/.test(stopPlaceRef)) {
+          locationInformationRequest = OJP.LocationInformationRequest.initWithLocationName(stageConfig, stopPlaceRef);
+        }
+
+        const locationInformationPromise = locationInformationRequest.fetchLocations();
+        promises.push(locationInformationPromise);
       }
     });
 
@@ -224,7 +230,7 @@ export class UserTripService {
         'stop',
         300
       );
-      const locationInformationPromise = locationInformationRequest.fetchResponse();
+      const locationInformationPromise = locationInformationRequest.fetchLocations();
       promises.push(locationInformationPromise)
     });
 
@@ -359,30 +365,14 @@ export class UserTripService {
     this.updatePermalinkAddress();
   }
 
-  public computeJourneyRequestParams(): OJP.JourneyRequestParams | null {
-    const requestParams = OJP.JourneyRequestParams.initWithLocationsAndDate(
-      this.fromTripLocation,
-      this.toTripLocation,
-      this.viaTripLocations,
-      this.tripModeTypes,
-      this.tripTransportModes,
-      this.departureDate,
-    )
-
-    return requestParams
-  }
-
   public computeTripRequestXML(departureDate: Date): string {
-    const stageConfig = this.getStageConfig()
-    const tripRequestParams = OJP.TripsRequestParams.initWithLocationsAndDate(this.fromTripLocation, this.toTripLocation, departureDate)
-    if (tripRequestParams === null) {
-      return 'BROKEN TripsRequestParams'
+    const stageConfig = this.getStageConfig();
+    const request = OJP.TripRequest.initWithTripLocationsAndDate(stageConfig, this.fromTripLocation, this.toTripLocation, departureDate);
+    if (request === null || request.requestInfo.requestXML === null) {
+      return 'BROKEN TripsRequestParams';
     }
-    
-    const tripRequest = new OJP.TripRequest(stageConfig, tripRequestParams)
-    const tripRequestXmlS = tripRequest.computeRequestXmlString()
-    
-    return tripRequestXmlS
+
+    return request.requestInfo.requestXML;
   }
 
   private updatePermalinkAddress() {

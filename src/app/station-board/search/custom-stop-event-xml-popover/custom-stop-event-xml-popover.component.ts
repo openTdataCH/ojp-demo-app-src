@@ -26,12 +26,16 @@ export class CustomStopEventXMLPopoverComponent {
   public parseCustomRequestXML() {
     this.isRunningRequest = true
 
-    const stageConfig = this.userTripService.getStageConfig()
-    const ojpRequest = new OJP.OJPBaseRequest(stageConfig)
-    
-    ojpRequest.fetchOJPResponse(this.customRequestXMLs, (responseText, error) => {
-      this.isRunningRequest = false
-      this.customRequestSaved.emit(responseText)
+    const request = OJP.StopEventRequest.initWithRequestMock(this.customRequestXMLs);
+    request.fetchResponse().then(response => {
+      this.isRunningRequest = false;
+      const responseXML = request.requestInfo.responseXML;
+      if (responseXML === null) {
+        console.log('ERROR - no response from StopEventRequest');
+        return;
+      }
+
+      this.customRequestSaved.emit(responseXML);
     });
   }
 

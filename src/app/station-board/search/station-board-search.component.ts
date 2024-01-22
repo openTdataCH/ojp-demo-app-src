@@ -43,7 +43,7 @@ export class StationBoardSearchComponent implements OnInit {
 
   public permalinkURLAddress: string
 
-  public currentRequestData: OJP.RequestData;
+  public currentRequestInfo: OJP.RequestInfo | null;
 
   public headerText: string = 'Search'
 
@@ -77,12 +77,7 @@ export class StationBoardSearchComponent implements OnInit {
     this.permalinkURLAddress = '';
     this.updatePermalinkURLAddress();
 
-    this.currentRequestData = {
-      requestXmlS: null,
-      requestDatetime: null,
-      responseXmlS: null,
-      responseDatetime: null
-    };
+    this.currentRequestInfo = null;
 
     const queryParams = new URLSearchParams(document.location.search);
     this.useMocks = queryParams.get('use_mocks') === 'yes';
@@ -113,6 +108,13 @@ export class StationBoardSearchComponent implements OnInit {
     this.stationBoardService.stationOnMapClicked.subscribe(feature => {
       this.handleMapClick(feature);
     })
+
+    if (this.useMocks) {
+      if (this.useMocks && document.location.hostname === 'localhost') {
+        this.fetchStopEventFromMocks();
+        return;
+      }
+    }
   }
 
   private computeAppStageFromString(appStageS: string): APP_STAGE | null {
@@ -256,39 +258,21 @@ export class StationBoardSearchComponent implements OnInit {
   }
 
   private fetchStopEventsForStopRef(stopPlaceRef: string) {
-    if (this.useMocks && document.location.hostname === 'localhost') {
-      this.fetchStopEventFromMocks();
-      return;
-    }
-
     const stopEventRequest = this.computeStopEventRequest(stopPlaceRef);
 
-    stopEventRequest.fetchResponse().then(stopEvents => {
-      if (stopEventRequest.lastRequestData) {
-        this.currentRequestData = stopEventRequest.lastRequestData;
-      }
-      this.parseStopEvents(stopEvents);
+    stopEventRequest.fetchResponse().then(response => {
+      this.currentRequestInfo = stopEventRequest.requestInfo;
+      this.parseStopEvents(response.stopEvents);
     });
   }
 
-  private fetchStopEventFromMocks() {
+  private async fetchStopEventFromMocks() {
     const mockURL = '/path/to/mock.xml';
 
-    const responsePromise = fetch(mockURL);
-
-    console.log('USE MOCKS: ' + mockURL);
-
-    responsePromise.then(response => {
-      response.text().then(responseText => {
-        const stopEventResponse = new OJP.StopEventResponse();
-        stopEventResponse.parseXML(responseText, (message) => {
-          if (message === 'StopEvent.DONE') {
-            this.parseStopEvents(stopEventResponse.stopEvents);
-          } else {
-            console.error('TODO: handle error STTAION BOARD');
-          }
-        });
-      });
+    const mockText = await (await fetch(mockURL)).text();
+    const request = OJP.StopEventRequest.initWithMock(mockText);
+    request.fetchResponse().then(response => {
+      this.parseStopEvents(response.stopEvents);
     });
   }
 
@@ -313,27 +297,26 @@ export class StationBoardSearchComponent implements OnInit {
     this.stationBoardService.stationBoardDataUpdated.emit(stationBoardData);
   }
 
-  private lookupStopPlaceRef(stopPlaceRef: string) {
+  private async lookupStopPlaceRef(stopPlaceRef: string) {
     const stageConfig = this.userTripService.getStageConfig();
-    const locationInformationRequest = OJP.LocationInformationRequest.initWithStopPlaceRef(stageConfig, stopPlaceRef)
-    const promise = locationInformationRequest.fetchResponse();
-    promise.then(locationsData => {
-      if (locationsData.length === 0) {
-        console.error('ERROR - cant find stopPlaceRef with ID: ' + stopPlaceRef);
-        return;
-      }
+    const locationInformationRequest = OJP.LocationInformationRequest.initWithStopPlaceRef(stageConfig, stopPlaceRef);
+    const response = await locationInformationRequest.fetchResponse();
 
-      const firstLocation = locationsData[0];
-      this.searchLocation = firstLocation;
+    if (response.locations.length === 0) {
+      console.error('ERROR - cant find stopPlaceRef with ID: ' + stopPlaceRef);
+      return;
+    }
 
-      this.mapService.tryToCenterAndZoomToLocation(firstLocation);
-      this.updatePermalinkURLAddress();
-      this.updateHeaderText();
+    const firstLocation = response.locations[0];
+    this.searchLocation = firstLocation;
 
-      if (this.autocompleteInputComponent) {
-        this.autocompleteInputComponent.updateLocationText(firstLocation);
-      }
-    });
+    this.mapService.tryToCenterAndZoomToLocation(firstLocation);
+    this.updatePermalinkURLAddress();
+    this.updateHeaderText();
+
+    if (this.autocompleteInputComponent) {
+      this.autocompleteInputComponent.updateLocationText(firstLocation);
+    }
   }
 
   private updateHeaderText() {
@@ -398,8 +381,10 @@ export class StationBoardSearchComponent implements OnInit {
       position: { top: '10px' },
     });
     dialogRef.afterOpened().subscribe(() => {
-      const popover = dialogRef.componentInstance as DebugXmlPopoverComponent
-      popover.updateRequestData(this.currentRequestData);
+      if (this.currentRequestInfo) {
+        const popover = dialogRef.componentInstance as DebugXmlPopoverComponent;
+        popover.updateRequestData(this.currentRequestInfo);
+      }
     });
   }
 
@@ -415,15 +400,15 @@ export class StationBoardSearchComponent implements OnInit {
     dialogRef.afterOpened().subscribe(() => {
       this.notificationToast.dismiss();
 
-      const popover = dialogRef.componentInstance as CustomStopEventXMLPopoverComponent
+      const popover = dialogRef.componentInstance as CustomStopEventXMLPopoverComponent;
 
-      if (this.currentRequestData.requestXmlS === null) {
+      if (this.currentRequestInfo === null) {
         const stopPlaceRefZH = '8503000';
         const stopEventRequest = this.computeStopEventRequest(stopPlaceRefZH);
-        this.currentRequestData.requestXmlS = stopEventRequest.computeRequestXmlString();
+        this.currentRequestInfo = stopEventRequest.requestInfo;
       }
 
-      popover.customRequestXMLs = this.currentRequestData.requestXmlS;
+      popover.customRequestXMLs = this.currentRequestInfo?.requestXML ?? 'n/a';
 
       popover.customRequestSaved.subscribe((responseXML) => {
         dialogRef.close()
@@ -438,31 +423,32 @@ export class StationBoardSearchComponent implements OnInit {
   }
 
   private handleCustomResponse(responseXML: string) {
-    this.currentRequestData.responseDatetime = new Date();
-    this.currentRequestData.responseXmlS = responseXML;
+    if (this.currentRequestInfo === null) {
+      return;
+    }
 
-    const stopEventsResponse = new OJP.StopEventResponse();
-    stopEventsResponse.parseXML(responseXML, (message) => {
-      const stopEvents = stopEventsResponse.stopEvents;
+    this.currentRequestInfo.responseDateTime = new Date();
+    this.currentRequestInfo.responseXML = responseXML;
+
+    const request = OJP.StopEventRequest.initWithMock(responseXML);
+    request.fetchResponse().then(response => {
+      const stopEvents = response.stopEvents;
 
       if (stopEvents.length > 0) {
-        this.mapService.tryToCenterAndZoomToLocation(stopEvents[0].stopPoint.location)
+        this.mapService.tryToCenterAndZoomToLocation(stopEvents[0].stopPoint.location);
+        this.parseStopEvents(response.stopEvents);
       } else {
         this.notificationToast.open('No StopEvents found', {
           type: 'error',
           verticalPosition: 'top',
         });
       }
-      
-      this.parseStopEvents(stopEvents);
     });
   }
 
   private updateCurrentRequestData(stopRef: string): void {
-    const stopEventRequest = this.computeStopEventRequest(stopRef);
-
-    this.currentRequestData.requestDatetime = new Date();
-    this.currentRequestData.requestXmlS = stopEventRequest.computeRequestXmlString();
+    const request = this.computeStopEventRequest(stopRef);
+    this.currentRequestInfo = request.requestInfo;
   }
 
   public loadEmbedHTMLPopover() {

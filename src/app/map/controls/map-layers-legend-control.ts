@@ -20,6 +20,7 @@ export class MapLayersLegendControl implements mapboxgl.IControl {
   private layersData: LayerData[]
   private userTripService: UserTripService
 
+  // TODO - move me in MapLayersController
   private prevMapBoundsHash: string = '';
 
   constructor(map: mapboxgl.Map, private debugXmlPopover: SbbDialog, userTripService: UserTripService) {
@@ -123,7 +124,7 @@ export class MapLayersLegendControl implements mapboxgl.IControl {
         });
         dialogRef.afterOpened().subscribe(() => {
           const popover = dialogRef.componentInstance as DebugXmlPopoverComponent
-          popover.updateRequestData(lastOJPRequest.lastRequestData)
+          popover.updateRequestData(lastOJPRequest.requestInfo);
         });
       }
     })

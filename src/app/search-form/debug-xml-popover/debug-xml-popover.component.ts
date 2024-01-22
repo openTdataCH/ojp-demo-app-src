@@ -11,21 +11,21 @@ export class DebugXmlPopoverComponent {
   public responseXmlS: string
 
   constructor() {
-    this.requestXmlS = 'n/a'
-    this.responseXmlS = 'n/a'
+    this.requestXmlS = 'loading...';
+    this.responseXmlS = 'loading...';
   }
 
-  updateRequestData(requestData: OJP.RequestData | null) {
-    if (requestData && requestData.requestXmlS) {
-      this.requestXmlS = XML_Helpers.prettyPrintXML(requestData.requestXmlS)
+  updateRequestData(requestInfo: OJP.RequestInfo) {
+    if (requestInfo.requestXML) {
+      this.requestXmlS = XML_Helpers.prettyPrintXML(requestInfo.requestXML);
     } else {
-      this.requestXmlS = 'n/a'
+      this.requestXmlS = 'n/a';
     }
 
-    if (requestData && requestData.responseXmlS) {
-      this.responseXmlS = XML_Helpers.prettyPrintXML(requestData.responseXmlS)
+    if (requestInfo.responseXML) {
+      this.responseXmlS = XML_Helpers.prettyPrintXML(requestInfo.responseXML);
     } else {
-      this.responseXmlS = 'n/a'
+      this.responseXmlS = 'n/a';
     }
   }
 }
