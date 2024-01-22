@@ -277,7 +277,9 @@ export class UserTripService {
   }
 
   private computeAppStageFromString(appStageS: string): APP_STAGE {
-    const availableStages: APP_STAGE[] = ['INT', 'LA Beta', 'PROD', 'TEST'];
+    const availableStages: APP_STAGE[] = APP_CONFIG.app_stages.map((stage) => {
+      return stage.key as APP_STAGE;
+    });
     const availableStagesLower: string[] = availableStages.map(stage => {
       return stage.toLowerCase();
     });
