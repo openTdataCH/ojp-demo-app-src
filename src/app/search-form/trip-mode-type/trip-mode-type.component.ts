@@ -9,7 +9,7 @@ import { MapService } from 'src/app/shared/services/map.service';
 import { UserTripService } from 'src/app/shared/services/user-trip.service';
 
 interface TripMotTypeDataModel {
-  sectionRequestData: OJP.RequestData | null,
+  requestInfo: OJP.RequestInfo | null,
   isNotLastSegment: boolean
 }
 
@@ -115,7 +115,7 @@ export class TripModeTypeComponent implements OnInit {
     this.tripTransportMode = this.userTripService.tripTransportModes[this.tripModeTypeIdx];
 
     this.tripMotTypeDataModel.isNotLastSegment = !this.isLastSegment();
-    this.tripMotTypeDataModel.sectionRequestData = null
+    this.tripMotTypeDataModel.requestInfo = null
 
     this.userTripService.activeTripSelected.subscribe(trip => {
       this.updateRequestDataModel()
@@ -185,19 +185,14 @@ export class TripModeTypeComponent implements OnInit {
   private updateRequestDataModel() {
     this.tripMotTypeDataModel.isNotLastSegment = !this.isLastSegment();
 
-    const lastJourneyResponse = this.userTripService.lastJourneyResponse
-    if (lastJourneyResponse === null) {
-      this.tripMotTypeDataModel.sectionRequestData = null
-      return
+    const tripRequest = this.userTripService.journeyTripRequests[this.tripModeTypeIdx] ?? null;
+    if (tripRequest === null) {
+      // mocks or the TripRequest parser callback are not complete
+      this.tripMotTypeDataModel.requestInfo = null;
+      return;
     }
 
-    const journeySection = lastJourneyResponse.sections[this.tripModeTypeIdx] ?? null
-    if (journeySection === null) {
-      this.tripMotTypeDataModel.sectionRequestData = null
-      return
-    }
-
-    this.tripMotTypeDataModel.sectionRequestData = journeySection.requestData
+    this.tripMotTypeDataModel.requestInfo = tripRequest.requestInfo;
   }
 
   public showRequestXmlPopover() {
@@ -205,8 +200,10 @@ export class TripModeTypeComponent implements OnInit {
       position: { top: '10px' },
     });
     dialogRef.afterOpened().subscribe(() => {
-      const popover = dialogRef.componentInstance as DebugXmlPopoverComponent
-      popover.updateRequestData(this.tripMotTypeDataModel.sectionRequestData)
+      if (this.tripMotTypeDataModel.requestInfo) {
+        const popover = dialogRef.componentInstance as DebugXmlPopoverComponent
+        popover.updateRequestData(this.tripMotTypeDataModel.requestInfo)
+      }
     });
   }
 

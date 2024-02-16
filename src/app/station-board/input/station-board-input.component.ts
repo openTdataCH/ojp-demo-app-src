@@ -93,17 +93,17 @@ export class StationBoardInputComponent implements OnInit {
     this.fetchLookupLocations(searchTerm);
   }
 
-  private fetchLookupLocations(searchTerm: string) {
+  private async fetchLookupLocations(searchTerm: string) {
     this.isBusySearching = true;
 
     const geoRestrictionType: OJP.GeoRestrictionType = 'stop';
     const stageConfig = this.userTripService.getStageConfig();
     const locationInformationRequest = OJP.LocationInformationRequest.initWithLocationName(stageConfig, searchTerm, geoRestrictionType);
 
-    locationInformationRequest.fetchResponse().then(locations => {
-      this.parseLocations(locations);
-      this.isBusySearching = false;
-    });
+    const response = await locationInformationRequest.fetchResponse();
+    
+    this.parseLocations(response.locations);
+    this.isBusySearching = false;
   }
 
   private parseLocations(locations: OJP.Location[], nearbyGeoPosition: OJP.GeoPosition | null = null) {
@@ -193,7 +193,7 @@ export class StationBoardInputComponent implements OnInit {
     });
   }
 
-  private handleNewGeoPosition(position: GeolocationPosition, completion: (locations: OJP.Location[]) => void) {
+  private async handleNewGeoPosition(position: GeolocationPosition, completion: (locations: OJP.Location[]) => void) {
     const bbox_width = 0.05;
     const bbox_height = 0.05;
     const bbox_W = position.coords.longitude - bbox_width / 2;
@@ -210,9 +210,8 @@ export class StationBoardInputComponent implements OnInit {
       300,
       null,
     );
-    request.fetchResponse().then(locations => {
-      completion(locations);
-    });
+    const response = await request.fetchResponse();
+    completion(response.locations);
   }
 
   public updateLocationText(location: OJP.Location) {

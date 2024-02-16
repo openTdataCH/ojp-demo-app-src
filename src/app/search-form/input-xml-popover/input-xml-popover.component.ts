@@ -8,8 +8,8 @@ import * as OJP from 'ojp-sdk'
   templateUrl: './input-xml-popover.component.html',
 })
 export class InputXmlPopoverComponent {
-  public inputTripRequestXmlS: string
-  public inputTripRequestResponseXmlS: string
+  public inputTripRequestXML: string
+  public inputTripRequestResponseXML: string
 
   public isRunningTripRequest: boolean
 
@@ -17,8 +17,8 @@ export class InputXmlPopoverComponent {
   @Output() tripCustomResponseSaved = new EventEmitter<string>()
 
   constructor(private userTripService: UserTripService) {
-    this.inputTripRequestXmlS = '... loading'
-    this.inputTripRequestResponseXmlS = 'Paste custom OJP TripRequest Response XML here...'
+    this.inputTripRequestXML = '... loading'
+    this.inputTripRequestResponseXML = 'Paste custom OJP TripRequest Response XML here...'
 
     this.isRunningTripRequest = false
   }
@@ -26,15 +26,27 @@ export class InputXmlPopoverComponent {
   public parseCustomRequestXML() {
     this.isRunningTripRequest = true
 
-    const stageConfig = this.userTripService.getStageConfig()
-    const ojpRequest = new OJP.OJPBaseRequest(stageConfig)
-    ojpRequest.fetchOJPResponse(this.inputTripRequestXmlS, responseText => {
-      this.isRunningTripRequest = false
-      this.tripCustomRequestSaved.emit(responseText)
+    const stageConfig = this.userTripService.getStageConfig();
+    const request = OJP.TripRequest.initWithRequestMock(this.inputTripRequestXML);
+    request.fetchResponse().then(response => {
+      if (response.message === 'ERROR') {
+        console.error('ERROR fetching OJP response');
+        console.log(response);
+        return;
+      }
+
+      const responseXML = request.requestInfo.responseXML;
+      if (responseXML === null) {
+        console.error('ERROR parsing OJP response');
+        console.log(request);
+        return;
+      }
+
+      this.tripCustomRequestSaved.emit(responseXML);
     });
   }
 
   public parseCustomResponseXML() {
-    this.tripCustomResponseSaved.emit(this.inputTripRequestResponseXmlS)
+    this.tripCustomResponseSaved.emit(this.inputTripRequestResponseXML);
   }
 }
