@@ -11,6 +11,8 @@ interface LegLocationData {
   actualPlatformText: string | null,
   timeText: string | null,
   delayText: string | null,
+  platformAssistanceIconPath: string | null,
+  platformAssistanceTooltip: string,
 }
 
 type LegTemplate = 'walk' | 'timed' | 'taxi';
@@ -292,6 +294,16 @@ export class ResultTripLegComponent implements OnInit {
       return timedLeg.service.siriSituations;
     })();
     this.legInfoDataModel.hasSituations = this.legInfoDataModel.situations.length > 0;
+
+    if (leg.legType === 'TimedLeg') {
+      const timedLeg = leg as OJP.TripTimedLeg;
+      
+      this.legInfoDataModel.fromLocationData.platformAssistanceIconPath = this.computePlatformAssistanceIconPath(timedLeg, 'From');
+      this.legInfoDataModel.fromLocationData.platformAssistanceTooltip = this.computePlatformAssistanceTooltip(timedLeg, 'From');
+
+      this.legInfoDataModel.toLocationData.platformAssistanceIconPath = this.computePlatformAssistanceIconPath(timedLeg, 'To');
+      this.legInfoDataModel.toLocationData.platformAssistanceTooltip = this.computePlatformAssistanceTooltip(timedLeg, 'To');
+    }
   }
 
   private computeLegIconFilename(leg: OJP.TripLeg): string {
@@ -322,6 +334,67 @@ export class ResultTripLegComponent implements OnInit {
     }
 
     return 'picto-bus-fallback';
+  }
+
+  private computePlatformAssistanceIconPath(timedLeg: OJP.TripTimedLeg, stopPointType: OJP.JourneyPointType): string | null {
+    const stopPoint = stopPointType === 'From' ? timedLeg.fromStopPoint : timedLeg.toStopPoint;
+
+    const filename: string | null = (() => {
+      if (stopPoint.vehicleAccessType === 'PLATFORM_ACCESS_WITHOUT_ASSISTANCE') {
+        return 'platform_independent';
+      }
+
+      if (stopPoint.vehicleAccessType === 'PLATFORM_ACCESS_WITH_ASSISTANCE') {
+        return 'platform_help_driver';
+      }
+
+      if (stopPoint.vehicleAccessType === 'PLATFORM_ACCESS_WITH_ASSISTANCE_WHEN_NOTIFIED') {
+        return 'platform_advance_notice';
+      }
+
+      if (stopPoint.vehicleAccessType === 'PLATFORM_NOT_WHEELCHAIR_ACCESSIBLE') {
+        return 'platform_not_possible';
+      }
+
+      if (stopPoint.vehicleAccessType === 'NO_DATA') {
+        return 'platform_no_information';
+      }
+
+      return null;
+    })();
+
+    if (filename === null) {
+      return null;
+    }
+    
+    const iconPath = 'assets/platform-assistance/' + filename + '.jpg';
+    return iconPath;
+  }
+
+  private computePlatformAssistanceTooltip(timedLeg: OJP.TripTimedLeg, stopPointType: OJP.JourneyPointType): string {
+    const stopPoint = stopPointType === 'From' ? timedLeg.fromStopPoint : timedLeg.toStopPoint;
+
+    const message: string = (() => {
+      if (stopPoint.vehicleAccessType === 'PLATFORM_ACCESS_WITHOUT_ASSISTANCE') {
+        return 'Step-free access; level entry/exit.';
+      }
+
+      if (stopPoint.vehicleAccessType === 'PLATFORM_ACCESS_WITH_ASSISTANCE') {
+        return 'Step-free access; entry/exit through staff assistance, no prior registration necessary.';
+      }
+
+      if (stopPoint.vehicleAccessType === 'PLATFORM_ACCESS_WITH_ASSISTANCE_WHEN_NOTIFIED') {
+        return 'Step-free access; entry/exit through staff assistance, advance registration required.';
+      }
+
+      if (stopPoint.vehicleAccessType === 'PLATFORM_NOT_WHEELCHAIR_ACCESSIBLE') {
+        return 'Not usable for wheelchairs.';
+      }
+
+      return 'No available information about vehicle access.';
+    })();
+
+    return message;
   }
 
   private computeLocationData(leg: OJP.TripLeg, endpointType: OJP.JourneyPointType): LegLocationData {

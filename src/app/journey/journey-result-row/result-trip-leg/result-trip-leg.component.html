@@ -61,6 +61,10 @@
     </div>
     <div 
       class="flex-grow-0 leg-time leg-right-side">
+      <img *ngIf="this.legInfoDataModel.fromLocationData.platformAssistanceIconPath !== null"
+        class="leg-platform-assistance" 
+        src="{{ this.legInfoDataModel.fromLocationData.platformAssistanceIconPath }}" 
+        title="{{ this.legInfoDataModel.fromLocationData.platformAssistanceTooltip }}" />
       <span>{{ this.legInfoDataModel.fromLocationData.timeText }}</span>
       <span class="time-delay">{{ this.legInfoDataModel.fromLocationData.delayText }}</span>
     </div>
@@ -108,6 +112,10 @@
     </div>
     <div 
       class="flex-grow-0 leg-time leg-right-side">
+      <img *ngIf="this.legInfoDataModel.toLocationData.platformAssistanceIconPath !== null"
+        class="leg-platform-assistance" 
+        src="{{ this.legInfoDataModel.toLocationData.platformAssistanceIconPath }}" 
+        title="{{ this.legInfoDataModel.toLocationData.platformAssistanceTooltip }}" />
       <span>{{ this.legInfoDataModel.toLocationData.timeText }}</span>
       <span class="time-delay">{{ this.legInfoDataModel.toLocationData.delayText }}</span>
     </div>
