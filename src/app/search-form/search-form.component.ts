@@ -314,6 +314,7 @@ export class SearchFormComponent implements OnInit {
     }
     this.mapService.newMapBoundsRequested.emit(mapData);
   }
+
   private expandSearchPanel() {
     this.searchPanel?.open()
   }
@@ -334,7 +335,7 @@ export class SearchFormComponent implements OnInit {
         this.lastCustomTripRequestXML = popover.inputTripRequestXML;
 
         const request = OJP.TripRequest.initWithResponseMock(tripsResponseXML);
-        request.fetchResponse().then(response => {
+        request.fetchResponse().then((response) => {
           popover.inputTripRequestResponseXML = tripsResponseXML;
           dialogRef.close();
           this.handleCustomTripResponse(response.trips);
@@ -353,8 +354,8 @@ export class SearchFormComponent implements OnInit {
     this.userTripService.updateTrips(trips);
     this.updateSearchForm(trips);
 
-    const zoomToTrip = trips.length > 0;
-    if (zoomToTrip) {
+    const hasTrips = trips.length > 0;
+    if (hasTrips) {
       const firstTrip = trips[0];
       this.zoomToTrip(firstTrip);
     }
