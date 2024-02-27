@@ -298,6 +298,10 @@ export class SearchFormComponent implements OnInit {
             this.zoomToTrip(firstTrip);
           }
         }
+
+        if (response.message === 'ERROR') {
+          this.isSearching = false;
+        }
       }
     })
   }
