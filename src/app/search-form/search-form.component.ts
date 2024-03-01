@@ -174,11 +174,11 @@ export class SearchFormComponent implements OnInit {
       if (response.message === 'TripRequest.Trip') {
         console.log('DEBUG: New Trip => ' + response.trips.length + '/' + response.tripsNo);
         if (response.trips.length === 1) {
-          this.handleCustomTripResponse(response.trips);
+          this.handleCustomTripResponse(response.trips, request, false);
         }
       }
       if (response.message === 'TripRequest.DONE') {
-        this.handleCustomTripResponse(response.trips);
+        this.handleCustomTripResponse(response.trips, request, true);
       }
     });
   }
@@ -349,7 +349,8 @@ export class SearchFormComponent implements OnInit {
         request.fetchResponse().then((response) => {
           popover.inputTripRequestResponseXML = tripsResponseXML;
           dialogRef.close();
-          this.handleCustomTripResponse(response.trips);
+
+          this.handleCustomTripResponse(response.trips, request, true);
         });
       };
 
@@ -358,7 +359,7 @@ export class SearchFormComponent implements OnInit {
     });
   }
 
-  private handleCustomTripResponse(trips: OJP.Trip[]) {
+  private handleCustomTripResponse(trips: OJP.Trip[], request: OJP.TripRequest, isDoneParsing: boolean) {
     this.requestDurationF = 'USER XML';
     this.isSearching = false;
     
