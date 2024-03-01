@@ -60,7 +60,7 @@
         </sbb-datepicker>
       </sbb-form-field>
     </div>
-    <div style="margin-left: 8px;">
+    <div style="margin-left: 8px; width:100px;">
       <sbb-form-field label="Time">
         <input
           sbbInput
@@ -68,6 +68,13 @@
           [(ngModel)]="this.searchTime"
           (change)="onChangeDateTime()" />
       </sbb-form-field>
+    </div>
+    <div style="margin-top: 28px;">
+      <sbb-radio-group class="sbb-radio-group-horizontal" [(ngModel)]="this.currentBoardingType">
+        <sbb-radio-button 
+          *ngFor="let boardingType of this.tripRequestBoardingTypes"
+          [value]="boardingType">{{ boardingType }}</sbb-radio-button>
+      </sbb-radio-group>
     </div>
   </div>
 
