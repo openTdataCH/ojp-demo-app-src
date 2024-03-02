@@ -4,6 +4,10 @@ OJP-Demo URL: https://opentdatach.github.io/ojp-demo-app/
 
 ----
 
+02.March 2024
+- use `0.9.29` version of [OJP JS](https://github.com/openTdataCH/ojp-js) SDK
+- adds support for `dep`/`arr` boarding type for journey searches - [PR #132](https://github.com/openTdataCH/ojp-demo-app-src/pull/132)
+
 16.February 2024
 - use `0.9.25` version of [OJP JS](https://github.com/openTdataCH/ojp-js) SDK
 - use new SDK constructs for request / response - [PR #129](https://github.com/openTdataCH/ojp-demo-app-src/pull/129)

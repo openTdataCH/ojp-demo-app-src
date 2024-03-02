@@ -46,6 +46,9 @@ export class SearchFormComponent implements OnInit {
 
   public headerText: string
 
+  public currentBoardingType: OJP.TripRequestBoardingType
+  public tripRequestBoardingTypes: OJP.TripRequestBoardingType[]
+
   private useMocks: boolean
 
   constructor(
@@ -76,6 +79,9 @@ export class SearchFormComponent implements OnInit {
     this.useMocks = false
 
     this.headerText = 'Search'
+
+    this.currentBoardingType = 'Dep';
+    this.tripRequestBoardingTypes = ['Dep', 'Arr'];
     
     this.isEmbed = this.router.url.indexOf('/embed/') !== -1;
   }
@@ -225,6 +231,7 @@ export class SearchFormComponent implements OnInit {
       this.userTripService.tripModeTypes,
       this.userTripService.tripTransportModes,
       this.userTripService.departureDate,
+      this.currentBoardingType,
     );
     if (journeyRequestParams === null) {
       this.notificationToast.open('Please check from/to input points', {
@@ -298,6 +305,10 @@ export class SearchFormComponent implements OnInit {
             this.zoomToTrip(firstTrip);
           }
         }
+
+        if (response.message === 'ERROR') {
+          this.isSearching = false;
+        }
       }
     })
   }
@@ -314,6 +325,7 @@ export class SearchFormComponent implements OnInit {
     }
     this.mapService.newMapBoundsRequested.emit(mapData);
   }
+
   private expandSearchPanel() {
     this.searchPanel?.open()
   }
@@ -334,7 +346,7 @@ export class SearchFormComponent implements OnInit {
         this.lastCustomTripRequestXML = popover.inputTripRequestXML;
 
         const request = OJP.TripRequest.initWithResponseMock(tripsResponseXML);
-        request.fetchResponse().then(response => {
+        request.fetchResponse().then((response) => {
           popover.inputTripRequestResponseXML = tripsResponseXML;
           dialogRef.close();
           this.handleCustomTripResponse(response.trips);
@@ -353,8 +365,8 @@ export class SearchFormComponent implements OnInit {
     this.userTripService.updateTrips(trips);
     this.updateSearchForm(trips);
 
-    const zoomToTrip = trips.length > 0;
-    if (zoomToTrip) {
+    const hasTrips = trips.length > 0;
+    if (hasTrips) {
       const firstTrip = trips[0];
       this.zoomToTrip(firstTrip);
     }
