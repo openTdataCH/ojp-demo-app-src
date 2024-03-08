@@ -17,6 +17,11 @@ interface LegLocationData {
 
 type LegTemplate = 'walk' | 'timed' | 'taxi';
 
+type ServiceAttributeRenderModel = {
+  icon: string,
+  caption: string
+}
+
 interface LegInfoDataModel {
   legColor: string,
   legIconPath: string,
@@ -38,6 +43,8 @@ interface LegInfoDataModel {
   situations: OJP.PtSituationElement[]
 
   legTemplate: LegTemplate
+
+  serviceAttributes: ServiceAttributeRenderModel[]
 }
 
 @Component({
@@ -304,6 +311,47 @@ export class ResultTripLegComponent implements OnInit {
       this.legInfoDataModel.toLocationData.platformAssistanceIconPath = this.computePlatformAssistanceIconPath(timedLeg, 'To');
       this.legInfoDataModel.toLocationData.platformAssistanceTooltip = this.computePlatformAssistanceTooltip(timedLeg, 'To');
     }
+
+    this.legInfoDataModel.serviceAttributes = this.computeServiceAttributeModel(leg);
+  }
+
+  private computeServiceAttributeModel(leg: OJP.TripLeg): ServiceAttributeRenderModel[] {
+    const rows: ServiceAttributeRenderModel[] = [];
+
+    if (leg.legType !== 'TimedLeg') {
+      return rows;
+    }
+
+    const timedLeg = leg as OJP.TripTimedLeg;
+    for (const [key, attrData] of Object.entries(timedLeg.service.serviceAttributes)) {
+      const icon: string | null = (() => {
+        if (key.startsWith('ojp')) {
+          return null;
+        }
+
+        if (key.toLowerCase().startsWith('i_')) {
+          return 'kom:circle-information-large';
+        }
+
+        if (key.toLowerCase() === 'sa-ba') {
+          return 'kom:circle-information-large';
+        }
+
+        return 'fpl:sa-' + key.toLowerCase();
+      })();
+
+      if (icon === null) {
+        continue;
+      }
+
+      const rowData: ServiceAttributeRenderModel = {
+        icon: icon,
+        caption: attrData.text
+      };
+      rows.push(rowData);
+    }
+
+    return rows;
   }
 
   private computeLegIconFilename(leg: OJP.TripLeg): string {

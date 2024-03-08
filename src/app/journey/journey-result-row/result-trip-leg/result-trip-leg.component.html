@@ -1,12 +1,19 @@
 <div class="mb-2 d-flex flex-row">
-  <div class="flex-grow-1">
+  <div>
     <div
       class="badge leg-pill pill-hover leg-leading-text"
       [ngStyle]="{'background-color': this.legInfoDataModel.legColor}"
       (click)="handleTapOnPill()"
     >{{ this.legInfoDataModel.leadingText }}</div>
   </div>
-  <div class="flex-grow-0 leg-right-side" *ngIf="this.isEmbed === false">
+  <div class="service-attributes">
+    <div class="d-flex">
+      <div class="service-attribute" *ngFor="let attrData of this.legInfoDataModel.serviceAttributes">
+        <sbb-icon svgIcon="{{ attrData.icon }}" class="sbb-icon-fit" title="{{ attrData.caption }}"></sbb-icon>
+      </div>
+    </div>
+  </div>
+  <div class="ms-auto" *ngIf="this.isEmbed === false">
     <div
       class="badge leg-pill pill-hover bg-primary"
       (click)="handleTapOnPill()"
