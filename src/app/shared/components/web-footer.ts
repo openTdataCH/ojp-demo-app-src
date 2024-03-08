@@ -17,7 +17,7 @@ export class WebFooterComponent implements OnInit {
   constructor() {
     this.model = {
       sdkVersion: OJP.SDK_VERSION,
-      lastUpdate: '02.March 2024',
+      lastUpdate: '08.March 2024',
     }
   }
 
