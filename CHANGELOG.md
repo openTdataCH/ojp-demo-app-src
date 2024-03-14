@@ -4,6 +4,10 @@ OJP-Demo URL: https://opentdatach.github.io/ojp-demo-app/
 
 ----
 
+10.March 2024
+- use `0.9.31` version of [OJP JS](https://github.com/openTdataCH/ojp-js) SDK
+- fix for shared mobility informtaion for POIs - [Fix POI shared mobility #133](https://github.com/openTdataCH/ojp-demo-app-src/pull/133)
+
 02.March 2024
 - use `0.9.29` version of [OJP JS](https://github.com/openTdataCH/ojp-js) SDK
 - adds support for `dep`/`arr` boarding type for journey searches - [PR #132](https://github.com/openTdataCH/ojp-demo-app-src/pull/132)
