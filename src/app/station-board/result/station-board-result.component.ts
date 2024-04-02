@@ -66,11 +66,31 @@ export class StationBoardResultComponent implements OnInit, AfterViewInit {
   }
 
   public hasDelay(stopEvent: OJP.StationBoardModel): boolean {
-    return stopEvent.mapStationBoardTime[this.stationBoardType].hasDelay;
+    const stationBoardTime = stopEvent.mapStationBoardTime[this.stationBoardType];
+    if (!stationBoardTime) {
+      return false;
+    }
+
+    return stationBoardTime.hasDelay;
   }
 
   public hasDelayDifferentTime(stopEvent: OJP.StationBoardModel): boolean {
-    return stopEvent.mapStationBoardTime[this.stationBoardType].hasDelayDifferentTime;
+    const stationBoardTime = stopEvent.mapStationBoardTime[this.stationBoardType];
+    if (!stationBoardTime) {
+      return false;
+    }
+
+    return stationBoardTime.hasDelayDifferentTime;
+  }
+
+  public formatStopEventTime(stopEvent: OJP.StationBoardModel, key: 'stopTime' | 'stopTimeActual' | 'stopDelayText'): string | null {
+    const stationBoardTime = stopEvent.mapStationBoardTime[this.stationBoardType];
+    if (stationBoardTime === null) {
+      return null;
+    }
+
+    const timeF = stationBoardTime[key];
+    return timeF;
   }
 
   public hasSituations(stopEvent: OJP.StationBoardModel): boolean {

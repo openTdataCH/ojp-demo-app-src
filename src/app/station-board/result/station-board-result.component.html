@@ -29,14 +29,14 @@
         
         <div class="text-center">
           <div *ngIf="!hasDelay(stopEntry)">
-            <div class="departure-time">{{ stopEntry.mapStationBoardTime[stationBoardType].stopTime }}</div>
+            <div class="departure-time">{{ formatStopEventTime(stopEntry, 'stopTime') }}</div>
           </div>
           <div *ngIf="hasDelay(stopEntry)">
             <div *ngIf="hasDelayDifferentTime(stopEntry)">
               <del>{{ stopEntry.mapStationBoardTime[stationBoardType].stopTime }}</del>
             </div>
-            <div class="departure-time">{{ stopEntry.mapStationBoardTime[stationBoardType].stopTimeActual }}</div>
-            <div class="departure-delay">{{ stopEntry.mapStationBoardTime[stationBoardType].stopDelayText }}</div>
+            <div class="departure-time">{{ formatStopEventTime(stopEntry, 'stopTimeActual') }}</div>
+            <div class="departure-delay">{{ formatStopEventTime(stopEntry, 'stopDelayText') }}</div>
           </div>
           <div *ngIf="hasSituations(stopEntry)">
             <sbb-tooltip svgIcon="fpl:info">
