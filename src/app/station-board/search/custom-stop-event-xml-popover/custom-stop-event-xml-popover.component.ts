@@ -26,7 +26,8 @@ export class CustomStopEventXMLPopoverComponent {
   public parseCustomRequestXML() {
     this.isRunningRequest = true
 
-    const request = OJP.StopEventRequest.initWithRequestMock(this.customRequestXMLs);
+    const stageConfig = this.userTripService.getStageConfig();
+    const request = OJP.StopEventRequest.initWithRequestMock(this.customRequestXMLs, stageConfig);
     request.fetchResponse().then(response => {
       this.isRunningRequest = false;
       const responseXML = request.requestInfo.responseXML;
