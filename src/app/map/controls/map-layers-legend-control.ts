@@ -141,12 +141,12 @@ export class MapLayersLegendControl implements mapboxgl.IControl {
     const layerKey = 'pois-ALL';
     const appMapLayerOptions: AppMapLayerOptions = JSON.parse(JSON.stringify(APP_CONFIG.map_app_map_layers[layerKey]));
 
-    const poiOSMTags: OJP.GeoRestrictionPoiOSMTag[] = [];
+    const poiOSMTags: OJP.RestrictionPoiOSMTag[] = [];
     const inputEls: HTMLInputElement[] = [];
     wrapperEl.querySelectorAll('.map-layer-poi').forEach(el => {
       const inputEl = el as HTMLInputElement;
       
-      const poiOSMTag = inputEl.getAttribute('data-osm-tag') as OJP.GeoRestrictionPoiOSMTag;
+      const poiOSMTag = inputEl.getAttribute('data-osm-tag') as OJP.RestrictionPoiOSMTag;
       if (poiOSMTag === null) {
         return;
       }
@@ -158,15 +158,17 @@ export class MapLayersLegendControl implements mapboxgl.IControl {
       }
 
       inputEl.addEventListener('change', ev => {
-        const poiOSMTags: OJP.GeoRestrictionPoiOSMTag[] = [];
+        const poiOSMTags: OJP.RestrictionPoiOSMTag[] = [];
         inputEls.forEach(inputEl => {
-          const poiOSMTag = inputEl.getAttribute('data-osm-tag') as OJP.GeoRestrictionPoiOSMTag;
+          const poiOSMTag = inputEl.getAttribute('data-osm-tag') as OJP.RestrictionPoiOSMTag;
           if (inputEl.checked && poiOSMTag) {
             poiOSMTags.push(poiOSMTag);
           }
         });
 
-        appMapLayer.geoRestrictionPoiOSMTags = poiOSMTags;
+        if (appMapLayer.restrictionPOI) {
+          appMapLayer.restrictionPOI.tags = poiOSMTags
+        }
         appMapLayer.isEnabled = poiOSMTags.length > 0;
         appMapLayer.refreshFeatures();
 
@@ -180,7 +182,10 @@ export class MapLayersLegendControl implements mapboxgl.IControl {
       });
     });
 
-    appMapLayerOptions.LIR_POI_Type = poiOSMTags;
+    appMapLayerOptions.LIR_POI_Type = {
+      poiType: 'poi',
+      tags: poiOSMTags,
+    }
     const appMapLayer = AppMapLayerFactory.init(layerKey, map, appMapLayerOptions, this.userTripService);
     appMapLayer.isEnabled = poiOSMTags.length > 0;
 
