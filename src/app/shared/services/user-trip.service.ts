@@ -117,7 +117,7 @@ export class UserTripService {
         let locationInformationRequest = OJP.LocationInformationRequest.initWithStopPlaceRef(stageConfig, stopPlaceRef);
         // Check if is location name instead of stopId / sloid
         if (typeof stopPlaceRef === 'string' && /^[A-Z]/.test(stopPlaceRef)) {
-          locationInformationRequest = OJP.LocationInformationRequest.initWithLocationName(stageConfig, stopPlaceRef);
+          locationInformationRequest = OJP.LocationInformationRequest.initWithLocationName(stageConfig, stopPlaceRef, []);
         }
 
         const locationInformationPromise = locationInformationRequest.fetchLocations();
@@ -235,7 +235,7 @@ export class UserTripService {
         bbox.northEast.latitude,
         bbox.northEast.longitude,
         bbox.southWest.latitude,
-        'stop',
+        ['stop'],
         300
       );
       const locationInformationPromise = locationInformationRequest.fetchLocations();

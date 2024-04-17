@@ -5,8 +5,8 @@ export type APP_STAGE = OJP.Default_APP_Stage
   | 'V2-PROD' | 'V2-INT' | 'V2-TEST';
 
 export interface AppMapLayerOptions {
-  LIR_Restriction_Type: OJP.GeoRestrictionType
-  LIR_POI_Type?: null | OJP.GeoRestrictionPoiOSMTag | OJP.GeoRestrictionPoiOSMTag[]
+  LIR_Restriction_Type: OJP.RestrictionType
+  LIR_POI_Type?: OJP.POI_Restriction | null
   minZoom: number
   layer_ids?: string[] | null,
   click_layer_ids?: string[] | 'SAME_AS_LAYER_IDS' | null
@@ -69,8 +69,11 @@ const map_app_map_layers: Record<string, AppMapLayerOptions> = {
     click_layer_ids: 'SAME_AS_LAYER_IDS',
   },
   'sharing_cars': {
-    LIR_Restriction_Type: 'poi_amenity',
-    LIR_POI_Type: 'car_sharing',
+    LIR_Restriction_Type: 'poi',
+    LIR_POI_Type: {
+      poiType: 'shared_mobility',
+      tags: ['car_sharing']
+    },
     minZoom: 12,
     layer_ids: [
       'car-rental-icon',
@@ -80,8 +83,11 @@ const map_app_map_layers: Record<string, AppMapLayerOptions> = {
     click_layer_ids: 'SAME_AS_LAYER_IDS',
   },
   'sharing_bicycles': {
-    LIR_Restriction_Type: 'poi_amenity',
-    LIR_POI_Type: 'bicycle_rental',
+    LIR_Restriction_Type: 'poi',
+    LIR_POI_Type: {
+      poiType: 'shared_mobility',
+      tags: ['bicycle_rental']
+    },
     minZoom: 14,
     layer_ids: [
       'bike-icon',
@@ -91,8 +97,11 @@ const map_app_map_layers: Record<string, AppMapLayerOptions> = {
     click_layer_ids: 'SAME_AS_LAYER_IDS',
   },
   'sharing_scooters': {
-    LIR_Restriction_Type: 'poi_amenity',
-    LIR_POI_Type: 'escooter_rental',
+    LIR_Restriction_Type: 'poi',
+    LIR_POI_Type: {
+      poiType: 'shared_mobility',
+      tags: ['escooter_rental']
+    },
     minZoom: 14,
     layer_ids: [
       'scooter-icon',
@@ -102,8 +111,11 @@ const map_app_map_layers: Record<string, AppMapLayerOptions> = {
     click_layer_ids: 'SAME_AS_LAYER_IDS',
   },
   'charging_stations': {
-    LIR_Restriction_Type: 'poi_amenity',
-    LIR_POI_Type: 'charging_station',
+    LIR_Restriction_Type: 'poi',
+    LIR_POI_Type: {
+      poiType: 'shared_mobility',
+      tags: ['charging_station']
+    },
     minZoom: 12,
     layer_ids: [
       'charging-station-icon',
@@ -113,8 +125,11 @@ const map_app_map_layers: Record<string, AppMapLayerOptions> = {
     click_layer_ids: 'SAME_AS_LAYER_IDS',
   },
   'sbb_services': {
-    LIR_Restriction_Type: 'poi_amenity',
-    LIR_POI_Type: 'sbb_services',
+    LIR_Restriction_Type: 'poi',
+    LIR_POI_Type: {
+      poiType: 'shared_mobility',
+      tags: ['sbb_services']
+    },
     minZoom: 12,
     layer_ids: [
       'charging-station-icon',
@@ -124,8 +139,11 @@ const map_app_map_layers: Record<string, AppMapLayerOptions> = {
     click_layer_ids: 'SAME_AS_LAYER_IDS',
   },
   'pois_other': {
-    LIR_Restriction_Type: 'poi_amenity',
-    LIR_POI_Type: 'other',
+    LIR_Restriction_Type: 'poi',
+    LIR_POI_Type: {
+      poiType: 'shared_mobility',
+      tags: ['other']
+    },
     minZoom: 12,
     layer_ids: [
       'charging-station-icon',
@@ -135,8 +153,11 @@ const map_app_map_layers: Record<string, AppMapLayerOptions> = {
     click_layer_ids: 'SAME_AS_LAYER_IDS',
   },
   'pois-ALL': {
-    LIR_Restriction_Type: 'poi_all',
-    LIR_POI_Type: ['service', 'shopping', 'leisure', 'catering', 'public', 'parkride', 'accommodation'],
+    LIR_Restriction_Type: 'poi',
+    LIR_POI_Type: {
+      poiType: 'poi',
+      tags: ['service', 'shopping', 'leisure', 'catering', 'public', 'parkride', 'accommodation']
+    },
     minZoom: 16,
     layer_ids: [
       'poi-all',

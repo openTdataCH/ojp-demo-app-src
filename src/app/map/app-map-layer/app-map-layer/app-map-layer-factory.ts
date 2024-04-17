@@ -16,15 +16,21 @@ export class AppMapLayerFactory {
           const stopAppMapLayer = new StopAppMapLayer(layerKey, map, appMapLayerOptions, userTripService);
           return stopAppMapLayer;
       }
-      if (appMapLayerOptions.LIR_Restriction_Type === 'poi_amenity' && appMapLayerOptions.LIR_POI_Type === 'charging_station') {
+
+      const isChargingStation = appMapLayerOptions.LIR_POI_Type?.tags.includes('charging_station');
+      if (isChargingStation) {
           const chargingStationAppMapLayer = new ChargingStationAppMapLayer(layerKey, map, appMapLayerOptions, userTripService);
           return chargingStationAppMapLayer;
       }
-      if (appMapLayerOptions.LIR_Restriction_Type === 'poi_amenity') {
+      
+      const isSharedMobility = appMapLayerOptions.LIR_POI_Type?.poiType === 'shared_mobility';
+      if (isSharedMobility) {
           const sharedMobilityAppMapLayer = new SharedMobilityAppMapLayer(layerKey, map, appMapLayerOptions, userTripService);
           return sharedMobilityAppMapLayer;
       }
-      if (appMapLayerOptions.LIR_Restriction_Type === 'poi_all') {
+      
+      const isPOI_all = appMapLayerOptions.LIR_POI_Type?.poiType === 'poi';
+      if (isPOI_all) {
           const poiAppMapLayer = new POIAppMapLayer(layerKey, map, appMapLayerOptions, userTripService);
           return poiAppMapLayer;
       }
