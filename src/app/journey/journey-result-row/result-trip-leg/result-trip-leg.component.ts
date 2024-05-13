@@ -136,6 +136,10 @@ export class ResultTripLegComponent implements OnInit {
       return 'Taxi';
     }
 
+    if (continuousLeg.legTransportMode === 'car-shuttle-train') {
+      return 'Ride Autoverladezug';
+    }
+
     return 'PLACEHOLDER - NEW MOT?';
   }
 
@@ -376,6 +380,10 @@ export class ResultTripLegComponent implements OnInit {
 
       if (continousLeg.isTaxi()) {
         return 'taxi';
+      }
+
+      if (continousLeg.legTransportMode === 'car-shuttle-train') {
+        return 'autozug';
       }
 
       return 'picto-walk'
