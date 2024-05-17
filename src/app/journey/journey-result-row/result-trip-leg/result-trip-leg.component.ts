@@ -136,10 +136,6 @@ export class ResultTripLegComponent implements OnInit {
       return 'Taxi';
     }
 
-    if (continuousLeg.legTransportMode === 'car-shuttle-train') {
-      return 'Ride Autoverladezug';
-    }
-
     return 'PLACEHOLDER - NEW MOT?';
   }
 
