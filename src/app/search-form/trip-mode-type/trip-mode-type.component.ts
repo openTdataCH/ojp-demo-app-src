@@ -232,7 +232,7 @@ export class TripModeTypeComponent implements OnInit {
       taxi: 'Taxi',
       'others-drive-car': 'Limousine',
       'car-shuttle-train': 'Autoverlad',
-      'car': 'Car',
+      'car': 'Car'
     }
 
     const text = MapIndividualTransportMode[transportMode] ?? 'n/a';
