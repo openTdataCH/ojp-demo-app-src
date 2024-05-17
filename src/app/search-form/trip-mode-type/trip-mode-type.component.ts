@@ -49,7 +49,7 @@ export class TripModeTypeComponent implements OnInit {
           'public_transport',
           'walk',
           'cycle',
-          'self-drive-car',
+          'car',
           'bicycle_rental',
           'escooter_rental',
           'car_sharing',
@@ -231,6 +231,8 @@ export class TripModeTypeComponent implements OnInit {
       charging_station: 'Charging Stations',
       taxi: 'Taxi',
       'others-drive-car': 'Limousine',
+      'car-shuttle-train': 'Autoverlad',
+      'car': 'Car',
     }
 
     const text = MapIndividualTransportMode[transportMode] ?? 'n/a';

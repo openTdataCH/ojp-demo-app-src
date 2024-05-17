@@ -96,9 +96,9 @@ export class StationBoardInputComponent implements OnInit {
   private async fetchLookupLocations(searchTerm: string) {
     this.isBusySearching = true;
 
-    const geoRestrictionType: OJP.GeoRestrictionType = 'stop';
+    const restrictionType: OJP.RestrictionType = 'stop';
     const stageConfig = this.userTripService.getStageConfig();
-    const locationInformationRequest = OJP.LocationInformationRequest.initWithLocationName(stageConfig, searchTerm, geoRestrictionType);
+    const locationInformationRequest = OJP.LocationInformationRequest.initWithLocationName(stageConfig, searchTerm, [restrictionType]);
 
     const response = await locationInformationRequest.fetchResponse();
     
@@ -206,9 +206,8 @@ export class StationBoardInputComponent implements OnInit {
     const request = OJP.LocationInformationRequest.initWithBBOXAndType(
       stageConfig,
       bbox_W, bbox_N, bbox_E, bbox_S,
-      'stop',
+      ['stop'],
       300,
-      null,
     );
     const response = await request.fetchResponse();
     completion(response.locations);

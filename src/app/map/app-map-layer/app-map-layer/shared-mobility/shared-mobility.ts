@@ -8,7 +8,7 @@ type SharedMobilityProvider = '2EM Car Sharing' | 'Bird' | 'Bolt' | 'Carvelo2go'
 type VehicleType = 'Car' | 'E-Car' | 'Bike' | 'E-Bike' | 'E-CargoBike' | 'E-Scooter' | 'E-Moped'
 
 export class SharedMobility {
-  public poiType: OJP.GeoRestrictionPoiOSMTag
+  public poiType: OJP.RestrictionPoiOSMTag
   public vehicleType: VehicleType
   public provider: SharedMobilityProvider
   public code: string
@@ -20,7 +20,7 @@ export class SharedMobility {
   public vehicleName: string | null
 
   constructor(
-    poiType: OJP.GeoRestrictionPoiOSMTag,
+    poiType: OJP.RestrictionPoiOSMTag,
     vehicleType: VehicleType,
     provider: SharedMobilityProvider,
     code: string,

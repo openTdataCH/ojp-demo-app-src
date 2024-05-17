@@ -4,6 +4,10 @@ OJP-Demo URL: https://opentdatach.github.io/ojp-demo-app/
 
 ----
 
+17.May 2024
+- use `0.9.33` version of [OJP JS](https://github.com/openTdataCH/ojp-js) SDK
+- adapt the LIR requests for the new API - [Fix restriction types #136](https://github.com/openTdataCH/ojp-demo-app-src/pull/136)
+
 24.March 2024
 - use `0.9.32` version of [OJP JS](https://github.com/openTdataCH/ojp-js) SDK
 - display `JourneyService` attributes - [Fix POI shared mobility #135](https://github.com/openTdataCH/ojp-demo-app-src/pull/135)

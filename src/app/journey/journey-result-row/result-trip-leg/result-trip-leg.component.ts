@@ -378,6 +378,10 @@ export class ResultTripLegComponent implements OnInit {
         return 'taxi';
       }
 
+      if (continousLeg.legTransportMode === 'car-shuttle-train') {
+        return 'autozug';
+      }
+
       return 'picto-walk'
     }
 

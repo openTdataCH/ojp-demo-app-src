@@ -17,8 +17,8 @@ export class AppMapLayer {
     private layerKey: string
 
     private map: mapboxgl.Map
-    private geoRestrictionType: OJP.GeoRestrictionType
-    public geoRestrictionPoiOSMTags: OJP.GeoRestrictionPoiOSMTag[] | null
+    private restrictionType: OJP.RestrictionType
+    public restrictionPOI: OJP.POI_Restriction | null
     public minZoom: number
 
     private features: GeoJSON.Feature[];
@@ -34,16 +34,12 @@ export class AppMapLayer {
         this.layerKey = layerKey;
 
         this.map = map;
-        this.geoRestrictionType = appMapLayerOptions.LIR_Restriction_Type;
+        this.restrictionType = appMapLayerOptions.LIR_Restriction_Type;
         
         if (appMapLayerOptions.LIR_POI_Type) {
-            if (Array.isArray(appMapLayerOptions.LIR_POI_Type)) {
-                this.geoRestrictionPoiOSMTags = appMapLayerOptions.LIR_POI_Type
-            } else {
-                this.geoRestrictionPoiOSMTags = [appMapLayerOptions.LIR_POI_Type];
-            }
+            this.restrictionPOI = appMapLayerOptions.LIR_POI_Type
         } else {
-            this.geoRestrictionPoiOSMTags = null
+            this.restrictionPOI = null
         }
         
         this.minZoom = appMapLayerOptions.minZoom;
@@ -109,7 +105,8 @@ export class AppMapLayer {
             return;
         }
 
-        const featuresLimit = this.geoRestrictionType === 'poi_all' ? 1000 : 300;
+        const isPOI_all = this.restrictionType === 'poi' && this.restrictionPOI?.poiType === 'poi';
+        const featuresLimit = isPOI_all ? 1000 : 300;
 
         const mapBounds = this.map.getBounds();
         const request = OJP.LocationInformationRequest.initWithBBOXAndType(
@@ -118,9 +115,9 @@ export class AppMapLayer {
             mapBounds.getNorth(),
             mapBounds.getEast(),
             mapBounds.getSouth(),
-            this.geoRestrictionType,
+            [this.restrictionType],
             featuresLimit,
-            this.geoRestrictionPoiOSMTags,
+            this.restrictionPOI,
         );
 
         this.lastOJPRequest = request;
@@ -142,7 +139,8 @@ export class AppMapLayer {
                 return;
             }
 
-            if (layerConfig.LIR_Restriction_Type === 'poi_amenity') {
+            const isSharedMobility = this.restrictionType === 'poi' && this.restrictionPOI?.poiType === 'shared_mobility';
+            if (isSharedMobility) {
                 const layerPoiType = layerConfig.LIR_POI_Type;
                 const poiCategory = location.poi?.category ?? null;
                 if (layerPoiType !== poiCategory) {
@@ -326,7 +324,7 @@ export class AppMapLayer {
         }
 
         let popupHTML = popupWrapperDIV.innerHTML;
-        popupHTML = popupHTML.replace('[GEO_RESTRICTION_TYPE]', this.geoRestrictionType);
+        popupHTML = popupHTML.replace('[GEO_RESTRICTION_TYPE]', this.restrictionType);
     
         const featureProperties = firstLocation.geoPosition?.properties ?? firstLocation.asGeoJSONFeature()?.properties ?? null
         if (featureProperties == null) {

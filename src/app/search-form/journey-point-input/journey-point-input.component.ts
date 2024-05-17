@@ -120,7 +120,7 @@ export class JourneyPointInputComponent implements OnInit, OnChanges {
   private async fetchJourneyPoints(searchTerm: string) {
     let stageConfig = this.userTripService.getStageConfig()
 
-    const request = OJP.LocationInformationRequest.initWithLocationName(stageConfig, searchTerm);
+    const request = OJP.LocationInformationRequest.initWithLocationName(stageConfig, searchTerm, []);
     const response = await request.fetchResponse();
 
     this.resetMapLocations();
