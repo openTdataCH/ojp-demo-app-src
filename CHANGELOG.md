@@ -8,6 +8,7 @@ OJP-Demo URL: https://opentdatach.github.io/ojp-demo-app/
 - use `0.9.33` version of [OJP JS](https://github.com/openTdataCH/ojp-js) SDK
 - adapt the LIR requests for the new API - [Fix restriction types #136](https://github.com/openTdataCH/ojp-demo-app-src/pull/136)
 - adds support for car shuttle train (Autoverladezug) - [Feature: Car shuttle train #137](https://github.com/openTdataCH/ojp-demo-app-src/pull/137)
+- adds support for loading TR Response XML from external gists - [Load TripRequest XML from a Github gist #138](https://github.com/openTdataCH/ojp-demo-app-src/pull/138)
 
 24.March 2024
 - use `0.9.32` version of [OJP JS](https://github.com/openTdataCH/ojp-js) SDK
