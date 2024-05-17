@@ -118,6 +118,12 @@ export class SearchFormComponent implements OnInit {
     if (this.useMocks) {
       this.initLocationsFromMocks()
     }
+
+    const queryParams = new URLSearchParams(document.location.search);
+    const gistId = queryParams.get('gist');
+    if (gistId) {
+      this.initFromGistRef(gistId);
+    }
   }
 
   private updateLocationTexts() {
@@ -166,6 +172,10 @@ export class SearchFormComponent implements OnInit {
     const mockURL = '/path/to/mock';
 
     const mockText = await (await fetch(mockURL)).text();
+    this.initFromMockXML(mockText);
+  }
+
+  private async initFromMockXML(mockText: string) {
     const request = OJP.TripRequest.initWithResponseMock(mockText);
     request.fetchResponseWithCallback((response) => {
       if (response.message === 'TripRequest.TripsNo') {
@@ -181,6 +191,29 @@ export class SearchFormComponent implements OnInit {
         this.handleCustomTripResponse(response.trips, request, true);
       }
     });
+  }
+
+  private async initFromGistRef(gistId: string) {
+    const gistURLMatches = gistId.match(/https:\/\/gist.github.com\/[^\/]+?\/([0-9a-z]*)/);
+    if (gistURLMatches) {
+      gistId = gistURLMatches[1];
+    }
+
+    const gistAPI = 'https://api.github.com/gists/' + gistId;
+    const gistJSON = await (await fetch(gistAPI)).json();
+    const gistFiles = gistJSON['files'] as Record<string, any>;
+
+    for (const gistFile in gistFiles) {
+      const gistFileData = gistFiles[gistFile];
+      if (gistFileData['language'] !== 'XML') {
+        continue;
+      }
+
+      const mockText = gistFileData['content'];
+      this.initFromMockXML(mockText);
+
+      break;
+    }
   }
 
   onLocationSelected(location: OJP.Location | null, originType: OJP.JourneyPointType) {
