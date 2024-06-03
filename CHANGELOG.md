@@ -5,7 +5,7 @@ OJP-Demo URL: https://opentdatach.github.io/ojp-demo-app/
 ----
 
 03.June 2024
-- restore `self-drive-car` for monomodal own car searches
+- restore `self-drive-car` for monomodal own car searches - [Fix TR params #141](https://github.com/openTdataCH/ojp-demo-app-src/pull/141)
 
 17.May 2024
 - use `0.9.33` version of [OJP JS](https://github.com/openTdataCH/ojp-js) SDK
