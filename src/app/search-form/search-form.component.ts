@@ -303,6 +303,7 @@ export class SearchFormComponent implements OnInit {
         this.requestDurationF = null;
 
         this.userTripService.updateTrips([]);
+        this.userTripService.selectActiveTrip(null);
 
         return;
       }
@@ -329,6 +330,10 @@ export class SearchFormComponent implements OnInit {
           // it could be that the trips order changed, zoom again to the first one
           const firstTrip = trips[0];
           this.zoomToTrip(firstTrip);
+
+          this.userTripService.selectActiveTrip(firstTrip);
+        } else {
+          this.userTripService.selectActiveTrip(null);
         }
       } else {
         this.userTripService.journeyTripRequests = journeyRequest.tripRequests;
