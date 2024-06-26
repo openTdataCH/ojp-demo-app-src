@@ -57,7 +57,7 @@ export class SearchFormComponent implements OnInit {
     private embedHTMLPopover: SbbDialog,
     private router: Router,
     public userTripService: UserTripService,
-    public mapService: MapService
+    private mapService: MapService
   ) {
     const searchDate = this.userTripService.departureDate
     this.searchDate = searchDate
