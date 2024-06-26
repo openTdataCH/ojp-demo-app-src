@@ -41,7 +41,7 @@ export class JourneyResultRowComponent implements OnInit {
 
     this.tripPanel?.afterExpand.subscribe(ev => {
       if (this.trip) {
-        this.userTripService.activeTripSelected.emit(this.trip);
+        this.userTripService.selectActiveTrip(this.trip);
       }
     })
   }
