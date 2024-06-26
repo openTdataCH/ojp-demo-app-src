@@ -82,6 +82,9 @@ export class SearchFormComponent implements OnInit {
 
     this.currentBoardingType = 'Dep';
     this.tripRequestBoardingTypes = ['Dep', 'Arr'];
+
+    const queryParams = new URLSearchParams(document.location.search);
+    this.useMocks = queryParams.get('use_mocks') === 'yes';
     
     this.isEmbed = this.router.url.indexOf('/embed/') !== -1;
   }
