@@ -4,6 +4,9 @@ OJP-Demo URL: https://opentdatach.github.io/ojp-demo-app/
 
 ----
 
+01.July 2024
+- fix shared mobility POI layers - [PR #142](https://github.com/openTdataCH/ojp-demo-app-src/pull/142)
+
 03.June 2024
 - restore `self-drive-car` for monomodal own car searches - [Fix TR params #141](https://github.com/openTdataCH/ojp-demo-app-src/pull/141)
 
