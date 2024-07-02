@@ -354,6 +354,46 @@ export class SearchFormComponent implements OnInit {
     })
   }
 
+  private sortTrips(trips: OJP.Trip[]) {
+    const tripModeTypes = this.userTripService.tripModeTypes;
+    const tripTransportModes = this.userTripService.tripTransportModes;
+    if (!((tripModeTypes.length === 1) && (tripTransportModes.length === 1))) {
+      // ignore multi-trips journeys
+      return;
+    }
+
+    const tripModeType = tripModeTypes[0];
+    const transportMode = tripTransportModes[0];
+
+    if (tripModeType !== 'monomodal') {
+      return;
+    }
+
+    if (transportMode === 'public_transport') {
+      return;
+    }
+
+    // Push first the monomodal trip with one leg matching the transport mode
+    const monomodalTrip = trips.find(trip => {
+      const foundLeg = trip.legs.find(leg => {
+        if (leg.legType !== 'ContinousLeg') {
+          return false;
+        }
+
+        const continousLeg = trip.legs[0] as OJP.TripContinousLeg;
+        return continousLeg.legTransportMode === transportMode;
+      }) ?? null;
+
+      return foundLeg !== null;
+    }) ?? null;
+
+    if (monomodalTrip) {
+      const tripIdx = trips.indexOf(monomodalTrip);
+      trips.splice(tripIdx, 1);
+      trips.unshift(monomodalTrip);
+    }
+  }
+    
   // Some of the legs can be merged
   // ex1: trains with multiple desitinaion units
   // - check for remainInVehicle https://github.com/openTdataCH/ojp-demo-app-src/issues/125  
