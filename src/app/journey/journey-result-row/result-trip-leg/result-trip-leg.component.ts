@@ -45,6 +45,8 @@ interface LegInfoDataModel {
   legTemplate: LegTemplate
 
   serviceAttributes: ServiceAttributeRenderModel[]
+
+  serviceDestinationText: string | null
 }
 
 @Component({
@@ -346,6 +348,15 @@ export class ResultTripLegComponent implements OnInit {
     }
 
     this.legInfoDataModel.serviceAttributes = this.computeServiceAttributeModel(leg);
+
+    this.legInfoDataModel.serviceDestinationText = (() => {
+      if (leg.legType !== 'TimedLeg') {
+        return null;
+      }
+
+      const timedLeg = leg as OJP.TripTimedLeg;
+      return timedLeg.service.destinationStopPlace?.stopPlaceName ?? 'n/a';
+    })();
   }
 
   private computeServiceAttributeModel(leg: OJP.TripLeg): ServiceAttributeRenderModel[] {
