@@ -4,8 +4,10 @@ OJP-Demo URL: https://opentdatach.github.io/ojp-demo-app/
 
 ----
 
-01.July 2024
+02.July 2024
+- use `0.9.35` version of [OJP JS](https://github.com/openTdataCH/ojp-js) SDK
 - fix shared mobility POI layers - [PR #142](https://github.com/openTdataCH/ojp-demo-app-src/pull/142)
+- adds car-ferry support - [PR #143](https://github.com/openTdataCH/ojp-demo-app-src/pull/143)
 
 03.June 2024
 - restore `self-drive-car` for monomodal own car searches - [Fix TR params #141](https://github.com/openTdataCH/ojp-demo-app-src/pull/141)
