@@ -354,6 +354,72 @@ export class SearchFormComponent implements OnInit {
     })
   }
 
+  // Some of the legs can be merged
+  // ex1: trains with multiple desitinaion units
+  // - check for remainInVehicle https://github.com/openTdataCH/ojp-demo-app-src/issues/125  
+  private mergeTripLegs(trips: OJP.Trip[]) {
+    trips.forEach(trip => {
+      const newLegs: OJP.TripLeg[] = [];
+      let skipIdx: number = -1;
+      
+      trip.legs.forEach((leg, legIdx) => {
+        if (legIdx <= skipIdx) {
+          return;
+        }
+
+        const leg2Idx = legIdx + 1;
+        const leg3Idx = legIdx + 2;
+        if (leg3Idx >= trip.legs.length) {
+          newLegs.push(leg);
+          return;
+        }
+
+        // If TransferLeg of type 'remainInVehicle'
+        // => merge prev / next TimedLeg legs
+        let shouldMergeLegs = false;
+        const leg2 = trip.legs[leg2Idx];
+        const leg3 = trip.legs[leg3Idx];
+        if (leg.legType === 'TimedLeg' && leg2.legType === 'TransferLeg' && leg3.legType === 'TimedLeg') {
+          const continousLeg = leg2 as OJP.TripContinousLeg;
+          if (continousLeg.transferMode === 'remainInVehicle') {
+            shouldMergeLegs = true;
+            skipIdx = leg3Idx;
+          }
+        }
+
+        if (shouldMergeLegs) {
+          const newLeg = this.mergeTimedLegs(leg as OJP.TripTimedLeg, leg3 as OJP.TripTimedLeg);
+          newLegs.push(newLeg);
+        } else {
+          newLegs.push(leg);
+        }
+      });
+
+      if (trip.legs.length > 0 && (trip.legs.length !== newLegs.length)) {
+        trip.legs = newLegs;
+      }
+    });
+  }
+
+  private mergeTimedLegs(leg1: OJP.TripTimedLeg, leg2: OJP.TripTimedLeg) {
+    let newLegIntermediatePoints = leg1.intermediateStopPoints.slice();
+    leg1.toStopPoint.stopPointType = 'Intermediate';
+    newLegIntermediatePoints.push(leg1.toStopPoint);
+    newLegIntermediatePoints = newLegIntermediatePoints.concat(leg2.intermediateStopPoints.slice());
+
+    const newLeg = new OJP.TripTimedLeg(leg1.legID, leg1.service, leg1.fromStopPoint, leg2.toStopPoint, newLegIntermediatePoints);
+
+    if (leg1.legDuration !== null && leg2.legDuration !== null) {
+      newLeg.legDuration = leg1.legDuration.plus(leg2.legDuration);
+    }
+
+    if (leg1.legTrack !== null && leg2.legTrack !== null) {
+      newLeg.legTrack = leg1.legTrack.plus(leg2.legTrack);
+    }
+    
+    return newLeg;
+  }
+
   private expandSearchPanel() {
     this.searchPanel?.open()
   }
