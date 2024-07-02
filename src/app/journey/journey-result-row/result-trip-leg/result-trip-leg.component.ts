@@ -287,7 +287,7 @@ export class ResultTripLegComponent implements OnInit {
     this.legInfoDataModel.isWalking = isWalking;
 
     this.legInfoDataModel.legTemplate = (() => {
-      const degaultLegTemplate: LegTemplate = 'timed';
+      const defaultLegTemplate: LegTemplate = 'timed';
       if (isWalking) {
         return 'walk';
       }
@@ -298,7 +298,7 @@ export class ResultTripLegComponent implements OnInit {
         }
       }
       
-      return degaultLegTemplate;
+      return defaultLegTemplate;
     })();
 
     this.legInfoDataModel.bookingArrangements = (() => {
