@@ -340,11 +340,10 @@ export class UserTripService {
 
   updateTrips(trips: OJP.Trip[]) {
     this.tripsUpdated.emit(trips)
-    if (trips.length > 0) {
-      this.activeTripSelected.emit(trips[0]);
-    } else {
-      this.activeTripSelected.emit(null);
-    }
+  }
+
+  selectActiveTrip(trip: OJP.Trip | null) {
+    this.activeTripSelected.emit(trip);
   }
 
   removeViaAtIndex(idx: number) {

@@ -2,6 +2,7 @@ import { Component, Input, OnInit, ViewChild } from '@angular/core';
 import { SbbExpansionPanel } from '@sbb-esta/angular/accordion';
 import { UserTripService } from 'src/app/shared/services/user-trip.service';
 import * as OJP from 'ojp-sdk'
+import { MapService } from 'src/app/shared/services/map.service';
 
 interface TripHeaderStats {
   title: string,
@@ -25,7 +26,7 @@ export class JourneyResultRowComponent implements OnInit {
 
   public tripHeaderStats: TripHeaderStats
 
-  constructor(private userTripService: UserTripService) {
+  constructor(private userTripService: UserTripService, private mapService: MapService) {
     this.tripHeaderStats = <TripHeaderStats>{}
   }
 
@@ -41,7 +42,8 @@ export class JourneyResultRowComponent implements OnInit {
 
     this.tripPanel?.afterExpand.subscribe(ev => {
       if (this.trip) {
-        this.userTripService.activeTripSelected.emit(this.trip);
+        this.userTripService.selectActiveTrip(this.trip);
+        this.mapService.zoomToTrip(this.trip);
       }
     })
   }
