@@ -329,9 +329,9 @@ export class SearchFormComponent implements OnInit {
         if (trips.length > 0) {
           // it could be that the trips order changed, zoom again to the first one
           const firstTrip = trips[0];
-          this.zoomToTrip(firstTrip);
 
           this.userTripService.selectActiveTrip(firstTrip);
+          this.mapService.zoomToTrip(firstTrip);
         } else {
           this.userTripService.selectActiveTrip(null);
         }
@@ -343,7 +343,7 @@ export class SearchFormComponent implements OnInit {
           if (trips.length === 1) {
             // zoom to first trip
             const firstTrip = trips[0];
-            this.zoomToTrip(firstTrip);
+            this.mapService.zoomToTrip(firstTrip);
           }
         }
 
@@ -409,7 +409,7 @@ export class SearchFormComponent implements OnInit {
     const hasTrips = trips.length > 0;
     if (hasTrips) {
       const firstTrip = trips[0];
-      this.zoomToTrip(firstTrip);
+      this.mapService.zoomToTrip(firstTrip);
     }
   }
 
