@@ -354,19 +354,6 @@ export class SearchFormComponent implements OnInit {
     })
   }
 
-  private zoomToTrip(trip: OJP.Trip) {
-    const bbox = trip.computeBBOX();
-    if (bbox.isValid() === false) {
-      return;
-    }
-
-    const bounds = new mapboxgl.LngLatBounds(bbox.asFeatureBBOX())
-    const mapData = {
-      bounds: bounds
-    }
-    this.mapService.newMapBoundsRequested.emit(mapData);
-  }
-
   private expandSearchPanel() {
     this.searchPanel?.open()
   }
