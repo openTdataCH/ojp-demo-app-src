@@ -191,6 +191,7 @@ export class SearchFormComponent implements OnInit {
         }
       }
       if (response.message === 'TripRequest.DONE') {
+        this.massageTrips(response.trips);        
         this.handleCustomTripResponse(response.trips);
       }
     });
@@ -318,6 +319,8 @@ export class SearchFormComponent implements OnInit {
           })
         }
 
+        this.massageTrips(trips);
+        
         const requestInfo = journeyRequest.tripRequests[0].requestInfo;
         const requestNetworkDuration = DateHelpers.computeExecutionTime(requestInfo.requestDateTime, requestInfo.responseDateTime);
         const requestParseDuration = DateHelpers.computeExecutionTime(requestInfo.responseDateTime, requestInfo.parseDateTime);
@@ -352,6 +355,11 @@ export class SearchFormComponent implements OnInit {
         }
       }
     })
+  }
+
+  private massageTrips(trips: OJP.Trip[]) {
+    this.sortTrips(trips);
+    this.mergeTripLegs(trips);
   }
 
   private sortTrips(trips: OJP.Trip[]) {
@@ -483,6 +491,8 @@ export class SearchFormComponent implements OnInit {
         request.fetchResponse().then((response) => {
           popover.inputTripRequestResponseXML = tripsResponseXML;
           dialogRef.close();
+
+          this.massageTrips(response.trips);
           this.handleCustomTripResponse(response.trips);
         });
       };
