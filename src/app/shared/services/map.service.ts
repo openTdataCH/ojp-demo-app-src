@@ -37,4 +37,17 @@ export class MapService {
     this.initialMapCenter = null
     this.initialMapZoom = null
   }
+
+  public zoomToTrip(trip: OJP.Trip) {
+    const bbox = trip.computeBBOX();
+    if (bbox.isValid() === false) {
+      return;
+    }
+
+    const bounds = new mapboxgl.LngLatBounds(bbox.asFeatureBBOX())
+    const mapData = {
+      bounds: bounds
+    }
+    this.newMapBoundsRequested.emit(mapData);
+  }
 }

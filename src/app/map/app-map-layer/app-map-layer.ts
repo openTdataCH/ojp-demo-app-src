@@ -141,9 +141,19 @@ export class AppMapLayer {
 
             const isSharedMobility = this.restrictionType === 'poi' && this.restrictionPOI?.poiType === 'shared_mobility';
             if (isSharedMobility) {
-                const layerPoiType = layerConfig.LIR_POI_Type;
+                const layerPoiType = layerConfig.LIR_POI_Type ?? null;
+                if (layerPoiType === null) {
+                    locationsDiscarded.push(location);
+                    return;
+                }
+                
                 const poiCategory = location.poi?.category ?? null;
-                if (layerPoiType !== poiCategory) {
+                if (poiCategory === null) {
+                    locationsDiscarded.push(location);
+                    return;
+                }
+
+                if (!layerPoiType.tags.includes(poiCategory)) {
                     locationsDiscarded.push(location);
                     return;
                 }
