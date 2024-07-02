@@ -66,7 +66,7 @@ export class SearchFormComponent implements OnInit {
     this.fromLocationText = ''
     this.toLocationText = ''
 
-    this.appStageOptions = ['PROD', 'INT', 'TEST', 'LA Beta']
+    this.appStageOptions = ['V2-PROD', 'V2-INT', 'V2-TEST'];
 
     this.isSearching = false;
 
@@ -187,12 +187,12 @@ export class SearchFormComponent implements OnInit {
       if (response.message === 'TripRequest.Trip') {
         console.log('DEBUG: New Trip => ' + response.trips.length + '/' + response.tripsNo);
         if (response.trips.length === 1) {
-          this.handleCustomTripResponse(response.trips);
+          this.handleCustomTripResponse(response.trips, request, false);
         }
       }
       if (response.message === 'TripRequest.DONE') {
         this.massageTrips(response.trips);        
-        this.handleCustomTripResponse(response.trips);
+        this.handleCustomTripResponse(response.trips, request, true);
       }
     });
   }
@@ -493,7 +493,7 @@ export class SearchFormComponent implements OnInit {
           dialogRef.close();
 
           this.massageTrips(response.trips);
-          this.handleCustomTripResponse(response.trips);
+          this.handleCustomTripResponse(response.trips, request, true);
         });
       };
 
@@ -502,7 +502,7 @@ export class SearchFormComponent implements OnInit {
     });
   }
 
-  private handleCustomTripResponse(trips: OJP.Trip[]) {
+  private handleCustomTripResponse(trips: OJP.Trip[], request: OJP.TripRequest, isDoneParsing: boolean) {
     this.requestDurationF = 'USER XML';
     this.isSearching = false;
     
