@@ -5,6 +5,9 @@
       [ngStyle]="{'background-color': this.legInfoDataModel.legColor}"
       (click)="handleTapOnPill()"
     >{{ this.legInfoDataModel.leadingText }}</div>
+    <ng-container
+      *ngIf="this.legInfoDataModel.legTemplate == 'timed' then timedLegHeadingTemplate;">
+    </ng-container>
   </div>
   <div class="service-attributes">
     <div class="d-flex">
@@ -47,6 +50,10 @@
 <div class="mb-2">
   <div class="border-bottom" style="height: 8px"></div>
 </div>
+
+<ng-template #timedLegHeadingTemplate>
+  <div class="service-heading">Direction: {{ this.legInfoDataModel.serviceDestinationText }}</div>
+</ng-template>
 
 <ng-template #timedLegTemplate>
   <div class="d-flex flex-row align-items-center">
