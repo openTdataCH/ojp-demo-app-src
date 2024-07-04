@@ -15,7 +15,9 @@ export class UserTripService {
   public fromTripLocation: OJP.TripLocationPoint | null
   public toTripLocation: OJP.TripLocationPoint | null
   public viaTripLocations: OJP.TripLocationPoint[]
-  
+
+  public currentBoardingType: OJP.TripRequestBoardingType
+
   // Used by the src/app/search-form/search-form.component.html template
   public journeyTripsPlaceholder: string[]
   
@@ -50,7 +52,9 @@ export class UserTripService {
     this.fromTripLocation = null
     this.toTripLocation = null
     this.viaTripLocations = []
-    
+
+    this.currentBoardingType = 'Dep'
+
     this.journeyTripsPlaceholder = ['-']
     this.tripModeTypes = ['monomodal']
     this.tripTransportModes = ['public_transport']
