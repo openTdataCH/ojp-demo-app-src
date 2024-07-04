@@ -267,6 +267,7 @@ export class SearchFormComponent implements OnInit {
       this.userTripService.tripTransportModes,
       this.userTripService.departureDate,
       this.userTripService.currentBoardingType,
+      'NumberOfResults',
     );
     if (journeyRequestParams === null) {
       this.notificationToast.open('Please check from/to input points', {
@@ -274,11 +275,6 @@ export class SearchFormComponent implements OnInit {
         verticalPosition: 'top',
       });
       return
-    }
-
-    if (this.userTripService.currentAppStage === 'LA Beta') {
-      // https://github.com/openTdataCH/ojp-demo-app-src/issues/108#issuecomment-1620364322
-      journeyRequestParams.useNumberOfResultsAfter = false
     }
     
     this.notificationToast.dismiss()
