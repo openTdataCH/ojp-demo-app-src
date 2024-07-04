@@ -115,6 +115,12 @@ export class SearchFormComponent implements OnInit {
       }
     });
 
+    this.userTripService.tripRequestFinished.subscribe(requestInfo => {
+      const requestNetworkDuration = DateHelpers.computeExecutionTime(requestInfo.requestDateTime, requestInfo.responseDateTime);
+      const requestParseDuration = DateHelpers.computeExecutionTime(requestInfo.responseDateTime, requestInfo.parseDateTime);
+      this.requestDurationF = (requestNetworkDuration + requestParseDuration).toFixed(2) + ' sec';
+    });
+
     if (this.useMocks) {
       this.initLocationsFromMocks()
     }
@@ -313,10 +319,8 @@ export class SearchFormComponent implements OnInit {
         }
 
         const requestInfo = journeyRequest.tripRequests[0].requestInfo;
-        const requestNetworkDuration = DateHelpers.computeExecutionTime(requestInfo.requestDateTime, requestInfo.responseDateTime);
-        const requestParseDuration = DateHelpers.computeExecutionTime(requestInfo.responseDateTime, requestInfo.parseDateTime);
-        this.requestDurationF = (requestNetworkDuration + requestParseDuration).toFixed(2) + ' sec';
-  
+        this.userTripService.tripRequestFinished.emit(requestInfo);
+
         this.isSearching = false;
         this.userTripService.updateTrips(trips);
 
