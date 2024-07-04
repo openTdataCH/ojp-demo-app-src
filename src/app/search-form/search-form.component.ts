@@ -13,7 +13,6 @@ import { SbbNotificationToast } from '@sbb-esta/angular/notification-toast';
 import { SbbRadioChange } from '@sbb-esta/angular/radio-button';
 
 import * as OJP from 'ojp-sdk'
-import mapboxgl from 'mapbox-gl'
 
 import { APP_STAGE } from '../config/app-config';
 import { Router } from '@angular/router';
