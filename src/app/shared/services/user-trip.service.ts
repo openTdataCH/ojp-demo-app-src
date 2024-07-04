@@ -36,6 +36,7 @@ export class UserTripService {
   public geoLocationsUpdated = new EventEmitter<void>();
   public tripsUpdated = new EventEmitter<OJP.Trip[]>();
   public activeTripSelected = new EventEmitter<OJP.Trip | null>();
+  public tripRequestFinished = new EventEmitter<OJP.RequestInfo>();
 
   public viaAtIndexRemoved = new EventEmitter<number>();
   public viaAtIndexUpdated = new EventEmitter<{location: OJP.Location, idx: number}>();
