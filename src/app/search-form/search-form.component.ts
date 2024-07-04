@@ -46,7 +46,6 @@ export class SearchFormComponent implements OnInit {
 
   public headerText: string
 
-  public currentBoardingType: OJP.TripRequestBoardingType
   public tripRequestBoardingTypes: OJP.TripRequestBoardingType[]
 
   private useMocks: boolean
@@ -80,7 +79,6 @@ export class SearchFormComponent implements OnInit {
 
     this.headerText = 'Search'
 
-    this.currentBoardingType = 'Dep';
     this.tripRequestBoardingTypes = ['Dep', 'Arr'];
 
     const queryParams = new URLSearchParams(document.location.search);
@@ -268,7 +266,7 @@ export class SearchFormComponent implements OnInit {
       this.userTripService.tripModeTypes,
       this.userTripService.tripTransportModes,
       this.userTripService.departureDate,
-      this.currentBoardingType,
+      this.userTripService.currentBoardingType,
     );
     if (journeyRequestParams === null) {
       this.notificationToast.open('Please check from/to input points', {
