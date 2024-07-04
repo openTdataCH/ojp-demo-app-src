@@ -70,7 +70,7 @@
       </sbb-form-field>
     </div>
     <div style="margin-top: 28px;">
-      <sbb-radio-group class="sbb-radio-group-horizontal" [(ngModel)]="this.currentBoardingType">
+      <sbb-radio-group class="sbb-radio-group-horizontal" [(ngModel)]="this.userTripService.currentBoardingType">
         <sbb-radio-button 
           *ngFor="let boardingType of this.tripRequestBoardingTypes"
           [value]="boardingType">{{ boardingType }}</sbb-radio-button>
