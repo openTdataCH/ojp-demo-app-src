@@ -86,7 +86,13 @@ export class MapComponent implements OnInit {
     this.mapService.newMapBoundsRequested.subscribe(mapData => {
       this.mapLoadingPromise?.then(map => {
         const newBounds = mapData.bounds;
-        const padding = mapData.padding ?? 100
+        const padding = mapData.padding ?? {
+          left: 50,
+          top: 170,
+          right: 50,
+          bottom: 100,
+        };
+        
         const onlyIfOutside = mapData.onlyIfOutside ?? false
 
         if (onlyIfOutside) {
