@@ -182,7 +182,7 @@
   <!-- SERVICE + HEADING -->
   <div class="d-flex gap-1 align-items-center">
     <div>
-       <button class="btn btn-primary btn-sm">{{ this.legInfoDataModel.serviceInfo }}</button>
+       <button class="btn btn-primary btn-sm" (click)="loadTripInfoResultPopover(this.legInfoDataModel.serviceJourneyRef)">{{ this.legInfoDataModel.serviceInfo }}</button>
     </div>
     
     <div> to {{ this.legInfoDataModel.serviceDestinationText }}</div>

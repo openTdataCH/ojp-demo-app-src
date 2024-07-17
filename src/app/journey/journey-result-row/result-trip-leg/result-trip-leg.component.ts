@@ -1,12 +1,15 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 
+import { SbbDialog } from "@sbb-esta/angular/dialog";
+
 import mapboxgl from 'mapbox-gl'
 import * as OJP from 'ojp-sdk'
 
 import { MapService } from '../../../shared/services/map.service'
 import { OJPHelpers } from '../../../helpers/ojp-helpers';
 import { LegStopPointData } from '../../../shared/components/service-stops.component'
+import { TripInfoResultPopoverComponent } from './trip-info-result-popover/trip-info-result-popover.component';
 
 type LegTemplate = 'walk' | 'timed' | 'taxi';
 
@@ -63,7 +66,7 @@ export class ResultTripLegComponent implements OnInit {
 
   public isEmbed: boolean
 
-  constructor(private mapService: MapService, private router: Router) {
+  constructor(private mapService: MapService, private router: Router, private tripInfoResultPopover: SbbDialog) {
     this.legInfoDataModel = <LegInfoDataModel>{}
     this.isEmbed = this.router.url.indexOf('/embed/') !== -1;
   }
@@ -556,5 +559,20 @@ export class ResultTripLegComponent implements OnInit {
     const location = isFrom ? this.leg.fromLocation : this.leg.toLocation
 
     this.mapService.tryToCenterAndZoomToLocation(location)
+  }
+
+  public loadTripInfoResultPopover(journeyRef: string | null) {
+    if (journeyRef === null) {
+      console.error('loadTripInfoResultPopover: cant fetch empty journeyRef');
+      return;
+    }
+
+    const dialogRef = this.tripInfoResultPopover.open(TripInfoResultPopoverComponent, {
+      position: { top: '20px' },
+    });
+    dialogRef.afterOpened().subscribe(() => {
+      const popover = dialogRef.componentInstance as TripInfoResultPopoverComponent;
+      popover.fetchJourneyRef(journeyRef);
+    });
   }
 }
