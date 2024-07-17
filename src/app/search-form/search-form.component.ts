@@ -87,8 +87,6 @@ export class SearchFormComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.userTripService.initDefaults();
-
     this.userTripService.locationsUpdated.subscribe(nothing => {
       this.updateLocationTexts();
     })
@@ -108,11 +106,7 @@ export class SearchFormComponent implements OnInit {
     });
 
     this.userTripService.defaultsInited.subscribe(nothing => {
-      const queryParams = new URLSearchParams(document.location.search);
-      const doSearch = queryParams.get('do_search') ?? false;
-      if (doSearch) {
-        this.handleTapOnSearch();
-      }
+      this.customInitFromParams();
     });
 
     this.userTripService.tripRequestFinished.subscribe(requestInfo => {
@@ -121,14 +115,27 @@ export class SearchFormComponent implements OnInit {
       this.requestDurationF = (requestNetworkDuration + requestParseDuration).toFixed(2) + ' sec';
     });
 
+    this.userTripService.initDefaults();
+  }
+
+  private customInitFromParams() {
     if (this.useMocks) {
       this.initLocationsFromMocks()
+      return;
     }
 
     const queryParams = new URLSearchParams(document.location.search);
+    
+    const doSearch = queryParams.get('do_search') ?? false;
+    if (doSearch) {
+      this.handleTapOnSearch();
+      return;
+    }
+
     const gistId = queryParams.get('gist');
     if (gistId) {
       this.initFromGistRef(gistId);
+      return;
     }
   }
 
