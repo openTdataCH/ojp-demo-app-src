@@ -192,21 +192,10 @@ export class ResultTripLegComponent implements OnInit {
     }
 
     const bounds = new mapboxgl.LngLatBounds(bbox.asFeatureBBOX())
-
-    const minDistanceM = 20
-    const hasSmallBBOX = bounds.getSouthWest().distanceTo(bounds.getNorthEast()) < minDistanceM
-    if (hasSmallBBOX) {
-      const mapData = {
-        lnglat: bounds.getCenter(),
-        zoom: 16
-      }
-      this.mapService.newMapCenterAndZoomRequested.emit(mapData);
-    } else {
-      const mapData = {
-        bounds: bounds
-      }
-      this.mapService.newMapBoundsRequested.emit(mapData);
+    const mapData = {
+      bounds: bounds,
     }
+    this.mapService.newMapBoundsRequested.emit(mapData);
   }
 
   private computeLegColor(): string {
