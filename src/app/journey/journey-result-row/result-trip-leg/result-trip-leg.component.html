@@ -1,59 +1,49 @@
-<div class="mb-2 d-flex flex-row">
-  <div>
-    <div
-      class="badge leg-pill pill-hover leg-leading-text"
-      [ngStyle]="{'background-color': this.legInfoDataModel.legColor}"
-      (click)="handleTapOnPill()"
-    >{{ this.legInfoDataModel.leadingText }}</div>
-    <ng-container
-      *ngIf="this.legInfoDataModel.legTemplate == 'timed' then timedLegHeadingTemplate;">
-    </ng-container>
-  </div>
-  <div class="service-attributes">
-    <div class="d-flex">
-      <div class="service-attribute" *ngFor="let attrData of this.legInfoDataModel.serviceAttributes">
-        <sbb-icon svgIcon="{{ attrData.icon }}" class="sbb-icon-fit" title="{{ attrData.caption }}"></sbb-icon>
-      </div>
-    </div>
-  </div>
-  <div class="ms-auto" *ngIf="this.isEmbed === false">
-    <div
-      class="badge leg-pill pill-hover bg-primary"
-      (click)="handleTapOnPill()"
-    >MAP</div>
-  </div>
-</div>
+<!-- <div class="border p-2 mb-2">
+  <div class="mb-2 d-flex flex-row"> -->
 
-<div class="mb-2 d-flex flex-row align-items-center">
-  <div class="flex-grow-0 leg-left-side">
-    <div class="d-flex flex-column leg-icon-wrapper">
-      <div class="text-center">
-        <img class="leg-icon" src="{{ this.legInfoDataModel.legIconPath }}" />
-      </div>
-      <div class="text-center">{{ this.legInfoDataModel.distanceText }}</div>
+<div class="border p-2 mb-2">
+  <div class="mb-2 d-flex flex-row">
+    <button 
+      type="button" 
+      class="btn btn-primary btn-sm font-weight-bold" 
+      [ngStyle]="{'background-color': this.legInfoDataModel.legColor, 'border-color': this.legInfoDataModel.legColor}"
+      (click)="handleTapOnLegHeading()">{{ this.legInfoDataModel.leadingText }}</button>
+  
+    <div class="ms-auto" *ngIf="this.isEmbed === false">
+      <div
+        class="badge leg-pill pill-hover bg-primary"
+        (click)="handleTapOnLegHeading()"
+      >MAP</div>
     </div>
   </div>
   
-  <div class="flex-grow-1">
-    <ng-container
-      *ngIf="this.legInfoDataModel.legTemplate == 'walk' then walkingLegTemplate;">
-    </ng-container>
-    <ng-container
-      *ngIf="this.legInfoDataModel.legTemplate == 'timed' then timedLegTemplate;">
-    </ng-container>
-    <ng-container
-      *ngIf="this.legInfoDataModel.legTemplate == 'taxi' then taxiLegTemplate;">
-    </ng-container>
+  <div class="mb-2 d-flex flex-row align-items-center">
+    <div class="flex-grow-0 leg-left-side">
+      <div class="d-flex flex-column leg-icon-wrapper">
+        <div class="text-center">
+          <img class="leg-icon" src="{{ this.legInfoDataModel.legIconPath }}" />
+        </div>
+        <div class="text-center">{{ this.legInfoDataModel.distanceText }}</div>
+      </div>
+    </div>
+    
+    <div class="flex-grow-1">
+      <ng-container
+        *ngIf="this.legInfoDataModel.legTemplate == 'walk' then walkingLegTemplate;">
+      </ng-container>
+      <ng-container
+        *ngIf="this.legInfoDataModel.legTemplate == 'timed' then timedLegTemplate;">
+      </ng-container>
+      <ng-container
+        *ngIf="this.legInfoDataModel.legTemplate == 'taxi' then taxiLegTemplate;">
+      </ng-container>
+    </div>
+  </div>
+  
+  <div class="mb-2">
+    <div class="border-bottom" style="height: 8px"></div>
   </div>
 </div>
-
-<div class="mb-2">
-  <div class="border-bottom" style="height: 8px"></div>
-</div>
-
-<ng-template #timedLegHeadingTemplate>
-  <div class="service-heading">Direction: {{ this.legInfoDataModel.serviceDestinationText }}</div>
-</ng-template>
 
 <ng-template #timedLegTemplate>
   <div class="d-flex flex-row align-items-center">
@@ -61,49 +51,39 @@
       class="flex-grow-1 leg-location location-hover" 
       (click)="this.handleClickOnLocation('From')"
     >
-      <span>{{ this.legInfoDataModel.fromLocationData.locationText }}</span>
-      
-      <div *ngIf="this.legInfoDataModel.fromLocationData.platformText">
-        <div *ngIf="!this.legInfoDataModel.fromLocationData.actualPlatformText">
-          <div>Pl. {{ this.legInfoDataModel.fromLocationData.platformText }}</div>  
-        </div>
-        <div *ngIf="this.legInfoDataModel.fromLocationData.actualPlatformText">
-          <div>Pl. <del> {{ this.legInfoDataModel.fromLocationData.platformText }}</del> <span class="time-delay"> {{ this.legInfoDataModel.fromLocationData.actualPlatformText }}</span></div>
+      <div class="d-flex">
+        <div>{{ this.legInfoDataModel.fromLocationData.locationText }}</div>
+        <div *ngIf="this.legInfoDataModel.fromLocationData.platformText">
+          <div *ngIf="!this.legInfoDataModel.fromLocationData.actualPlatformText">
+            <div>, Pl. {{ this.legInfoDataModel.fromLocationData.platformText }}</div>  
+          </div>
+          <div *ngIf="this.legInfoDataModel.fromLocationData.actualPlatformText">
+            <div>, Pl. <del> {{ this.legInfoDataModel.fromLocationData.platformText }}</del> <span class="time-delay"> {{ this.legInfoDataModel.fromLocationData.actualPlatformText }}</span></div>
+          </div>
         </div>
       </div>
-    
     </div>
+
     <div 
       class="flex-grow-0 leg-time leg-right-side">
       <img *ngIf="this.legInfoDataModel.fromLocationData.platformAssistanceIconPath !== null"
         class="leg-platform-assistance" 
         src="{{ this.legInfoDataModel.fromLocationData.platformAssistanceIconPath }}" 
         title="{{ this.legInfoDataModel.fromLocationData.platformAssistanceTooltip }}" />
-      <span>{{ this.legInfoDataModel.fromLocationData.timeText }}</span>
-      <span class="time-delay">{{ this.legInfoDataModel.fromLocationData.delayText }}</span>
+      <span>{{ this.legInfoDataModel.fromLocationData.depText }}</span>
+      <span class="time-delay">{{ this.legInfoDataModel.fromLocationData.depDelayText }}</span>
     </div>
   </div>
 
-  <div class="mb-2 d-flex flex-row align-items-center">
-    <div class="flex-grow-1 leg-location location-hover">
-      <div class="border-bottom" style="height: 8px; margin-left: 4px;"></div>
+  <div class="px-2">
+    <div class="d-flex flex-row align-items-center" style="height: 16px;">
+      <div class="separator"></div>
     </div>
-    <div class="flex-grow-0 situation-info" *ngIf="this.legInfoDataModel.hasSituations">
-      <sbb-tooltip svgIcon="fpl:info">
-        <div *ngFor="let situation of this.legInfoDataModel.situations; index as idx">
-          <p>
-            <strong>{{ situation.situationContent.summary }}</strong>
-          </p>
-          <div>
-            {{ situation.situationContent.description }}
-          </div>
-          <ul class="tooltip-list">
-            <li *ngFor="let detailText of situation.situationContent.details">
-              {{ detailText }}
-            </li>
-          </ul>
-        </div>
-      </sbb-tooltip>
+
+    <ng-container *ngTemplateOutlet="timedLegTemplateVariant2"></ng-container>
+
+    <div class="d-flex flex-row align-items-center" style="height: 16px;">
+      <div class="separator"></div>
     </div>
   </div>
 
@@ -112,26 +92,27 @@
       class="flex-grow-1 leg-location location-hover"
       (click)="this.handleClickOnLocation('To')"
     >
-      <span>{{ this.legInfoDataModel.toLocationData.locationText }}</span>
-
-      <div *ngIf="this.legInfoDataModel.toLocationData.platformText">
-        <div *ngIf="!this.legInfoDataModel.toLocationData.actualPlatformText">
-          <div>Pl. {{ this.legInfoDataModel.toLocationData.platformText }}</div>  
-        </div>
-        <div *ngIf="this.legInfoDataModel.toLocationData.actualPlatformText">
-          <div>Pl. <del> {{ this.legInfoDataModel.toLocationData.platformText }}</del> <span class="time-delay"> {{ this.legInfoDataModel.toLocationData.actualPlatformText }}</span></div>
+      <div class="d-flex">
+        <div>{{ this.legInfoDataModel.toLocationData.locationText }}</div>
+        <div *ngIf="this.legInfoDataModel.toLocationData.platformText">
+          <div *ngIf="!this.legInfoDataModel.toLocationData.actualPlatformText">
+            <div>, Pl. {{ this.legInfoDataModel.toLocationData.platformText }}</div>  
+          </div>
+          <div *ngIf="this.legInfoDataModel.toLocationData.actualPlatformText">
+            <div>, Pl. <del> {{ this.legInfoDataModel.toLocationData.platformText }}</del> <span class="time-delay"> {{ this.legInfoDataModel.toLocationData.actualPlatformText }}</span></div>
+          </div>
         </div>
       </div>
-    
     </div>
+    
     <div 
       class="flex-grow-0 leg-time leg-right-side">
       <img *ngIf="this.legInfoDataModel.toLocationData.platformAssistanceIconPath !== null"
         class="leg-platform-assistance" 
         src="{{ this.legInfoDataModel.toLocationData.platformAssistanceIconPath }}" 
         title="{{ this.legInfoDataModel.toLocationData.platformAssistanceTooltip }}" />
-      <span>{{ this.legInfoDataModel.toLocationData.timeText }}</span>
-      <span class="time-delay">{{ this.legInfoDataModel.toLocationData.delayText }}</span>
+      <span>{{ this.legInfoDataModel.toLocationData.arrText }}</span>
+      <span class="time-delay">{{ this.legInfoDataModel.toLocationData.arrDelayText }}</span>
     </div>
   </div>
 </ng-template>
@@ -193,6 +174,74 @@
     </div>
     <div class="flex-grow-0 leg-time leg-right-side">
       <div>{{ this.legInfoDataModel.durationText }}</div>
+    </div>
+  </div>
+</ng-template>
+
+<ng-template #timedLegTemplateVariant2>
+  <!-- SERVICE + HEADING -->
+  <div class="d-flex gap-1 align-items-center">
+    <div>
+       <button class="btn btn-primary btn-sm">{{ this.legInfoDataModel.serviceInfo }}</button>
+    </div>
+    
+    <div> to {{ this.legInfoDataModel.serviceDestinationText }}</div>
+  </div>
+
+  <!-- INTERMEDIARY_STOPS + ATTRIBUTES -->
+  <div class="d-flex gap-2 align-items-center mt-2">
+    <div *ngIf="this.legInfoDataModel.serviceIntermediaryStopsText !== null">
+      <button type="button" class="btn btn-primary btn-sm btn-collapse collapsed" data-bs-toggle="collapse" [attr.data-bs-target]="'#' + this.legElementId" aria-expanded="false" [attr.aria-controls]="this.legElementId">{{ this.legInfoDataModel.serviceIntermediaryStopsText }} <i class="bi bi-chevron-down"></i><i class="bi bi-chevron-up"></i></button>
+    </div>
+
+    <div class="service-attributes">
+      <div class="d-flex gap-1 align-items-center">
+        <div class="service-attribute" *ngFor="let attrData of this.legInfoDataModel.serviceAttributes">
+          <sbb-tooltip svgIcon="{{ attrData.icon }}" class="sbb-icon-fit">
+            <div>
+              {{ attrData.caption }}
+            </div>
+          </sbb-tooltip>
+        </div>
+      </div>
+    </div>
+
+    <div class="mt-2" *ngIf="this.legInfoDataModel.hasSituations">
+      <sbb-tooltip svgIcon="fpl:info" *ngIf="this.legInfoDataModel.hasSituations">
+        <div *ngFor="let situation of this.legInfoDataModel.situations; index as idx">
+          <p>
+            <strong>{{ situation.situationContent.summary }}</strong>
+          </p>
+          <div>
+            {{ situation.situationContent.description }}
+          </div>
+          <ul class="tooltip-list">
+            <li *ngFor="let detailText of situation.situationContent.details">
+              {{ detailText }}
+            </li>
+          </ul>
+        </div>
+      </sbb-tooltip>
+    </div>
+  </div>
+
+  <div class="py-2 collapse" [id]="this.legElementId">
+    <div class="d-flex gap-2">
+      <div class="flex-grow-1">
+        <div *ngFor="let locationData of this.legInfoDataModel.intermediaryLocationsData">
+          {{ locationData.locationText }}
+        </div>
+      </div>
+      <div>
+        <div *ngFor="let locationData of this.legInfoDataModel.intermediaryLocationsData">
+          <div>{{ locationData.arrText ?? ' ' }} <span class="time-delay">{{ locationData.arrDelayText }}</span></div>
+        </div>
+      </div>
+      <div>
+        <div *ngFor="let locationData of this.legInfoDataModel.intermediaryLocationsData">
+          {{ locationData.depText }} <span class="time-delay">{{ locationData.depDelayText }}</span>
+        </div>
+      </div>
     </div>
   </div>
 </ng-template>
