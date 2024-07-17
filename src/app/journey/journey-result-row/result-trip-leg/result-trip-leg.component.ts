@@ -49,6 +49,11 @@ interface LegInfoDataModel {
 })
 export class ResultTripLegComponent implements OnInit {
   @Input() leg: OJP.TripLeg | undefined
+  @Input() legId: string | undefined
+  @Input() legIdx: number | undefined
+  @Input() isLastLeg = false
+
+  public legElementId: string = 'n/a'
 
   public legInfoDataModel: LegInfoDataModel
 
@@ -60,9 +65,13 @@ export class ResultTripLegComponent implements OnInit {
   }
 
   ngOnInit() {
-    if (this.leg) {
-      this.initLegInfo(this.leg)
+    if (this.leg === undefined || this.legIdx === undefined) {
+      return;
     }
+
+    this.legElementId = 'leg_' + this.legId;
+
+    this.initLegInfo()
   }
 
   private computeLegLeadText(): string {
@@ -223,7 +232,12 @@ export class ResultTripLegComponent implements OnInit {
     return this.leg?.computeLegColor() ?? OJP.MapLegTypeColor.TimedLeg
   }
 
-  private initLegInfo(leg: OJP.TripLeg) {
+  private initLegInfo() {
+    if (this.leg === undefined) {
+      return;
+    }
+
+    const leg = this.leg;
     this.legInfoDataModel.legColor = this.computeLegColor()
     this.legInfoDataModel.leadingText = this.computeLegLeadText()
 
