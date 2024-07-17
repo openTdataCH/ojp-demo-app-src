@@ -1,10 +1,10 @@
 import { Component, Input, OnInit } from '@angular/core';
-import { MapService } from 'src/app/shared/services/map.service';
 import { Router } from '@angular/router';
 
 import mapboxgl from 'mapbox-gl'
 import * as OJP from 'ojp-sdk'
 
+import { MapService } from '../../../shared/services/map.service'
 import { OJPHelpers } from '../../../helpers/ojp-helpers';
 import { LegStopPointData } from '../../../shared/components/service-stops.component'
 
