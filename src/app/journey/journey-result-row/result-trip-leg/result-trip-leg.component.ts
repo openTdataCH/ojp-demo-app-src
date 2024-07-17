@@ -74,10 +74,12 @@ export class ResultTripLegComponent implements OnInit {
     this.initLegInfo()
   }
 
-  private computeLegLeadText(): string {
-    if (this.leg === undefined) {
+  private computeLegLeadingText(): string {
+    if (this.leg === undefined || this.legIdx === undefined) {
       return 'n/a'
     }
+
+    const legIdxS = '' + (this.legIdx + 1) + '. ';
 
     if (this.leg.legType === 'TransferLeg') {
       const leadingTextTitle = 'Transfer'
@@ -88,7 +90,7 @@ export class ResultTripLegComponent implements OnInit {
         legDurationS = ' ' + continuousLeg.walkDuration.formatDuration()
       }
       
-      return leadingTextTitle + legDurationS
+      return legIdxS + leadingTextTitle + legDurationS;
     }
 
     if (this.leg.legType === 'ContinousLeg') {
