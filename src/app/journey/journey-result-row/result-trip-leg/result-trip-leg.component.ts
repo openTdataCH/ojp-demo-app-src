@@ -41,6 +41,9 @@ interface LegInfoDataModel {
   serviceAttributes: ServiceAttributeRenderModel[]
 
   serviceDestinationText: string | null
+  serviceInfo: string | null
+  serviceIntermediaryStopsText: string | null
+  serviceJourneyRef: string | null
 }
 
 @Component({
@@ -346,6 +349,54 @@ export class ResultTripLegComponent implements OnInit {
 
       const timedLeg = leg as OJP.TripTimedLeg;
       return timedLeg.service.destinationStopPlace?.stopPlaceName ?? 'n/a';
+    })();
+  }
+
+    this.legInfoDataModel.serviceInfo = (() => {
+      if (leg.legType !== 'TimedLeg') {
+        return null;
+      }
+
+      const timedLeg = leg as OJP.TripTimedLeg;
+      return this.formatServiceName(timedLeg);
+    })();
+
+    this.legInfoDataModel.serviceIntermediaryStopsText = (() => {
+      if (leg.legType !== 'TimedLeg') {
+        return null;
+      }
+
+      const timedLeg = leg as OJP.TripTimedLeg;
+      const intermediaryStopsNo = timedLeg.intermediateStopPoints.length;
+      
+      if (intermediaryStopsNo === 0) {
+        return null;
+      }
+
+      if (intermediaryStopsNo === 1) {
+        return '1 stop';
+      }
+
+      return intermediaryStopsNo + ' stops';
+    })();
+
+    this.legInfoDataModel.serviceInfo = (() => {
+      if (leg.legType !== 'TimedLeg') {
+        return null;
+      }
+
+      const timedLeg = leg as OJP.TripTimedLeg;
+      return this.formatServiceName(timedLeg);
+    })();
+
+    this.legInfoDataModel.serviceJourneyRef = (() => {
+      if (leg.legType !== 'TimedLeg') {
+        return null;
+      }
+
+      const timedLeg = leg as OJP.TripTimedLeg;
+
+      return timedLeg.service.journeyRef;
     })();
   }
 
