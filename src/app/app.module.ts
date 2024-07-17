@@ -15,6 +15,8 @@ import { DebugXmlPopoverComponent } from './search-form/debug-xml-popover/debug-
 import { InputXmlPopoverComponent } from './search-form/input-xml-popover/input-xml-popover.component';
 import { EmbedSearchPopoverComponent } from './search-form/embed-search-popover/embed-search-popover.component';
 import { EmbedStationBoardPopoverComponent } from './station-board/search/embed-station-board-popover/embed-station-board-popover.component';
+import { CustomStopEventXMLPopoverComponent } from './station-board/search/custom-stop-event-xml-popover/custom-stop-event-xml-popover.component';
+import { CustomTripInfoXMLPopoverComponent } from './trip-info/search/custom-trip-info-xml-popover/custom-trip-info-xml-popover.component';
 
 import { JourneyPointInputComponent } from './search-form/journey-point-input/journey-point-input.component';
 import { JourneyResultsComponent } from './journey/journey-results/journey-results.component';
@@ -23,8 +25,6 @@ import { JourneySearchComponent } from './journey/journey-search/journey-search.
 import { MapComponent } from './map/map.component';
 import { ResultTripLegComponent } from './journey/journey-result-row/result-trip-leg/result-trip-leg.component';
 import { SearchFormComponent } from './search-form/search-form.component';
-
-import { CustomStopEventXMLPopoverComponent } from './station-board/search/custom-stop-event-xml-popover/custom-stop-event-xml-popover.component';
 
 import { StationBoardComponent } from './station-board/station-board.component';
 import { StationBoardInputComponent } from './station-board/input/station-board-input.component';
@@ -73,6 +73,7 @@ import { WebHeaderComponent } from './shared/components/web-header';
     DebugXmlPopoverComponent,
     InputXmlPopoverComponent,
     CustomStopEventXMLPopoverComponent,
+    CustomTripInfoXMLPopoverComponent,
     EmbedSearchPopoverComponent,
     EmbedStationBoardPopoverComponent,
 
