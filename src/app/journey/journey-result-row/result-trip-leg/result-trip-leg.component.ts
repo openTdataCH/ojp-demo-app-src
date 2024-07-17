@@ -201,18 +201,7 @@ export class ResultTripLegComponent implements OnInit {
     }
 
     const legFeatures = this.leg.computeGeoJSONFeatures();
-
-    const bbox = new OJP.GeoPositionBBOX([])
-    legFeatures.forEach(feature => {
-      const featureBBOX = feature.bbox;
-      if (featureBBOX) {
-        const bboxSW = new OJP.GeoPosition(featureBBOX[0], featureBBOX[1])
-        bbox.extend(bboxSW)
-
-        const bboxNE = new OJP.GeoPosition(featureBBOX[2], featureBBOX[3])
-        bbox.extend(bboxNE)
-      }
-    })
+    const bbox = OJP.GeoPositionBBOX.initFromGeoJSONFeatures(legFeatures);
 
     if (!bbox.isValid()) {
       console.error('Invalid BBOX for leg');
