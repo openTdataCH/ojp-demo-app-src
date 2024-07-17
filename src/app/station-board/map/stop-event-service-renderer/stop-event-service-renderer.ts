@@ -10,11 +10,13 @@ type LinePointType = 'prev' | 'next'
 
 export class StopEventServiceRenderer {
     private map: mapboxgl.Map
-    private sourceID: string
+    private sourceID: string;
+    public geojsonFeatures: GeoJSON.Feature[]
 
     constructor(map: mapboxgl.Map) {
         this.map = map
         this.sourceID = 'stop-event-service-data';
+        this.geojsonFeatures = [];
         
         this.addMapLayers(map);
     }
@@ -39,7 +41,11 @@ export class StopEventServiceRenderer {
     }
 
     public drawStopEvent(stopEvent: OJP.StopEvent) {
-        let geojsonFeatures: GeoJSON.Feature[] = [];
+        this.drawStopPoints(stopEvent.prevStopPoints, stopEvent.nextStopPoints, stopEvent.stopPoint);
+    }
+
+    private drawStopPoints(prevStopPoints: OJP.StopPoint[], nextStopPoints: OJP.StopPoint[], currentStopPoint: OJP.StopPoint | null) {
+        this.geojsonFeatures = [];
 
         const lineFeaturePoints: Record<LinePointType, GeoJSON.Position[]> = {
             prev: [],
@@ -53,7 +59,7 @@ export class StopEventServiceRenderer {
         const linePointTypes: LinePointType[] = ['prev', 'next'];
         linePointTypes.forEach(linePointType => {
             const is_previous = linePointType === 'prev';
-            let stopPointsRef = is_previous ? stopEvent.prevStopPoints : stopEvent.nextStopPoints;
+            let stopPointsRef = is_previous ? prevStopPoints : nextStopPoints;
 
             stopPointsRef.forEach((stopPoint, idx) => {
                 const geoPosition = stopPoint.location.geoPosition;
@@ -82,16 +88,18 @@ export class StopEventServiceRenderer {
         });
 
         // Insert current station
-        const geoPosition = stopEvent.stopPoint.location.geoPosition;
-        if (geoPosition) {
-            lineFeaturePoints.prev.push(geoPosition.asPosition());
-            lineFeaturePoints.next.unshift(geoPosition.asPosition());
-            
-            const feature = stopEvent.stopPoint.location.asGeoJSONFeature();
-            if (feature && feature.properties) {
-                feature.properties['point-type'] = 'next';
-                feature.properties['point-size'] = 'large';
-                pointFeatures['next'].push(feature);
+        if (currentStopPoint) {
+            const geoPosition = currentStopPoint.location.geoPosition;
+            if (geoPosition) {
+                lineFeaturePoints.prev.push(geoPosition.asPosition());
+                lineFeaturePoints.next.unshift(geoPosition.asPosition());
+                
+                const feature = currentStopPoint.location.asGeoJSONFeature();
+                if (feature && feature.properties) {
+                    feature.properties['point-type'] = 'next';
+                    feature.properties['point-size'] = 'large';
+                    pointFeatures['next'].push(feature);
+                }
             }
         }
 
@@ -111,20 +119,22 @@ export class StopEventServiceRenderer {
                     coordinates: points
                 }
             }
-            geojsonFeatures.push(lineFeature);
+            this.geojsonFeatures.push(lineFeature);
 
-            geojsonFeatures = geojsonFeatures.concat(pointFeatures[linePointType]);
+            this.geojsonFeatures = this.geojsonFeatures.concat(pointFeatures[linePointType]);
         })
 
         const geojson = <GeoJSON.FeatureCollection>{
             type: 'FeatureCollection',
-            features: geojsonFeatures
+            features: this.geojsonFeatures
         }
 
         this.udateStopEventSource(geojson);
     }
 
     public resetStopEventLayers() {
+        this.geojsonFeatures = [];
+
         const emptyGeoJSON = <GeoJSON.FeatureCollection> {
             type: 'FeatureCollection',
             features: []
