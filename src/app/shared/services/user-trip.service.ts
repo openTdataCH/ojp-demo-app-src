@@ -562,6 +562,7 @@ export class UserTripService {
 
   public massageTrips(trips: OJP.Trip[]) {
     this.sortTrips(trips);
+    this.patchTripLegEndpointCoords(trips);
     this.mergeTripLegs(trips);
   }
 
@@ -603,6 +604,40 @@ export class UserTripService {
       trips.splice(tripIdx, 1);
       trips.unshift(monomodalTrip);
     }
+  }
+
+  private patchTripLegEndpointCoords(trips: OJP.Trip[]) {
+    trips.forEach(trip => {
+      trip.legs.forEach((leg, legIdx) => {
+        if (leg.legType !== 'TimedLeg') {
+          return;
+        }
+  
+        const timedLeg = leg as OJP.TripTimedLeg;
+        
+        // Check if we have a START geoPosition
+        // - use it for prev leg END geoPosition
+        const fromGeoPosition = timedLeg.legTrack?.fromGeoPosition() ?? null;
+        if (legIdx > 0 && fromGeoPosition !== null) {
+          const prevLeg = trip.legs[legIdx - 1];
+          if (prevLeg.toLocation.geoPosition === null) {
+            console.log('SDK HACK - patchLegEndpointCoords - use legTrack.fromGeoPosition for prevLeg.toLocation.geoPosition');
+            prevLeg.toLocation.geoPosition = fromGeoPosition;
+          }
+        }
+  
+        // Check if we have a END geoPosition
+        // - use it for next leg START geoPosition
+        const toGeoPosition = timedLeg.legTrack?.toGeoPosition() ?? null;
+        if (legIdx < (trip.legs.length - 1) && toGeoPosition !== null) {
+          const nextLeg = trip.legs[legIdx + 1];
+          if (nextLeg.fromLocation.geoPosition === null) {
+            console.log('SDK HACK - patchLegEndpointCoords - use legTrack.toGeoPosition for nextLeg.fromLocation.geoPosition');
+            nextLeg.fromLocation.geoPosition = toGeoPosition;
+          }
+        }
+      });
+    });
   }
     
   // Some of the legs can be merged
