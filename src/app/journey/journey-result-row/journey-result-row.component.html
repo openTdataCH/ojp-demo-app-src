@@ -15,8 +15,11 @@
   </sbb-expansion-panel-header>
   <div>
     <result-trip-leg
-      *ngFor="let leg of trip?.legs; index as idx"
+      *ngFor="let leg of trip?.legs; index as legIdx"
       [leg]="leg"
+      [legId]="this.idx + '_' + legIdx"
+      [legIdx]="legIdx"
+      [isLastLeg]="idx === ((trip?.legs?.length ?? 1) - 1)"
     >
     </result-trip-leg>
   </div>
