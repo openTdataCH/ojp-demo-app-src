@@ -32,6 +32,7 @@ import { StationBoardMapComponent } from './station-board/map/station-board-map.
 import { StationBoardResultComponent } from './station-board/result/station-board-result.component';
 import { StationBoardSearchComponent } from './station-board/search/station-board-search.component';
 
+import { TripInfoComponent } from './trip-info/trip-info.component';
 import { TripInfoMapComponent } from './trip-info/map/trip-info-map.component';
 import { TripInfoSearchComponent } from './trip-info/search/trip-info-search.component';
 import { TripInfoResultComponent } from './trip-info/result/trip-info-result.component';
@@ -64,6 +65,7 @@ import { WebHeaderComponent } from './shared/components/web-header';
     StationBoardResultComponent,
     StationBoardSearchComponent,
 
+    TripInfoComponent,
     TripInfoMapComponent,
     TripInfoSearchComponent,
     TripInfoResultComponent,
