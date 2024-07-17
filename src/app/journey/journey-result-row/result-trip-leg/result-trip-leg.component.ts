@@ -360,11 +360,13 @@ export class ResultTripLegComponent implements OnInit {
           return 'kom:circle-information-large';
         }
 
-        if (key.toLowerCase() === 'sa-ba') {
+        if (['sa-ba', 'ba', 'sa-hl', 'hl'].includes(key.toLowerCase())) {
           return 'kom:circle-information-large';
         }
 
-        return 'fpl:sa-' + key.toLowerCase();
+        const icon = 'fpl:sa-' + key.toLowerCase();
+        
+        return icon;
       })();
 
       if (icon === null) {
