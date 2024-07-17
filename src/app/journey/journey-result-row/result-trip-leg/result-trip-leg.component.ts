@@ -177,7 +177,7 @@ export class ResultTripLegComponent implements OnInit {
     return ''
   }
 
-  handleTapOnPill() {
+  handleTapOnLegHeading() {
     if (!this.leg) {
       return
     }
