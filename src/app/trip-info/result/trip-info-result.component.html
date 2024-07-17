@@ -1,0 +1,15 @@
+<div *ngIf="this.model.tripInfoResult !== null">
+  <div class="px-3">
+    <div class="d-flex align-items-center gap-2 mt-3">
+      <div><img class="leg-icon" src="{{ this.model.serviceIconPath }}" /></div>
+      <div class="service-line-number">{{ this.model.serviceLineText }}</div>
+      <div class="service-trip-id">{{ this.model.serviceTripId }}</div>
+      <div class="service-operator">({{ this.model.serviceOperator }})</div>
+    </div>
+    <h2 class="mt-3">{{ this.model.serviceFromText }} → {{ this.model.serviceToText }}</h2>
+    <div class="p-1">
+      <service-stops [stopPointsData]="this.model.stopPointsData" (locationSelected)="onLocationSelected($event)"></service-stops>
+    </div>
+    <div class="mt-3 mb-2">Permalink: <a [href]="('./trip?ref=' + this.model.journeyRef)" target="_blank">{{ this.model.journeyRef }}</a></div>
+  </div>
+</div>
