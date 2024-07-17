@@ -8,10 +8,15 @@ export interface IMapBoundsData {
   padding?: mapboxgl.PaddingOptions | null
 }
 
+export interface IMapLocationZoomData {
+  lnglat: mapboxgl.LngLatLike
+  zoom: number
+}
+
 @Injectable( {providedIn: 'root'} )
 export class MapService {
   public newMapBoundsRequested = new EventEmitter<IMapBoundsData>();
-  public newMapCenterAndZoomRequested = new EventEmitter<{ lnglat: mapboxgl.LngLat, zoom: number }>();
+  public newMapCenterAndZoomRequested = new EventEmitter<IMapLocationZoomData>();
 
   public tryToCenterAndZoomToLocation(location: OJP.Location | null, zoomValue: number = 16.0) {
     if (location === null) {
