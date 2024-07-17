@@ -5,16 +5,8 @@ import { Router } from '@angular/router';
 import mapboxgl from 'mapbox-gl'
 import * as OJP from 'ojp-sdk'
 
-interface LegLocationData {
-  locationText: string,
-  platformText: string | null,
-  actualPlatformText: string | null,
-  timeText: string | null,
-  delayText: string | null,
-  platformAssistanceIconPath: string | null,
-  platformAssistanceTooltip: string,
-}
 import { OJPHelpers } from '../../../helpers/ojp-helpers';
+import { LegStopPointData } from '../../../shared/components/service-stops.component'
 
 type LegTemplate = 'walk' | 'timed' | 'taxi';
 
@@ -37,8 +29,8 @@ interface LegInfoDataModel {
   distanceText: string,
   
   isTimed: boolean,
-  fromLocationData: LegLocationData,
-  toLocationData: LegLocationData,
+  fromLocationData: LegStopPointData,
+  toLocationData: LegStopPointData,
 
   hasSituations: boolean
   situations: OJP.PtSituationElement[]
@@ -314,8 +306,9 @@ export class ResultTripLegComponent implements OnInit {
     this.legInfoDataModel.legIconPath = 'assets/pictograms/' + legIconFilename + '.png'
 
     this.legInfoDataModel.isTimed = leg.legType === 'TimedLeg'
-    this.legInfoDataModel.fromLocationData = this.computeLocationData(leg, 'From')
-    this.legInfoDataModel.toLocationData = this.computeLocationData(leg, 'To')
+    
+    this.legInfoDataModel.fromLocationData = this.computeLocationData(leg, 'From');
+    this.legInfoDataModel.toLocationData = this.computeLocationData(leg, 'To');
 
     this.legInfoDataModel.situations = (() => {
       if (leg.legType !== 'TimedLeg') {
@@ -449,48 +442,28 @@ export class ResultTripLegComponent implements OnInit {
     return message;
   }
 
-  private computeLocationData(leg: OJP.TripLeg, endpointType: OJP.JourneyPointType): LegLocationData {
+  private computeLocationData(leg: OJP.TripLeg, endpointType: OJP.JourneyPointType): LegStopPointData {
     const isFrom = endpointType === 'From'
 
     let location = isFrom ? leg.fromLocation : leg.toLocation
 
-    const locationData = <LegLocationData>{
+    const stopPointData = <LegStopPointData>{
       locationText: location.computeLocationName() ?? '',
       platformText: null,
-      timeText: null,
-      delayText: null,
+      arrText: null,
+      arrDelayText: null,
+      depText: null,
+      depDelayText: null,
     }
 
     if (leg.legType === 'TimedLeg') {
       const timedLeg = leg as OJP.TripTimedLeg
-      const stopPoint = isFrom ? timedLeg.fromStopPoint : timedLeg.toStopPoint
-      
-      const stopPointTime = isFrom ? stopPoint.departureData : stopPoint.arrivalData
-      const depTime = stopPointTime?.timetableTime
-      if (depTime) {
-        locationData.timeText = OJP.DateHelpers.formatTimeHHMM(depTime)
+      const stopPoint = isFrom ? timedLeg.fromStopPoint : timedLeg.toStopPoint;
 
-        const delayMinutes = stopPointTime?.delayMinutes
-        if (delayMinutes) {
-          const delayTextParts: string[] = []
-          delayTextParts.push(' ')
-          delayTextParts.push(delayMinutes > 0 ? '+' : '')
-          delayTextParts.push('' + delayMinutes)
-          delayTextParts.push("'")
-
-          locationData.delayText = delayTextParts.join('')
-        }
-      }
-
-      locationData.platformText = stopPoint.plannedPlatform;
-      if (stopPoint.actualPlatform === stopPoint.plannedPlatform) {
-        locationData.actualPlatformText = null;
-      } else {
-        locationData.actualPlatformText = stopPoint.actualPlatform;
-      }
+      OJPHelpers.updateLocationDataWithTime(stopPointData, stopPoint);
     }
 
-    return locationData
+    return stopPointData
   }
 
   public handleClickOnLocation(endpointType: OJP.JourneyPointType) {
