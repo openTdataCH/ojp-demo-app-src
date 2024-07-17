@@ -5,12 +5,16 @@ import { JourneySearchComponent } from './journey/journey-search/journey-search.
 import { StationBoardComponent } from './station-board/station-board.component';
 import { EmbedSearchComponent } from './embed/embed-search.component';
 import { EmbedStationBoardComponent } from './embed/embed-station-board.component';
+import { TripInfoComponent } from './trip-info/trip-info.component';
 
 const routes: Routes = [
   { path: 'embed/search', component: EmbedSearchComponent },
   { path: 'embed/board', component: EmbedStationBoardComponent },
   { path: 'search', component: JourneySearchComponent },
   { path: 'board', component: StationBoardComponent },
+  { path: 'trip', component: TripInfoComponent },
+  // newsletter quick fix
+  { path: 'searchOJP-Demo', redirectTo: '/search', pathMatch: 'full' },
   { path: '', redirectTo: '/search', pathMatch: 'full' },
 ];
 
