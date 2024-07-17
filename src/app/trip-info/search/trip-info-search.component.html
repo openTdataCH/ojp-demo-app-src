@@ -1,0 +1,80 @@
+<div class="row mb-2">
+  <div class="col">
+    <sbb-accordion>
+      <sbb-expansion-panel [expanded]="true">
+        <sbb-expansion-panel-header>{{ this.headerText }}</sbb-expansion-panel-header>
+        
+        <div class="d-flex align-items-center">
+          <div class="flex-grow-1">
+            <sbb-form-field class="sbb-form-field-long">
+              <sbb-label>Journey Ref</sbb-label>
+              <input sbbInput placeholder="type a JourneyRef" value="" [(ngModel)]="this.model.journeyRef" />
+            </sbb-form-field>
+          </div>
+          
+          <div
+            *ngIf="this.currentRequestInfo?.requestXML"
+            class="xml-info"
+            (click)="showRequestXmlPopover()"
+          >
+            <span class="layer-xml-info badge bg-info text-dark">XML</span>
+          </div>
+        </div>
+
+        <div class="d-flex">
+          <div>
+            <sbb-form-field label="Choose Day">
+              <sbb-datepicker arrows>
+                <input 
+                  sbbInput  
+                  sbbDateInput
+                  [(ngModel)]="this.model.journeyDateTime"
+                  (dateChange)="onDateTimeChanged()" />
+              </sbb-datepicker>
+            </sbb-form-field>
+          </div>
+        </div>
+        
+        <div class="mb-3 d-flex">
+          <div>
+            <sbb-radio-group class="sbb-radio-group-horizontal">
+              <sbb-radio-button *ngFor="let appStageOption of this.model.appStageOptions" 
+                [value]="appStageOption"
+                [checked]="this.userTripService.currentAppStage == appStageOption"
+                (change)="onChangeStageAPI($event)">
+                {{ appStageOption }}
+              </sbb-radio-button>
+            </sbb-radio-group>
+          </div>
+        </div>
+
+        <div class="d-flex">
+          <div style="margin-right: 4px;">
+            <button
+              class="btn btn-primary"
+              type="button"
+              (click)="searchButtonClicked()"
+              [disabled]="isSearchButtonDisabled()">
+              <span
+                class="spinner-border spinner-border-sm"
+                role="status"
+                aria-hidden="true"
+                *ngIf="this.model.isSearching"></span>
+              Search
+            </button>
+          </div>
+
+          <div class="ms-auto">
+            <button
+              class="btn btn-secondary"
+              (click)="loadCustomXMLPopover()"
+              type="button">
+              Custom XML
+            </button>
+          </div>
+        </div>
+
+      </sbb-expansion-panel>
+    </sbb-accordion>
+  </div>
+</div>
