@@ -50,7 +50,7 @@ interface LegInfoDataModel {
 export class ResultTripLegComponent implements OnInit {
   @Input() leg: OJP.TripLeg | undefined
 
-  legInfoDataModel: LegInfoDataModel
+  public legInfoDataModel: LegInfoDataModel
 
   public isEmbed: boolean
 
