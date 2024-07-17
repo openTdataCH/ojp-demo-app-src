@@ -25,6 +25,7 @@ import { JourneySearchComponent } from './journey/journey-search/journey-search.
 import { MapComponent } from './map/map.component';
 import { ResultTripLegComponent } from './journey/journey-result-row/result-trip-leg/result-trip-leg.component';
 import { SearchFormComponent } from './search-form/search-form.component';
+import { TripInfoResultPopoverComponent } from './journey/journey-result-row/result-trip-leg/trip-info-result-popover/trip-info-result-popover.component';
 
 import { StationBoardComponent } from './station-board/station-board.component';
 import { StationBoardInputComponent } from './station-board/input/station-board-input.component';
@@ -58,6 +59,7 @@ import { WebHeaderComponent } from './shared/components/web-header';
     ResultTripLegComponent,
     SearchFormComponent,
     TripModeTypeComponent,
+    TripInfoResultPopoverComponent,
 
     StationBoardComponent,
     StationBoardInputComponent,
