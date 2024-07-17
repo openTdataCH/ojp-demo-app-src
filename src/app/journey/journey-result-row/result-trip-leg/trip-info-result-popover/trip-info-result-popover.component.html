@@ -1,0 +1,24 @@
+<div sbbDialogTitle>{{ this.model.title }}</div>
+<div sbbDialogContent>
+  <div style="width: 500px">
+    <div class="p-2 d-flex gap-2" *ngIf="this.model.isFetching">
+      <div class="spinner-border" role="status">
+        <span class="visually-hidden">Loading...</span>
+      </div>
+      <div>fetching OJP TripInfoRequest ...</div>
+    </div>
+    
+    <div class="alert alert-danger" role="alert" *ngIf="this.model.errorMessage">
+      {{ this.model.errorMessage }}
+    </div>
+    <trip-info-result></trip-info-result>
+  </div>
+</div>
+<div sbbDialogActions>
+  <button
+    type="button"
+    class="btn btn-secondary"
+    sbbDialogClose>
+    Close
+  </button>
+</div>
