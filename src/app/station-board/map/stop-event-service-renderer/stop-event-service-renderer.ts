@@ -44,6 +44,10 @@ export class StopEventServiceRenderer {
         this.drawStopPoints(stopEvent.prevStopPoints, stopEvent.nextStopPoints, stopEvent.stopPoint);
     }
 
+    public drawServiceStopPoints(stopPoints: OJP.StopPoint[]) {
+        this.drawStopPoints([], stopPoints, stopPoints[0]);
+    }
+    
     private drawStopPoints(prevStopPoints: OJP.StopPoint[], nextStopPoints: OJP.StopPoint[], currentStopPoint: OJP.StopPoint | null) {
         this.geojsonFeatures = [];
 
