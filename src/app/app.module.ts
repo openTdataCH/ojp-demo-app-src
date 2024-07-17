@@ -33,6 +33,8 @@ import { StationBoardSearchComponent } from './station-board/search/station-boar
 
 import { TripModeTypeComponent } from './search-form/trip-mode-type/trip-mode-type.component';
 
+import { ServiceStopsComponent } from './shared/components/service-stops.component';
+
 import { EmbedSearchComponent } from './embed/embed-search.component';
 import { EmbedStationBoardComponent } from './embed/embed-station-board.component';
 import { WebFooterComponent } from './shared/components/web-footer';
@@ -62,6 +64,8 @@ import { WebHeaderComponent } from './shared/components/web-header';
     CustomStopEventXMLPopoverComponent,
     EmbedSearchPopoverComponent,
     EmbedStationBoardPopoverComponent,
+
+    ServiceStopsComponent,
     
     WebFooterComponent,
     WebHeaderComponent,
