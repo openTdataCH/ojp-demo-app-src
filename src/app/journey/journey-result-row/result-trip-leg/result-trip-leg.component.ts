@@ -14,6 +14,7 @@ interface LegLocationData {
   platformAssistanceIconPath: string | null,
   platformAssistanceTooltip: string,
 }
+import { OJPHelpers } from '../../../helpers/ojp-helpers';
 
 type LegTemplate = 'walk' | 'timed' | 'taxi';
 
@@ -320,7 +321,7 @@ export class ResultTripLegComponent implements OnInit {
 
     this.legInfoDataModel.hasGuidance = this.legInfoDataModel.guidanceTextLines.length > 0
 
-    const legIconFilename = this.computeLegIconFilename(leg)
+    const legIconFilename = OJPHelpers.computeIconFilenameForLeg(leg);
     this.legInfoDataModel.legIconPath = 'assets/pictograms/' + legIconFilename + '.png'
 
     this.legInfoDataModel.isTimed = leg.legType === 'TimedLeg'
@@ -396,44 +397,6 @@ export class ResultTripLegComponent implements OnInit {
     }
 
     return rows;
-  }
-
-  private computeLegIconFilename(leg: OJP.TripLeg): string {
-    if (leg.legType === 'TransferLeg') {
-      return 'picto-walk'
-    }
-
-    if (leg.legType === 'TimedLeg') {
-      const timedLeg = leg as OJP.TripTimedLeg
-      return timedLeg.service.ptMode.computePublicTransportPictogram();
-    }
-
-    if (leg.legType === 'ContinousLeg') {
-      const continousLeg = leg as OJP.TripContinousLeg
-      if (continousLeg.isDriveCarLeg()) {
-        return 'car-sharing'
-      }
-
-      if (continousLeg.isSharedMobility()) {
-        return 'velo-scooter-sharing'
-      }
-
-      if (continousLeg.isTaxi()) {
-        return 'taxi';
-      }
-
-      if (continousLeg.legTransportMode === 'car-shuttle-train') {
-        return 'autozug';
-      }
-
-      if (continousLeg.legTransportMode === 'car-ferry') {
-        return 'ferry';
-      }
-
-      return 'picto-walk'
-    }
-
-    return 'picto-bus-fallback';
   }
 
   private computePlatformAssistanceIconPath(timedLeg: OJP.TripTimedLeg, stopPointType: OJP.JourneyPointType): string | null {
