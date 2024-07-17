@@ -1,3 +1,8 @@
+// need to redeclare it otherwise Bootrstrap clashes with SBB
+.font-weight-bold {
+  font-weight: bold;
+}
+
 .pill-hover:hover {
   cursor: pointer;
 }
@@ -13,20 +18,6 @@
 
 .leg-left-side {
   width: 50px;
-}
-
-.service-attributes {
-  margin-left: 4px;
-}
-
-.service-attribute {
-  margin-top: 4px;
-  margin-left: 4px;
-  height: 14px;
-}
-
-.leg-leading-text {
-  margin-bottom: 2px;
 }
 
 .leg-icon {
@@ -61,15 +52,30 @@
   padding-left: 0px;
 }
 
-.situation-info {
-  margin-left: 4px;
-}
-
 .leg-platform-assistance {
   width: 30px;
 }
 
-.service-heading {
-  margin-left: 2px;
-  // font-size: 12px;
+.separator {
+  width: 100%;
+  height: 1px;
+  background-color: #dee2e6;
+}
+
+.btn-collapse.collapsed .bi-chevron-down {
+  display: inline;
+}
+.btn-collapse .bi-chevron-down {
+  display: none;
+}
+
+.btn-collapse.collapsed .bi-chevron-up {
+  display: none;
+}
+.btn-collapse .bi-chevron-up {
+  display: inline;
+}
+
+.intermediary-stops {
+  font-size: 14px;
 }
