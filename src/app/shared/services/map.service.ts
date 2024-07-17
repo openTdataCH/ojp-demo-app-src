@@ -23,12 +23,11 @@ export class MapService {
       return
     }
 
-    const locationLngLatLike = location.geoPosition?.asLngLat() as [number, number] ?? null
-    if (locationLngLatLike === null) {
+    const locationLngLat = location.geoPosition?.asLngLat() ?? null
+    if (locationLngLat === null) {
       return
     }
 
-    const locationLngLat = new mapboxgl.LngLat(locationLngLatLike[0], locationLngLatLike[1]);
     this.newMapCenterAndZoomRequested.emit({
       lnglat: locationLngLat,
       zoom: zoomValue
