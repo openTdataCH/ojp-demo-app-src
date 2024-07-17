@@ -353,7 +353,6 @@ export class ResultTripLegComponent implements OnInit {
       const timedLeg = leg as OJP.TripTimedLeg;
       return timedLeg.service.destinationStopPlace?.stopPlaceName ?? 'n/a';
     })();
-  }
 
     this.legInfoDataModel.serviceInfo = (() => {
       if (leg.legType !== 'TimedLeg') {
