@@ -31,6 +31,7 @@ interface LegInfoDataModel {
   isTimed: boolean,
   fromLocationData: LegStopPointData,
   toLocationData: LegStopPointData,
+  intermediaryLocationsData: LegStopPointData[]
 
   hasSituations: boolean
   situations: OJP.PtSituationElement[]
@@ -294,6 +295,27 @@ export class ResultTripLegComponent implements OnInit {
     
     this.legInfoDataModel.fromLocationData = this.computeLocationData(leg, 'From');
     this.legInfoDataModel.toLocationData = this.computeLocationData(leg, 'To');
+
+    this.legInfoDataModel.intermediaryLocationsData = (() => {
+      const stopPointsData: LegStopPointData[] = [];
+
+      if (leg.legType !== 'TimedLeg') {
+        return stopPointsData;
+      }
+
+      const timedLeg = leg as OJP.TripTimedLeg;
+      timedLeg.intermediateStopPoints.forEach(stopPoint => {
+        const stopPointData = <LegStopPointData>{
+          locationText: stopPoint.location.computeLocationName() ?? 'n/a',
+        };
+
+        OJPHelpers.updateLocationDataWithTime(stopPointData, stopPoint);
+
+        stopPointsData.push(stopPointData);
+      });
+
+      return stopPointsData;
+    })();
 
     this.legInfoDataModel.situations = (() => {
       if (leg.legType !== 'TimedLeg') {
