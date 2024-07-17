@@ -96,57 +96,36 @@ export class ResultTripLegComponent implements OnInit {
     if (this.leg.legType === 'ContinousLeg') {
       const continuousLeg = this.leg as OJP.TripContinousLeg
 
-      const leadingText = this.computeLegLeadTextContinousLeg(continuousLeg);
+      const leadingText = this.computeLegLeadingTextContinousLeg(continuousLeg);
 
       let legDurationS = ''
       if (this.leg.legDuration) {
         legDurationS = ' ' + this.leg.legDuration.formatDuration()
       }
       
-      return leadingText + legDurationS
+      return legIdxS + leadingText + ' - ' + legDurationS;
     }
 
     if (this.leg.legType === 'TimedLeg') {
       const timedLeg = this.leg as OJP.TripTimedLeg
-      const serviceName = this.formatServiceName(timedLeg);
+
+      let leadingText = timedLeg.service.ptMode.name;
+      if (timedLeg.service.ptMode.isDemandMode) {
+        leadingText = 'OnDemand ' + leadingText;
+      }
 
       let legDurationS = ''
       if (this.leg.legDuration) {
         legDurationS = ' ' + this.leg.legDuration.formatDuration()
       }
 
-      return serviceName + legDurationS
+      return legIdxS + leadingText + ' - ' + legDurationS;
     }
 
-    return this.leg.legType
+    return legIdxS + this.leg.legType;
   }
 
-  private formatServiceName(timedLeg: OJP.TripTimedLeg): string {
-    const service = timedLeg.service;
-
-    if (service.ptMode.isDemandMode) {
-      return service.serviceLineNumber ?? 'OnDemand';
-    }
-
-    const nameParts: string[] = []
-
-    if (service.serviceLineNumber) {
-      if (!service.ptMode.isRail()) {
-        nameParts.push(service.ptMode.shortName ?? service.ptMode.ptMode)
-      }
-
-      nameParts.push(service.serviceLineNumber)
-      nameParts.push(service.journeyNumber ?? '')
-    } else {
-      nameParts.push(service.ptMode.shortName ?? service.ptMode.ptMode)
-    }
-
-    nameParts.push('(' + service.agencyCode + ')')
-
-    return nameParts.join(' ')
-  }
-
-  private computeLegLeadTextContinousLeg(continuousLeg: OJP.TripContinousLeg): string {
+  private computeLegLeadingTextContinousLeg(continuousLeg: OJP.TripContinousLeg): string {
     if (continuousLeg.legTransportMode === 'walk') {
       return 'Walk';
     }
@@ -240,8 +219,9 @@ export class ResultTripLegComponent implements OnInit {
     }
 
     const leg = this.leg;
+
     this.legInfoDataModel.legColor = this.computeLegColor()
-    this.legInfoDataModel.leadingText = this.computeLegLeadText()
+    this.legInfoDataModel.leadingText = this.computeLegLeadingText()
 
     const isTransfer = leg.legType === 'TransferLeg'
     this.legInfoDataModel.guidanceTextLines = []
@@ -356,6 +336,27 @@ export class ResultTripLegComponent implements OnInit {
       const timedLeg = leg as OJP.TripTimedLeg;
       return timedLeg.service.destinationStopPlace?.stopPlaceName ?? 'n/a';
     })();
+  }
+
+  private formatServiceName(timedLeg: OJP.TripTimedLeg): string {
+    const service = timedLeg.service;
+
+    const nameParts: string[] = []
+
+    if (service.serviceLineNumber) {
+      if (!service.ptMode.isRail()) {
+        nameParts.push(service.ptMode.shortName ?? service.ptMode.ptMode)
+      }
+
+      nameParts.push(service.serviceLineNumber)
+      nameParts.push(service.journeyNumber ?? '')
+    } else {
+      nameParts.push(service.ptMode.shortName ?? service.ptMode.ptMode)
+    }
+
+    nameParts.push('(' + service.agencyID + ')')
+
+    return nameParts.join(' ')
   }
 
   private computeServiceAttributeModel(leg: OJP.TripLeg): ServiceAttributeRenderModel[] {
