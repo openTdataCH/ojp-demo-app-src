@@ -44,9 +44,11 @@
                 <p>
                   <strong>{{ situation.situationContent.summary }}</strong>
                 </p>
-                <div>
-                  {{ situation.situationContent.description }}
-                </div>
+                <ul class="tooltip-list">
+                  <li *ngFor="let descriptionText of situation.situationContent.descriptions">
+                    {{ descriptionText }}
+                  </li>
+                </ul>
                 <ul class="tooltip-list">
                   <li *ngFor="let detailText of situation.situationContent.details">
                     {{ detailText }}
