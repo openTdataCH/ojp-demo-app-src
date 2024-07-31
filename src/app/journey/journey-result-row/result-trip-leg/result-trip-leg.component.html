@@ -212,9 +212,26 @@
           <p>
             <strong>{{ situation.situationContent.summary }}</strong>
           </p>
-          <div>
-            {{ situation.situationContent.description }}
-          </div>
+
+          <!-- Handle situations with one-description -->
+          <ng-container *ngIf="situation.situationContent.descriptions.length === 1">
+            <div>
+              {{ situation.situationContent.descriptions[0] }}
+            </div>
+          </ng-container>
+
+          <!-- Handle situations with 2 or more descriptions -->
+          <ng-container *ngIf="situation.situationContent.descriptions.length > 1">
+            <ul class="tooltip-list">
+              <li *ngFor="let descriptionText of situation.situationContent.descriptions">
+                {{ descriptionText }}
+              </li>
+            </ul>
+
+            <!-- => insert a delimiter between description and detail -->
+            <h6>Detail</h6>
+          </ng-container>
+          
           <ul class="tooltip-list">
             <li *ngFor="let detailText of situation.situationContent.details">
               {{ detailText }}
