@@ -269,15 +269,17 @@ export class ResultTripLegComponent implements OnInit {
     this.legInfoDataModel.isWalking = isWalking;
 
     this.legInfoDataModel.legTemplate = (() => {
-      const defaultLegTemplate: LegTemplate = 'timed';
-      if (isWalking) {
-        return 'walk';
-      }
+      const defaultLegTemplate: LegTemplate = 'walk';
+      
       if (isContinous) {
         const continousLeg = leg as OJP.TripContinousLeg;
         if (continousLeg.isTaxi()) {
           return 'taxi';
         }
+      }
+
+      if (leg.legType === 'TimedLeg') {
+        return 'timed';
       }
       
       return defaultLegTemplate;
