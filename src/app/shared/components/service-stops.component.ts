@@ -17,6 +17,8 @@ export interface LegStopPointData {
   platformAssistanceTooltip: string,
 
   geoPosition: OJP.GeoPosition | null
+
+  isNotServicedStop: boolean
 }
 
 @Component({

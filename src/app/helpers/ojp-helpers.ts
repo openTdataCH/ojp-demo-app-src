@@ -90,5 +90,7 @@ export class OJPHelpers {
     }
 
     stopPointData.geoPosition = stopPoint.location.geoPosition;
+
+    stopPointData.isNotServicedStop = stopPoint.isNotServicedStop === true;
   }
 }

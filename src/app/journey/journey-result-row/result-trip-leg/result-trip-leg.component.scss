@@ -79,3 +79,13 @@
 .intermediary-stops {
   font-size: 14px;
 }
+
+.table-stops {
+  font-size: 13px;
+}
+
+.table-stops td.fit, 
+.table-stops th.fit {
+  white-space: nowrap;
+  width: 1%;
+}
