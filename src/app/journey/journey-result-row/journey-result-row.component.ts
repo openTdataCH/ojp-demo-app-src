@@ -11,6 +11,9 @@ interface TripHeaderStats {
   tripToTime: string,
   tripDurationS: string,
   tripDistanceS: string,
+
+  isCancelled: boolean,
+  isInfeasable: boolean
 }
 
 @Component({
@@ -49,7 +52,10 @@ export class JourneyResultRowComponent implements OnInit {
   }
 
   private initTripHeaderStats(trip: OJP.Trip) {
-    this.tripHeaderStats.title = 'Trip ' + ((this.idx ?? 0) + 1)
+    this.tripHeaderStats.title = 'Trip ' + ((this.idx ?? 0) + 1);
+
+    this.tripHeaderStats.isCancelled = trip.stats.isCancelled === true;
+    this.tripHeaderStats.isInfeasable = trip.stats.isInfeasable === true;
       
     if (trip.stats.transferNo === 0) {
       this.tripHeaderStats.tripChangesInfo = 'direct'
