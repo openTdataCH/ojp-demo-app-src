@@ -207,38 +207,23 @@
     </div>
 
     <div class="mt-2" *ngIf="this.legInfoDataModel.hasSituations">
-      <sbb-tooltip svgIcon="fpl:info" *ngIf="this.legInfoDataModel.hasSituations">
-        <div *ngFor="let situation of this.legInfoDataModel.situations; index as idx">
-          <p>
-            <strong>{{ situation.situationContent.summary }}</strong>
-          </p>
-
-          <!-- Handle situations with one-description -->
-          <ng-container *ngIf="situation.situationContent.descriptions.length === 1">
+      <div class="d-flex gap-2">
+        <div *ngFor="let situationData of this.legInfoDataModel.situations">
+          <sbb-tooltip svgIcon="fpl:info">
+            <p>
+              <strong>{{ situationData.summary }}</strong>
+            </p>
             <div>
-              {{ situation.situationContent.descriptions[0] }}
+              {{ situationData.description }}
             </div>
-          </ng-container>
-
-          <!-- Handle situations with 2 or more descriptions -->
-          <ng-container *ngIf="situation.situationContent.descriptions.length > 1">
             <ul class="tooltip-list">
-              <li *ngFor="let descriptionText of situation.situationContent.descriptions">
-                {{ descriptionText }}
+              <li *ngFor="let detailText of situationData.details">
+                {{ detailText }}
               </li>
             </ul>
-
-            <!-- => insert a delimiter between description and detail -->
-            <h6>Detail</h6>
-          </ng-container>
-          
-          <ul class="tooltip-list">
-            <li *ngFor="let detailText of situation.situationContent.details">
-              {{ detailText }}
-            </li>
-          </ul>
+          </sbb-tooltip>
         </div>
-      </sbb-tooltip>
+      </div>
     </div>
   </div>
 

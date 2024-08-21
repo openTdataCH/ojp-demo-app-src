@@ -39,23 +39,23 @@
             <div class="departure-delay">{{ formatStopEventTime(stopEntry, 'stopDelayText') }}</div>
           </div>
           <div *ngIf="hasSituations(stopEntry)">
-            <sbb-tooltip svgIcon="fpl:info">
-              <div *ngFor="let situation of stopEntry.stopSituations; index as idx">
-                <p>
-                  <strong>{{ situation.situationContent.summary }}</strong>
-                </p>
-                <ul class="tooltip-list">
-                  <li *ngFor="let descriptionText of situation.situationContent.descriptions">
-                    {{ descriptionText }}
-                  </li>
-                </ul>
-                <ul class="tooltip-list">
-                  <li *ngFor="let detailText of situation.situationContent.details">
-                    {{ detailText }}
-                  </li>
-                </ul>
+            <div class="d-flex gap-2">
+              <div *ngFor="let situationData of stopEntry.stopSituations">
+                <sbb-tooltip svgIcon="fpl:info">
+                  <p>
+                    <strong>{{ situationData.summary }}</strong>
+                  </p>
+                  <div>
+                    {{ situationData.description }}
+                  </div>
+                  <ul class="tooltip-list">
+                    <li *ngFor="let detailText of situationData.details">
+                      {{ detailText }}
+                    </li>
+                  </ul>
+                </sbb-tooltip>
               </div>
-            </sbb-tooltip>
+            </div>
           </div>
         </div>
       </div>

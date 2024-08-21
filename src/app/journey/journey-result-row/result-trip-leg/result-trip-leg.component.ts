@@ -18,6 +18,12 @@ type ServiceAttributeRenderModel = {
   caption: string
 }
 
+interface SituationData {
+  summary: string
+  description: string
+  details: string[]
+}
+
 interface LegInfoDataModel {
   legColor: string,
   legIconPath: string,
@@ -37,7 +43,7 @@ interface LegInfoDataModel {
   intermediaryLocationsData: LegStopPointData[]
 
   hasSituations: boolean
-  situations: OJP.PtSituationElement[]
+  situations: SituationData[]
 
   legTemplate: LegTemplate
 
@@ -324,12 +330,40 @@ export class ResultTripLegComponent implements OnInit {
     })();
 
     this.legInfoDataModel.situations = (() => {
+      const situationsData: SituationData[] = [];
+
       if (leg.legType !== 'TimedLeg') {
-        return [];
+        return situationsData;
       }
 
       const timedLeg = leg as OJP.TripTimedLeg;
-      return timedLeg.service.siriSituations;
+      timedLeg.service.siriSituations.forEach(situation => {
+        situation.publishingActions.forEach(publishingAction => {
+          const mapTextualContent = publishingAction.passengerInformation.mapTextualContent;
+
+          const situationData = <SituationData>{};
+
+          if ('Summary' in mapTextualContent) {
+            situationData.summary = mapTextualContent['Summary'].join('. ');
+          }
+
+          if ('Description' in mapTextualContent) {
+            situationData.description = mapTextualContent['Description'].join('. ');
+          }
+
+          situationData.details = [];
+          const detailKeys = ['Consequence', 'Duration', 'Reason', 'Recommendation', 'Remark'];
+          detailKeys.forEach(detailKey => {
+            if (detailKey in mapTextualContent) {
+              situationData.details = situationData.details.concat(mapTextualContent[detailKey]);
+            }
+          });
+
+          situationsData.push(situationData);
+        });
+      });
+
+      return situationsData;
     })();
     this.legInfoDataModel.hasSituations = this.legInfoDataModel.situations.length > 0;
 
