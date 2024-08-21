@@ -215,21 +215,23 @@
     </div>
 
     <div class="mt-2" *ngIf="this.legInfoDataModel.hasSituations">
-      <sbb-tooltip svgIcon="fpl:info" *ngIf="this.legInfoDataModel.hasSituations">
-        <div *ngFor="let situation of this.legInfoDataModel.situations; index as idx">
-          <p>
-            <strong>{{ situation.situationContent.summary }}</strong>
-          </p>
-          <div>
-            {{ situation.situationContent.description }}
-          </div>
-          <ul class="tooltip-list">
-            <li *ngFor="let detailText of situation.situationContent.details">
-              {{ detailText }}
-            </li>
-          </ul>
+      <div class="d-flex gap-2">
+        <div *ngFor="let situationData of this.legInfoDataModel.situations">
+          <sbb-tooltip svgIcon="fpl:info">
+            <p>
+              <strong>{{ situationData.summary }}</strong>
+            </p>
+            <div>
+              {{ situationData.description }}
+            </div>
+            <ul class="tooltip-list">
+              <li *ngFor="let detailText of situationData.details">
+                {{ detailText }}
+              </li>
+            </ul>
+          </sbb-tooltip>
         </div>
-      </sbb-tooltip>
+      </div>
     </div>
   </div>
 
