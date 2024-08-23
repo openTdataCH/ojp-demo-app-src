@@ -12,6 +12,7 @@ import { UserTripService } from 'src/app/shared/services/user-trip.service';
 import { TripInfoService } from '../trip-info.service';
 import { DebugXmlPopoverComponent } from '../../search-form/debug-xml-popover/debug-xml-popover.component';
 import { CustomTripInfoXMLPopoverComponent } from './custom-trip-info-xml-popover/custom-trip-info-xml-popover.component';
+import { LanguageService } from 'src/app/shared/services/language.service';
 
 interface PagelModel {
   journeyRef: string
@@ -44,6 +45,7 @@ export class TripInfoSearchComponent implements OnInit {
     private debugXmlPopover: SbbDialog,
     private customXmlPopover: SbbDialog,
     private tripInfoService: TripInfoService,
+    private languageService: LanguageService,
     public userTripService: UserTripService,
   ) {
     this.queryParams = new URLSearchParams(document.location.search);
@@ -61,6 +63,7 @@ export class TripInfoSearchComponent implements OnInit {
     this.currentRequestInfo = null;
 
     const queryParams = new URLSearchParams(document.location.search);
+    
     this.useMocks = queryParams.get('use_mocks') === 'yes';
   }
 
@@ -146,7 +149,7 @@ export class TripInfoSearchComponent implements OnInit {
   private async fetchTripInfo() {
     const stageConfig = this.userTripService.getStageConfig();
     const dayRef = OJP.DateHelpers.formatDate(this.model.journeyDateTime).substring(0, 10);
-    const request = OJP.TripInfoRequest.initWithJourneyRef(stageConfig, this.model.journeyRef, dayRef);
+    const request = OJP.TripInfoRequest.initWithJourneyRef(stageConfig, this.languageService.language, this.model.journeyRef, dayRef);
     this.model.isSearching = true;
     const response = await request.fetchResponse();
 
