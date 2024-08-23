@@ -14,6 +14,7 @@ export enum FeaturePropsEnum {
 }
 
 export class AppMapLayer {
+    private language: OJP.Language
     private layerKey: string
 
     private map: mapboxgl.Map
@@ -30,7 +31,8 @@ export class AppMapLayer {
 
     protected currentLocations: OJP.Location[];
 
-    constructor(layerKey: string, map: mapboxgl.Map, appMapLayerOptions: AppMapLayerOptions, userTripService: UserTripService) {
+    constructor(language: OJP.Language, layerKey: string, map: mapboxgl.Map, appMapLayerOptions: AppMapLayerOptions, userTripService: UserTripService) {
+        this.language = language;
         this.layerKey = layerKey;
 
         this.map = map;
@@ -111,6 +113,7 @@ export class AppMapLayer {
         const mapBounds = this.map.getBounds();
         const request = OJP.LocationInformationRequest.initWithBBOXAndType(
             this.userTripService.getStageConfig(),
+            this.language,
             mapBounds.getWest(),
             mapBounds.getNorth(),
             mapBounds.getEast(),
