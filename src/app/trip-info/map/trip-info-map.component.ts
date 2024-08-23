@@ -13,6 +13,7 @@ import { TripInfoService } from '../trip-info.service';
 
 import { StopEventServiceRenderer as JourneyServiceRenderer } from '../../station-board/map/stop-event-service-renderer/stop-event-service-renderer';
 import { MapHelpers } from '../../map/helpers/map.helpers';
+import { LanguageService } from 'src/app/shared/services/language.service';
 
 @Component({
   selector: 'trip-info-map',
@@ -27,7 +28,8 @@ export class TripInfoMapComponent implements OnInit {
     private userTripService: UserTripService,
     private mapService: MapService,
     private debugXmlPopover: SbbDialog,
-    private tripInfoService: TripInfoService
+    private tripInfoService: TripInfoService,
+    private languageService: LanguageService,
   ) {
     this.mapLoadingPromise = null;
     this.journeyServiceRenderer = null;
@@ -130,7 +132,7 @@ export class TripInfoMapComponent implements OnInit {
     const debugControl = new MapDebugControl(map);
     map.addControl(debugControl, 'top-left');
 
-    const mapLayersLegendControl = new MapLayersLegendControl(map, this.debugXmlPopover, this.userTripService);
+    const mapLayersLegendControl = new MapLayersLegendControl(map, this.debugXmlPopover, this.userTripService, this.languageService);
     map.addControl(mapLayersLegendControl, 'top-right');
   }
 
