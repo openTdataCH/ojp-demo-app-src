@@ -1,4 +1,5 @@
 import mapboxgl from 'mapbox-gl'
+import * as OJP from 'ojp-sdk'
 
 import { AppMapLayerOptions } from '../../../config/app-config'
 import { UserTripService } from "../../../shared/services/user-trip.service";
@@ -11,31 +12,31 @@ import { SharedMobilityAppMapLayer } from "./shared-mobility-app-map-layer";
 import { StopAppMapLayer } from "./stop-app-map-layer";
 
 export class AppMapLayerFactory {
-  public static init(layerKey: string, map: mapboxgl.Map, appMapLayerOptions: AppMapLayerOptions, userTripService: UserTripService): AppMapLayer {
+  public static init(language: OJP.Language, layerKey: string, map: mapboxgl.Map, appMapLayerOptions: AppMapLayerOptions, userTripService: UserTripService): AppMapLayer {
       if (appMapLayerOptions.LIR_Restriction_Type === 'stop') {
-          const stopAppMapLayer = new StopAppMapLayer(layerKey, map, appMapLayerOptions, userTripService);
+          const stopAppMapLayer = new StopAppMapLayer(language, layerKey, map, appMapLayerOptions, userTripService);
           return stopAppMapLayer;
       }
 
       const isChargingStation = appMapLayerOptions.LIR_POI_Type?.tags.includes('charging_station');
       if (isChargingStation) {
-          const chargingStationAppMapLayer = new ChargingStationAppMapLayer(layerKey, map, appMapLayerOptions, userTripService);
+          const chargingStationAppMapLayer = new ChargingStationAppMapLayer(language, layerKey, map, appMapLayerOptions, userTripService);
           return chargingStationAppMapLayer;
       }
       
       const isSharedMobility = appMapLayerOptions.LIR_POI_Type?.poiType === 'shared_mobility';
       if (isSharedMobility) {
-          const sharedMobilityAppMapLayer = new SharedMobilityAppMapLayer(layerKey, map, appMapLayerOptions, userTripService);
+          const sharedMobilityAppMapLayer = new SharedMobilityAppMapLayer(language, layerKey, map, appMapLayerOptions, userTripService);
           return sharedMobilityAppMapLayer;
       }
       
       const isPOI_all = appMapLayerOptions.LIR_POI_Type?.poiType === 'poi';
       if (isPOI_all) {
-          const poiAppMapLayer = new POIAppMapLayer(layerKey, map, appMapLayerOptions, userTripService);
+          const poiAppMapLayer = new POIAppMapLayer(language, layerKey, map, appMapLayerOptions, userTripService);
           return poiAppMapLayer;
       }
 
-      const appMapLayer = new AppMapLayer(layerKey, map, appMapLayerOptions, userTripService);
+      const appMapLayer = new AppMapLayer(language, layerKey, map, appMapLayerOptions, userTripService);
       return appMapLayer;
   }
 }
