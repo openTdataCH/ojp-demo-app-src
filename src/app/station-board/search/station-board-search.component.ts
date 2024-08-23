@@ -18,6 +18,7 @@ import { CustomStopEventXMLPopoverComponent } from './custom-stop-event-xml-popo
 import { APP_STAGE } from '../../config/app-config'
 import { EmbedStationBoardPopoverComponent } from './embed-station-board-popover/embed-station-board-popover.component';
 import { Router } from '@angular/router';
+import { LanguageService } from '../../shared/services/language.service';
 
 @Component({
   selector: 'station-board-search',
@@ -56,6 +57,7 @@ export class StationBoardSearchComponent implements OnInit {
     private customXmlPopover: SbbDialog,
     private mapService: MapService, 
     private stationBoardService: StationBoardService,
+    private languageService: LanguageService,
     public userTripService: UserTripService,
     private embedHTMLPopover: SbbDialog,
     private router: Router,
@@ -280,7 +282,7 @@ export class StationBoardSearchComponent implements OnInit {
     const stopEventType: OJP.StopEventType = this.stationBoardType === 'Arrivals' ? 'arrival' : 'departure'
     const stopEventDate = this.computeStopBoardDate();
     const appStageConfig = this.userTripService.getStageConfig();
-    const stopEventRequest = OJP.StopEventRequest.initWithStopPlaceRef(appStageConfig, stopPlaceRef, stopEventType, stopEventDate);
+    const stopEventRequest = OJP.StopEventRequest.initWithStopPlaceRef(appStageConfig, this.languageService.language, stopPlaceRef, stopEventType, stopEventDate);
 
     return stopEventRequest;
   }
@@ -299,7 +301,7 @@ export class StationBoardSearchComponent implements OnInit {
 
   private async lookupStopPlaceRef(stopPlaceRef: string) {
     const stageConfig = this.userTripService.getStageConfig();
-    const locationInformationRequest = OJP.LocationInformationRequest.initWithStopPlaceRef(stageConfig, stopPlaceRef);
+    const locationInformationRequest = OJP.LocationInformationRequest.initWithStopPlaceRef(stageConfig, this.languageService.language, stopPlaceRef);
     const response = await locationInformationRequest.fetchResponse();
 
     if (response.locations.length === 0) {

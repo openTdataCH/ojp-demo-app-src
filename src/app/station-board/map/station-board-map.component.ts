@@ -12,6 +12,7 @@ import { StationBoardService } from '../station-board.service';
 
 import { StopEventServiceRenderer } from './stop-event-service-renderer/stop-event-service-renderer';
 import { MapHelpers } from 'src/app/map/helpers/map.helpers';
+import { LanguageService } from 'src/app/shared/services/language.service';
 
 @Component({
   selector: 'station-board-map',
@@ -26,7 +27,8 @@ export class StationBoardMapComponent implements OnInit {
     private userTripService: UserTripService,
     private mapService: MapService,
     private debugXmlPopover: SbbDialog,
-    private stationBoardService: StationBoardService
+    private stationBoardService: StationBoardService,
+    private languageService: LanguageService
   ) {
     this.mapLoadingPromise = null;
     this.stopEventServiceRenderer = null;
@@ -84,7 +86,7 @@ export class StationBoardMapComponent implements OnInit {
     const debugControl = new MapDebugControl(map);
     map.addControl(debugControl, 'top-left');
 
-    const mapLayersLegendControl = new MapLayersLegendControl(map, this.debugXmlPopover, this.userTripService);
+    const mapLayersLegendControl = new MapLayersLegendControl(map, this.debugXmlPopover, this.userTripService, this.languageService);
     map.addControl(mapLayersLegendControl, 'top-right');
   }
 
