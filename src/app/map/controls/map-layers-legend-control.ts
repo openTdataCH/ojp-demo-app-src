@@ -1,13 +1,13 @@
 import { SbbDialog } from "@sbb-esta/angular/dialog";
 
 import mapboxgl from "mapbox-gl";
+import * as OJP from 'ojp-sdk'
+
 import { AppMapLayerOptions, APP_CONFIG } from "src/app/config/app-config";
 import { DebugXmlPopoverComponent } from "src/app/search-form/debug-xml-popover/debug-xml-popover.component";
 import { UserTripService } from "src/app/shared/services/user-trip.service";
 import { AppMapLayer } from "../app-map-layer/app-map-layer";
 import { AppMapLayerFactory } from "../app-map-layer/app-map-layer/app-map-layer-factory";
-
-import * as OJP from 'ojp-sdk'
 
 interface LayerData {
   inputEls: HTMLInputElement[] | null

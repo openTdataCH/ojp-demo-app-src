@@ -2,8 +2,8 @@ import { Component } from '@angular/core';
 
 import * as OJP from 'ojp-sdk'
 
-import { UserTripService } from 'src/app/shared/services/user-trip.service';
-import { TripInfoService } from 'src/app/trip-info/trip-info.service';
+import { UserTripService } from '../../../../shared/services/user-trip.service';
+import { TripInfoService } from '../../../../trip-info/trip-info.service';
 
 interface PageModel {
   title: string,

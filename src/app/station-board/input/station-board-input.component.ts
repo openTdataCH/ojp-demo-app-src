@@ -6,7 +6,7 @@ import { SbbAutocompleteSelectedEvent, SbbAutocompleteTrigger } from '@sbb-esta/
 
 import * as OJP from 'ojp-sdk'
 
-import { UserTripService } from 'src/app/shared/services/user-trip.service';
+import { UserTripService } from '../../shared/services/user-trip.service';
 
 interface StopLookup {
   stopPlaceRef: string

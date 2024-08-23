@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { UserTripService } from 'src/app/shared/services/user-trip.service';
 
 import * as OJP from 'ojp-sdk'
-import { MapService } from 'src/app/shared/services/map.service';
+import { MapService } from '../../shared/services/map.service'
 
 @Component({
   selector: 'journey-results',

@@ -8,8 +8,8 @@ import { SbbExpansionPanel } from '@sbb-esta/angular/accordion';
 import { SbbDialog } from '@sbb-esta/angular/dialog';
 import { SbbNotificationToast } from '@sbb-esta/angular/notification-toast';
 
-import { UserTripService } from 'src/app/shared/services/user-trip.service';
-import { MapService } from 'src/app/shared/services/map.service';
+import { UserTripService } from '../../shared/services/user-trip.service';
+import { MapService } from '../../shared/services/map.service';
 import { StationBoardData, StationBoardService } from '../station-board.service';
 import { StationBoardInputComponent } from '../input/station-board-input.component';
 import { DebugXmlPopoverComponent } from '../../search-form/debug-xml-popover/debug-xml-popover.component';
