@@ -7,6 +7,7 @@ import { SbbAutocompleteSelectedEvent } from '@sbb-esta/angular/autocomplete';
 import * as OJP from 'ojp-sdk'
 
 import { MapService } from '../../shared/services/map.service';
+import { LanguageService } from '../../shared/services/language.service'
 import { UserTripService } from '../../shared/services/user-trip.service';
 
 import { SbbErrorStateMatcher } from '@sbb-esta/angular/core';
@@ -40,7 +41,7 @@ export class JourneyPointInputComponent implements OnInit, OnChanges {
   @Input() inputValue: string = '';
   @Output() selectedLocation = new EventEmitter<OJP.Location | null>()
 
-  constructor(private mapService: MapService, private userTripService: UserTripService) {
+  constructor(private mapService: MapService, private userTripService: UserTripService, private languageService: LanguageService) {
     this.mapLookupLocations = {} as MapLocations
     this.resetMapLocations()
 
@@ -122,7 +123,7 @@ export class JourneyPointInputComponent implements OnInit, OnChanges {
   private async fetchJourneyPoints(searchTerm: string) {
     let stageConfig = this.userTripService.getStageConfig()
 
-    const request = OJP.LocationInformationRequest.initWithLocationName(stageConfig, searchTerm, []);
+    const request = OJP.LocationInformationRequest.initWithLocationName(stageConfig, this.languageService.language, searchTerm, []);
     const response = await request.fetchResponse();
 
     this.resetMapLocations();

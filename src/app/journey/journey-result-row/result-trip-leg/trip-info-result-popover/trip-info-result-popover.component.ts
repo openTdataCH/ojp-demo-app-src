@@ -4,6 +4,7 @@ import * as OJP from 'ojp-sdk'
 
 import { UserTripService } from '../../../../shared/services/user-trip.service';
 import { TripInfoService } from '../../../../trip-info/trip-info.service';
+import { LanguageService } from '../../../../shared/services/language.service'
 
 interface PageModel {
   title: string,
@@ -18,7 +19,7 @@ interface PageModel {
 export class TripInfoResultPopoverComponent {
   public model: PageModel
 
-  constructor(private userTripService: UserTripService, private tripInfoService: TripInfoService) {
+  constructor(private userTripService: UserTripService, private tripInfoService: TripInfoService, private languageService: LanguageService) {
     this.model = <PageModel>{};
 
     this.model.title = 'TripInfoResult';
@@ -30,7 +31,7 @@ export class TripInfoResultPopoverComponent {
     this.model.title = 'JourneyRef: ' + journeyRef;
 
     const stageConfig = this.userTripService.getStageConfig();
-    const request = OJP.TripInfoRequest.initWithJourneyRef(stageConfig, journeyRef);
+    const request = OJP.TripInfoRequest.initWithJourneyRef(stageConfig, this.languageService.language, journeyRef);
 
     this.model.isFetching = true;
     const response = await request.fetchResponse();

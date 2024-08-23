@@ -3,6 +3,7 @@ import { UserTripService } from 'src/app/shared/services/user-trip.service';
 
 import * as OJP from 'ojp-sdk'
 import { MapService } from '../../shared/services/map.service'
+import { LanguageService } from '../../shared/services/language.service';
 
 @Component({
   selector: 'journey-results',
@@ -14,7 +15,7 @@ export class JourneyResultsComponent implements OnInit {
   public isFetchingPrevTrips: boolean
   public isFetchingNextTrips: boolean
 
-  constructor(private userTripService: UserTripService, private mapService: MapService) {
+  constructor(private userTripService: UserTripService, private mapService: MapService, private languageService: LanguageService) {
     this.trips = []
     this.isFetchingPrevTrips = false;
     this.isFetchingNextTrips = false;
@@ -64,6 +65,7 @@ export class JourneyResultsComponent implements OnInit {
     const stageConfig = this.userTripService.getStageConfig()
     const request = OJP.TripRequest.initWithTripLocationsAndDate(
       stageConfig,
+      this.languageService.language,
       this.userTripService.fromTripLocation,
       this.userTripService.toTripLocation,
       depArrDate,
