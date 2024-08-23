@@ -5,8 +5,10 @@ import { FormControl, FormGroupDirective, NgForm, Validators } from '@angular/fo
 import { SbbAutocompleteSelectedEvent } from '@sbb-esta/angular/autocomplete';
 
 import * as OJP from 'ojp-sdk'
-import { MapService } from 'src/app/shared/services/map.service';
-import { UserTripService } from 'src/app/shared/services/user-trip.service';
+
+import { MapService } from '../../shared/services/map.service';
+import { UserTripService } from '../../shared/services/user-trip.service';
+
 import { SbbErrorStateMatcher } from '@sbb-esta/angular/core';
 
 type MapLocations = Record<OJP.LocationType, OJP.Location[]>

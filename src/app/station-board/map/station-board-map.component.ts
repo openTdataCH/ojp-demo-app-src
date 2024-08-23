@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { SbbDialog } from '@sbb-esta/angular/dialog';
 
 import mapboxgl from 'mapbox-gl'
+import * as OJP from 'ojp-sdk'
 
 import { MapDebugControl } from 'src/app/map/controls/map-debug-control';
 import { MapLayersLegendControl } from 'src/app/map/controls/map-layers-legend-control';
@@ -9,7 +10,6 @@ import { MapService } from 'src/app/shared/services/map.service';
 import { UserTripService } from 'src/app/shared/services/user-trip.service';
 import { StationBoardService } from '../station-board.service';
 
-import * as OJP from 'ojp-sdk'
 import { StopEventServiceRenderer } from './stop-event-service-renderer/stop-event-service-renderer';
 import { MapHelpers } from 'src/app/map/helpers/map.helpers';
 
