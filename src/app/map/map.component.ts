@@ -86,7 +86,13 @@ export class MapComponent implements OnInit {
     this.mapService.newMapBoundsRequested.subscribe(mapData => {
       this.mapLoadingPromise?.then(map => {
         const newBounds = mapData.bounds;
-        const padding = mapData.padding ?? 100
+        const padding = mapData.padding ?? {
+          left: 50,
+          top: 170,
+          right: 50,
+          bottom: 100,
+        };
+        
         const onlyIfOutside = mapData.onlyIfOutside ?? false
 
         if (onlyIfOutside) {
@@ -107,8 +113,7 @@ export class MapComponent implements OnInit {
         // Error: `LngLatLike` argument must be specified as a LngLat instance, an object {lng: <lng>, lat: <lat>}, an object {lon: <lng>, lat: <lat>}, or an array of [<lng>, <lat>]
         const fixedBounds: mapboxgl.LngLatBoundsLike = [newBounds.getWest(), newBounds.getSouth(), newBounds.getEast(), newBounds.getNorth()];
         map.fitBounds(fixedBounds, {
-          padding: padding,
-          duration: 0
+          padding: padding
         })
       });
     })

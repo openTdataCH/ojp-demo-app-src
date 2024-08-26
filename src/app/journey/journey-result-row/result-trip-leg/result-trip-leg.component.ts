@@ -45,6 +45,8 @@ interface LegInfoDataModel {
   legTemplate: LegTemplate
 
   serviceAttributes: ServiceAttributeRenderModel[]
+
+  serviceDestinationText: string | null
 }
 
 @Component({
@@ -102,7 +104,7 @@ export class ResultTripLegComponent implements OnInit {
 
     if (this.leg.legType === 'TimedLeg') {
       const timedLeg = this.leg as OJP.TripTimedLeg
-      const serviceName = timedLeg.service.formatServiceName()
+      const serviceName = this.formatServiceName(timedLeg);
 
       let legDurationS = ''
       if (this.leg.legDuration) {
@@ -113,6 +115,31 @@ export class ResultTripLegComponent implements OnInit {
     }
 
     return this.leg.legType
+  }
+
+  private formatServiceName(timedLeg: OJP.TripTimedLeg): string {
+    const service = timedLeg.service;
+
+    if (service.ptMode.isDemandMode) {
+      return service.serviceLineNumber ?? 'OnDemand';
+    }
+
+    const nameParts: string[] = []
+
+    if (service.serviceLineNumber) {
+      if (!service.ptMode.isRail()) {
+        nameParts.push(service.ptMode.shortName ?? service.ptMode.ptMode)
+      }
+
+      nameParts.push(service.serviceLineNumber)
+      nameParts.push(service.journeyNumber ?? '')
+    } else {
+      nameParts.push(service.ptMode.shortName ?? service.ptMode.ptMode)
+    }
+
+    nameParts.push('(' + service.agencyID + ')')
+
+    return nameParts.join(' ')
   }
 
   private computeLegLeadTextContinousLeg(continuousLeg: OJP.TripContinousLeg): string {
@@ -262,7 +289,7 @@ export class ResultTripLegComponent implements OnInit {
     this.legInfoDataModel.isWalking = isWalking;
 
     this.legInfoDataModel.legTemplate = (() => {
-      const degaultLegTemplate: LegTemplate = 'timed';
+      const defaultLegTemplate: LegTemplate = 'timed';
       if (isWalking) {
         return 'walk';
       }
@@ -273,7 +300,7 @@ export class ResultTripLegComponent implements OnInit {
         }
       }
       
-      return degaultLegTemplate;
+      return defaultLegTemplate;
     })();
 
     this.legInfoDataModel.bookingArrangements = (() => {
@@ -321,6 +348,15 @@ export class ResultTripLegComponent implements OnInit {
     }
 
     this.legInfoDataModel.serviceAttributes = this.computeServiceAttributeModel(leg);
+
+    this.legInfoDataModel.serviceDestinationText = (() => {
+      if (leg.legType !== 'TimedLeg') {
+        return null;
+      }
+
+      const timedLeg = leg as OJP.TripTimedLeg;
+      return timedLeg.service.destinationStopPlace?.stopPlaceName ?? 'n/a';
+    })();
   }
 
   private computeServiceAttributeModel(leg: OJP.TripLeg): ServiceAttributeRenderModel[] {

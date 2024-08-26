@@ -1,3 +1,12 @@
+<div class="row" *ngIf="this.trips.length > 0">
+  <div class="col text-center link-connection">
+    <button class="btn btn-primary" type="button" (click)="loadPreviousTrips()" [disabled]="this.isFetchingPrevTrips">
+      <span *ngIf="this.isFetchingPrevTrips" class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+      Earlier connections
+    </button>
+  </div>
+</div>
+
 <sbb-accordion>
   <journey-result-row
     *ngFor="let trip of trips; index as idx"
@@ -5,3 +14,12 @@
     [idx]="idx"
   ></journey-result-row>
 </sbb-accordion>
+
+<div class="row" *ngIf="this.trips.length > 0">
+  <div class="col text-center link-connection">
+    <button class="btn btn-primary" type="button" (click)="loadNextTrips()" [disabled]="this.isFetchingNextTrips">
+      <span *ngIf="this.isFetchingNextTrips" class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+      Later connections
+    </button>
+  </div>
+</div>

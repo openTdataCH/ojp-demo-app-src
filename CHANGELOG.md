@@ -4,6 +4,11 @@ OJP-Demo URL: https://opentdatach.github.io/ojp-demo-app/
 
 ----
 
+26.August 2024
+- paginate results, display prev / next connections - [PR #153](https://github.com/openTdataCH/ojp-demo-app-src/pull/153) 
+- display heading text - [Display Service DestinationText #146](https://github.com/openTdataCH/ojp-demo-app-src/issues/146), [PR #153](https://github.com/openTdataCH/ojp-demo-app-src/pull/153) 
+- use `0.9.36` version of [OJP JS](https://github.com/openTdataCH/ojp-js) SDK
+
 02.July 2024
 - use `0.9.35` version of [OJP JS](https://github.com/openTdataCH/ojp-js) SDK
 - allow trip legs to be merged in case of `remainInVehicle` leg type - [remainInVehicle as symbol #125](https://github.com/openTdataCH/ojp-demo-app-src/issues/125)

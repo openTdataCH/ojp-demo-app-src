@@ -15,7 +15,9 @@ export class UserTripService {
   public fromTripLocation: OJP.TripLocationPoint | null
   public toTripLocation: OJP.TripLocationPoint | null
   public viaTripLocations: OJP.TripLocationPoint[]
-  
+
+  public currentBoardingType: OJP.TripRequestBoardingType
+
   // Used by the src/app/search-form/search-form.component.html template
   public journeyTripsPlaceholder: string[]
   
@@ -34,6 +36,7 @@ export class UserTripService {
   public geoLocationsUpdated = new EventEmitter<void>();
   public tripsUpdated = new EventEmitter<OJP.Trip[]>();
   public activeTripSelected = new EventEmitter<OJP.Trip | null>();
+  public tripRequestFinished = new EventEmitter<OJP.RequestInfo>();
 
   public viaAtIndexRemoved = new EventEmitter<number>();
   public viaAtIndexUpdated = new EventEmitter<{location: OJP.Location, idx: number}>();
@@ -46,7 +49,9 @@ export class UserTripService {
     this.fromTripLocation = null
     this.toTripLocation = null
     this.viaTripLocations = []
-    
+
+    this.currentBoardingType = 'Dep'
+
     this.journeyTripsPlaceholder = ['-']
     this.tripModeTypes = ['monomodal']
     this.tripTransportModes = ['public_transport']
@@ -339,7 +344,8 @@ export class UserTripService {
   }
 
   updateTrips(trips: OJP.Trip[]) {
-    this.tripsUpdated.emit(trips)
+    this.massageTrips(trips);
+    this.tripsUpdated.emit(trips);
   }
 
   selectActiveTrip(trip: OJP.Trip | null) {
@@ -552,5 +558,116 @@ export class UserTripService {
     
     this.geoLocationsUpdated.emit()
     this.updatePermalinkAddress()
+  }
+
+  public massageTrips(trips: OJP.Trip[]) {
+    this.sortTrips(trips);
+    this.mergeTripLegs(trips);
+  }
+
+  private sortTrips(trips: OJP.Trip[]) {
+    const tripModeTypes = this.tripModeTypes;
+    const tripTransportModes = this.tripTransportModes;
+    if (!((tripModeTypes.length === 1) && (tripTransportModes.length === 1))) {
+      // ignore multi-trips journeys
+      return;
+    }
+
+    const tripModeType = tripModeTypes[0];
+    const transportMode = tripTransportModes[0];
+
+    if (tripModeType !== 'monomodal') {
+      return;
+    }
+
+    if (transportMode === 'public_transport') {
+      return;
+    }
+
+    // Push first the monomodal trip with one leg matching the transport mode
+    const monomodalTrip = trips.find(trip => {
+      const foundLeg = trip.legs.find(leg => {
+        if (leg.legType !== 'ContinousLeg') {
+          return false;
+        }
+
+        const continousLeg = trip.legs[0] as OJP.TripContinousLeg;
+        return continousLeg.legTransportMode === transportMode;
+      }) ?? null;
+
+      return foundLeg !== null;
+    }) ?? null;
+
+    if (monomodalTrip) {
+      const tripIdx = trips.indexOf(monomodalTrip);
+      trips.splice(tripIdx, 1);
+      trips.unshift(monomodalTrip);
+    }
+  }
+    
+  // Some of the legs can be merged
+  // ex1: trains with multiple desitinaion units
+  // - check for remainInVehicle https://github.com/openTdataCH/ojp-demo-app-src/issues/125  
+  private mergeTripLegs(trips: OJP.Trip[]) {
+    trips.forEach(trip => {
+      const newLegs: OJP.TripLeg[] = [];
+      let skipIdx: number = -1;
+      
+      trip.legs.forEach((leg, legIdx) => {
+        if (legIdx <= skipIdx) {
+          return;
+        }
+
+        const leg2Idx = legIdx + 1;
+        const leg3Idx = legIdx + 2;
+        if (leg3Idx >= trip.legs.length) {
+          newLegs.push(leg);
+          return;
+        }
+
+        // If TransferLeg of type 'remainInVehicle'
+        // => merge prev / next TimedLeg legs
+        let shouldMergeLegs = false;
+        const leg2 = trip.legs[leg2Idx];
+        const leg3 = trip.legs[leg3Idx];
+        if (leg.legType === 'TimedLeg' && leg2.legType === 'TransferLeg' && leg3.legType === 'TimedLeg') {
+          const continousLeg = leg2 as OJP.TripContinousLeg;
+          if (continousLeg.transferMode === 'remainInVehicle') {
+            shouldMergeLegs = true;
+            skipIdx = leg3Idx;
+          }
+        }
+
+        if (shouldMergeLegs) {
+          const newLeg = this.mergeTimedLegs(leg as OJP.TripTimedLeg, leg3 as OJP.TripTimedLeg);
+          newLegs.push(newLeg);
+        } else {
+          newLegs.push(leg);
+        }
+      });
+
+      if (trip.legs.length > 0 && (trip.legs.length !== newLegs.length)) {
+        trip.legs = newLegs;
+      }
+    });
+  }
+
+  private mergeTimedLegs(leg1: OJP.TripTimedLeg, leg2: OJP.TripTimedLeg) {
+    let newLegIntermediatePoints = leg1.intermediateStopPoints.slice();
+    leg1.toStopPoint.stopPointType = 'Intermediate';
+    newLegIntermediatePoints.push(leg1.toStopPoint);
+    newLegIntermediatePoints = newLegIntermediatePoints.concat(leg2.intermediateStopPoints.slice());
+
+    const newLeg = new OJP.TripTimedLeg(leg1.legID, leg1.service, leg1.fromStopPoint, leg2.toStopPoint, newLegIntermediatePoints);
+
+    if (leg1.legDuration !== null && leg2.legDuration !== null) {
+      newLeg.legDuration = leg1.legDuration.plus(leg2.legDuration);
+    }
+
+    if (leg1.legTrack !== null && leg2.legTrack !== null) {
+      newLeg.legTrack = leg1.legTrack.plus(leg2.legTrack);
+    }
+    
+    return newLeg;
   }
 }
