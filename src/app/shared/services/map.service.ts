@@ -1,6 +1,14 @@
 import { Injectable, EventEmitter } from '@angular/core'
 import mapboxgl from 'mapbox-gl';
+
+import { SbbDialog } from '@sbb-esta/angular/dialog';
+
 import * as OJP from 'ojp-sdk'
+
+import { UserTripService } from './user-trip.service';
+import { MapHelpers } from '../../map/helpers/map.helpers'
+import { MapDebugControl } from '../../map/controls/map-debug-control'
+import { MapLayersLegendControl } from '../../map/controls/map-layers-legend-control';
 
 export interface IMapBoundsData {
   bounds: mapboxgl.LngLatBounds
@@ -8,22 +16,26 @@ export interface IMapBoundsData {
   padding?: mapboxgl.PaddingOptions | null
 }
 
+export interface IMapLocationZoomData {
+  lnglat: mapboxgl.LngLatLike
+  zoom: number
+}
+
 @Injectable( {providedIn: 'root'} )
 export class MapService {
   public newMapBoundsRequested = new EventEmitter<IMapBoundsData>();
-  public newMapCenterAndZoomRequested = new EventEmitter<{ lnglat: mapboxgl.LngLat, zoom: number }>();
+  public newMapCenterAndZoomRequested = new EventEmitter<IMapLocationZoomData>();
 
   public tryToCenterAndZoomToLocation(location: OJP.Location | null, zoomValue: number = 16.0) {
     if (location === null) {
       return
     }
 
-    const locationLngLatLike = location.geoPosition?.asLngLat() as [number, number] ?? null
-    if (locationLngLatLike === null) {
+    const locationLngLat = location.geoPosition?.asLngLat() ?? null
+    if (locationLngLat === null) {
       return
     }
 
-    const locationLngLat = new mapboxgl.LngLat(locationLngLatLike[0], locationLngLatLike[1]);
     this.newMapCenterAndZoomRequested.emit({
       lnglat: locationLngLat,
       zoom: zoomValue
@@ -38,6 +50,31 @@ export class MapService {
     this.initialMapZoom = null
   }
 
+  public createMap(elementID: string): mapboxgl.Map {
+    const mapBounds = new mapboxgl.LngLatBounds([[5.9559,45.818], [10.4921,47.8084]]);
+
+    const map = new mapboxgl.Map({
+      container: elementID,
+      style: 'mapbox://styles/mapbox/light-v10',
+      bounds: mapBounds,
+      accessToken: 'pk.eyJ1IjoidmFzaWxlIiwiYSI6ImNra2k2dWFkeDFrbG0ycXF0Nmg0Z2tsNXAifQ.nK-i-3cpWmji7HvK1Ilynw',
+    });
+
+    if (this.initialMapCenter) {
+      map.setCenter(this.initialMapCenter)
+      if (this.initialMapZoom) {
+        map.setZoom(this.initialMapZoom)
+      }
+    } else {
+      map.fitBounds(mapBounds, {
+        padding: 50,
+        duration: 0,
+      });
+    }
+
+    return map;
+  }
+
   public zoomToTrip(trip: OJP.Trip) {
     const bbox = trip.computeBBOX();
     if (bbox.isValid() === false) {
@@ -49,5 +86,77 @@ export class MapService {
       bounds: bounds
     }
     this.newMapBoundsRequested.emit(mapData);
+  }
+
+  public zoomToBounds(map: mapboxgl.Map, mapData: IMapBoundsData) {
+    const newBounds = mapData.bounds;
+
+    const minDistanceM = 20
+    const hasSmallBBOX = newBounds.getSouthWest().distanceTo(newBounds.getNorthEast()) < minDistanceM
+    if (hasSmallBBOX) {
+      map.jumpTo({
+        center: newBounds.getCenter(),
+        zoom: 16
+      });
+
+      return;
+    }
+
+    const padding = mapData.padding ?? {
+      left: 50,
+      top: 170,
+      right: 50,
+      bottom: 100,
+    };
+    
+    const onlyIfOutside = mapData.onlyIfOutside ?? false
+
+    if (onlyIfOutside) {
+      const isInside = MapHelpers.areBoundsInsideOtherBounds(newBounds, map.getBounds())
+      if (isInside) {
+        return
+      }
+    }
+
+    // TODO - check wht Mapbox is complaining
+    // map.fitBounds(newBounds, {
+    //   padding: padding,
+    //   duration: 0
+    // })
+
+    // without this hack we get
+    // ERROR Error: Uncaught (in promise): Error: `LngLatLike` argument must be specified as a LngLat instance, an object {lng: <lng>, lat: <lat>}, an object {lon: <lng>, lat: <lat>}, or an array of [<lng>, <lat>]
+    // Error: `LngLatLike` argument must be specified as a LngLat instance, an object {lng: <lng>, lat: <lat>}, an object {lon: <lng>, lat: <lat>}, or an array of [<lng>, <lat>]
+    const fixedBounds: mapboxgl.LngLatBoundsLike = [newBounds.getWest(), newBounds.getSouth(), newBounds.getEast(), newBounds.getNorth()];
+    map.fitBounds(fixedBounds, {
+      padding: padding
+    })
+  }
+
+  public zoomToLocation(map: mapboxgl.Map, mapData: IMapLocationZoomData) {
+    map.flyTo({
+      center: mapData.lnglat,
+      zoom: mapData.zoom
+    });
+  }
+
+  public addControls(map: mapboxgl.Map, debugXmlPopover: SbbDialog, userTripService: UserTripService) {
+    const navigationControl = new mapboxgl.NavigationControl({
+      showCompass: false,
+      visualizePitch: false
+    });
+    map.addControl(navigationControl, 'bottom-right');
+
+    const scaleControl = new mapboxgl.ScaleControl({
+        maxWidth: 200,
+        unit: 'metric'
+    });
+    map.addControl(scaleControl);
+
+    const debugControl = new MapDebugControl(map);
+    map.addControl(debugControl, 'top-left');
+
+    const mapLayersLegendControl = new MapLayersLegendControl(map, debugXmlPopover, userTripService);
+    map.addControl(mapLayersLegendControl, 'top-right');
   }
 }

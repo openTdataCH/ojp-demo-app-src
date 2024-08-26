@@ -9,8 +9,6 @@ import { UserTripService } from '../shared/services/user-trip.service';
 
 import { MapHelpers } from './helpers/map.helpers';
 
-import { MapDebugControl } from './controls/map-debug-control'
-import { MapLayersLegendControl } from './controls/map-layers-legend-control';
 import { TripRenderController } from './controllers/trip-render-controller';
 
 @Component({
@@ -85,45 +83,13 @@ export class MapComponent implements OnInit {
 
     this.mapService.newMapBoundsRequested.subscribe(mapData => {
       this.mapLoadingPromise?.then(map => {
-        const newBounds = mapData.bounds;
-        const padding = mapData.padding ?? {
-          left: 50,
-          top: 170,
-          right: 50,
-          bottom: 100,
-        };
-        
-        const onlyIfOutside = mapData.onlyIfOutside ?? false
-
-        if (onlyIfOutside) {
-          const isInside = MapHelpers.areBoundsInsideOtherBounds(newBounds, map.getBounds())
-          if (isInside) {
-            return
-          }
-        }
-
-        // TODO - check wht Mapbox is complaining
-        // map.fitBounds(newBounds, {
-        //   padding: padding,
-        //   duration: 0
-        // })
-
-        // without this hack we get
-        // ERROR Error: Uncaught (in promise): Error: `LngLatLike` argument must be specified as a LngLat instance, an object {lng: <lng>, lat: <lat>}, an object {lon: <lng>, lat: <lat>}, or an array of [<lng>, <lat>]
-        // Error: `LngLatLike` argument must be specified as a LngLat instance, an object {lng: <lng>, lat: <lat>}, an object {lon: <lng>, lat: <lat>}, or an array of [<lng>, <lat>]
-        const fixedBounds: mapboxgl.LngLatBoundsLike = [newBounds.getWest(), newBounds.getSouth(), newBounds.getEast(), newBounds.getNorth()];
-        map.fitBounds(fixedBounds, {
-          padding: padding
-        })
+        this.mapService.zoomToBounds(map, mapData);
       });
     })
 
     this.mapService.newMapCenterAndZoomRequested.subscribe(mapData => {
       this.mapLoadingPromise?.then(map => {
-        map.jumpTo({
-          center: mapData.lnglat,
-          zoom: mapData.zoom
-        });
+        this.mapService.zoomToLocation(map, mapData);
       });
     })
 
@@ -142,26 +108,7 @@ export class MapComponent implements OnInit {
   }
 
   private initMap() {
-    const mapBounds = new mapboxgl.LngLatBounds([[5.9559,45.818], [10.4921,47.8084]]);
-
-    const map = new mapboxgl.Map({
-      container: 'map_canvas',
-      style: 'mapbox://styles/mapbox/light-v10',
-      bounds: mapBounds,
-      accessToken: 'pk.eyJ1IjoidmFzaWxlIiwiYSI6ImNra2k2dWFkeDFrbG0ycXF0Nmg0Z2tsNXAifQ.nK-i-3cpWmji7HvK1Ilynw',
-    });
-
-    if (this.mapService.initialMapCenter) {
-      map.setCenter(this.mapService.initialMapCenter)
-      if (this.mapService.initialMapZoom) {
-        map.setZoom(this.mapService.initialMapZoom)
-      }
-    } else {
-      map.fitBounds(mapBounds, {
-        padding: 50,
-        duration: 0,
-      });
-    }
+    const map = this.mapService.createMap('map_canvas');
 
     this.mapLoadingPromise = new Promise<mapboxgl.Map>((resolve, reject) => {
       map.on('load', ev => {
@@ -220,7 +167,7 @@ export class MapComponent implements OnInit {
   }
 
   private onMapLoad(map: mapboxgl.Map) {
-    this.addMapControls(map);
+    this.mapService.addControls(map, this.debugXmlPopover, this.userTripService);
 
     map.on('contextmenu', (ev: mapboxgl.MapMouseEvent) => {
       this.showPickupPopup(map, ev.lngLat);
@@ -266,26 +213,6 @@ export class MapComponent implements OnInit {
     this.popupContextMenu.setLngLat(lngLat)
       .setDOMContent(popupContainer)
       .addTo(map);
-  }
-
-  private addMapControls(map: mapboxgl.Map) {
-    const navigationControl = new mapboxgl.NavigationControl({
-      showCompass: false,
-      visualizePitch: false
-    });
-    map.addControl(navigationControl, 'bottom-right');
-
-    const scaleControl = new mapboxgl.ScaleControl({
-        maxWidth: 200,
-        unit: 'metric'
-    });
-    map.addControl(scaleControl);
-
-    const debugControl = new MapDebugControl(map);
-    map.addControl(debugControl, 'top-left');
-
-    const mapLayersLegendControl = new MapLayersLegendControl(map, this.debugXmlPopover, this.userTripService);
-    map.addControl(mapLayersLegendControl, 'top-right');
   }
 
   private updateMarkerLocation(marker: mapboxgl.Marker, location: OJP.Location | null) {

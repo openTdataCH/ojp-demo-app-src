@@ -87,8 +87,6 @@ export class SearchFormComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.userTripService.initDefaults();
-
     this.userTripService.locationsUpdated.subscribe(nothing => {
       this.updateLocationTexts();
     })
@@ -108,11 +106,7 @@ export class SearchFormComponent implements OnInit {
     });
 
     this.userTripService.defaultsInited.subscribe(nothing => {
-      const queryParams = new URLSearchParams(document.location.search);
-      const doSearch = queryParams.get('do_search') ?? false;
-      if (doSearch) {
-        this.handleTapOnSearch();
-      }
+      this.customInitFromParams();
     });
 
     this.userTripService.tripRequestFinished.subscribe(requestInfo => {
@@ -121,14 +115,27 @@ export class SearchFormComponent implements OnInit {
       this.requestDurationF = (requestNetworkDuration + requestParseDuration).toFixed(2) + ' sec';
     });
 
+    this.userTripService.initDefaults();
+  }
+
+  private customInitFromParams() {
     if (this.useMocks) {
       this.initLocationsFromMocks()
+      return;
     }
 
     const queryParams = new URLSearchParams(document.location.search);
+    
+    const doSearch = queryParams.get('do_search') ?? false;
+    if (doSearch) {
+      this.handleTapOnSearch();
+      return;
+    }
+
     const gistId = queryParams.get('gist');
     if (gistId) {
       this.initFromGistRef(gistId);
+      return;
     }
   }
 
@@ -190,12 +197,12 @@ export class SearchFormComponent implements OnInit {
       if (response.message === 'TripRequest.Trip') {
         console.log('DEBUG: New Trip => ' + response.trips.length + '/' + response.tripsNo);
         if (response.trips.length === 1) {
-          this.handleCustomTripResponse(response.trips);
+          this.handleCustomTripResponse(response.trips, request);
         }
       }
       if (response.message === 'TripRequest.DONE') {
         this.userTripService.massageTrips(response.trips);
-        this.handleCustomTripResponse(response.trips);
+        this.handleCustomTripResponse(response.trips, request);
       }
     });
   }
@@ -290,7 +297,6 @@ export class SearchFormComponent implements OnInit {
     this.isSearching = true;
 
     journeyRequest.fetchResponse((response) => {
-
       if (response.error) {
         this.notificationToast.open(response.error.message, {
           type: 'error',
@@ -377,7 +383,7 @@ export class SearchFormComponent implements OnInit {
           dialogRef.close();
 
           this.userTripService.massageTrips(response.trips);
-          this.handleCustomTripResponse(response.trips);
+          this.handleCustomTripResponse(response.trips, request);
         });
       };
 
@@ -386,9 +392,11 @@ export class SearchFormComponent implements OnInit {
     });
   }
 
-  private handleCustomTripResponse(trips: OJP.Trip[]) {
+  private handleCustomTripResponse(trips: OJP.Trip[], request: OJP.TripRequest) {
     this.requestDurationF = 'USER XML';
     this.isSearching = false;
+
+    this.userTripService.tripRequestFinished.emit(request.requestInfo);
     
     this.userTripService.updateTrips(trips);
     this.updateSearchForm(trips);
@@ -396,6 +404,8 @@ export class SearchFormComponent implements OnInit {
     const hasTrips = trips.length > 0;
     if (hasTrips) {
       const firstTrip = trips[0];
+
+      this.userTripService.selectActiveTrip(firstTrip);
       this.mapService.zoomToTrip(firstTrip);
     }
   }

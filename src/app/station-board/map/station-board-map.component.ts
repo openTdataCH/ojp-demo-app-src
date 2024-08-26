@@ -37,10 +37,7 @@ export class StationBoardMapComponent implements OnInit {
 
     this.mapService.newMapCenterAndZoomRequested.subscribe(mapData => {
       this.mapLoadingPromise?.then(map => {
-        map.jumpTo({
-          center: mapData.lnglat,
-          zoom: mapData.zoom
-        });
+        this.mapService.zoomToLocation(map, mapData);
       });
     })
 
@@ -53,27 +50,8 @@ export class StationBoardMapComponent implements OnInit {
   }
   
   private initMap() {
-    const mapBounds = new mapboxgl.LngLatBounds([[5.9559,45.818], [10.4921,47.8084]]);
-    const map = new mapboxgl.Map({
-      container: 'map_canvas_station_board',
-      style: 'mapbox://styles/mapbox/light-v10',
-      bounds: mapBounds,
-      accessToken: 'pk.eyJ1IjoidmFzaWxlIiwiYSI6ImNra2k2dWFkeDFrbG0ycXF0Nmg0Z2tsNXAifQ.nK-i-3cpWmji7HvK1Ilynw',
-    });
-    
-    if (this.mapService.initialMapCenter) {
-      map.setCenter(this.mapService.initialMapCenter)
-      
-      if (this.mapService.initialMapZoom) {
-        map.setZoom(this.mapService.initialMapZoom)
-      }
-    } else {
-      map.fitBounds(mapBounds, {
-        padding: 50,
-        duration: 0,
-      });
-    }
-    
+    const map = this.mapService.createMap('map_canvas_station_board');
+
     this.mapLoadingPromise = new Promise<mapboxgl.Map>((resolve, reject) => {
       map.on('load', ev => {
         resolve(map);

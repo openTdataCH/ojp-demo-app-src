@@ -3,23 +3,22 @@
 
   <div class="app-root">
     <nav sbb-tab-nav-bar [tabPanel]="tabPanel">
-      <a sbb-tab-link [active]="'true'">Journey Search</a>
+      <a sbb-tab-link [active]="'false'" [routerLink]="'../search'">Journey Search</a>
       <a sbb-tab-link [active]="'false'" [routerLink]="'../board'">Station Board</a>
-      <a sbb-tab-link [active]="'false'" [routerLink]="'../trip'">Trip Info</a>
+      <a sbb-tab-link [active]="'true'">Trip Info</a>
     </nav>
 
     <sbb-tab-nav-panel #tabPanel>
       <div class="row">
         <div class="col-md-5">
-          <app-search-form></app-search-form>
-          <journey-results></journey-results>
+          <trip-info-search></trip-info-search>
+          <trip-info-result></trip-info-result>
         </div>
         <div class="col-md-7">
-          <app-map></app-map>
+          <trip-info-map></trip-info-map>
         </div>
       </div>
     </sbb-tab-nav-panel>
-  
   </div>
 
   <web-footer></web-footer>
