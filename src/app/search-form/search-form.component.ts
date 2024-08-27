@@ -192,10 +192,10 @@ export class SearchFormComponent implements OnInit {
     const request = OJP.TripRequest.initWithResponseMock(mockText);
     request.fetchResponseWithCallback((response) => {
       if (response.message === 'TripRequest.TripsNo') {
-        console.log('DEBUG: TripsNo => ' + response.tripsNo);
+        // console.log('DEBUG: TripsNo => ' + response.tripsNo);
       }
       if (response.message === 'TripRequest.Trip') {
-        console.log('DEBUG: New Trip => ' + response.trips.length + '/' + response.tripsNo);
+        // console.log('DEBUG: New Trip => ' + response.trips.length + '/' + response.tripsNo);
         if (response.trips.length === 1) {
           this.handleCustomTripResponse(response.trips, request);
         }
