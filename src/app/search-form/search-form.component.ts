@@ -14,7 +14,7 @@ import { SbbRadioChange } from '@sbb-esta/angular/radio-button';
 
 import * as OJP from 'ojp-sdk'
 
-import { APP_STAGE } from '../config/app-config';
+import { APP_STAGE, DEBUG_LEVEL } from '../config/app-config';
 import { Router } from '@angular/router';
 
 @Component({
@@ -182,7 +182,7 @@ export class SearchFormComponent implements OnInit {
   }
 
   private async initLocationsFromMocks() {
-    const mockURL = '/path/to/mock';
+    const mockURL = 'http://localhost/Work/sbb/ojp-opendata/projects/ojp/openTdataCH--ojp-demo-app-src/_mocks/v1/tr/response/situations-latest.xml';
 
     const mockText = await (await fetch(mockURL)).text();
     this.initFromMockXML(mockText);
@@ -192,10 +192,14 @@ export class SearchFormComponent implements OnInit {
     const request = OJP.TripRequest.initWithResponseMock(mockText);
     request.fetchResponseWithCallback((response) => {
       if (response.message === 'TripRequest.TripsNo') {
-        console.log('DEBUG: TripsNo => ' + response.tripsNo);
+        if (DEBUG_LEVEL === 'DEBUG') {
+          console.log('DEBUG: TripsNo => ' + response.tripsNo);
+        }
       }
       if (response.message === 'TripRequest.Trip') {
-        console.log('DEBUG: New Trip => ' + response.trips.length + '/' + response.tripsNo);
+        if (DEBUG_LEVEL === 'DEBUG') {
+          console.log('DEBUG: New Trip => ' + response.trips.length + '/' + response.tripsNo);
+        }
         if (response.trips.length === 1) {
           this.handleCustomTripResponse(response.trips, request);
         }

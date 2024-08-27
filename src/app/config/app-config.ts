@@ -1,5 +1,8 @@
 import * as OJP from 'ojp-sdk'
 
+type DEBUG_LEVEL_Type = 'DEBUG' | 'PROD'
+export const DEBUG_LEVEL: DEBUG_LEVEL_Type = 'PROD'
+
 export type APP_STAGE = OJP.Default_APP_Stage
 
 export interface AppMapLayerOptions {
