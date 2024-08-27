@@ -10,18 +10,13 @@ import { MapService } from '../../../shared/services/map.service'
 import { OJPHelpers } from '../../../helpers/ojp-helpers';
 import { LegStopPointData } from '../../../shared/components/service-stops.component'
 import { TripInfoResultPopoverComponent } from './trip-info-result-popover/trip-info-result-popover.component';
+import { SituationData } from '../../../shared/types/situation-type';
 
 type LegTemplate = 'walk' | 'timed' | 'taxi';
 
 type ServiceAttributeRenderModel = {
   icon: string,
   caption: string
-}
-
-interface SituationData {
-  summary: string
-  description: string
-  details: string[]
 }
 
 interface LegInfoDataModel {
@@ -339,33 +334,7 @@ export class ResultTripLegComponent implements OnInit {
       }
 
       const timedLeg = leg as OJP.TripTimedLeg;
-      timedLeg.service.siriSituations.forEach(situation => {
-        situation.publishingActions.forEach(publishingAction => {
-          const mapTextualContent = publishingAction.passengerInformation.mapTextualContent;
-
-          const situationData = <SituationData>{};
-
-          if ('Summary' in mapTextualContent) {
-            situationData.summary = mapTextualContent['Summary'].join('. ');
-          }
-
-          if ('Description' in mapTextualContent) {
-            situationData.description = mapTextualContent['Description'].join('. ');
-          }
-
-          situationData.details = [];
-          const detailKeys = ['Consequence', 'Duration', 'Reason', 'Recommendation', 'Remark'];
-          detailKeys.forEach(detailKey => {
-            if (detailKey in mapTextualContent) {
-              situationData.details = situationData.details.concat(mapTextualContent[detailKey]);
-            }
-          });
-
-          situationsData.push(situationData);
-        });
-      });
-
-      return situationsData;
+      return OJPHelpers.computeSituationsData(timedLeg.service.siriSituations);
     })();
     this.legInfoDataModel.hasSituations = this.legInfoDataModel.situations.length > 0;
 
