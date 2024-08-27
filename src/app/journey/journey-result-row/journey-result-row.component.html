@@ -4,7 +4,18 @@
   <sbb-expansion-panel-header>
     <div class="d-flex justify-content-between w-100 trip-info">
       <div>
-        <div class="trip-info-header">{{ this.tripHeaderStats.title }} - {{ this.tripHeaderStats.tripChangesInfo }}</div>
+        <div class="trip-info-header d-flex gap-1">
+          <div>{{ this.tripHeaderStats.title }}</div>
+          <div *ngIf="this.tripHeaderStats.isCancelled === true">
+            <span class="badge rounded-pill bg-danger fw-bolder">Cancelled</span>
+          </div>
+          <div *ngIf="this.tripHeaderStats.isInfeasable === true">
+            <span class="badge rounded-pill bg-warning fw-bolder text-dark">Infeasable</span>
+          </div>
+          <div>
+            <span> - {{ this.tripHeaderStats.tripChangesInfo }}</span>
+          </div>
+        </div>
         <div>{{ this.tripHeaderStats.tripDurationS }} - {{ this.tripHeaderStats.tripDistanceS }}</div>
       </div>
       <div class="trip-info-header">

@@ -62,6 +62,7 @@
           </div>
         </div>
       </div>
+      <div *ngIf="this.legInfoDataModel.fromLocationData.isNotServicedStop"><span class="badge rounded-pill bg-danger fw-bolder">not serviced</span></div>
     </div>
 
     <div 
@@ -70,7 +71,10 @@
         class="leg-platform-assistance" 
         src="{{ this.legInfoDataModel.fromLocationData.platformAssistanceIconPath }}" 
         title="{{ this.legInfoDataModel.fromLocationData.platformAssistanceTooltip }}" />
-      <span>{{ this.legInfoDataModel.fromLocationData.depText }}</span>
+      
+      <span *ngIf="!this.legInfoDataModel.fromLocationData.isNotServicedStop">{{ this.legInfoDataModel.fromLocationData.depText }}</span>
+      <span *ngIf="this.legInfoDataModel.fromLocationData.isNotServicedStop"><del>{{ this.legInfoDataModel.fromLocationData.depText }}</del></span>
+      
       <span class="time-delay">{{ this.legInfoDataModel.fromLocationData.depDelayText }}</span>
     </div>
   </div>
@@ -103,6 +107,7 @@
           </div>
         </div>
       </div>
+      <div *ngIf="this.legInfoDataModel.toLocationData.isNotServicedStop"><span class="badge rounded-pill bg-danger fw-bolder">not serviced</span></div>
     </div>
     
     <div 
@@ -111,7 +116,10 @@
         class="leg-platform-assistance" 
         src="{{ this.legInfoDataModel.toLocationData.platformAssistanceIconPath }}" 
         title="{{ this.legInfoDataModel.toLocationData.platformAssistanceTooltip }}" />
-      <span>{{ this.legInfoDataModel.toLocationData.arrText }}</span>
+      
+      <span *ngIf="!this.legInfoDataModel.toLocationData.isNotServicedStop">{{ this.legInfoDataModel.toLocationData.arrText }}</span>
+      <span *ngIf="this.legInfoDataModel.toLocationData.isNotServicedStop"><del>{{ this.legInfoDataModel.toLocationData.arrText }}</del></span>
+      
       <span class="time-delay">{{ this.legInfoDataModel.toLocationData.arrDelayText }}</span>
     </div>
   </div>
@@ -207,41 +215,63 @@
     </div>
 
     <div class="mt-2" *ngIf="this.legInfoDataModel.hasSituations">
-      <sbb-tooltip svgIcon="fpl:info" *ngIf="this.legInfoDataModel.hasSituations">
-        <div *ngFor="let situation of this.legInfoDataModel.situations; index as idx">
-          <p>
-            <strong>{{ situation.situationContent.summary }}</strong>
-          </p>
-          <div>
-            {{ situation.situationContent.description }}
-          </div>
-          <ul class="tooltip-list">
-            <li *ngFor="let detailText of situation.situationContent.details">
-              {{ detailText }}
-            </li>
-          </ul>
+      <div class="d-flex gap-2">
+        <div *ngFor="let situationData of this.legInfoDataModel.situations">
+          <sbb-tooltip svgIcon="fpl:info">
+            <p>
+              <strong>{{ situationData.summary }}</strong>
+            </p>
+
+            <!-- Handle situations with one-description -->
+            <ng-container *ngIf="situationData.descriptions.length === 1">
+              <div>
+                {{ situationData.descriptions[0] }}
+              </div>
+            </ng-container>
+
+            <!-- Handle situations with 2 or more descriptions -->
+            <ng-container *ngIf="situationData.descriptions.length > 1">
+              <ul class="tooltip-list">
+                <li *ngFor="let descriptionText of situationData.descriptions">
+                  {{ descriptionText }}
+                </li>
+              </ul>
+            
+              <!-- => insert a delimiter between description and detail -->
+              <h6>Detail</h6>
+            </ng-container>
+            
+            <ul class="tooltip-list">
+              <li *ngFor="let detailText of situationData.details">
+                {{ detailText }}
+              </li>
+            </ul>
+          </sbb-tooltip>
         </div>
-      </sbb-tooltip>
+      </div>
     </div>
   </div>
 
   <div class="py-2 collapse" [id]="this.legElementId">
-    <div class="d-flex gap-2">
-      <div class="flex-grow-1">
-        <div *ngFor="let locationData of this.legInfoDataModel.intermediaryLocationsData">
-          {{ locationData.locationText }}
-        </div>
-      </div>
-      <div>
-        <div *ngFor="let locationData of this.legInfoDataModel.intermediaryLocationsData">
-          <div>{{ locationData.arrText ?? ' ' }} <span class="time-delay">{{ locationData.arrDelayText }}</span></div>
-        </div>
-      </div>
-      <div>
-        <div *ngFor="let locationData of this.legInfoDataModel.intermediaryLocationsData">
-          {{ locationData.depText }} <span class="time-delay">{{ locationData.depDelayText }}</span>
-        </div>
-      </div>
-    </div>
+    <table class="table table-hover table-stops mb-0 align-middle">
+      <tbody>
+        <tr *ngFor="let locationData of this.legInfoDataModel.intermediaryLocationsData">
+          <td>
+            <div class="d-flex gap-2">
+              <div>{{ locationData.locationText }}</div>
+              <div *ngIf="locationData.isNotServicedStop"><span class="badge rounded-pill bg-danger fw-bolder">not serviced</span></div>
+            </div>
+          </td>
+          <td class="fit">
+            <div *ngIf="!locationData.isNotServicedStop">{{ locationData.arrText ?? ' ' }} <span class="time-delay">{{ locationData.arrDelayText }}</span></div>
+            <div *ngIf="locationData.isNotServicedStop"><del>{{ locationData.arrText ?? ' ' }}</del> <span class="time-delay">{{ locationData.arrDelayText }}</span></div>
+          </td>
+          <td class="fit stop-time">
+            <div *ngIf="!locationData.isNotServicedStop">{{ locationData.depText }} <span class="time-delay">{{ locationData.depDelayText }}</span></div>
+            <div *ngIf="locationData.isNotServicedStop"><del>{{ locationData.depText }}</del> <span class="time-delay">{{ locationData.depDelayText }}</span></div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
   </div>
 </ng-template>
