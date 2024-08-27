@@ -1,6 +1,6 @@
 import { EventEmitter, Injectable } from '@angular/core'
 
-import { APP_CONFIG, APP_STAGE } from '../../config/app-config'
+import { APP_CONFIG, APP_STAGE, DEBUG_LEVEL } from '../../config/app-config'
 import { MapService } from './map.service'
 
 import * as OJP from 'ojp-sdk'
@@ -621,7 +621,9 @@ export class UserTripService {
         if (legIdx > 0 && fromGeoPosition !== null) {
           const prevLeg = trip.legs[legIdx - 1];
           if (prevLeg.toLocation.geoPosition === null) {
-            // console.log('SDK HACK - patchLegEndpointCoords - use legTrack.fromGeoPosition for prevLeg.toLocation.geoPosition');
+            if (DEBUG_LEVEL === 'DEBUG') {
+              console.log('SDK HACK - patchLegEndpointCoords - use legTrack.fromGeoPosition for prevLeg.toLocation.geoPosition');
+            }
             prevLeg.toLocation.geoPosition = fromGeoPosition;
           }
         }
@@ -632,7 +634,9 @@ export class UserTripService {
         if (legIdx < (trip.legs.length - 1) && toGeoPosition !== null) {
           const nextLeg = trip.legs[legIdx + 1];
           if (nextLeg.fromLocation.geoPosition === null) {
-            // console.log('SDK HACK - patchLegEndpointCoords - use legTrack.toGeoPosition for nextLeg.fromLocation.geoPosition');
+            if (DEBUG_LEVEL === 'DEBUG') {
+              console.log('SDK HACK - patchLegEndpointCoords - use legTrack.toGeoPosition for nextLeg.fromLocation.geoPosition');
+            }
             nextLeg.fromLocation.geoPosition = toGeoPosition;
           }
         }
