@@ -95,6 +95,8 @@ export class JourneyResultsComponent implements OnInit {
 
         this.userTripService.selectActiveTrip(firstTrip);
         this.mapService.zoomToTrip(firstTrip);
+
+        this.userTripService.fetchFares();
       } else {
         this.userTripService.selectActiveTrip(null);
       }
