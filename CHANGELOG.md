@@ -5,6 +5,8 @@ OJP-Demo URL: https://opentdatach.github.io/ojp-demo-app/
 ----
 
 28.August 2024
+- Display OJP fares [PR #158](https://github.com/openTdataCH/ojp-demo-app-src/pull/158)
+  - display fares using `OJP.NovaFareParser`
 - Localization support [PR #157](https://github.com/openTdataCH/ojp-demo-app-src/pull/157)
   - use `0.11.1` version of [ojp-js](https://github.com/openTdataCH/ojp-js) SDK
   - adds support for language in which the OJP API will return the results, default is the browser locale otherwise can be set via the `lang` query param - see [Application URLs](https://github.com/openTdataCH/ojp-demo-app-src/blob/main/docs/URLs.md)

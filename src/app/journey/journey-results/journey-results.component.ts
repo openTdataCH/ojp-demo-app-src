@@ -29,6 +29,27 @@ export class JourneyResultsComponent implements OnInit {
     this.userTripService.searchParamsReset.subscribe(() => {
       this.trips = []
     });
+
+    this.userTripService.tripFaresUpdated.subscribe(fareResults => {
+      this.trips.forEach(trip => {
+        trip.tripFareResults = [];
+      });
+
+      fareResults.forEach(fareResult => {
+        const trip = this.trips.find(trip => {
+          return trip.id === fareResult.tripId
+        }) ?? null;
+
+        if (trip === null) {
+          console.error('ERROR - cant find fare for trip ' + fareResult.tripId);
+          console.log(this.trips);
+          console.log(fareResult);
+          return;
+        }
+
+        trip.tripFareResults = fareResult.tripFareResults;
+      });
+    })
   }
 
   public loadPreviousTrips() {
@@ -95,6 +116,8 @@ export class JourneyResultsComponent implements OnInit {
 
         this.userTripService.selectActiveTrip(firstTrip);
         this.mapService.zoomToTrip(firstTrip);
+
+        this.userTripService.fetchFares();
       } else {
         this.userTripService.selectActiveTrip(null);
       }

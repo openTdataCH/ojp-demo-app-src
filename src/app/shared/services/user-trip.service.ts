@@ -35,6 +35,9 @@ export class UserTripService {
   public locationsUpdated = new EventEmitter<void>();
   public geoLocationsUpdated = new EventEmitter<void>();
   public tripsUpdated = new EventEmitter<OJP.Trip[]>();
+  
+  public tripFaresUpdated = new EventEmitter<OJP.FareResult[]>();
+  
   public activeTripSelected = new EventEmitter<OJP.Trip | null>();
   public tripRequestFinished = new EventEmitter<OJP.RequestInfo>();
 
@@ -353,6 +356,10 @@ export class UserTripService {
     this.activeTripSelected.emit(trip);
   }
 
+  private updateFares(fareResults: OJP.FareResult[]) {
+    this.tripFaresUpdated.emit(fareResults);
+  }
+
   removeViaAtIndex(idx: number) {
     this.viaTripLocations.splice(idx, 1);
     this.tripModeTypes.splice(idx, 1);
@@ -604,6 +611,10 @@ export class UserTripService {
       const tripIdx = trips.indexOf(monomodalTrip);
       trips.splice(tripIdx, 1);
       trips.unshift(monomodalTrip);
+
+      if (DEBUG_LEVEL === 'DEBUG') {
+        console.log('SDK HACK - sortTrips - trips were re-sorted to promote the index-' + tripIdx + ' trip first');
+      }
     }
   }
 
@@ -687,6 +698,9 @@ export class UserTripService {
       });
 
       if (trip.legs.length > 0 && (trip.legs.length !== newLegs.length)) {
+        if (DEBUG_LEVEL === 'DEBUG') {
+          console.log('SDK HACK - mergeTripLegs - remainInVehicle usecase, before: ' + trip.legs.length + ', after: ' + newLegs.length + ' legs');
+        }
         trip.legs = newLegs;
       }
     });
@@ -709,5 +723,39 @@ export class UserTripService {
     }
     
     return newLeg;
+  }
+
+  public fetchFares() {
+    if (this.journeyTripRequests.length === 0) {
+      return;
+    }
+
+    const tripRequestResponse = this.journeyTripRequests[0].response;
+    if (tripRequestResponse === null) {
+      return;
+    }
+
+    const tripRequestResponseRebuilt = new OJP.TripRequestResponse(tripRequestResponse.trips);
+    const tripRequestResponseXML = tripRequestResponseRebuilt.asXML();
+
+    const novaURL = 'https://tools.odpch.ch/ojp-nova/ojp2023';
+    const novaHTTP = fetch(novaURL, {
+      body: tripRequestResponseXML,
+      method: 'POST'
+    });
+    novaHTTP.then(response => {
+      response.text().then(novaResponseXML => {
+        const parser = new OJP.NovaFareParser();
+        parser.callback = (response) => {
+          if (response.message === 'NovaFares.DONE') {
+            this.updateFares(response.fareResults);
+          } else {
+            console.error('NOVA ERROR');
+            console.log(novaResponseXML);
+          }
+        };
+        parser.parseXML(novaResponseXML);
+      });
+    });
   }
 }
