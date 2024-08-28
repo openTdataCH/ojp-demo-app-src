@@ -204,13 +204,14 @@ export class SearchFormComponent implements OnInit {
         if (DEBUG_LEVEL === 'DEBUG') {
           console.log('DEBUG: New Trip => ' + response.trips.length + '/' + response.tripsNo);
         }
+        
         if (response.trips.length === 1) {
-          this.handleCustomTripResponse(response.trips, request);
+          this.handleCustomTripResponse(response.trips, request, false);
         }
       }
       if (response.message === 'TripRequest.DONE') {
         this.userTripService.massageTrips(response.trips);
-        this.handleCustomTripResponse(response.trips, request);
+        this.handleCustomTripResponse(response.trips, request, true);
       }
     });
   }
@@ -324,6 +325,7 @@ export class SearchFormComponent implements OnInit {
       }
 
       const trips = response.sections.flatMap(el => el.trips);
+      this.userTripService.journeyTripRequests = journeyRequest.tripRequests;
       
       if (response.message === 'JourneyRequest.DONE') {
         if (trips.length === 0) {
@@ -345,12 +347,12 @@ export class SearchFormComponent implements OnInit {
 
           this.userTripService.selectActiveTrip(firstTrip);
           this.mapService.zoomToTrip(firstTrip);
+
+          this.userTripService.fetchFares();
         } else {
           this.userTripService.selectActiveTrip(null);
         }
       } else {
-        this.userTripService.journeyTripRequests = journeyRequest.tripRequests;
-
         if (response.message === 'TripRequest.Trip') {
           this.userTripService.updateTrips(trips);
           if (trips.length === 1) {
@@ -392,7 +394,7 @@ export class SearchFormComponent implements OnInit {
           dialogRef.close();
 
           this.userTripService.massageTrips(response.trips);
-          this.handleCustomTripResponse(response.trips, request);
+          this.handleCustomTripResponse(response.trips, request, true);
         });
       };
 
@@ -401,12 +403,13 @@ export class SearchFormComponent implements OnInit {
     });
   }
 
-  private handleCustomTripResponse(trips: OJP.Trip[], request: OJP.TripRequest) {
+  private handleCustomTripResponse(trips: OJP.Trip[], request: OJP.TripRequest, isDoneParsing: boolean) {
     this.requestDurationF = 'USER XML';
     this.isSearching = false;
 
     this.userTripService.tripRequestFinished.emit(request.requestInfo);
     
+    this.userTripService.journeyTripRequests = [request];
     this.userTripService.updateTrips(trips);
     this.updateSearchForm(trips);
 
@@ -416,6 +419,10 @@ export class SearchFormComponent implements OnInit {
 
       this.userTripService.selectActiveTrip(firstTrip);
       this.mapService.zoomToTrip(firstTrip);
+
+      if (isDoneParsing) {
+        this.userTripService.fetchFares();
+      }
     }
   }
 
