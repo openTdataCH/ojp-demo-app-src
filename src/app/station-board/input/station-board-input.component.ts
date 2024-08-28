@@ -6,7 +6,8 @@ import { SbbAutocompleteSelectedEvent, SbbAutocompleteTrigger } from '@sbb-esta/
 
 import * as OJP from 'ojp-sdk'
 
-import { UserTripService } from 'src/app/shared/services/user-trip.service';
+import { UserTripService } from '../../shared/services/user-trip.service';
+import { LanguageService } from '../../shared/services/language.service';
 
 interface StopLookup {
   stopPlaceRef: string
@@ -35,7 +36,7 @@ export class StationBoardInputComponent implements OnInit {
   //      - therefore => workaround
   private hackIgnoreInputChangesFlag: boolean
 
-  constructor(private userTripService: UserTripService) {
+  constructor(private userTripService: UserTripService, private languageService: LanguageService) {
     this.searchInputControl = new FormControl('');
     this.stopLookups = [StationBoardInputComponent.AroundMeStopLookup]
     this.currentStopLookup = null
@@ -98,7 +99,7 @@ export class StationBoardInputComponent implements OnInit {
 
     const restrictionType: OJP.RestrictionType = 'stop';
     const stageConfig = this.userTripService.getStageConfig();
-    const locationInformationRequest = OJP.LocationInformationRequest.initWithLocationName(stageConfig, searchTerm, [restrictionType]);
+    const locationInformationRequest = OJP.LocationInformationRequest.initWithLocationName(stageConfig, this.languageService.language, searchTerm, [restrictionType]);
 
     const response = await locationInformationRequest.fetchResponse();
     
@@ -205,6 +206,7 @@ export class StationBoardInputComponent implements OnInit {
 
     const request = OJP.LocationInformationRequest.initWithBBOXAndType(
       stageConfig,
+      this.languageService.language,
       bbox_W, bbox_N, bbox_E, bbox_S,
       ['stop'],
       300,

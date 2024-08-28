@@ -3,6 +3,8 @@ import { Component, OnInit, ViewChild } from '@angular/core';
 import { DateHelpers } from '../helpers/date-helpers';
 
 import { UserTripService } from '../shared/services/user-trip.service'
+import { LanguageService } from '../shared/services/language.service';
+
 import { MapService } from '../shared/services/map.service';
 import { InputXmlPopoverComponent } from './input-xml-popover/input-xml-popover.component';
 import { EmbedSearchPopoverComponent } from './embed-search-popover/embed-search-popover.component';
@@ -54,6 +56,7 @@ export class SearchFormComponent implements OnInit {
     private tripXmlPopover: SbbDialog,
     private embedHTMLPopover: SbbDialog,
     private router: Router,
+    private languageService: LanguageService,
     public userTripService: UserTripService,
     private mapService: MapService
   ) {
@@ -115,7 +118,8 @@ export class SearchFormComponent implements OnInit {
       this.requestDurationF = (requestNetworkDuration + requestParseDuration).toFixed(2) + ' sec';
     });
 
-    this.userTripService.initDefaults();
+
+    this.userTripService.initDefaults(this.languageService.language);
   }
 
   private customInitFromParams() {
@@ -182,7 +186,7 @@ export class SearchFormComponent implements OnInit {
   }
 
   private async initLocationsFromMocks() {
-    const mockURL = 'http://localhost/Work/sbb/ojp-opendata/projects/ojp/openTdataCH--ojp-demo-app-src/_mocks/v1/tr/response/situations-latest.xml';
+    const mockURL = '/path/to/mock';
 
     const mockText = await (await fetch(mockURL)).text();
     this.initFromMockXML(mockText);
@@ -242,7 +246,7 @@ export class SearchFormComponent implements OnInit {
     const newAppStage = ev.value as APP_STAGE
     this.userTripService.updateAppStage(newAppStage)
 
-    this.userTripService.refetchEndpointsByName();
+    this.userTripService.refetchEndpointsByName(this.languageService.language);
   }
 
   onChangeDateTime() {
@@ -276,6 +280,7 @@ export class SearchFormComponent implements OnInit {
     this.userTripService.updateDepartureDateTime(this.computeFormDepartureDate())
 
     const journeyRequestParams = OJP.JourneyRequestParams.initWithLocationsAndDate(
+      this.languageService.language,
       this.userTripService.fromTripLocation,
       this.userTripService.toTripLocation,
       this.userTripService.viaTripLocations,
@@ -376,7 +381,7 @@ export class SearchFormComponent implements OnInit {
     });
     dialogRef.afterOpened().subscribe(() => {
       const popover = dialogRef.componentInstance as InputXmlPopoverComponent
-      popover.inputTripRequestXML = this.userTripService.computeTripRequestXML(this.computeFormDepartureDate());
+      popover.inputTripRequestXML = this.userTripService.computeTripRequestXML(this.languageService.language, this.computeFormDepartureDate());
 
       const handleCustomXMLResponse = (tripsResponseXML: string) => {
         this.lastCustomTripRequestXML = popover.inputTripRequestXML;

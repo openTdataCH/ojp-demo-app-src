@@ -1,13 +1,14 @@
 import { SbbDialog } from "@sbb-esta/angular/dialog";
 
 import mapboxgl from "mapbox-gl";
+import * as OJP from 'ojp-sdk'
+
 import { AppMapLayerOptions, APP_CONFIG } from "src/app/config/app-config";
 import { DebugXmlPopoverComponent } from "src/app/search-form/debug-xml-popover/debug-xml-popover.component";
 import { UserTripService } from "src/app/shared/services/user-trip.service";
 import { AppMapLayer } from "../app-map-layer/app-map-layer";
 import { AppMapLayerFactory } from "../app-map-layer/app-map-layer/app-map-layer-factory";
-
-import * as OJP from 'ojp-sdk'
+import { LanguageService } from "src/app/shared/services/language.service";
 
 interface LayerData {
   inputEls: HTMLInputElement[] | null
@@ -19,14 +20,16 @@ export class MapLayersLegendControl implements mapboxgl.IControl {
   private map: mapboxgl.Map | null;
   private layersData: LayerData[]
   private userTripService: UserTripService
+  private languageService: LanguageService
 
   // TODO - move me in MapLayersController
   private prevMapBoundsHash: string = '';
 
-  constructor(map: mapboxgl.Map, private debugXmlPopover: SbbDialog, userTripService: UserTripService) {
+  constructor(map: mapboxgl.Map, private debugXmlPopover: SbbDialog, userTripService: UserTripService, languageService: LanguageService) {
     this.map = map;
     this.layersData = []
     this.userTripService = userTripService;
+    this.languageService = languageService;
   }
 
   onAdd(map: mapboxgl.Map): HTMLElement {
@@ -89,7 +92,7 @@ export class MapLayersLegendControl implements mapboxgl.IControl {
         return;
       }
 
-      const appMapLayer = AppMapLayerFactory.init(layerKey, map, appMapLayerOptions, this.userTripService);
+      const appMapLayer = AppMapLayerFactory.init(this.languageService.language, layerKey, map, appMapLayerOptions, this.userTripService);
       appMapLayer.isEnabled = inputEl.checked;
 
       if (layerXmlInfoEl) {
@@ -186,7 +189,7 @@ export class MapLayersLegendControl implements mapboxgl.IControl {
       poiType: 'poi',
       tags: poiOSMTags,
     }
-    const appMapLayer = AppMapLayerFactory.init(layerKey, map, appMapLayerOptions, this.userTripService);
+    const appMapLayer = AppMapLayerFactory.init(this.languageService.language, layerKey, map, appMapLayerOptions, this.userTripService);
     appMapLayer.isEnabled = poiOSMTags.length > 0;
 
     const layerXmlInfoEl = wrapperEl.querySelector('.layer-xml-info') as HTMLInputElement;

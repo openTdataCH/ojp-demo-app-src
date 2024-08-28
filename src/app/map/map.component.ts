@@ -10,6 +10,7 @@ import { UserTripService } from '../shared/services/user-trip.service';
 import { MapHelpers } from './helpers/map.helpers';
 
 import { TripRenderController } from './controllers/trip-render-controller';
+import { LanguageService } from '../shared/services/language.service';
 
 @Component({
   selector: 'app-map',
@@ -29,6 +30,7 @@ export class MapComponent implements OnInit {
 
   constructor(
     private userTripService: UserTripService,
+    private languageService: LanguageService,
     private mapService: MapService,
     private debugXmlPopover: SbbDialog,
   ) {
@@ -167,7 +169,7 @@ export class MapComponent implements OnInit {
   }
 
   private onMapLoad(map: mapboxgl.Map) {
-    this.mapService.addControls(map, this.debugXmlPopover, this.userTripService);
+    this.mapService.addControls(map, this.debugXmlPopover, this.userTripService, this.languageService);
 
     map.on('contextmenu', (ev: mapboxgl.MapMouseEvent) => {
       this.showPickupPopup(map, ev.lngLat);

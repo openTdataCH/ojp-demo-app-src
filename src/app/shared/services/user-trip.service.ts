@@ -64,7 +64,7 @@ export class UserTripService {
     this.permalinkRelativeURL = null
   }
 
-  public initDefaults() {
+  public initDefaults(language: OJP.Language) {
     let appStageS = this.queryParams.get('stage')
     if (appStageS) {
       this.currentAppStage = this.computeAppStageFromString(appStageS)
@@ -111,10 +111,10 @@ export class UserTripService {
         });
         promises.push(coordsPromise);
       } else {
-        let locationInformationRequest = OJP.LocationInformationRequest.initWithStopPlaceRef(stageConfig, stopPlaceRef);
+        let locationInformationRequest = OJP.LocationInformationRequest.initWithStopPlaceRef(stageConfig, language, stopPlaceRef);
         // Check if is location name instead of stopId / sloid
         if (typeof stopPlaceRef === 'string' && /^[A-Z]/.test(stopPlaceRef)) {
-          locationInformationRequest = OJP.LocationInformationRequest.initWithLocationName(stageConfig, stopPlaceRef, []);
+          locationInformationRequest = OJP.LocationInformationRequest.initWithLocationName(stageConfig, language, stopPlaceRef, []);
         }
 
         const locationInformationPromise = locationInformationRequest.fetchLocations();
@@ -200,7 +200,7 @@ export class UserTripService {
     });
   }
 
-  public refetchEndpointsByName() {
+  public refetchEndpointsByName(language: OJP.Language) {
     const promises: Promise<OJP.Location[] | null>[] = [];
     const emptyPromise = new Promise<null>((resolve, reject) => {
       resolve(null);
@@ -228,6 +228,7 @@ export class UserTripService {
       const stageConfig = this.getStageConfig();
       const locationInformationRequest = OJP.LocationInformationRequest.initWithBBOXAndType(
         stageConfig,
+        language,
         bbox.southWest.longitude,
         bbox.northEast.latitude,
         bbox.northEast.longitude,
@@ -372,9 +373,9 @@ export class UserTripService {
     this.updatePermalinkAddress();
   }
 
-  public computeTripRequestXML(departureDate: Date): string {
+  public computeTripRequestXML(language: OJP.Language, departureDate: Date): string {
     const stageConfig = this.getStageConfig();
-    const request = OJP.TripRequest.initWithTripLocationsAndDate(stageConfig, this.fromTripLocation, this.toTripLocation, departureDate);
+    const request = OJP.TripRequest.initWithTripLocationsAndDate(stageConfig, language, this.fromTripLocation, this.toTripLocation, departureDate);
     if (request === null || request.requestInfo.requestXML === null) {
       return 'BROKEN TripsRequestParams';
     }

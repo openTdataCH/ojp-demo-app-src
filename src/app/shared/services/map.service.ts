@@ -9,6 +9,7 @@ import { UserTripService } from './user-trip.service';
 import { MapHelpers } from '../../map/helpers/map.helpers'
 import { MapDebugControl } from '../../map/controls/map-debug-control'
 import { MapLayersLegendControl } from '../../map/controls/map-layers-legend-control';
+import { LanguageService } from './language.service';
 
 export interface IMapBoundsData {
   bounds: mapboxgl.LngLatBounds
@@ -140,7 +141,7 @@ export class MapService {
     });
   }
 
-  public addControls(map: mapboxgl.Map, debugXmlPopover: SbbDialog, userTripService: UserTripService) {
+  public addControls(map: mapboxgl.Map, debugXmlPopover: SbbDialog, userTripService: UserTripService, languageService: LanguageService) {
     const navigationControl = new mapboxgl.NavigationControl({
       showCompass: false,
       visualizePitch: false
@@ -156,7 +157,7 @@ export class MapService {
     const debugControl = new MapDebugControl(map);
     map.addControl(debugControl, 'top-left');
 
-    const mapLayersLegendControl = new MapLayersLegendControl(map, debugXmlPopover, userTripService);
+    const mapLayersLegendControl = new MapLayersLegendControl(map, debugXmlPopover, userTripService, languageService);
     map.addControl(mapLayersLegendControl, 'top-right');
   }
 }
