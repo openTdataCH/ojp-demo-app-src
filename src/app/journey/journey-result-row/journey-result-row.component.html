@@ -34,4 +34,11 @@
     >
     </result-trip-leg>
   </div>
+  <div>Price:
+    <ul class="trip-fares">
+      <li *ngFor="let tripFareResult of trip?.tripFareResults; index as idx">
+        Legs {{ tripFareResult.fromTripLegIdRef }}-{{ tripFareResult.toTripLegIdRef }} : {{ tripFareResult.fareProduct.price }} CHF ({{ tripFareResult.fareProduct.travelClass }})
+      </li>
+    </ul>
+  </div>
 </sbb-expansion-panel>
