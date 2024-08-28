@@ -35,6 +35,9 @@ export class UserTripService {
   public locationsUpdated = new EventEmitter<void>();
   public geoLocationsUpdated = new EventEmitter<void>();
   public tripsUpdated = new EventEmitter<OJP.Trip[]>();
+  
+  public tripFaresUpdated = new EventEmitter<OJP.FareResult[]>();
+  
   public activeTripSelected = new EventEmitter<OJP.Trip | null>();
   public tripRequestFinished = new EventEmitter<OJP.RequestInfo>();
 
@@ -351,6 +354,10 @@ export class UserTripService {
 
   selectActiveTrip(trip: OJP.Trip | null) {
     this.activeTripSelected.emit(trip);
+  }
+
+  private updateFares(fareResults: OJP.FareResult[]) {
+    this.tripFaresUpdated.emit(fareResults);
   }
 
   removeViaAtIndex(idx: number) {
@@ -716,5 +723,39 @@ export class UserTripService {
     }
     
     return newLeg;
+  }
+
+  public fetchFares() {
+    if (this.journeyTripRequests.length === 0) {
+      return;
+    }
+
+    const tripRequestResponse = this.journeyTripRequests[0].response;
+    if (tripRequestResponse === null) {
+      return;
+    }
+
+    const tripRequestResponseRebuilt = new OJP.TripRequestResponse(tripRequestResponse.trips);
+    const tripRequestResponseXML = tripRequestResponseRebuilt.asXML();
+
+    const novaURL = 'https://tools.odpch.ch/ojp-nova/ojp2023';
+    const novaHTTP = fetch(novaURL, {
+      body: tripRequestResponseXML,
+      method: 'POST'
+    });
+    novaHTTP.then(response => {
+      response.text().then(novaResponseXML => {
+        const parser = new OJP.NovaFareParser();
+        parser.callback = (response) => {
+          if (response.message === 'NovaFares.DONE') {
+            this.updateFares(response.fareResults);
+          } else {
+            console.error('NOVA ERROR');
+            console.log(novaResponseXML);
+          }
+        };
+        parser.parseXML(novaResponseXML);
+      });
+    });
   }
 }
