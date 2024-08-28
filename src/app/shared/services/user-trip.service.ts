@@ -604,6 +604,10 @@ export class UserTripService {
       const tripIdx = trips.indexOf(monomodalTrip);
       trips.splice(tripIdx, 1);
       trips.unshift(monomodalTrip);
+
+      if (DEBUG_LEVEL === 'DEBUG') {
+        console.log('SDK HACK - sortTrips - trips were re-sorted to promote the index-' + tripIdx + ' trip first');
+      }
     }
   }
 
@@ -687,6 +691,9 @@ export class UserTripService {
       });
 
       if (trip.legs.length > 0 && (trip.legs.length !== newLegs.length)) {
+        if (DEBUG_LEVEL === 'DEBUG') {
+          console.log('SDK HACK - mergeTripLegs - remainInVehicle usecase, before: ' + trip.legs.length + ', after: ' + newLegs.length + ' legs');
+        }
         trip.legs = newLegs;
       }
     });
