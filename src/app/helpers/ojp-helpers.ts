@@ -99,18 +99,29 @@ export class OJPHelpers {
     const situationsData: SituationData[] = [];
 
     siriSituations.forEach(situation => {
-      const situationContentV1 = situation.situationContentV1;
-      if (situationContentV1 === null) {
-        return;
-      }
+      situation.publishingActions.forEach(publishingAction => {
+        const mapTextualContent = publishingAction.passengerInformation.mapTextualContent;
 
-      const situationData: SituationData = {
-        summary: situationContentV1.summary,
-        descriptions: situationContentV1.descriptions,
-        details: situationContentV1.details
-      }
+        const situationData = <SituationData>{};
 
-      situationsData.push(situationData);
+        if ('Summary' in mapTextualContent) {
+          situationData.summary = mapTextualContent['Summary'].join('. ');
+        }
+
+        if ('Description' in mapTextualContent) {
+          situationData.descriptions = mapTextualContent['Description'];
+        }
+
+        situationData.details = [];
+        const detailKeys = ['Consequence', 'Duration', 'Reason', 'Recommendation', 'Remark'];
+        detailKeys.forEach(detailKey => {
+          if (detailKey in mapTextualContent) {
+            situationData.details = situationData.details.concat(mapTextualContent[detailKey]);
+          }
+        });
+
+        situationsData.push(situationData);
+      });
     });
 
     return situationsData;
