@@ -4,6 +4,27 @@ OJP-Demo URL: https://opentdatach.github.io/ojp-demo-app/
 
 ----
 
+28.August 2024
+- Display OJP fares [PR #158](https://github.com/openTdataCH/ojp-demo-app-src/pull/158)
+  - display fares using `OJP.NovaFareParser`
+- Localization support [PR #157](https://github.com/openTdataCH/ojp-demo-app-src/pull/157)
+  - use `0.11.1` version of [ojp-js](https://github.com/openTdataCH/ojp-js) SDK
+  - adds support for language in which the OJP API will return the results, default is the browser locale otherwise can be set via the `lang` query param - see [Application URLs](https://github.com/openTdataCH/ojp-demo-app-src/blob/main/docs/URLs.md)
+
+27.August 2024
+- Updates situations/traffic/real-time info [PR #155](https://github.com/openTdataCH/ojp-demo-app-src/pull/155)
+  - use `0.10.1` version of [ojp-js](https://github.com/openTdataCH/ojp-js) SDK
+  - allow to display SIRI-SX situations with multiple descriptions
+  - adds support for trips with `Cancelled`, `Infeasable` Trip status
+  - adds support for `NotServicedStopa property for TimedLeg stops
+  - move the logic for `StationBoardModel` from the SDK into the GUI
+
+26.August 2024
+- display service trip info in a popover / standalone tab - [PR #154](https://github.com/openTdataCH/ojp-demo-app-src/pull/154)
+- paginate results, display prev / next connections - [PR #153](https://github.com/openTdataCH/ojp-demo-app-src/pull/153) 
+- display heading text - [Display Service DestinationText #146](https://github.com/openTdataCH/ojp-demo-app-src/issues/146), [PR #153](https://github.com/openTdataCH/ojp-demo-app-src/pull/153) 
+- use `0.9.36` version of [OJP JS](https://github.com/openTdataCH/ojp-js) SDK
+
 02.July 2024
 - use `0.9.35` version of [OJP JS](https://github.com/openTdataCH/ojp-js) SDK
 - allow trip legs to be merged in case of `remainInVehicle` leg type - [remainInVehicle as symbol #125](https://github.com/openTdataCH/ojp-demo-app-src/issues/125)

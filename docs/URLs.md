@@ -10,6 +10,7 @@ OJP-Demo URL: https://opentdatach.github.io/ojp-demo-app/
 
 | Param  | Example (decoded) | Description |
 |--|--|--|
+|lang| `de`, `en`, `fr` or `it` | Choose the ISO language in which the OJP repsonse will be deliverd, default is the browser locale. |
 |from| `8503000` for Zürich HB or `47.378173,8.540264` for same location as coordinates.|[DiDok](https://opentransportdata.swiss/de/dataset/didok) id or [Latitude,Longitude](https://developers.google.com/maps/documentation/javascript/reference/coordinates) coordinates. |
 |to|see `from`| |
 |via| `47.044250,8.308174;47.163056,8.687139` | List of [Latitude,Longitude](https://developers.google.com/maps/documentation/javascript/reference/coordinates) coordinates separated by semi-colon `;`. |
@@ -48,6 +49,7 @@ OJP-Demo URL: https://opentdatach.github.io/ojp-demo-app/
 ----
 
 CHANGELOG
+- Aug 2024 - added `lang` param
 - Oct 2022 - updated mono-, multi- modal journey examples
 - Sep 2022 - adds Station Board
 - Mar 2022 - adds `do_search` param

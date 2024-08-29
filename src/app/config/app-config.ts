@@ -4,6 +4,9 @@ export type APP_STAGE = OJP.Default_APP_Stage
   | 'GR TEST' | 'INT Linux' | 'TEST Linux' 
   | 'V2-PROD' | 'V2-INT' | 'V2-TEST';
 
+type DEBUG_LEVEL_Type = 'DEBUG' | 'PROD'
+export const DEBUG_LEVEL: DEBUG_LEVEL_Type = 'PROD'
+
 export interface AppMapLayerOptions {
   LIR_Restriction_Type: OJP.RestrictionType
   LIR_POI_Type?: OJP.POI_Restriction | null
