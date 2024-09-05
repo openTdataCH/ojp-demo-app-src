@@ -290,9 +290,12 @@ export class UserTripService {
     this.fromTripLocation = Object.assign({}, this.toTripLocation);
     this.toTripLocation = Object.assign({}, locationAux);
 
-    this.updatePermalinkAddress();
     this.locationsUpdated.emit();
     this.geoLocationsUpdated.emit();
+    this.activeTripSelected.emit(null);
+
+    this.searchParamsReset.emit();
+    this.updatePermalinkAddress();
   }
 
   private computeAppStageFromString(appStageS: string): APP_STAGE {
