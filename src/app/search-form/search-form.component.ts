@@ -104,8 +104,8 @@ export class SearchFormComponent implements OnInit {
     });
 
     this.userTripService.searchParamsReset.subscribe(() => {
-      this.expandSearchPanel()
-      this.requestDurationF = null
+      this.expandSearchPanel();
+      this.requestDurationF = null;
     });
 
     this.userTripService.defaultsInited.subscribe(nothing => {
