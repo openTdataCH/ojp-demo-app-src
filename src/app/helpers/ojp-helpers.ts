@@ -1,7 +1,6 @@
 import * as OJP from 'ojp-sdk';
 
 import { LegStopPointData } from '../shared/components/service-stops.component';
-import { SituationData } from '../shared/types/situation-type';
 
 export class OJPHelpers {
   public static computeIconFilenameForService(service: OJP.JourneyService): string {
@@ -95,20 +94,18 @@ export class OJPHelpers {
     stopPointData.isNotServicedStop = stopPoint.isNotServicedStop === true;
   }
 
-  public static computeSituationsData(siriSituations: OJP.PtSituationElement[]): SituationData[] {
-    const situationsData: SituationData[] = [];
+  public static computeSituationsData(siriSituations: OJP.PtSituationElement[]): OJP.SituationContent[] {
+    const situationsData: OJP.SituationContent[] = [];
 
     siriSituations.forEach(situation => {
-      const situationContentV1 = situation.situationContentV1;
-      if (situationContentV1 === null) {
-        return;
+      if (situation.situationContent !== null) {
+        situationsData.push(situation.situationContent);
       }
 
-      const situationData: SituationData = {
-        summary: situationContentV1.summary,
-        descriptions: situationContentV1.descriptions,
-        details: situationContentV1.details
-      }
+      situation.publishingActions.forEach(publishingAction => {
+        const mapTextualContent = publishingAction.passengerInformation.mapTextualContent;
+
+        const situationData = <OJP.SituationContent>{};
 
       situationsData.push(situationData);
     });
