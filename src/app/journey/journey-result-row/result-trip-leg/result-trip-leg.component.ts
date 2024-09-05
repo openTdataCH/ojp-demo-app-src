@@ -10,7 +10,6 @@ import { MapService } from '../../../shared/services/map.service'
 import { OJPHelpers } from '../../../helpers/ojp-helpers';
 import { LegStopPointData } from '../../../shared/components/service-stops.component'
 import { TripInfoResultPopoverComponent } from './trip-info-result-popover/trip-info-result-popover.component';
-import { SituationData } from '../../../shared/types/situation-type';
 
 type LegTemplate = 'walk' | 'timed' | 'taxi';
 
@@ -38,7 +37,7 @@ interface LegInfoDataModel {
   intermediaryLocationsData: LegStopPointData[]
 
   hasSituations: boolean
-  situations: SituationData[]
+  situations: OJP.SituationContent[]
 
   legTemplate: LegTemplate
 
@@ -327,14 +326,15 @@ export class ResultTripLegComponent implements OnInit {
     })();
 
     this.legInfoDataModel.situations = (() => {
-      const situationsData: SituationData[] = [];
-
       if (leg.legType !== 'TimedLeg') {
-        return situationsData;
+        return [];
       }
 
       const timedLeg = leg as OJP.TripTimedLeg;
-      return OJPHelpers.computeSituationsData(timedLeg.service.siriSituations);
+      const timedLegSituations = timedLeg.service.siriSituations;
+      const situationsData = OJPHelpers.computeSituationsData(timedLegSituations);
+
+      return situationsData;
     })();
     this.legInfoDataModel.hasSituations = this.legInfoDataModel.situations.length > 0;
 

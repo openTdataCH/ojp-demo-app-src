@@ -3,7 +3,6 @@ import { AfterViewInit, Component, ElementRef, OnInit, ViewChild } from '@angula
 import * as OJP from 'ojp-sdk'
 
 import { StationBoardService } from '../station-board.service';
-import { SituationData } from '../../shared/types/situation-type';
 import { OJPHelpers } from '../../helpers/ojp-helpers';
 
 interface StationBoardTime {
@@ -29,7 +28,7 @@ interface StationBoardModel {
   stopPlatform: string | null
   stopPlatformActual: string | null
 
-  situations: SituationData[]
+  situations: OJP.SituationContent[]
 }
 
 @Component({
