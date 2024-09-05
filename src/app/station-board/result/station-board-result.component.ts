@@ -3,7 +3,6 @@ import { AfterViewInit, Component, ElementRef, OnInit, ViewChild } from '@angula
 import * as OJP from 'ojp-sdk'
 
 import { StationBoardService } from '../station-board.service';
-import { SituationData } from '../../shared/types/situation-type';
 import { OJPHelpers } from '../../helpers/ojp-helpers';
 
 interface StationBoardTime {
@@ -29,7 +28,7 @@ interface StationBoardModel {
   stopPlatform: string | null
   stopPlatformActual: string | null
 
-  situations: SituationData[]
+  situations: OJP.SituationContent[]
 }
 
 @Component({
@@ -214,7 +213,7 @@ export class StationBoardResultComponent implements OnInit, AfterViewInit {
         servicePtMode: servicePtMode,
         tripNumber: stopEvent.journeyService.journeyNumber, 
         tripHeading: stopEvent.journeyService.destinationStopPlace?.stopPlaceName ?? 'N/A', 
-        tripOperator: stopEvent.journeyService.agencyID,
+        tripOperator: stopEvent.journeyService.agencyCode,
         mapStationBoardTime: {
             Arrivals: arrivalTime,
             Departures: departureTime

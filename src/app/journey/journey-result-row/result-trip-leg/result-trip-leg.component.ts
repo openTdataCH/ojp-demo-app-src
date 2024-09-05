@@ -10,7 +10,7 @@ import { MapService } from '../../../shared/services/map.service'
 import { OJPHelpers } from '../../../helpers/ojp-helpers';
 import { LegStopPointData } from '../../../shared/components/service-stops.component'
 import { TripInfoResultPopoverComponent } from './trip-info-result-popover/trip-info-result-popover.component';
-import { SituationData } from '../../../shared/types/situation-type';
+import { DEBUG_LEVEL } from 'src/app/config/app-config';
 
 type LegTemplate = 'walk' | 'timed' | 'taxi';
 
@@ -38,7 +38,7 @@ interface LegInfoDataModel {
   intermediaryLocationsData: LegStopPointData[]
 
   hasSituations: boolean
-  situations: SituationData[]
+  situations: OJP.SituationContent[]
 
   legTemplate: LegTemplate
 
@@ -327,14 +327,23 @@ export class ResultTripLegComponent implements OnInit {
     })();
 
     this.legInfoDataModel.situations = (() => {
-      const situationsData: SituationData[] = [];
-
       if (leg.legType !== 'TimedLeg') {
-        return situationsData;
+        return [];
       }
 
       const timedLeg = leg as OJP.TripTimedLeg;
-      return OJPHelpers.computeSituationsData(timedLeg.service.siriSituations);
+      const timedLegSituations = timedLeg.service.siriSituations;
+      const situationsData = OJPHelpers.computeSituationsData(timedLegSituations);
+      
+      if (DEBUG_LEVEL === 'DEBUG') {
+        if ((timedLegSituations.length > 0) && (situationsData.length === 0)) {
+          console.error('ResultTripLegComponent.initLegInfo ERROR - have situations but cant extract data from them');
+          console.log(timedLegSituations);
+          console.log('========================================================');
+        }
+      }  
+
+      return situationsData;
     })();
     this.legInfoDataModel.hasSituations = this.legInfoDataModel.situations.length > 0;
 
@@ -423,7 +432,7 @@ export class ResultTripLegComponent implements OnInit {
       nameParts.push(service.ptMode.shortName ?? service.ptMode.ptMode)
     }
 
-    nameParts.push('(' + service.agencyID + ')')
+    nameParts.push('(' + service.agencyCode + ')')
 
     return nameParts.join(' ')
   }

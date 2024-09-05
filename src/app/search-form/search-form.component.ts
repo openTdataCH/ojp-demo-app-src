@@ -67,7 +67,7 @@ export class SearchFormComponent implements OnInit {
     this.fromLocationText = ''
     this.toLocationText = ''
 
-    this.appStageOptions = ['PROD', 'INT', 'TEST', 'LA Beta']
+    this.appStageOptions = ['V2-PROD', 'V2-INT', 'V2-TEST'];
 
     this.isSearching = false;
 
@@ -117,7 +117,6 @@ export class SearchFormComponent implements OnInit {
       const requestParseDuration = DateHelpers.computeExecutionTime(requestInfo.responseDateTime, requestInfo.parseDateTime);
       this.requestDurationF = (requestNetworkDuration + requestParseDuration).toFixed(2) + ' sec';
     });
-
 
     this.userTripService.initDefaults(this.languageService.language);
   }

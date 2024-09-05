@@ -12,15 +12,27 @@
     <tbody>
       <tr *ngFor="let stopPointData of this.stopPointsData" (click)="zoomToLocation(stopPointData)">
         <td class="fit stop-time">
-          <span>{{ stopPointData.arrText }}</span>
-          <span class="time-delay">{{ stopPointData.arrDelayText }}</span>
+          <div *ngIf="stopPointData.isNotServicedStop">
+            <span><del>{{ stopPointData.arrText }}</del></span>
+            <span class="time-delay"><del>{{ stopPointData.arrDelayText }}</del></span>  
+          </div>
+          <div *ngIf="!stopPointData.isNotServicedStop">
+            <span>{{ stopPointData.arrText }}</span>
+            <span class="time-delay">{{ stopPointData.arrDelayText }}</span>  
+          </div>
         </td>
         <td class="fit stop-time">
-          <span>{{ stopPointData.depText }}</span>
-          <span class="time-delay">{{ stopPointData.depDelayText }}</span>
+          <div *ngIf="stopPointData.isNotServicedStop">
+            <span><del>{{ stopPointData.depText }}</del></span>
+            <span class="time-delay"><del>{{ stopPointData.depDelayText }}</del></span>
+          </div>
+          <div *ngIf="!stopPointData.isNotServicedStop">
+            <span>{{ stopPointData.depText }}</span>
+            <span class="time-delay">{{ stopPointData.depDelayText }}</span>
+          </div>
         </td>
         <td class="stop-info d-flex">
-          <div class="flex-grow-1">{{ stopPointData.locationText }}</div>
+          <div class="flex-grow-1">{{ stopPointData.locationText }} <span *ngIf="stopPointData.isNotServicedStop" class="badge rounded-pill bg-danger fw-bolder">not serviced</span></div>
           <div *ngIf="stopPointData.platformText !== null" class="d-flex gap-2">
             <div *ngIf="stopPointData.actualPlatformText === null">
               <div>Pl. {{ stopPointData.platformText }}</div>
