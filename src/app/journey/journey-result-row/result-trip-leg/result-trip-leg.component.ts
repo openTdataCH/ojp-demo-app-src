@@ -10,6 +10,7 @@ import { MapService } from '../../../shared/services/map.service'
 import { OJPHelpers } from '../../../helpers/ojp-helpers';
 import { LegStopPointData } from '../../../shared/components/service-stops.component'
 import { TripInfoResultPopoverComponent } from './trip-info-result-popover/trip-info-result-popover.component';
+import { DEBUG_LEVEL } from 'src/app/config/app-config';
 
 type LegTemplate = 'walk' | 'timed' | 'taxi';
 
@@ -333,6 +334,14 @@ export class ResultTripLegComponent implements OnInit {
       const timedLeg = leg as OJP.TripTimedLeg;
       const timedLegSituations = timedLeg.service.siriSituations;
       const situationsData = OJPHelpers.computeSituationsData(timedLegSituations);
+      
+      if (DEBUG_LEVEL === 'DEBUG') {
+        if ((timedLegSituations.length > 0) && (situationsData.length === 0)) {
+          console.error('ResultTripLegComponent.initLegInfo ERROR - have situations but cant extract data from them');
+          console.log(timedLegSituations);
+          console.log('========================================================');
+        }
+      }  
 
       return situationsData;
     })();
