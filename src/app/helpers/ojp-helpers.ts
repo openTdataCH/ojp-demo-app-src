@@ -112,4 +112,27 @@ export class OJPHelpers {
 
     return situationsData;
   }
+
+  public static async fetchGist(gistId: string): Promise<string | null> {
+    const gistURLMatches = gistId.match(/https:\/\/gist.github.com\/[^\/]+?\/([0-9a-z]*)/);
+    if (gistURLMatches !== null) {
+      gistId = gistURLMatches[1];
+    }
+
+    const gistAPI = 'https://api.github.com/gists/' + gistId;
+    const gistJSON = await (await fetch(gistAPI)).json();
+    const gistFiles = gistJSON['files'] as Record<string, any>;
+
+    for (const gistFile in gistFiles) {
+      const gistFileData = gistFiles[gistFile];
+      if (gistFileData['language'] !== 'XML') {
+        continue;
+      }
+
+      const mockText = gistFileData['content'];
+      return mockText;
+    }
+
+    return null;
+  }
 }
