@@ -17,7 +17,9 @@
 |-----|-------|
 | https://tools.odpch.ch/ojp-demo-v2/search?gist=86514397dae2038d7024f2228be476d7 | TR with `Infeasable`, `Unplanned` status |
 | https://tools.odpch.ch/ojp-demo-v2/search?gist=2f9f3554a3f5b7c65ce76f04406319bb | TR with `Deviation` status |
+| https://tools.odpch.ch/ojp-demo-v2/search?gist=1dff55df2c5b3167f59c093261ff4f54 | TR with `Cancelled` status |
 | https://tools.odpch.ch/ojp-demo-v2/search?gist=29843eabbeaaa8e73163b0a22b511513 | TR with `Autoverladezug` |
+
 
 ----
 
