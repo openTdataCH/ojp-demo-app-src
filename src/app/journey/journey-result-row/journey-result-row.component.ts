@@ -13,7 +13,8 @@ interface TripHeaderStats {
   tripDistanceS: string,
 
   isCancelled: boolean,
-  isInfeasable: boolean
+  isInfeasable: boolean,
+  isUnplanned: boolean,
 }
 
 @Component({
@@ -56,6 +57,7 @@ export class JourneyResultRowComponent implements OnInit {
 
     this.tripHeaderStats.isCancelled = trip.stats.isCancelled === true;
     this.tripHeaderStats.isInfeasable = trip.stats.isInfeasable === true;
+    this.tripHeaderStats.isUnplanned = trip.stats.isUnplanned === true;
       
     if (trip.stats.transferNo === 0) {
       this.tripHeaderStats.tripChangesInfo = 'direct'
