@@ -12,6 +12,9 @@
           <div *ngIf="this.tripHeaderStats.isInfeasable === true">
             <span class="badge rounded-pill bg-warning fw-bolder text-dark">Infeasable</span>
           </div>
+          <div *ngIf="this.tripHeaderStats.isUnplanned === true">
+            <span class="badge rounded-pill bg-warning fw-bolder text-dark">Unplanned</span>
+          </div>
           <div>
             <span> - {{ this.tripHeaderStats.tripChangesInfo }}</span>
           </div>
