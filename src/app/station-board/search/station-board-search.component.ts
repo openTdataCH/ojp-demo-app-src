@@ -111,6 +111,10 @@ export class StationBoardSearchComponent implements OnInit {
       this.handleMapClick(feature);
     })
 
+    this.customInitFromParams();
+  }
+
+  private customInitFromParams() {
     if (this.useMocks) {
       if (this.useMocks && document.location.hostname === 'localhost') {
         this.fetchStopEventFromMocks();
@@ -272,6 +276,10 @@ export class StationBoardSearchComponent implements OnInit {
     const mockURL = '/path/to/mock.xml';
 
     const mockText = await (await fetch(mockURL)).text();
+    this.initFromMockXML(mockText);
+  }
+
+  private initFromMockXML(mockText: string) {
     const request = OJP.StopEventRequest.initWithMock(mockText);
     request.fetchResponse().then(response => {
       this.parseStopEvents(response.stopEvents);
