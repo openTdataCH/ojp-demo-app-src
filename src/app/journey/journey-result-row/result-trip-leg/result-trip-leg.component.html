@@ -2,13 +2,23 @@
   <div class="mb-2 d-flex flex-row"> -->
 
 <div>
-  <div class="mb-2 d-flex flex-row">
-    <button 
+  <div class="mb-2 d-flex flex-row gap-2">
+    <div>
+      <button 
       type="button" 
       class="btn btn-primary btn-sm font-weight-bold" 
       [ngStyle]="{'background-color': this.legInfoDataModel.legColor, 'border-color': this.legInfoDataModel.legColor}"
       (click)="handleTapOnLegHeading()">{{ this.legInfoDataModel.leadingText }}</button>
-  
+    </div>
+    <div *ngIf="this.legInfoDataModel.isCancelled === true">
+      <span class="badge rounded-pill bg-danger fw-bolder">Cancelled</span>
+    </div>
+    <div *ngIf="this.legInfoDataModel.hasDeviation === true">
+      <span class="badge rounded-pill bg-warning fw-bolder">Deviation</span>
+    </div>
+    <div *ngIf="this.legInfoDataModel.isUnplanned === true">
+      <span class="badge rounded-pill bg-warning fw-bolder">Unplanned</span>
+    </div>
     <div class="ms-auto" *ngIf="this.isEmbed === false">
       <div
         class="badge leg-pill pill-hover bg-primary"

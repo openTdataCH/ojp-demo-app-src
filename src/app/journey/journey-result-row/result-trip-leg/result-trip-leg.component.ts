@@ -48,6 +48,10 @@ interface LegInfoDataModel {
   serviceInfo: string | null
   serviceIntermediaryStopsText: string | null
   serviceJourneyRef: string | null
+
+  isCancelled: boolean
+  hasDeviation: boolean
+  isUnplanned: boolean
 }
 
 @Component({
@@ -413,6 +417,36 @@ export class ResultTripLegComponent implements OnInit {
       const timedLeg = leg as OJP.TripTimedLeg;
 
       return timedLeg.service.journeyRef;
+    })();
+
+    this.legInfoDataModel.isCancelled = (() => {
+      if (leg.legType !== 'TimedLeg') {
+        return false;
+      }
+
+      const timedLeg = leg as OJP.TripTimedLeg;
+
+      return timedLeg.service.hasCancellation === true;
+    })();
+
+    this.legInfoDataModel.hasDeviation = (() => {
+      if (leg.legType !== 'TimedLeg') {
+        return false;
+      }
+
+      const timedLeg = leg as OJP.TripTimedLeg;
+
+      return timedLeg.service.hasDeviation === true;
+    })();
+
+    this.legInfoDataModel.isUnplanned = (() => {
+      if (leg.legType !== 'TimedLeg') {
+        return false;
+      }
+
+      const timedLeg = leg as OJP.TripTimedLeg;
+
+      return timedLeg.service.isUnplanned === true;
     })();
   }
 
