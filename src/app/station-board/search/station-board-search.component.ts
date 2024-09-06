@@ -19,6 +19,7 @@ import { APP_STAGE } from '../../config/app-config'
 import { EmbedStationBoardPopoverComponent } from './embed-station-board-popover/embed-station-board-popover.component';
 import { Router } from '@angular/router';
 import { LanguageService } from '../../shared/services/language.service';
+import { OJPHelpers } from 'src/app/helpers/ojp-helpers';
 
 @Component({
   selector: 'station-board-search',
@@ -121,6 +122,22 @@ export class StationBoardSearchComponent implements OnInit {
         return;
       }
     }
+
+    const gistId = this.queryParams.get('gist');
+    if (gistId) {
+      this.initFromGistRef(gistId);
+      return;
+    }
+  }
+
+  private async initFromGistRef(gistId: string) {
+    const mockText = await OJPHelpers.fetchGist(gistId);
+    if (mockText === null) {
+      console.error('initFromGistRef: cant fetch gist XML');
+      return;
+    }
+
+    this.initFromMockXML(mockText);
   }
 
   private computeAppStageFromString(appStageS: string): APP_STAGE | null {
