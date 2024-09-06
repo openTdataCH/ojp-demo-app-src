@@ -299,6 +299,14 @@ export class StationBoardSearchComponent implements OnInit {
   private initFromMockXML(mockText: string) {
     const request = OJP.StopEventRequest.initWithMock(mockText);
     request.fetchResponse().then(response => {
+      if (response.stopEvents.length > 0) {
+        const stopEvent = response.stopEvents[0];
+        const firstLocation = stopEvent.stopPoint.location;
+        if (firstLocation) {
+          this.onLocationSelected(firstLocation);
+        }
+      }
+
       this.parseStopEvents(response.stopEvents);
     });
   }
