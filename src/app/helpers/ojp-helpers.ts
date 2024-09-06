@@ -129,7 +129,14 @@ export class OJPHelpers {
         continue;
       }
 
-      const mockText = gistFileData['content'];
+      let mockText = gistFileData['content'];
+
+      if (gistFileData['truncated'] === true) {
+        const gistRawURL = gistFileData['raw_url'];
+        console.log('GIST response truncated, fetching content from raw_url: ' + gistRawURL);
+        mockText = await (await fetch(gistRawURL)).text();
+      }
+      
       return mockText;
     }
 
