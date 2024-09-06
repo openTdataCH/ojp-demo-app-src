@@ -18,6 +18,7 @@ import * as OJP from 'ojp-sdk'
 
 import { APP_STAGE, DEBUG_LEVEL } from '../config/app-config';
 import { Router } from '@angular/router';
+import { OJPHelpers } from '../helpers/ojp-helpers';
 
 @Component({
   selector: 'app-search-form',
@@ -216,26 +217,13 @@ export class SearchFormComponent implements OnInit {
   }
 
   private async initFromGistRef(gistId: string) {
-    const gistURLMatches = gistId.match(/https:\/\/gist.github.com\/[^\/]+?\/([0-9a-z]*)/);
-    if (gistURLMatches) {
-      gistId = gistURLMatches[1];
+    const mockText = await OJPHelpers.fetchGist(gistId);
+    if (mockText === null) {
+      console.error('initFromGistRef: cant fetch gist XML');
+      return;
     }
 
-    const gistAPI = 'https://api.github.com/gists/' + gistId;
-    const gistJSON = await (await fetch(gistAPI)).json();
-    const gistFiles = gistJSON['files'] as Record<string, any>;
-
-    for (const gistFile in gistFiles) {
-      const gistFileData = gistFiles[gistFile];
-      if (gistFileData['language'] !== 'XML') {
-        continue;
-      }
-
-      const mockText = gistFileData['content'];
-      this.initFromMockXML(mockText);
-
-      break;
-    }
+    this.initFromMockXML(mockText);
   }
 
   onLocationSelected(location: OJP.Location | null, originType: OJP.JourneyPointType) {
