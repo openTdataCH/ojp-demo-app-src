@@ -52,6 +52,8 @@ export class SearchFormComponent implements OnInit {
 
   private useMocks: boolean
 
+  public gistURL: string | null;
+
   constructor(
     private notificationToast: SbbNotificationToast,
     private tripXmlPopover: SbbDialog,
@@ -88,6 +90,8 @@ export class SearchFormComponent implements OnInit {
     this.useMocks = queryParams.get('use_mocks') === 'yes';
     
     this.isEmbed = this.router.url.indexOf('/embed/') !== -1;
+
+    this.gistURL = null;
   }
 
   ngOnInit() {
@@ -222,6 +226,8 @@ export class SearchFormComponent implements OnInit {
       console.error('initFromGistRef: cant fetch gist XML');
       return;
     }
+
+    this.gistURL = 'https://gist.github.com/' + gistId;
 
     this.initFromMockXML(mockText);
   }

@@ -163,3 +163,12 @@
     </div>
   </div>
 </div>
+
+<div class="row mb-2" *ngIf="this.gistURL !== null">
+  <div class="col">
+    <div>
+      Content from <a href="{{ this.gistURL }}" target="_blank">{{ this.gistURL }}</a>
+    </div>
+  </div>
+</div>
+    
