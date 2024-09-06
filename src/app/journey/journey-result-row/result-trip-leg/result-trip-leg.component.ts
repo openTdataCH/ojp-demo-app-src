@@ -455,7 +455,7 @@ export class ResultTripLegComponent implements OnInit {
           return 'kom:circle-information-large';
         }
 
-        if (['sa-ba', 'ba', 'sa-hl', 'hl'].includes(key.toLowerCase())) {
+        if (['sa-ba', 'ba', 'sa-hl', 'hl', 'bu'].includes(key.toLowerCase())) {
           return 'kom:circle-information-large';
         }
 
