@@ -1,6 +1,6 @@
 import { EventEmitter, Injectable } from '@angular/core'
 
-import { APP_CONFIG, APP_STAGE } from 'src/app/config/app-config'
+import { APP_CONFIG, APP_DEFAULT_STAGE, APP_STAGE } from 'src/app/config/app-config'
 import { MapService } from './map.service'
 
 import * as OJP from 'ojp-sdk'
@@ -52,7 +52,7 @@ export class UserTripService {
 
     this.lastJourneyResponse = null
     this.departureDate = this.computeInitialDate()
-    this.currentAppStage = 'PROD'
+    this.currentAppStage = APP_DEFAULT_STAGE;
 
     this.permalinkURLAddress = null
   }
@@ -288,7 +288,7 @@ export class UserTripService {
       return availableStages[stageIDX];
     }
 
-    return 'PROD';
+    return APP_DEFAULT_STAGE;
   }
 
   updateTripEndpoint(location: OJP.Location, endpointType: OJP.JourneyPointType, updateSource: LocationUpdateSource) {
