@@ -69,6 +69,13 @@
       </sbb-form-field>
     </div>
     <div>
+      <button sbb-secondary-button
+        (click)="resetDateTime()"
+        aria-expanded="false">
+          <sbb-icon svgIcon="kom:arrow-circle-reset-small"></sbb-icon>
+      </button>
+    </div>
+    <div>
       <sbb-radio-group class="sbb-radio-group-horizontal" [(ngModel)]="this.userTripService.currentBoardingType">
         <sbb-radio-button 
           *ngFor="let boardingType of this.tripRequestBoardingTypes"

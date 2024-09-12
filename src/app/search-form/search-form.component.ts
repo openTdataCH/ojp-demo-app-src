@@ -443,4 +443,11 @@ export class SearchFormComponent implements OnInit {
       // handle popover vars
     })
   }
+
+  public resetDateTime() {
+    const nowDateTime = new Date();
+    this.searchDate = nowDateTime;
+    this.searchTime = OJP.DateHelpers.formatTimeHHMM(nowDateTime);
+    this.userTripService.updateDepartureDateTime(this.computeFormDepartureDate());
+  }
 }
