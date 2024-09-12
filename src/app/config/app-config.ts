@@ -9,7 +9,7 @@ export interface AppMapLayerOptions {
 }
 
 export type APP_STAGE = OJP.Default_APP_Stage | 'GR TEST'
-export const APP_DEFAULT_STAGE: APP_STAGE = 'GR TEST'
+export const APP_DEFAULT_STAGE: APP_STAGE = 'PROD'
 
 const app_stages: OJP.StageConfig[] = [
   {
