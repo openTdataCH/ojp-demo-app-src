@@ -30,6 +30,7 @@ export class SearchFormComponent implements OnInit {
 
   public fromLocationText: string
   public toLocationText: string
+  public viaText: string
 
   public appStageOptions: APP_STAGE[] = []
 
@@ -69,6 +70,7 @@ export class SearchFormComponent implements OnInit {
 
     this.fromLocationText = ''
     this.toLocationText = ''
+    this.viaText = ''
 
     this.appStageOptions = ['PROD', 'INT', 'TEST', 'LA Beta']
 
@@ -168,7 +170,12 @@ export class SearchFormComponent implements OnInit {
       }
 
       fromToTextParts.push(locationText);
-    })
+    });
+
+    if (this.userTripService.viaTripLocations.length > 0) {
+      const firstViaLocation = this.userTripService.viaTripLocations[0].location;
+      this.viaText = firstViaLocation.computeLocationName() ?? 'Name n/a';
+    }
 
     if (this.isEmbed) {
       const textParts: string[] = [];
@@ -234,7 +241,7 @@ export class SearchFormComponent implements OnInit {
   }
 
   onLocationSelected(location: OJP.Location | null, originType: OJP.JourneyPointType) {
-    this.userTripService.updateTripEndpoint(location, originType, 'SearchForm')
+    this.userTripService.updateTripEndpoint(location, originType, 'SearchForm');
   }
 
   onChangeStageAPI(ev: SbbRadioChange) {
@@ -274,38 +281,42 @@ export class SearchFormComponent implements OnInit {
   public handleTapOnSearch() {
     this.userTripService.updateDepartureDateTime(this.computeFormDepartureDate())
 
-    const journeyRequestParams = OJP.JourneyRequestParams.initWithLocationsAndDate(
+    const includeLegProjection = true;
+
+    const viaTripLocations = this.userTripService.isViaEnabled ? this.userTripService.viaTripLocations : [];
+
+    const stageConfig = this.userTripService.getStageConfig();
+    const tripRequest = OJP.TripRequest.initWithTripLocationsAndDate(
+      stageConfig, 
       this.languageService.language,
       this.userTripService.fromTripLocation,
       this.userTripService.toTripLocation,
-      this.userTripService.viaTripLocations,
-      this.userTripService.tripModeTypes,
-      this.userTripService.tripTransportModes,
       this.userTripService.departureDate,
       this.userTripService.currentBoardingType,
       'NumberOfResults',
+      includeLegProjection,
+      this.userTripService.tripModeTypes[0],
+      this.userTripService.tripTransportModes[0],
+      viaTripLocations,
     );
-    if (journeyRequestParams === null) {
+
+    if (tripRequest === null) {
       this.notificationToast.open('Please check from/to input points', {
         type: 'error',
         verticalPosition: 'top',
       });
       return
     }
-    
-    this.notificationToast.dismiss()
 
-    const stageConfig = this.userTripService.getStageConfig()
-    const journeyRequest = new OJP.JourneyRequest(stageConfig, journeyRequestParams);
-
+    this.notificationToast.dismiss();
     this.isSearching = true;
 
-    journeyRequest.fetchResponse((response) => {
-      if (response.error) {
-        this.notificationToast.open(response.error.message, {
+    tripRequest.fetchResponseWithCallback((response) => {
+      if (response.message === 'ERROR') {
+        this.notificationToast.open('ParseTripsXMLError', {
           type: 'error',
           verticalPosition: 'top',
-        })
+        });
 
         this.isSearching = false;
         this.userTripService.journeyTripRequests = [];
@@ -318,10 +329,12 @@ export class SearchFormComponent implements OnInit {
         return;
       }
 
-      const trips = response.sections.flatMap(el => el.trips);
-      this.userTripService.journeyTripRequests = journeyRequest.tripRequests;
-      
-      if (response.message === 'JourneyRequest.DONE') {
+      const trips = response.trips;
+      this.userTripService.journeyTripRequests = [tripRequest];
+
+      if (response.message === 'TripRequest.DONE') {
+        this.isSearching = false;
+
         if (trips.length === 0) {
           this.notificationToast.open('No trips found', {
             type: 'info',
@@ -329,10 +342,8 @@ export class SearchFormComponent implements OnInit {
           })
         }
 
-        const requestInfo = journeyRequest.tripRequests[0].requestInfo;
-        this.userTripService.tripRequestFinished.emit(requestInfo);
+        this.userTripService.tripRequestFinished.emit(tripRequest.requestInfo);
 
-        this.isSearching = false;
         this.userTripService.updateTrips(trips);
 
         if (trips.length > 0) {
@@ -347,7 +358,17 @@ export class SearchFormComponent implements OnInit {
           this.userTripService.selectActiveTrip(null);
         }
       } else {
+        if (response.message === 'TripRequest.TripsNo') {
+          if (DEBUG_LEVEL === 'DEBUG') {
+            console.log('DEBUG: TripsNo => ' + response.tripsNo);
+          }
+        }
+
         if (response.message === 'TripRequest.Trip') {
+          if (DEBUG_LEVEL === 'DEBUG') {
+            console.log('DEBUG: New Trip => ' + response.trips.length + '/' + response.tripsNo);
+          }
+
           this.userTripService.updateTrips(trips);
           if (trips.length === 1) {
             // zoom to first trip
@@ -355,12 +376,8 @@ export class SearchFormComponent implements OnInit {
             this.mapService.zoomToTrip(firstTrip);
           }
         }
-
-        if (response.message === 'ERROR') {
-          this.isSearching = false;
-        }
       }
-    })
+    });
   }
 
   private expandSearchPanel() {
@@ -443,6 +460,10 @@ export class SearchFormComponent implements OnInit {
       const popover = dialogRef.componentInstance as EmbedSearchPopoverComponent
       // handle popover vars
     })
+  }
+
+  public toggleViaState() {
+    this.userTripService.updateVia();
   }
 
   public resetDateTime() {

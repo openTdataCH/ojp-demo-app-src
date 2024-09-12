@@ -19,13 +19,37 @@
         [placeholder]="'From'">
       </journey-point-input>
     </div>
+
+    <div class="right-button">
+      <button sbb-secondary-button
+        (click)="toggleViaState()"
+        class="btn-collapse collapsed"
+        data-bs-toggle="collapse" 
+        data-bs-target="#viaContainer"
+        aria-controls="viaContainer"
+        aria-expanded="false">
+        
+        <sbb-icon *ngIf="!this.userTripService.isViaEnabled" svgIcon="kom:plus-medium"></sbb-icon>
+        <sbb-icon *ngIf="this.userTripService.isViaEnabled" svgIcon="kom:minus-medium"></sbb-icon>
+      </button>
+    </div>
   </div>
 
+  <div class="collapse" [ngClass]="{ 'show': this.userTripService.isViaEnabled}" id="viaContainer">
+    <div class="d-flex align-items-center">
+      <div class="flex-grow-1 journey-endpoint">
+        <journey-point-input
+          (selectedLocation)="onLocationSelected($event, 'Via')"
+          [endpointType]="'Via'"
+          [inputValue]="this.viaText"
+          [placeholder]="'Via'">
+        </journey-point-input>
+      </div>
+    </div>
+  </div> 
+  
   <ng-container *ngIf="!this.isEmbed">
-    <trip-mode-type 
-      *ngFor="let modeType of this.userTripService.journeyTripsPlaceholder; index as idx"
-      [tripModeTypeIdx]="idx">
-    </trip-mode-type>
+    <trip-mode-type [tripModeTypeIdx]="0"></trip-mode-type>
   </ng-container>
 
   <div class="d-flex align-items-center">

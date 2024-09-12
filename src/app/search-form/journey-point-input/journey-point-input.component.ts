@@ -139,9 +139,27 @@ export class JourneyPointInputComponent implements OnInit, OnChanges {
   }
 
   public handleTapOnMapButton() {
-    const tripLocationPoint = this.endpointType === 'From' ? this.userTripService.fromTripLocation : this.userTripService.toTripLocation
-    const location = tripLocationPoint?.location ?? null;
-    this.mapService.tryToCenterAndZoomToLocation(location)
+    const location: OJP.Location | null = (() => {
+      if (this.endpointType === 'From') {
+        return this.userTripService.fromTripLocation?.location ?? null;
+      }
+
+      if (this.endpointType === 'To') {
+        return this.userTripService.toTripLocation?.location ?? null;
+      }
+
+      if (this.endpointType === 'Via') {
+        const viaTripLocations = this.userTripService.viaTripLocations;
+        if (viaTripLocations.length > 0) {
+          const viaTripLocation = viaTripLocations[0];
+          return viaTripLocation.location;
+        }
+      }
+
+      return null;
+    })()
+
+    this.mapService.tryToCenterAndZoomToLocation(location);
   }
 
   private handleCoordsPick(location: OJP.Location) {
