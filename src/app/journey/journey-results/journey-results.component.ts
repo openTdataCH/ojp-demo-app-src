@@ -92,6 +92,9 @@ export class JourneyResultsComponent implements OnInit {
       depArrDate,
       this.userTripService.currentBoardingType,
       numberOfResultsType,
+      true,
+      this.userTripService.tripModeTypes[0],
+      this.userTripService.tripTransportModes[0],
     );
 
     if (request === null) {
