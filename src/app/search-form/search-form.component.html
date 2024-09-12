@@ -10,12 +10,12 @@
 </div>
 
 <ng-template #searchContent>
-  <div class="d-flex">
+  <div class="d-flex align-items-center">
     <div class="flex-grow-1 journey-endpoint">
       <journey-point-input
         (selectedLocation)="onLocationSelected($event, 'From')"
         [endpointType]="'From'"
-        [inputValue]="fromLocationText"
+        [inputValue]="this.fromLocationText"
         [placeholder]="'From'">
       </journey-point-input>
     </div>
@@ -47,7 +47,7 @@
     </div>
   </div>
 
-  <div class="d-flex">
+  <div class="d-flex align-items-center gap-2">
     <div>
       <sbb-form-field label="Choose Day">
         <sbb-datepicker arrows>
@@ -59,7 +59,7 @@
         </sbb-datepicker>
       </sbb-form-field>
     </div>
-    <div style="margin-left: 8px; width:100px;">
+    <div style="width:70px;">
       <sbb-form-field label="Time">
         <input
           sbbInput
@@ -68,7 +68,7 @@
           (change)="onChangeDateTime()" />
       </sbb-form-field>
     </div>
-    <div style="margin-top: 28px;">
+    <div>
       <sbb-radio-group class="sbb-radio-group-horizontal" [(ngModel)]="this.userTripService.currentBoardingType">
         <sbb-radio-button 
           *ngFor="let boardingType of this.tripRequestBoardingTypes"
