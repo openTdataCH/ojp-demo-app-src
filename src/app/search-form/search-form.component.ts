@@ -65,6 +65,8 @@ export class SearchFormComponent implements OnInit {
 
     this.useMocks = false
 
+    const queryParams = new URLSearchParams(document.location.search);
+    this.useMocks = queryParams.get('use_mocks') === 'yes';
   }
 
   ngOnInit() {
