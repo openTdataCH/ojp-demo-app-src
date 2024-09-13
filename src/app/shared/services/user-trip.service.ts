@@ -103,9 +103,18 @@ export class UserTripService {
         });
         promises.push(coordsPromise);
       } else {
-        const locationInformationRequest = OJP.LocationInformationRequest.initWithStopPlaceRef(stageConfig, stopPlaceRef)
-        const locationInformationPromise = locationInformationRequest.fetchResponse();
-        promises.push(locationInformationPromise)
+        if (this.currentAppStage === 'GR TEST') {
+          // GR TEST cant use lookups by StopPlace, use LocationName with stopPlaceRef instead
+          const stopNameLIR = OJP.LocationInformationRequest.initWithLocationName(stageConfig, stopPlaceRef);
+          const stopNameLIR_Promise = stopNameLIR.fetchResponse();
+
+          promises.push(stopNameLIR_Promise);
+        } else {
+          const stopPlaceRefLIR = OJP.LocationInformationRequest.initWithStopPlaceRef(stageConfig, stopPlaceRef)
+          const stopPlaceRefLIR_Promise = stopPlaceRefLIR.fetchResponse();
+
+          promises.push(stopPlaceRefLIR_Promise);
+        }
       }
     });
 
