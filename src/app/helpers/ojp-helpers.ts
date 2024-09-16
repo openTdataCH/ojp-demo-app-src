@@ -107,7 +107,24 @@ export class OJPHelpers {
 
         const situationData = <OJP.SituationContent>{};
 
-      situationsData.push(situationData);
+        if ('Summary' in mapTextualContent) {
+          situationData.summary = mapTextualContent['Summary'].join('. ');
+        }
+
+        if ('Description' in mapTextualContent) {
+          situationData.descriptions = mapTextualContent['Description'];
+        }
+
+        situationData.details = [];
+        const detailKeys = ['Consequence', 'Duration', 'Reason', 'Recommendation', 'Remark'];
+        detailKeys.forEach(detailKey => {
+          if (detailKey in mapTextualContent) {
+            situationData.details = situationData.details.concat(mapTextualContent[detailKey]);
+          }
+        });
+
+        situationsData.push(situationData);
+      });
     });
 
     return situationsData;
