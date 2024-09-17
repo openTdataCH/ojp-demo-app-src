@@ -1,4 +1,4 @@
-<div class="row" *ngIf="this.trips.length > 0">
+<div class="row" *ngIf="this.model.hasPagination">
   <div class="col text-center link-connection">
     <button class="btn btn-primary" type="button" (click)="loadPreviousTrips()" [disabled]="this.model.isFetchingPrevTrips">
       <span *ngIf="this.model.isFetchingPrevTrips" class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
@@ -15,7 +15,7 @@
   ></journey-result-row>
 </sbb-accordion>
 
-<div class="row" *ngIf="this.trips.length > 0">
+<div class="row" *ngIf="this.model.hasPagination">
   <div class="col text-center link-connection">
     <button class="btn btn-primary" type="button" (click)="loadNextTrips()" [disabled]="this.model.isFetchingNextTrips">
       <span *ngIf="this.model.isFetchingNextTrips" class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>

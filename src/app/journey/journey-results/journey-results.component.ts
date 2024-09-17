@@ -7,6 +7,7 @@ import { LanguageService } from '../../shared/services/language.service';
 
 interface PageModel {
   trips: OJP.Trip[]
+  hasPagination: boolean
   isFetchingPrevTrips: boolean
   isFetchingNextTrips: boolean
 }
@@ -22,9 +23,23 @@ export class JourneyResultsComponent implements OnInit {
   constructor(private userTripService: UserTripService, private mapService: MapService, private languageService: LanguageService) {
     this.model = {
       trips: [],
+      hasPagination: false,
       isFetchingPrevTrips: false,
       isFetchingNextTrips: false,
     };
+
+    const tripsNo = 0;
+    this.model.hasPagination = this.computeHasPagination(tripsNo);
+  }
+
+  private computeHasPagination(tripsNo: number): boolean {
+    if (tripsNo === 0) {
+      return false;
+    }
+
+    const hasPublicTransport = this.userTripService.hasPublicTransport();
+
+    return hasPublicTransport;
   }
 
   ngOnInit() {
