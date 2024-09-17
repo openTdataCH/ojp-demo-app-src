@@ -8,6 +8,7 @@ OJP-Demo URL: https://opentdatach.github.io/ojp-demo-app/
 - Improve Trips [PR #161](https://github.com/openTdataCH/ojp-demo-app-src/pull/161)
   - use OJP `Via` for journeys - [Implement VIA in OJP (GUI and SDK) #151](https://github.com/openTdataCH/ojp-demo-app-src/issues/151)
   - display TimedLeg with status cancelled / deviation / unplanned and `notServiced` stops
+  - use `NumberOfResults` only for public transport requests
   - display station board situations for `Service`
   - add reset datetime control
   - use latest OJP SDK
