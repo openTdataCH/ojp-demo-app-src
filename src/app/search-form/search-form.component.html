@@ -10,22 +10,46 @@
 </div>
 
 <ng-template #searchContent>
-  <div class="d-flex">
+  <div class="d-flex align-items-center">
     <div class="flex-grow-1 journey-endpoint">
       <journey-point-input
         (selectedLocation)="onLocationSelected($event, 'From')"
         [endpointType]="'From'"
-        [inputValue]="fromLocationText"
+        [inputValue]="this.fromLocationText"
         [placeholder]="'From'">
       </journey-point-input>
     </div>
+
+    <div class="right-button">
+      <button sbb-secondary-button
+        (click)="toggleViaState()"
+        class="btn-collapse collapsed"
+        data-bs-toggle="collapse" 
+        data-bs-target="#viaContainer"
+        aria-controls="viaContainer"
+        aria-expanded="false">
+        
+        <sbb-icon *ngIf="!this.userTripService.isViaEnabled" svgIcon="kom:plus-medium"></sbb-icon>
+        <sbb-icon *ngIf="this.userTripService.isViaEnabled" svgIcon="kom:minus-medium"></sbb-icon>
+      </button>
+    </div>
   </div>
 
+  <div class="collapse" [ngClass]="{ 'show': this.userTripService.isViaEnabled}" id="viaContainer">
+    <div class="d-flex align-items-center">
+      <div class="flex-grow-1 journey-endpoint">
+        <journey-point-input
+          (selectedLocation)="onLocationSelected($event, 'Via')"
+          [endpointType]="'Via'"
+          [inputValue]="this.viaText"
+          [placeholder]="'Via'">
+        </journey-point-input>
+      </div>
+    </div>
+  </div> 
+  
   <ng-container *ngIf="!this.isEmbed">
-    <trip-mode-type 
-      *ngFor="let modeType of this.userTripService.journeyTripsPlaceholder; index as idx"
-      [tripModeTypeIdx]="idx">
-    </trip-mode-type>
+    <trip-mode-type [tripModeTypeIdx]="0"></trip-mode-type>
   </ng-container>
 
   <div class="d-flex align-items-center">
@@ -38,9 +62,8 @@
       </journey-point-input>
     </div>
 
-    <div class="swap-endpoints">
+    <div class="right-button">
       <button sbb-secondary-button
-        data-bs-toggle="collapse"
         (click)="swapEndpoints()"
         aria-expanded="false">
           <sbb-icon svgIcon="kom:arrow-change-horizontal-medium"></sbb-icon>
@@ -48,7 +71,7 @@
     </div>
   </div>
 
-  <div class="d-flex">
+  <div class="d-flex align-items-center gap-2">
     <div>
       <sbb-form-field label="Choose Day">
         <sbb-datepicker arrows>
@@ -60,7 +83,7 @@
         </sbb-datepicker>
       </sbb-form-field>
     </div>
-    <div style="margin-left: 8px; width:100px;">
+    <div style="width:70px;">
       <sbb-form-field label="Time">
         <input
           sbbInput
@@ -69,7 +92,14 @@
           (change)="onChangeDateTime()" />
       </sbb-form-field>
     </div>
-    <div style="margin-top: 28px;">
+    <div>
+      <button sbb-secondary-button
+        (click)="resetDateTime()"
+        aria-expanded="false">
+          <sbb-icon svgIcon="kom:arrow-circle-reset-small"></sbb-icon>
+      </button>
+    </div>
+    <div>
       <sbb-radio-group class="sbb-radio-group-horizontal" [(ngModel)]="this.userTripService.currentBoardingType">
         <sbb-radio-button 
           *ngFor="let boardingType of this.tripRequestBoardingTypes"
@@ -151,3 +181,12 @@
     </div>
   </div>
 </div>
+
+<div class="row mb-2" *ngIf="this.gistURL !== null">
+  <div class="col">
+    <div>
+      Content from <a href="{{ this.gistURL }}" target="_blank">{{ this.gistURL }}</a>
+    </div>
+  </div>
+</div>
+    

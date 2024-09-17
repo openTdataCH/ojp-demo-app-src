@@ -15,12 +15,10 @@ export class UserTripService {
   public fromTripLocation: OJP.TripLocationPoint | null
   public toTripLocation: OJP.TripLocationPoint | null
   public viaTripLocations: OJP.TripLocationPoint[]
+  public isViaEnabled: boolean
 
   public currentBoardingType: OJP.TripRequestBoardingType
 
-  // Used by the src/app/search-form/search-form.component.html template
-  public journeyTripsPlaceholder: string[]
-  
   public tripModeTypes: OJP.TripModeType[]
   public tripTransportModes: OJP.IndividualTransportMode[]
 
@@ -41,9 +39,6 @@ export class UserTripService {
   public activeTripSelected = new EventEmitter<OJP.Trip | null>();
   public tripRequestFinished = new EventEmitter<OJP.RequestInfo>();
 
-  public viaAtIndexRemoved = new EventEmitter<number>();
-  public viaAtIndexUpdated = new EventEmitter<{location: OJP.Location, idx: number}>();
-
   public searchParamsReset = new EventEmitter<void>();
 
   constructor(private mapService: MapService) {
@@ -52,10 +47,10 @@ export class UserTripService {
     this.fromTripLocation = null
     this.toTripLocation = null
     this.viaTripLocations = []
+    this.isViaEnabled = false;
 
     this.currentBoardingType = 'Dep'
 
-    this.journeyTripsPlaceholder = ['-']
     this.tripModeTypes = ['monomodal']
     this.tripTransportModes = ['public_transport']
 
@@ -130,27 +125,28 @@ export class UserTripService {
     const viaPartsS = this.queryParams.get('via') ?? null
     const viaParts: string[] = viaPartsS === null ? [] : viaPartsS.split(';')
     viaParts.forEach(viaKey => {
-      const viaLocation = OJP.Location.initFromLiteralCoords(viaKey)
-      if (viaLocation) {
-        const viaTripLocaton = new OJP.TripLocationPoint(viaLocation)
-        this.viaTripLocations.push(viaTripLocaton)
+      const viaLocationFromCoords = OJP.Location.initFromLiteralCoords(viaKey);
+      if (viaLocationFromCoords) {
+        const viaTripLocation = new OJP.TripLocationPoint(viaLocationFromCoords);
+        this.viaTripLocations.push(viaTripLocation);
 
-        if (viaLocation.geoPosition) {
-          bbox.extend(viaLocation.geoPosition)
+        if (viaLocationFromCoords.geoPosition) {
+          bbox.extend(viaLocationFromCoords.geoPosition);
         }
+      } else {
+        const stopPlaceLIR = OJP.LocationInformationRequest.initWithStopPlaceRef(stageConfig, language, viaKey);
+        const stopPlacePromise = stopPlaceLIR.fetchLocations();
+        promises.push(stopPlacePromise);
       }
     });
     
-    this.journeyTripsPlaceholder = [];
     this.tripModeTypes = [];
     const tripModeTypesS = this.queryParams.get('mode_types') ?? null;
     if (tripModeTypesS) {
       tripModeTypesS.split(';').forEach(tripModeTypeS => {
         this.tripModeTypes.push(tripModeTypeS as OJP.TripModeType);
-        this.journeyTripsPlaceholder.push('-');
       });
     } else {
-      this.journeyTripsPlaceholder = ['-'];
       this.tripModeTypes = ['monomodal'];
     }
 
@@ -174,15 +170,28 @@ export class UserTripService {
 
         const firstLocation = locations[0]
         if (isFrom) {
-          this.fromTripLocation = new OJP.TripLocationPoint(firstLocation)
+          this.fromTripLocation = new OJP.TripLocationPoint(firstLocation);
         } else {
-          this.toTripLocation = new OJP.TripLocationPoint(firstLocation)
+          this.toTripLocation = new OJP.TripLocationPoint(firstLocation);
         }
 
         if (firstLocation.geoPosition) {
           bbox.extend(firstLocation.geoPosition)
         }
       });
+
+      const viaLocationsData = locationsData[2] ?? null;
+      if (viaLocationsData !== null) {
+        this.isViaEnabled = true;
+        
+        const firstLocation = viaLocationsData[0];
+        const viaTripLocation = new OJP.TripLocationPoint(firstLocation);
+        this.viaTripLocations = [viaTripLocation];
+
+        if (firstLocation.geoPosition) {
+          bbox.extend(firstLocation.geoPosition)
+        }
+      }
 
       this.locationsUpdated.emit();
       this.geoLocationsUpdated.emit();
@@ -280,9 +289,23 @@ export class UserTripService {
     this.fromTripLocation = Object.assign({}, this.toTripLocation);
     this.toTripLocation = Object.assign({}, locationAux);
 
-    this.updatePermalinkAddress();
     this.locationsUpdated.emit();
     this.geoLocationsUpdated.emit();
+    this.activeTripSelected.emit(null);
+
+    this.searchParamsReset.emit();
+    this.updatePermalinkAddress();
+  }
+
+  public updateVia() {
+    this.isViaEnabled = !this.isViaEnabled;
+
+    this.locationsUpdated.emit();
+    this.geoLocationsUpdated.emit();
+    this.activeTripSelected.emit(null);
+
+    this.searchParamsReset.emit();
+    this.updatePermalinkAddress();
   }
 
   private computeAppStageFromString(appStageS: string): APP_STAGE {
@@ -319,12 +342,10 @@ export class UserTripService {
     }
 
     if (location && endpointType === 'Via') {
-      const viaTripLocation = new OJP.TripLocationPoint(location)
-      this.viaTripLocations.push(viaTripLocation)
-      
-      this.journeyTripsPlaceholder.push('-');
-      this.tripModeTypes.push('monomodal');
-      this.tripTransportModes.push('public_transport');
+      const viaTripLocation = new OJP.TripLocationPoint(location);
+      this.viaTripLocations = [viaTripLocation];
+
+      this.isViaEnabled = true;
     }
 
     this.locationsUpdated.emit();
@@ -336,11 +357,10 @@ export class UserTripService {
   }
 
   updateViaPoint(location: OJP.Location, viaIDx: number) {
-    this.viaTripLocations[viaIDx].location = location
-    this.viaAtIndexUpdated.emit({
-      location: location,
-      idx: viaIDx
-    })
+    this.viaTripLocations[viaIDx].location = location;
+
+    this.locationsUpdated.emit();
+    this.geoLocationsUpdated.emit();
     this.activeTripSelected.emit(null);
 
     this.searchParamsReset.emit();
@@ -358,26 +378,6 @@ export class UserTripService {
 
   private updateFares(fareResults: OJP.FareResult[]) {
     this.tripFaresUpdated.emit(fareResults);
-  }
-
-  removeViaAtIndex(idx: number) {
-    this.viaTripLocations.splice(idx, 1);
-    this.tripModeTypes.splice(idx, 1);
-    this.journeyTripsPlaceholder.splice(idx, 1);
-    this.tripTransportModes.splice(idx, 1);
-
-    // Reset the tripMotTypes
-    if (this.viaTripLocations.length === 0) {
-      this.journeyTripsPlaceholder = ['-'];
-      this.tripModeTypes = ['monomodal'];
-      this.tripTransportModes = ['public_transport'];
-    }
-
-    this.viaAtIndexRemoved.emit(idx);
-    this.activeTripSelected.emit(null);
-
-    this.searchParamsReset.emit();
-    this.updatePermalinkAddress();
   }
 
   public computeTripRequestXML(language: OJP.Language, departureDate: Date): string {
@@ -419,9 +419,13 @@ export class UserTripService {
     const viaParamParts: string[] = []
     this.viaTripLocations.forEach(viaTripLocation => {
       const location = viaTripLocation.location;
-      const geoPositionLngLatS = location?.geoPosition?.asLatLngString(true) ?? null
-      if (geoPositionLngLatS) {
-        viaParamParts.push(geoPositionLngLatS)
+      if (location.stopPlace) {
+        viaParamParts.push(location.stopPlace.stopPlaceRef);
+      } else {
+        const geoPositionLngLatS = location?.geoPosition?.asLatLngString(true) ?? null
+        if (geoPositionLngLatS) {
+          viaParamParts.push(geoPositionLngLatS);
+        }
       }
     });
     if (viaParamParts.length > 0) {
@@ -560,7 +564,6 @@ export class UserTripService {
 
     this.viaTripLocations = []
     
-    this.journeyTripsPlaceholder = ['-'];
     this.tripModeTypes = ['monomodal'];
     this.tripTransportModes = ['public_transport'];
     
@@ -757,5 +760,17 @@ export class UserTripService {
         parser.parseXML(novaResponseXML);
       });
     });
+  }
+
+  public hasPublicTransport(): boolean {
+    const defaultValue = false;
+
+    if (this.tripTransportModes.length === 0) {
+      return defaultValue;
+    }
+
+    const tripTransportMode = this.tripTransportModes[0];
+
+    return tripTransportMode === 'public_transport';
   }
 }

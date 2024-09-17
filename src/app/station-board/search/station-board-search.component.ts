@@ -19,6 +19,7 @@ import { APP_STAGE } from '../../config/app-config'
 import { EmbedStationBoardPopoverComponent } from './embed-station-board-popover/embed-station-board-popover.component';
 import { Router } from '@angular/router';
 import { LanguageService } from '../../shared/services/language.service';
+import { OJPHelpers } from 'src/app/helpers/ojp-helpers';
 
 @Component({
   selector: 'station-board-search',
@@ -111,12 +112,32 @@ export class StationBoardSearchComponent implements OnInit {
       this.handleMapClick(feature);
     })
 
+    this.customInitFromParams();
+  }
+
+  private customInitFromParams() {
     if (this.useMocks) {
       if (this.useMocks && document.location.hostname === 'localhost') {
         this.fetchStopEventFromMocks();
         return;
       }
     }
+
+    const gistId = this.queryParams.get('gist');
+    if (gistId) {
+      this.initFromGistRef(gistId);
+      return;
+    }
+  }
+
+  private async initFromGistRef(gistId: string) {
+    const mockText = await OJPHelpers.fetchGist(gistId);
+    if (mockText === null) {
+      console.error('initFromGistRef: cant fetch gist XML');
+      return;
+    }
+
+    this.initFromMockXML(mockText);
   }
 
   private computeAppStageFromString(appStageS: string): APP_STAGE | null {
@@ -272,8 +293,20 @@ export class StationBoardSearchComponent implements OnInit {
     const mockURL = '/path/to/mock.xml';
 
     const mockText = await (await fetch(mockURL)).text();
+    this.initFromMockXML(mockText);
+  }
+
+  private initFromMockXML(mockText: string) {
     const request = OJP.StopEventRequest.initWithMock(mockText);
     request.fetchResponse().then(response => {
+      if (response.stopEvents.length > 0) {
+        const stopEvent = response.stopEvents[0];
+        const firstLocation = stopEvent.stopPoint.location;
+        if (firstLocation) {
+          this.onLocationSelected(firstLocation);
+        }
+      }
+
       this.parseStopEvents(response.stopEvents);
     });
   }

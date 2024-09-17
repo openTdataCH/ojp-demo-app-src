@@ -10,7 +10,7 @@ import { MapService } from '../../../shared/services/map.service'
 import { OJPHelpers } from '../../../helpers/ojp-helpers';
 import { LegStopPointData } from '../../../shared/components/service-stops.component'
 import { TripInfoResultPopoverComponent } from './trip-info-result-popover/trip-info-result-popover.component';
-import { SituationData } from '../../../shared/types/situation-type';
+import { DEBUG_LEVEL } from 'src/app/config/app-config';
 
 type LegTemplate = 'walk' | 'timed' | 'taxi';
 
@@ -38,7 +38,7 @@ interface LegInfoDataModel {
   intermediaryLocationsData: LegStopPointData[]
 
   hasSituations: boolean
-  situations: SituationData[]
+  situations: OJP.SituationContent[]
 
   legTemplate: LegTemplate
 
@@ -48,6 +48,10 @@ interface LegInfoDataModel {
   serviceInfo: string | null
   serviceIntermediaryStopsText: string | null
   serviceJourneyRef: string | null
+
+  isCancelled: boolean
+  hasDeviation: boolean
+  isUnplanned: boolean
 }
 
 @Component({
@@ -327,14 +331,23 @@ export class ResultTripLegComponent implements OnInit {
     })();
 
     this.legInfoDataModel.situations = (() => {
-      const situationsData: SituationData[] = [];
-
       if (leg.legType !== 'TimedLeg') {
-        return situationsData;
+        return [];
       }
 
       const timedLeg = leg as OJP.TripTimedLeg;
-      return OJPHelpers.computeSituationsData(timedLeg.service.siriSituations);
+      const timedLegSituations = timedLeg.service.siriSituations;
+      const situationsData = OJPHelpers.computeSituationsData(timedLegSituations);
+      
+      if (DEBUG_LEVEL === 'DEBUG') {
+        if ((timedLegSituations.length > 0) && (situationsData.length === 0)) {
+          console.error('ResultTripLegComponent.initLegInfo ERROR - have situations but cant extract data from them');
+          console.log(timedLegSituations);
+          console.log('========================================================');
+        }
+      }  
+
+      return situationsData;
     })();
     this.legInfoDataModel.hasSituations = this.legInfoDataModel.situations.length > 0;
 
@@ -405,6 +418,36 @@ export class ResultTripLegComponent implements OnInit {
 
       return timedLeg.service.journeyRef;
     })();
+
+    this.legInfoDataModel.isCancelled = (() => {
+      if (leg.legType !== 'TimedLeg') {
+        return false;
+      }
+
+      const timedLeg = leg as OJP.TripTimedLeg;
+
+      return timedLeg.service.hasCancellation === true;
+    })();
+
+    this.legInfoDataModel.hasDeviation = (() => {
+      if (leg.legType !== 'TimedLeg') {
+        return false;
+      }
+
+      const timedLeg = leg as OJP.TripTimedLeg;
+
+      return timedLeg.service.hasDeviation === true;
+    })();
+
+    this.legInfoDataModel.isUnplanned = (() => {
+      if (leg.legType !== 'TimedLeg') {
+        return false;
+      }
+
+      const timedLeg = leg as OJP.TripTimedLeg;
+
+      return timedLeg.service.isUnplanned === true;
+    })();
   }
 
   private formatServiceName(timedLeg: OJP.TripTimedLeg): string {
@@ -446,7 +489,7 @@ export class ResultTripLegComponent implements OnInit {
           return 'kom:circle-information-large';
         }
 
-        if (['sa-ba', 'ba', 'sa-hl', 'hl'].includes(key.toLowerCase())) {
+        if (['sa-ba', 'ba', 'sa-hl', 'hl', 'bu'].includes(key.toLowerCase())) {
           return 'kom:circle-information-large';
         }
 

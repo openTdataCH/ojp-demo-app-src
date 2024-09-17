@@ -10,7 +10,6 @@ import { UserTripService } from 'src/app/shared/services/user-trip.service';
 
 interface TripMotTypeDataModel {
   requestInfo: OJP.RequestInfo | null,
-  isNotLastSegment: boolean
 }
 
 interface TripTransportModeData {
@@ -114,7 +113,6 @@ export class TripModeTypeComponent implements OnInit {
     this.tripTransportModes = JSON.parse(JSON.stringify(tripTransportModeData.transportModes));
     this.tripTransportMode = this.userTripService.tripTransportModes[this.tripModeTypeIdx];
 
-    this.tripMotTypeDataModel.isNotLastSegment = !this.isLastSegment();
     this.tripMotTypeDataModel.requestInfo = null
 
     this.userTripService.activeTripSelected.subscribe(trip => {
@@ -130,26 +128,6 @@ export class TripModeTypeComponent implements OnInit {
 
   private isLastSegment(): boolean {
     return this.tripModeTypeIdx === (this.userTripService.tripModeTypes.length - 1);
-  }
-
-  public handleTapOnMapButton() {
-    const viaTripLocation = this.userTripService.viaTripLocations[this.tripModeTypeIdx] ?? null
-    this.mapService.tryToCenterAndZoomToLocation(viaTripLocation.location)
-  }
-
-  public computeViaName(): string {
-    const nextViaTripLocation = this.userTripService.viaTripLocations[this.tripModeTypeIdx] ??  null
-    if (nextViaTripLocation === null) {
-      return ''
-    }
-
-    const defaultName = nextViaTripLocation.location.geoPosition?.asLatLngString() ?? ''
-
-    return defaultName
-  }
-
-  public removeVia() {
-    this.userTripService.removeViaAtIndex(this.tripModeTypeIdx)
   }
 
   public onTripModeChange() {
@@ -183,8 +161,6 @@ export class TripModeTypeComponent implements OnInit {
   }
 
   private updateRequestDataModel() {
-    this.tripMotTypeDataModel.isNotLastSegment = !this.isLastSegment();
-
     const tripRequest = this.userTripService.journeyTripRequests[this.tripModeTypeIdx] ?? null;
     if (tripRequest === null) {
       // mocks or the TripRequest parser callback are not complete

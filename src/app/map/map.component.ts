@@ -61,7 +61,7 @@ export class MapComponent implements OnInit {
       }
     })
 
-    this.viaMarkers = []
+    this.viaMarkers = [];
 
     this.mapLoadingPromise = null;
 
@@ -93,18 +93,7 @@ export class MapComponent implements OnInit {
       this.mapLoadingPromise?.then(map => {
         this.mapService.zoomToLocation(map, mapData);
       });
-    })
-
-    this.userTripService.viaAtIndexRemoved.subscribe(viaIdx => {
-      if (viaIdx > (this.viaMarkers.length - 1)) {
-        return
-      }
-
-      const marker = this.viaMarkers[viaIdx]
-      marker.remove()
-
-      this.viaMarkers.splice(viaIdx, 1)
-    })
+    });
 
     this.initMap()
   }
@@ -128,34 +117,25 @@ export class MapComponent implements OnInit {
       const marker = isFrom ? this.fromMarker : this.toMarker
 
       this.updateMarkerLocation(marker, tripLocationPoint?.location ?? null)
-    })
+    });
 
-    const viaMakersCount = this.viaMarkers.length
-    const viaLocationsCount = this.userTripService.viaTripLocations.length
+    if (this.userTripService.isViaEnabled) {
+      this.userTripService.viaTripLocations.forEach((viaTripLocation, markerIDx) => {
+        let marker = this.viaMarkers[markerIDx] ?? null;
+        if (marker === null) {
+          marker = this.createViaMarker(viaTripLocation.location, markerIDx);
+          this.viaMarkers.push(marker);
+        }
 
-    // Remove excess VIA markers
-    if (viaMakersCount > viaLocationsCount) {
-      let markersToRemove: mapboxgl.Marker[] = this.viaMarkers
-      if (viaLocationsCount > 0) {
-        const markersCountToRemove = viaMakersCount - viaLocationsCount
-        markersToRemove = this.viaMarkers.splice(viaLocationsCount, markersCountToRemove)
-      }
+        this.updateMarkerLocation(marker, viaTripLocation.location);
+      });
+    } else {
+      this.viaMarkers.forEach(marker => {
+        marker.remove();
+      });
 
-      markersToRemove.forEach(marker => {
-        marker.remove()
-      })
+      this.viaMarkers = [];
     }
-
-    // Adds / Update VIA markers
-    this.userTripService.viaTripLocations.forEach((viaTripLocation, idx) => {
-      let marker = this.viaMarkers[idx] ?? null
-      if (marker === null) {
-        marker = this.createViaMarker(viaTripLocation.location)
-        this.viaMarkers.push(marker)
-      }
-
-      this.updateMarkerLocation(marker, viaTripLocation.location)
-    })
   }
 
   private handleMarkerDrag(marker: mapboxgl.Marker, endpointType: OJP.JourneyPointType) {
@@ -164,7 +144,6 @@ export class MapComponent implements OnInit {
     let location = OJP.Location.initWithLngLat(lngLat.lng, lngLat.lat);
 
     // Try to snap to the nearest stop
-
     this.userTripService.updateTripEndpoint(location, endpointType, 'MapDragend');
   }
 
@@ -235,7 +214,7 @@ export class MapComponent implements OnInit {
     }
   }
 
-  private createViaMarker(location: OJP.Location): mapboxgl.Marker {
+  private createViaMarker(location: OJP.Location, markerIDx: number): mapboxgl.Marker {
     const markerDIV = document.createElement('div');
     markerDIV.className = 'marker-journey-endpoint marker-journey-endpoint-Via';
 
@@ -250,8 +229,6 @@ export class MapComponent implements OnInit {
       anchor: 'bottom',
       draggable: isDraggable,
     });
-
-    const markerIDx = this.viaMarkers.length
 
     marker.on('dragend', ev => {
       const lngLat = marker.getLngLat();

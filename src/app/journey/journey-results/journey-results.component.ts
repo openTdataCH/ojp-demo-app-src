@@ -5,44 +5,65 @@ import * as OJP from 'ojp-sdk'
 import { MapService } from '../../shared/services/map.service'
 import { LanguageService } from '../../shared/services/language.service';
 
+interface PageModel {
+  trips: OJP.Trip[]
+  hasPagination: boolean
+  isFetchingPrevTrips: boolean
+  isFetchingNextTrips: boolean
+}
+
 @Component({
   selector: 'journey-results',
   templateUrl: './journey-results.component.html',
   styleUrls: ['./journey-results.component.scss'],
 })
 export class JourneyResultsComponent implements OnInit {
-  public trips: OJP.Trip[]
-  public isFetchingPrevTrips: boolean
-  public isFetchingNextTrips: boolean
+  public model: PageModel;
 
   constructor(private userTripService: UserTripService, private mapService: MapService, private languageService: LanguageService) {
-    this.trips = []
-    this.isFetchingPrevTrips = false;
-    this.isFetchingNextTrips = false;
+    this.model = {
+      trips: [],
+      hasPagination: false,
+      isFetchingPrevTrips: false,
+      isFetchingNextTrips: false,
+    };
+
+    const tripsNo = 0;
+    this.model.hasPagination = this.computeHasPagination(tripsNo);
+  }
+
+  private computeHasPagination(tripsNo: number): boolean {
+    if (tripsNo === 0) {
+      return false;
+    }
+
+    const hasPublicTransport = this.userTripService.hasPublicTransport();
+
+    return hasPublicTransport;
   }
 
   ngOnInit() {
     this.userTripService.tripsUpdated.subscribe(trips => {
-      this.trips = trips
+      this.updatePageModel(trips);
     });
 
     this.userTripService.searchParamsReset.subscribe(() => {
-      this.trips = []
+      this.updatePageModel([]);
     });
 
     this.userTripService.tripFaresUpdated.subscribe(fareResults => {
-      this.trips.forEach(trip => {
+      this.model.trips.forEach(trip => {
         trip.tripFareResults = [];
       });
 
       fareResults.forEach(fareResult => {
-        const trip = this.trips.find(trip => {
+        const trip = this.model.trips.find(trip => {
           return trip.id === fareResult.tripId
         }) ?? null;
 
         if (trip === null) {
           console.error('ERROR - cant find fare for trip ' + fareResult.tripId);
-          console.log(this.trips);
+          console.log(this.model.trips);
           console.log(fareResult);
           return;
         }
@@ -53,37 +74,40 @@ export class JourneyResultsComponent implements OnInit {
   }
 
   public loadPreviousTrips() {
-    if (this.trips.length === 0) {
+    if (this.model.trips.length === 0) {
       return;
     }
 
-    const depArrDate = this.trips[0].computeDepartureTime();
+    const depArrDate = this.model.trips[0].computeDepartureTime();
     if (depArrDate === null) {
       return;
     }
 
-    this.isFetchingPrevTrips = true;
+    this.model.isFetchingPrevTrips = true;
 
     this.loadTrips('NumberOfResultsBefore', depArrDate);
   }
 
   public loadNextTrips() {
-    if (this.trips.length === 0) {
+    if (this.model.trips.length === 0) {
       return;
     }
 
-    const depArrDate = this.trips[this.trips.length - 1].computeDepartureTime();
+    const lastTrip = this.model.trips[this.model.trips.length - 1];
+    const depArrDate = lastTrip.computeDepartureTime();
     if (depArrDate === null) {
       return;
     }
 
-    this.isFetchingNextTrips = true;
+    this.model.isFetchingNextTrips = true;
 
     this.loadTrips('NumberOfResultsAfter', depArrDate);
   }
 
   private loadTrips(numberOfResultsType: OJP.NumberOfResultsType, depArrDate: Date) {
-    const stageConfig = this.userTripService.getStageConfig()
+    const viaTripLocations = this.userTripService.isViaEnabled ? this.userTripService.viaTripLocations : [];
+
+    const stageConfig = this.userTripService.getStageConfig();
     const request = OJP.TripRequest.initWithTripLocationsAndDate(
       stageConfig,
       this.languageService.language,
@@ -92,6 +116,10 @@ export class JourneyResultsComponent implements OnInit {
       depArrDate,
       this.userTripService.currentBoardingType,
       numberOfResultsType,
+      true,
+      this.userTripService.tripModeTypes[0],
+      this.userTripService.tripTransportModes[0],
+      viaTripLocations,
     );
 
     if (request === null) {
@@ -101,10 +129,6 @@ export class JourneyResultsComponent implements OnInit {
     this.userTripService.journeyTripRequests = [request];
 
     request.fetchResponse().then(response => {
-      // Update both - TODO - use a completion instead?
-      this.isFetchingPrevTrips = false;
-      this.isFetchingNextTrips = false;
-
       const trips = response.trips;
       this.userTripService.updateTrips(trips);
 
@@ -122,5 +146,13 @@ export class JourneyResultsComponent implements OnInit {
         this.userTripService.selectActiveTrip(null);
       }
     });
+  }
+
+  private updatePageModel(trips: OJP.Trip[]) {
+    this.model.trips = trips;
+    this.model.hasPagination = this.computeHasPagination(trips.length);
+    // Update both - TODO - use a completion instead?
+    this.model.isFetchingPrevTrips = false;
+    this.model.isFetchingNextTrips = false;    
   }
 }
