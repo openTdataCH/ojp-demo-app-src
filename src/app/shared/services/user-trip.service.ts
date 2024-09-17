@@ -761,4 +761,16 @@ export class UserTripService {
       });
     });
   }
+
+  public hasPublicTransport(): boolean {
+    const defaultValue = false;
+
+    if (this.tripTransportModes.length === 0) {
+      return defaultValue;
+    }
+
+    const tripTransportMode = this.tripTransportModes[0];
+
+    return tripTransportMode === 'public_transport';
+  }
 }
