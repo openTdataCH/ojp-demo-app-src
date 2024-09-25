@@ -109,8 +109,11 @@ export class OJPHelpers {
 
         if ('Summary' in mapTextualContent) {
           situationData.summary = mapTextualContent['Summary'].join('. ');
+        } else {
+          situationData.summary = 'Summary n/a';
         }
 
+        situationData.descriptions = [];
         if ('Description' in mapTextualContent) {
           situationData.descriptions = mapTextualContent['Description'];
         }
