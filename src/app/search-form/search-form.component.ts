@@ -284,6 +284,12 @@ export class SearchFormComponent implements OnInit {
 
     const viaTripLocations = this.userTripService.isViaEnabled ? this.userTripService.viaTripLocations : [];
 
+    const numberOfResults: number | null = (() => {
+      const hasPublicTransport = this.userTripService.hasPublicTransport();
+      
+      return hasPublicTransport ? 5 : null;
+    })();
+
     const stageConfig = this.userTripService.getStageConfig();
     const tripRequest = OJP.TripRequest.initWithTripLocationsAndDate(
       stageConfig, 
@@ -297,6 +303,7 @@ export class SearchFormComponent implements OnInit {
       this.userTripService.tripModeTypes[0],
       this.userTripService.tripTransportModes[0],
       viaTripLocations,
+      numberOfResults,
     );
 
     if (tripRequest === null) {
