@@ -107,6 +107,12 @@ export class JourneyResultsComponent implements OnInit {
   private loadTrips(numberOfResultsType: OJP.NumberOfResultsType, depArrDate: Date) {
     const viaTripLocations = this.userTripService.isViaEnabled ? this.userTripService.viaTripLocations : [];
 
+    const numberOfResults: number | null = (() => {
+      const hasPublicTransport = this.userTripService.hasPublicTransport();
+      
+      return hasPublicTransport ? 5 : null;
+    })();
+
     const stageConfig = this.userTripService.getStageConfig();
     const request = OJP.TripRequest.initWithTripLocationsAndDate(
       stageConfig,
@@ -120,6 +126,7 @@ export class JourneyResultsComponent implements OnInit {
       this.userTripService.tripModeTypes[0],
       this.userTripService.tripTransportModes[0],
       viaTripLocations,
+      numberOfResults,
     );
 
     if (request === null) {
