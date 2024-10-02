@@ -1,16 +1,14 @@
-<div sbbDialogTitle>Debug XML</div>
+<div sbbDialogTitle>Current Response XML</div>
 <div sbbDialogContent>
-  <div style="width: 500px">
-    <div>
-      Request XML
-      <textarea class="w-100" rows="7">{{ this.requestXmlS }}</textarea>
-    </div>
-    <div>
-      Response XML
-      <textarea class="w-100" rows="7">{{ this.responseXmlS }}</textarea>
-    </div>
+  <div>
+    <textarea class="w-100" rows="20">{{ this.responseXML }}</textarea>
+  </div>
+  <div class="d-flex gap-2 align-items-center">
+    <div class="flex-grow-1"><button class="btn btn-primary btn-sm" (click)="copyTextToClipboard()">Copy to Clipboard</button></div>
+    <div><input class="form-check-input" type="checkbox" checked (change)="toggleStripTags()" /> Remove <mark>&lt;LinkProjection&gt;</mark></div>
   </div>
 </div>
+
 <div sbbDialogActions>
   <button
     type="button"
