@@ -1,10 +1,11 @@
 import { EventEmitter, Injectable } from '@angular/core'
 
-import { APP_CONFIG, APP_STAGE, DEBUG_LEVEL } from '../../config/app-config'
-import { MapService } from './map.service'
+import mapboxgl from 'mapbox-gl'
 
 import * as OJP from 'ojp-sdk'
-import mapboxgl from 'mapbox-gl'
+
+import { APP_CONFIG, APP_STAGE, DEBUG_LEVEL } from '../../config/app-config'
+import { MapService } from './map.service'
 
 type LocationUpdateSource = 'SearchForm' | 'MapDragend' | 'MapPopupClick'
 
