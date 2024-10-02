@@ -45,6 +45,12 @@
           [placeholder]="'Via'">
         </journey-point-input>
       </div>
+      <div class="via-dwell-time">
+        <sbb-form-field class="sbb-form-field-long">
+          <sbb-label>Dwell Time (mins)</sbb-label>
+          <input type="text" sbbInput placeholder="0" [formControl]="viaDwellTime" />
+        </sbb-form-field>
+      </div>
     </div>
   </div> 
   
