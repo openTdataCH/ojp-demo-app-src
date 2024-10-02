@@ -210,6 +210,7 @@ export class TripModeTypeComponent implements OnInit {
       'car-shuttle-train': 'Autoverlad',
       'car': 'Car',
       'car-ferry': 'Ferry',
+      'foot': 'Foot (walking)',
     }
 
     const text = MapIndividualTransportMode[transportMode] ?? 'n/a';
