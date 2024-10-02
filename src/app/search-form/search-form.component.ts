@@ -2,6 +2,12 @@ import { Component, OnInit, ViewChild } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { debounceTime } from 'rxjs';
 
+import { SbbDialog } from "@sbb-esta/angular/dialog";
+import { SbbExpansionPanel } from '@sbb-esta/angular/accordion';
+import { SbbNotificationToast } from '@sbb-esta/angular/notification-toast';
+import { SbbRadioChange } from '@sbb-esta/angular/radio-button';
+
+import * as OJP from 'ojp-sdk'
 
 import { DateHelpers } from '../helpers/date-helpers';
 
@@ -11,13 +17,6 @@ import { LanguageService } from '../shared/services/language.service';
 import { MapService } from '../shared/services/map.service';
 import { InputXmlPopoverComponent } from './input-xml-popover/input-xml-popover.component';
 import { EmbedSearchPopoverComponent } from './embed-search-popover/embed-search-popover.component';
-
-import { SbbDialog } from "@sbb-esta/angular/dialog";
-import { SbbExpansionPanel } from '@sbb-esta/angular/accordion';
-import { SbbNotificationToast } from '@sbb-esta/angular/notification-toast';
-import { SbbRadioChange } from '@sbb-esta/angular/radio-button';
-
-import * as OJP from 'ojp-sdk'
 
 import { APP_STAGE, DEBUG_LEVEL } from '../config/app-config';
 import { Router } from '@angular/router';
