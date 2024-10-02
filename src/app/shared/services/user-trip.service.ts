@@ -6,6 +6,7 @@ import * as OJP from 'ojp-sdk'
 
 import { APP_CONFIG, APP_STAGE, DEBUG_LEVEL } from '../../config/app-config'
 import { MapService } from './map.service'
+import { LanguageService } from './language.service'
 
 type LocationUpdateSource = 'SearchForm' | 'MapDragend' | 'MapPopupClick'
 
@@ -395,16 +396,6 @@ export class UserTripService {
 
   private updateFares(fareResults: OJP.FareResult[]) {
     this.tripFaresUpdated.emit(fareResults);
-  }
-
-  public computeTripRequestXML(language: OJP.Language, departureDate: Date): string {
-    const stageConfig = this.getStageConfig();
-    const request = OJP.TripRequest.initWithTripLocationsAndDate(stageConfig, language, this.fromTripLocation, this.toTripLocation, departureDate);
-    if (request === null || request.requestInfo.requestXML === null) {
-      return 'BROKEN TripsRequestParams';
-    }
-
-    return request.requestInfo.requestXML;
   }
 
   private updatePermalinkAddress() {
@@ -841,5 +832,28 @@ export class UserTripService {
     const tripTransportMode = this.tripTransportModes[0];
 
     return tripTransportMode === 'public_transport';
+  }
+
+  public computeTripRequest(languageService: LanguageService) {
+    const stageConfig = this.getStageConfig();
+    const includeLegProjection = true;
+    const viaTripLocations = this.isViaEnabled ? this.viaTripLocations : [];
+    
+    const tripRequest = OJP.TripRequest.initWithTripLocationsAndDate(
+      stageConfig, 
+      languageService.language,
+      this.fromTripLocation,
+      this.toTripLocation,
+      this.departureDate,
+      this.currentBoardingType,
+      'NumberOfResults',
+      includeLegProjection,
+      this.tripModeTypes[0],
+      this.tripTransportModes[0],
+      viaTripLocations,
+      this.numberOfResults,
+    );
+
+    return tripRequest;
   }
 }
