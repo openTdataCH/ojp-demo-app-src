@@ -1,16 +1,8 @@
 import { Component, Input, OnInit, ViewChild, ElementRef } from '@angular/core';
-import { SbbDialog } from '@sbb-esta/angular/dialog';
 
 import * as OJP from 'ojp-sdk'
 
-import { DebugXmlPopoverComponent } from '../debug-xml-popover/debug-xml-popover.component';
-
-import { MapService } from 'src/app/shared/services/map.service';
 import { UserTripService } from 'src/app/shared/services/user-trip.service';
-
-interface TripMotTypeDataModel {
-  requestInfo: OJP.RequestInfo | null,
-}
 
 interface TripTransportModeData {
   modeType: OJP.TripModeType,
@@ -79,15 +71,13 @@ export class TripModeTypeComponent implements OnInit {
   public tripTransportModes: OJP.IndividualTransportMode[]
   public tripTransportMode: OJP.IndividualTransportMode
 
-  public tripMotTypeDataModel: TripMotTypeDataModel
-
   public settingsCollapseID: string
   public endpointMinDurationS: string
   public endpointMaxDurationS: string
   public endpointMinDistanceS: string
   public endpointMaxDistanceS: string
 
-  constructor(private debugXmlPopover: SbbDialog, public userTripService: UserTripService, private mapService: MapService) {
+  constructor(public userTripService: UserTripService) {
     this.tripTransportModeData = appTripTransportModeData;
 
     this.tripModeType = this.tripTransportModeData[0].modeType
@@ -95,8 +85,6 @@ export class TripModeTypeComponent implements OnInit {
     this.tripTransportMode = this.tripTransportModes[0]
 
     this.tripModeTypeIdx = 0
-
-    this.tripMotTypeDataModel = <TripMotTypeDataModel>{}
 
     this.settingsCollapseID = 'mode_custom_mode_settings_NOT_READY_YET';
     this.endpointMinDurationS = '2';
@@ -114,12 +102,6 @@ export class TripModeTypeComponent implements OnInit {
 
     this.tripTransportModes = JSON.parse(JSON.stringify(tripTransportModeData.transportModes));
     this.tripTransportMode = this.userTripService.tripTransportModes[this.tripModeTypeIdx];
-
-    this.tripMotTypeDataModel.requestInfo = null
-
-    this.userTripService.activeTripSelected.subscribe(trip => {
-      this.updateRequestDataModel()
-    })
 
     this.userTripService.defaultsInited.subscribe(nothing => {
       this.userTripService.updateTripLocationCustomMode(this.tripModeTypeIdx);
@@ -161,28 +143,6 @@ export class TripModeTypeComponent implements OnInit {
       this.settingsContainer.nativeElement.classList.remove('show');
     }
   }
-
-  private updateRequestDataModel() {
-    const tripRequest = this.userTripService.journeyTripRequests[this.tripModeTypeIdx] ?? null;
-    if (tripRequest === null) {
-      // mocks or the TripRequest parser callback are not complete
-      this.tripMotTypeDataModel.requestInfo = null;
-      return;
-    }
-
-    this.tripMotTypeDataModel.requestInfo = tripRequest.requestInfo;
-  }
-
-  public showRequestXmlPopover() {
-    const dialogRef = this.debugXmlPopover.open(DebugXmlPopoverComponent, {
-      position: { top: '10px' },
-    });
-    dialogRef.afterOpened().subscribe(() => {
-      if (this.tripMotTypeDataModel.requestInfo) {
-        const popover = dialogRef.componentInstance as DebugXmlPopoverComponent
-        popover.updateRequestData(this.tripMotTypeDataModel.requestInfo)
-      }
-    });
   }
 
   public computeTripModeTypeText(tripModeType: OJP.TripModeType): string {
