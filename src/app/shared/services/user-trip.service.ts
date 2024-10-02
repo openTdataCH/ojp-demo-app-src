@@ -498,36 +498,39 @@ export class UserTripService {
     this.updatePermalinkAddress()
   }
 
-  private computeTripLocationsToUpdate(tripSectionIdx: number): OJP.TripLocationPoint[] {
+  private computeTripLocationsToUpdate(): OJP.TripLocationPoint[] {
     const tripLocationsToUpdate: OJP.TripLocationPoint[] = [];
 
-    const tripLocations = [this.fromTripLocation];
-    this.viaTripLocations.forEach(viaTripLocation => {
-      tripLocations.push(viaTripLocation);
-    });
-    tripLocations.push(this.toTripLocation);
-
+    // TODO - remove this, we used to have multiple TR
+    const tripSectionIdx = 0;
     const tripModeType = this.tripModeTypes[tripSectionIdx];
-    
-    const tripLocationPointA = tripLocations[tripSectionIdx];
-    if (tripLocationPointA) {
-      if (tripModeType === 'mode_at_start' || tripModeType === 'mode_at_start_end') {
-        tripLocationsToUpdate.push(tripLocationPointA);
-      }
-    }
 
-    const tripLocationPointB = tripLocations[tripSectionIdx + 1];
-    if (tripLocationPointB) {
-      if (tripModeType === 'mode_at_end' || tripModeType === 'mode_at_start_end') {
-        tripLocationsToUpdate.push(tripLocationPointB);
+    const endpointTypes: OJP.JourneyPointType[] = ['From', 'To'];
+    endpointTypes.forEach(endpointType => {
+      const isFrom = endpointType === 'From';
+      const tripLocation = isFrom ? this.fromTripLocation : this.toTripLocation;
+      if (tripLocation === null) {
+        return;
       }
-    }
+
+      // discard FROM for mode_at_end
+      if ((tripModeType === 'mode_at_end') && isFrom) {
+        return;
+      }
+
+      // discard TO for mode_at_start
+      if ((tripModeType === 'mode_at_start') && !isFrom) {
+        return;
+      }
+
+      tripLocationsToUpdate.push(tripLocation);
+    });
 
     return tripLocationsToUpdate;
   }
 
   public updateTripLocationRestrictions(minDuration: number, maxDuration: number, minDistance: number, maxDistance: number, tripSectionIdx: number) {
-    const tripLocationsToUpdate = this.computeTripLocationsToUpdate(tripSectionIdx);
+    const tripLocationsToUpdate = this.computeTripLocationsToUpdate();
 
     tripLocationsToUpdate.forEach(tripLocation => {
       tripLocation.minDuration = minDuration;
@@ -538,7 +541,7 @@ export class UserTripService {
   }
 
   public updateTripLocationCustomMode(tripSectionIdx: number) {
-    const tripLocationsToUpdate = this.computeTripLocationsToUpdate(tripSectionIdx);
+    const tripLocationsToUpdate = this.computeTripLocationsToUpdate();
     const tripModeType = this.tripModeTypes[tripSectionIdx];
 
     tripLocationsToUpdate.forEach(tripLocation => {
