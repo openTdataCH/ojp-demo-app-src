@@ -36,7 +36,7 @@
   </div>
 
   <div class="collapse" [ngClass]="{ 'show': this.userTripService.isViaEnabled}" id="viaContainer">
-    <div class="d-flex align-items-center">
+    <div class="d-flex gap-2 align-items-center">
       <div class="flex-grow-1 journey-endpoint">
         <journey-point-input
           (selectedLocation)="onLocationSelected($event, 'Via')"
@@ -154,11 +154,11 @@
 
 <div class="row mb-2" *ngIf="!this.isEmbed">
   <div class="col">
-    <div class="d-flex flex-row-reverse">
+    <div class="d-flex gap-1 flex-row-reverse">
       <div *ngIf="this.requestDurationF !== null">
         <span class="badge bg-success">{{ this.requestDurationF }}</span>
       </div>
-      <div style="width: 7px"></div>
+      <div style="width: 2px"></div>
       <ng-container *ngIf="this.userTripService.permalinkRelativeURL !== null">
         <div>
           <a href="{{ this.userTripService.sbbURL }}" target="_blank">SBB</a>
