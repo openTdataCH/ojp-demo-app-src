@@ -3,13 +3,13 @@
   <div class="d-flex align-items-center via-mot">
     <div class="flex-grow-1">
       <sbb-form-field class="w-100">
-        <sbb-label>Choose Monomodal / Multimodal</sbb-label>
+        <sbb-label>Mono-/Multi-modal</sbb-label>
           <sbb-select
           [(ngModel)]="this.tripModeType"
           (selectionChange)="onTripModeChange()">
           <sbb-option
             *ngFor="let tripTransportMode of this.tripTransportModeData"
-            [value]="tripTransportMode.modeType">{{ this.computeTripModeTypeText(tripTransportMode.modeType) }}</sbb-option>
+            [value]="tripTransportMode.modeType">{{ computeTripModeTypeText(tripTransportMode.modeType) }}</sbb-option>
         </sbb-select>
       </sbb-form-field>
     </div>
@@ -17,13 +17,13 @@
   <div class="d-flex align-items-center via-mot">
     <div class="flex-grow-1">
       <sbb-form-field class="w-100">
-        <sbb-label>Choose MOT (Mode of Transport)</sbb-label>
+        <sbb-label>Mode of Transport</sbb-label>
           <sbb-select
           [(ngModel)]="this.tripTransportMode"
-          (selectionChange)="this.onTransportModeChange()">
+          (selectionChange)="onTransportModeChange()">
           <sbb-option
             *ngFor="let tripTransportMode of this.tripTransportModes"
-            [value]="tripTransportMode">{{ this.computeTripTransportModeText(tripTransportMode) }}</sbb-option>
+            [value]="tripTransportMode">{{ computeTripTransportModeText(tripTransportMode) }}</sbb-option>
         </sbb-select>
       </sbb-form-field>
     </div>
