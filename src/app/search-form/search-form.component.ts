@@ -1,4 +1,7 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
+import { FormControl } from '@angular/forms';
+import { debounceTime } from 'rxjs';
+
 
 import { DateHelpers } from '../helpers/date-helpers';
 
@@ -31,6 +34,7 @@ export class SearchFormComponent implements OnInit {
   public fromLocationText: string
   public toLocationText: string
   public viaText: string
+  public viaDwellTime = new FormControl('');
 
   public appStageOptions: APP_STAGE[] = []
 
@@ -99,6 +103,7 @@ export class SearchFormComponent implements OnInit {
   ngOnInit() {
     this.userTripService.locationsUpdated.subscribe(nothing => {
       this.updateLocationTexts();
+      this.updateViaDwellTime();
     })
 
     this.userTripService.tripsUpdated.subscribe(trips => {
@@ -125,7 +130,23 @@ export class SearchFormComponent implements OnInit {
       this.requestDurationF = (requestNetworkDuration + requestParseDuration).toFixed(2) + ' sec';
     });
 
+    this.viaDwellTime.valueChanges.pipe(debounceTime(300)).subscribe(value => {
+      this.updateViaDwellTime();
+    });
+
     this.userTripService.initDefaults(this.languageService.language);
+  }
+
+  private updateViaDwellTime() {
+    if (this.userTripService.viaTripLocations.length === 0) {
+      return;
+    }
+
+    let viaDwellTimeValue: number | null = Number(this.viaDwellTime.value);
+    viaDwellTimeValue = isNaN(viaDwellTimeValue) ? null : viaDwellTimeValue;
+    
+    const firstVia = this.userTripService.viaTripLocations[0];
+    firstVia.dwellTimeMinutes = viaDwellTimeValue;
   }
 
   private customInitFromParams() {
