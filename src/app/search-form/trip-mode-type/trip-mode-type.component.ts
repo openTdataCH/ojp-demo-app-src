@@ -17,6 +17,53 @@ interface TripTransportModeData {
   transportModes: OJP.IndividualTransportMode[],
 }
 
+const appTripTransportModeData: TripTransportModeData[] = [
+  {
+    modeType: 'monomodal',
+    transportModes: [
+      'public_transport',
+      'walk', // in v2 is 'foot',
+      'cycle',
+      'self-drive-car',
+      'bicycle_rental',
+      'escooter_rental',
+      'car_sharing',
+      'taxi',
+      'others-drive-car',
+    ]
+  },
+  {
+    modeType: 'mode_at_start',
+    transportModes: [
+      'walk', // in v2 is 'foot',
+      'cycle',
+      'bicycle_rental',
+      'escooter_rental',
+      'taxi',
+      'others-drive-car',
+    ]
+  },
+  {
+    modeType: 'mode_at_end',
+    transportModes: [
+      'walk', // in v2 is 'foot',
+      'bicycle_rental',
+      'escooter_rental',
+      'car_sharing',
+      'taxi',
+      'others-drive-car',
+    ]
+  },
+  {
+    modeType: 'mode_at_start_end',
+    transportModes: [
+      'walk', // in v2 is 'foot',
+      'bicycle_rental',
+      'escooter_rental'
+    ]
+  }
+];
+
 @Component({
   selector: 'trip-mode-type',
   templateUrl: './trip-mode-type.component.html',
@@ -41,52 +88,7 @@ export class TripModeTypeComponent implements OnInit {
   public endpointMaxDistanceS: string
 
   constructor(private debugXmlPopover: SbbDialog, public userTripService: UserTripService, private mapService: MapService) {
-    this.tripTransportModeData = [
-      {
-        modeType: 'monomodal',
-        transportModes: [
-          'public_transport',
-          'walk',
-          'cycle',
-          'self-drive-car',
-          'bicycle_rental',
-          'escooter_rental',
-          'car_sharing',
-          'taxi',
-          'others-drive-car',
-        ]
-      },
-      {
-        modeType: 'mode_at_start',
-        transportModes: [
-          'walk',
-          'cycle',
-          'bicycle_rental',
-          'escooter_rental',
-          'taxi',
-          'others-drive-car',
-        ]
-      },
-      {
-        modeType: 'mode_at_end',
-        transportModes: [
-          'walk',
-          'bicycle_rental',
-          'escooter_rental',
-          'car_sharing',
-          'taxi',
-          'others-drive-car',
-        ]
-      },
-      {
-        modeType: 'mode_at_start_end',
-        transportModes: [
-          'walk',
-          'bicycle_rental',
-          'escooter_rental'
-        ]
-      }
-    ]
+    this.tripTransportModeData = appTripTransportModeData;
 
     this.tripModeType = this.tripTransportModeData[0].modeType
     this.tripTransportModes = JSON.parse(JSON.stringify(this.tripTransportModeData[0].transportModes))
