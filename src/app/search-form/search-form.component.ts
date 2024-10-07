@@ -496,6 +496,7 @@ export class SearchFormComponent implements OnInit {
     dialogRef.afterOpened().subscribe(() => {
       if (this.currentRequestInfo) {
         const popover = dialogRef.componentInstance as DebugXmlPopoverComponent;
+        popover.isTripRequest = true;
         popover.updateRequestData(this.currentRequestInfo);
       }
     });
