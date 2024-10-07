@@ -31,6 +31,7 @@ export class DebugXmlPopoverComponent {
       if (this.isTripRequest) {
         // HACK: Quick'n'dirty remove the not-needed nodes, using string replace - XSLT didnt work as expected
         let responseXML_Stripped = this.responseXML_Original.replace(/<LinkProjection>.+?<\/LinkProjection>/gms, '');
+        responseXML_Stripped = responseXML_Stripped.replace(/<ojp:LinkProjection>.+?<\/ojp:LinkProjection>/gms, '');
         
         this.responseXML_Stripped = responseXML_Stripped;
       }
