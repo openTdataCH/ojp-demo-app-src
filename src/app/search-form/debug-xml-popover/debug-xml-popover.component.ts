@@ -10,6 +10,7 @@ import { XML_Helpers } from 'src/app/helpers/xml-helpers';
 })
 export class DebugXmlPopoverComponent {
   public responseXML: string;
+  public isTripRequest: boolean;
   
   private responseXML_Original: string;
   private responseXML_Stripped: string;
@@ -18,6 +19,7 @@ export class DebugXmlPopoverComponent {
 
   constructor(private clipboard: Clipboard) {
     this.responseXML = 'loading TR...';
+    this.isTripRequest = false;
     this.responseXML_Original = 'n/a';
     this.responseXML_Stripped = 'n/a';
     this.isStrippingTagsEnabled = true;
@@ -26,7 +28,12 @@ export class DebugXmlPopoverComponent {
   public updateRequestData(requestInfo: OJP.RequestInfo) {
     if (requestInfo.responseXML) {
       this.responseXML_Original = XML_Helpers.prettyPrintXML(requestInfo.responseXML);
-      this.responseXML_Stripped = this.responseXML_Original.replace(/<LinkProjection>.+?<\/LinkProjection>/gms, '');
+      if (this.isTripRequest) {
+        // HACK: Quick'n'dirty remove the not-needed nodes, using string replace - XSLT didnt work as expected
+        let responseXML_Stripped = this.responseXML_Original.replace(/<LinkProjection>.+?<\/LinkProjection>/gms, '');
+        
+        this.responseXML_Stripped = responseXML_Stripped;
+      }
 
       this.updateResponseXML();
     } else {
@@ -40,7 +47,7 @@ export class DebugXmlPopoverComponent {
   }
 
   private updateResponseXML() {
-    if (this.isStrippingTagsEnabled) {
+    if (this.isTripRequest && this.isStrippingTagsEnabled) {
       this.responseXML = this.responseXML_Stripped;
     } else {
       this.responseXML = this.responseXML_Original;
