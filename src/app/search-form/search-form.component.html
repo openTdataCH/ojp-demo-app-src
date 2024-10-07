@@ -36,7 +36,7 @@
   </div>
 
   <div class="collapse" [ngClass]="{ 'show': this.userTripService.isViaEnabled}" id="viaContainer">
-    <div class="d-flex align-items-center">
+    <div class="d-flex gap-2 align-items-center">
       <div class="flex-grow-1 journey-endpoint">
         <journey-point-input
           (selectedLocation)="onLocationSelected($event, 'Via')"
@@ -45,11 +45,17 @@
           [placeholder]="'Via'">
         </journey-point-input>
       </div>
+      <div class="via-dwell-time">
+        <sbb-form-field class="sbb-form-field-long">
+          <sbb-label>Dwell Time (mins)</sbb-label>
+          <input type="text" sbbInput placeholder="0" [formControl]="viaDwellTime" />
+        </sbb-form-field>
+      </div>
     </div>
   </div> 
   
   <ng-container *ngIf="!this.isEmbed">
-    <trip-mode-type [tripModeTypeIdx]="0"></trip-mode-type>
+    <trip-mode-type></trip-mode-type>
   </ng-container>
 
   <div class="d-flex align-items-center">
@@ -154,11 +160,14 @@
 
 <div class="row mb-2" *ngIf="!this.isEmbed">
   <div class="col">
-    <div class="d-flex flex-row-reverse">
+    <div class="d-flex gap-1 flex-row-reverse">
+      <div class="xml-info" (click)="showRequestXMLPopover()" *ngIf="this.currentRequestInfo !== null">
+        <span class="layer-xml-info badge bg-info text-dark">XML</span>
+      </div>
       <div *ngIf="this.requestDurationF !== null">
         <span class="badge bg-success">{{ this.requestDurationF }}</span>
       </div>
-      <div style="width: 7px"></div>
+      <div style="width: 2px"></div>
       <ng-container *ngIf="this.userTripService.permalinkRelativeURL !== null">
         <div>
           <a href="{{ this.userTripService.permalinkRelativeURL }}" target="_blank">Permalink</a>

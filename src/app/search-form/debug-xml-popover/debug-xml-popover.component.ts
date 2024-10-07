@@ -1,4 +1,6 @@
 import { Component } from '@angular/core';
+import { Clipboard } from '@angular/cdk/clipboard';
+
 import * as OJP from 'ojp-sdk'
 import { XML_Helpers } from 'src/app/helpers/xml-helpers';
 
@@ -7,25 +9,61 @@ import { XML_Helpers } from 'src/app/helpers/xml-helpers';
   templateUrl: './debug-xml-popover.component.html',
 })
 export class DebugXmlPopoverComponent {
-  public requestXmlS: string
-  public responseXmlS: string
+  public responseXML: string;
+  public isTripRequest: boolean;
+  
+  public requestXML: string;
+  private responseXML_Original: string;
+  private responseXML_Stripped: string;
+  
+  private isStrippingTagsEnabled: boolean
 
-  constructor() {
-    this.requestXmlS = 'loading...';
-    this.responseXmlS = 'loading...';
+  constructor(private clipboard: Clipboard) {
+    this.responseXML = 'loading TR...';
+    this.isTripRequest = false;
+    this.requestXML = 'n/a';
+    this.responseXML_Original = 'n/a';
+    this.responseXML_Stripped = 'n/a';
+    this.isStrippingTagsEnabled = true;
   }
 
-  updateRequestData(requestInfo: OJP.RequestInfo) {
+  public updateRequestData(requestInfo: OJP.RequestInfo) {
     if (requestInfo.requestXML) {
-      this.requestXmlS = XML_Helpers.prettyPrintXML(requestInfo.requestXML);
+      this.requestXML = XML_Helpers.prettyPrintXML(requestInfo.requestXML);
     } else {
-      this.requestXmlS = 'n/a';
+      this.requestXML = 'n/a (error getting request XML)';
     }
 
     if (requestInfo.responseXML) {
-      this.responseXmlS = XML_Helpers.prettyPrintXML(requestInfo.responseXML);
+      this.responseXML_Original = XML_Helpers.prettyPrintXML(requestInfo.responseXML);
+      if (this.isTripRequest) {
+        // HACK: Quick'n'dirty remove the not-needed nodes, using string replace - XSLT didnt work as expected
+        let responseXML_Stripped = this.responseXML_Original.replace(/<LinkProjection>.+?<\/LinkProjection>/gms, '');
+        responseXML_Stripped = responseXML_Stripped.replace(/<ojp:LinkProjection>.+?<\/ojp:LinkProjection>/gms, '');
+        
+        this.responseXML_Stripped = responseXML_Stripped;
+      }
+
+      this.updateResponseXML();
     } else {
-      this.responseXmlS = 'n/a';
+      this.responseXML = 'loading TR ... or TR is not fetched yet';
     }
+  }
+
+  public toggleStripTags() {
+    this.isStrippingTagsEnabled = !this.isStrippingTagsEnabled;
+    this.updateResponseXML();
+  }
+
+  private updateResponseXML() {
+    if (this.isTripRequest && this.isStrippingTagsEnabled) {
+      this.responseXML = this.responseXML_Stripped;
+    } else {
+      this.responseXML = this.responseXML_Original;
+    }
+  }
+
+  public copyTextToClipboard() {
+    this.clipboard.copy(this.responseXML);
   }
 }

@@ -4,6 +4,20 @@ OJP-Demo URL: https://opentdatach.github.io/ojp-demo-app/
 
 ----
 
+07.October 2024
+- Improve Trips [PR #166](https://github.com/openTdataCH/ojp-demo-app-src/pull/166)
+  - allow additional trip restrictions to be turned on/off individually - [Changing the Monomodal Walk #114](https://github.com/openTdataCH/ojp-demo-app-src/issues/114)
+  - updates `DebugXML` popover 
+    - allow copy to clipboard - [copy to clipboard for request and response #123](https://github.com/openTdataCH/ojp-demo-app-src/issues/123)
+    - strip `LinkProjection` in XML response 
+    - harmonize across Journey Search / Station Board /  Trip Info pages
+  - adds via dwell time - [Implement Via DwellTime #164](https://github.com/openTdataCH/ojp-demo-app-src/issues/164)
+  - discard NOVA products that are not 1st or 2nd class - see [ojp-nova#49](https://github.com/openTdataCH/ojp-nova/issues/49#issuecomment-2393912586)
+  - bug fixes
+    - fix pagination number of results param
+    - fix showing trips with situations missing `Description`
+  - use latest OJP SDK
+
 17.September 2024
 - Improve Trips [PR #161](https://github.com/openTdataCH/ojp-demo-app-src/pull/161)
   - use OJP `Via` for journeys - [Implement VIA in OJP (GUI and SDK) #151](https://github.com/openTdataCH/ojp-demo-app-src/issues/151)

@@ -56,6 +56,9 @@ export class JourneyResultsComponent implements OnInit {
         trip.tripFareResults = [];
       });
 
+      // See https://github.com/openTdataCH/ojp-nova/issues/49#issuecomment-2393912586
+      const discardFareProductIDs = ['2361'];
+
       fareResults.forEach(fareResult => {
         const trip = this.model.trips.find(trip => {
           return trip.id === fareResult.tripId
@@ -68,7 +71,9 @@ export class JourneyResultsComponent implements OnInit {
           return;
         }
 
-        trip.tripFareResults = fareResult.tripFareResults;
+        // Discard trip fare products with issues
+        const keepTripFareResults = fareResult.tripFareResults.filter(tripFareResult => !discardFareProductIDs.includes(tripFareResult.fareProduct.fareProductId));
+        trip.tripFareResults = keepTripFareResults;
       });
     })
   }
@@ -107,6 +112,12 @@ export class JourneyResultsComponent implements OnInit {
   private loadTrips(numberOfResultsType: OJP.NumberOfResultsType, depArrDate: Date) {
     const viaTripLocations = this.userTripService.isViaEnabled ? this.userTripService.viaTripLocations : [];
 
+    const numberOfResults: number | null = (() => {
+      const hasPublicTransport = this.userTripService.hasPublicTransport();
+      
+      return hasPublicTransport ? 5 : null;
+    })();
+
     const stageConfig = this.userTripService.getStageConfig();
     const request = OJP.TripRequest.initWithTripLocationsAndDate(
       stageConfig,
@@ -120,6 +131,7 @@ export class JourneyResultsComponent implements OnInit {
       this.userTripService.tripModeTypes[0],
       this.userTripService.tripTransportModes[0],
       viaTripLocations,
+      numberOfResults,
     );
 
     if (request === null) {

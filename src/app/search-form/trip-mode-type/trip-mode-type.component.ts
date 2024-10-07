@@ -1,21 +1,63 @@
-import { Component, Input, OnInit, ViewChild, ElementRef } from '@angular/core';
-import { SbbDialog } from '@sbb-esta/angular/dialog';
+import { Component, OnInit } from '@angular/core';
+import { FormControl } from '@angular/forms';
+import { debounceTime } from 'rxjs';
 
 import * as OJP from 'ojp-sdk'
 
-import { DebugXmlPopoverComponent } from '../debug-xml-popover/debug-xml-popover.component';
-
-import { MapService } from 'src/app/shared/services/map.service';
-import { UserTripService } from 'src/app/shared/services/user-trip.service';
-
-interface TripMotTypeDataModel {
-  requestInfo: OJP.RequestInfo | null,
-}
+import { UserTripService } from '../../shared/services/user-trip.service';
+import { FormatHelpers } from '../../helpers/format-helpers';
 
 interface TripTransportModeData {
   modeType: OJP.TripModeType,
   transportModes: OJP.IndividualTransportMode[],
 }
+
+const appTripTransportModeData: TripTransportModeData[] = [
+  {
+    modeType: 'monomodal',
+    transportModes: [
+      'public_transport',
+      'walk', // in v2 is 'foot',
+      'cycle',
+      'self-drive-car',
+      'bicycle_rental',
+      'escooter_rental',
+      'car_sharing',
+      'taxi',
+      'others-drive-car',
+    ]
+  },
+  {
+    modeType: 'mode_at_start',
+    transportModes: [
+      'walk', // in v2 is 'foot',
+      'cycle',
+      'bicycle_rental',
+      'escooter_rental',
+      'taxi',
+      'others-drive-car',
+    ]
+  },
+  {
+    modeType: 'mode_at_end',
+    transportModes: [
+      'walk', // in v2 is 'foot',
+      'bicycle_rental',
+      'escooter_rental',
+      'car_sharing',
+      'taxi',
+      'others-drive-car',
+    ]
+  },
+  {
+    modeType: 'mode_at_start_end',
+    transportModes: [
+      'walk', // in v2 is 'foot',
+      'bicycle_rental',
+      'escooter_rental'
+    ]
+  }
+];
 
 @Component({
   selector: 'trip-mode-type',
@@ -23,111 +65,100 @@ interface TripTransportModeData {
   styleUrls: ['./trip-mode-type.component.scss']
 })
 export class TripModeTypeComponent implements OnInit {
-  @Input() tripModeTypeIdx: number
-  @ViewChild('settingsContainer') settingsContainer!: ElementRef; 
-
   public tripTransportModeData: TripTransportModeData[]
 
   public tripModeType: OJP.TripModeType
   public tripTransportModes: OJP.IndividualTransportMode[]
   public tripTransportMode: OJP.IndividualTransportMode
 
-  public tripMotTypeDataModel: TripMotTypeDataModel
-
+  public isAdditionalRestrictionsEnabled: boolean
   public settingsCollapseID: string
-  public endpointMinDurationS: string
-  public endpointMaxDurationS: string
-  public endpointMinDistanceS: string
-  public endpointMaxDistanceS: string
 
-  constructor(private debugXmlPopover: SbbDialog, public userTripService: UserTripService, private mapService: MapService) {
-    this.tripTransportModeData = [
-      {
-        modeType: 'monomodal',
-        transportModes: [
-          'public_transport',
-          'walk',
-          'cycle',
-          'self-drive-car',
-          'bicycle_rental',
-          'escooter_rental',
-          'car_sharing',
-          'taxi',
-          'others-drive-car',
-        ]
-      },
-      {
-        modeType: 'mode_at_start',
-        transportModes: [
-          'walk',
-          'cycle',
-          'bicycle_rental',
-          'escooter_rental',
-          'taxi',
-          'others-drive-car',
-        ]
-      },
-      {
-        modeType: 'mode_at_end',
-        transportModes: [
-          'walk',
-          'bicycle_rental',
-          'escooter_rental',
-          'car_sharing',
-          'taxi',
-          'others-drive-car',
-        ]
-      },
-      {
-        modeType: 'mode_at_start_end',
-        transportModes: [
-          'walk',
-          'bicycle_rental',
-          'escooter_rental'
-        ]
-      }
-    ]
+  public filterMinDurationControl = new FormControl('');
+  public filterMaxDurationControl = new FormControl('');
+  public filterMinDistanceControl = new FormControl('');
+  public filterMaxDistanceControl = new FormControl('');
+
+  public isFilterMinDurationEnabled;
+  public isFilterMaxDurationEnabled;
+  public isFilterMinDistanceEnabled;
+  public isFilterMaxDistanceEnabled;
+
+  constructor(public userTripService: UserTripService) {
+    this.tripTransportModeData = appTripTransportModeData;
 
     this.tripModeType = this.tripTransportModeData[0].modeType
     this.tripTransportModes = JSON.parse(JSON.stringify(this.tripTransportModeData[0].transportModes))
     this.tripTransportMode = this.tripTransportModes[0]
 
-    this.tripModeTypeIdx = 0
-
-    this.tripMotTypeDataModel = <TripMotTypeDataModel>{}
-
+    this.isAdditionalRestrictionsEnabled = false;
     this.settingsCollapseID = 'mode_custom_mode_settings_NOT_READY_YET';
-    this.endpointMinDurationS = '2';
-    this.endpointMaxDurationS = '30';
-    this.endpointMinDistanceS = '100';
-    this.endpointMaxDistanceS = '20000';
+    
+    this.filterMinDurationControl.setValue('2', { emitEvent: false });
+    this.filterMaxDurationControl.setValue('30', { emitEvent: false });
+    this.filterMinDistanceControl.setValue('100', { emitEvent: false });
+    this.filterMaxDistanceControl.setValue('10000', { emitEvent: false });
+
+    this.isFilterMinDurationEnabled = false;
+    this.isFilterMaxDurationEnabled = true;
+    this.isFilterMinDistanceEnabled = false;
+    this.isFilterMaxDistanceEnabled = true;
   }
 
   ngOnInit() {
-    this.tripModeType = this.userTripService.tripModeTypes[this.tripModeTypeIdx];
+    // TODO - remove this, we used to have multiple TR
+    const tripModeTypeIdx = 0;
+    this.tripModeType = this.userTripService.tripModeTypes[tripModeTypeIdx];
 
     const tripTransportModeData = this.tripTransportModeData.find(tripTransportMode => {
       return tripTransportMode.modeType === this.tripModeType;
     }) ?? this.tripTransportModeData[0];
 
     this.tripTransportModes = JSON.parse(JSON.stringify(tripTransportModeData.transportModes));
-    this.tripTransportMode = this.userTripService.tripTransportModes[this.tripModeTypeIdx];
-
-    this.tripMotTypeDataModel.requestInfo = null
-
-    this.userTripService.activeTripSelected.subscribe(trip => {
-      this.updateRequestDataModel()
-    })
+    this.tripTransportMode = this.userTripService.tripTransportModes[tripModeTypeIdx];
 
     this.userTripService.defaultsInited.subscribe(nothing => {
-      this.userTripService.updateTripLocationCustomMode(this.tripModeTypeIdx);
-    })
+      this.userTripService.updateTripLocationCustomMode();
+    });
 
-    this.settingsCollapseID = 'mode_custom_mode_settings_' + this.tripModeTypeIdx;
+    this.filterMinDurationControl.valueChanges.pipe(debounceTime(200)).subscribe(value => {
+      this.updateAdditionalRestrictions();
+    });
+    this.filterMaxDurationControl.valueChanges.pipe(debounceTime(200)).subscribe(value => {
+      this.updateAdditionalRestrictions();
+    });
+    this.filterMinDistanceControl.valueChanges.pipe(debounceTime(200)).subscribe(value => {
+      this.updateAdditionalRestrictions();
+    });
+    this.filterMaxDistanceControl.valueChanges.pipe(debounceTime(200)).subscribe(value => {
+      this.updateAdditionalRestrictions();
+    });
+
+    this.settingsCollapseID = 'mode_custom_mode_settings_' + tripModeTypeIdx;
   }
 
-  private isLastSegment(): boolean {
-    return this.tripModeTypeIdx === (this.userTripService.tripModeTypes.length - 1);
+  public updateAdditionalRestrictions() {
+    let minDuration = null;
+    let maxDuration = null;
+    let minDistance = null;
+    let maxDistance = null;
+
+    if (this.isAdditionalRestrictionsEnabled) {
+      if (this.isFilterMinDurationEnabled) {
+        minDuration = FormatHelpers.parseNumber(this.filterMinDurationControl.value);
+      }
+      if (this.isFilterMaxDurationEnabled) {
+        maxDuration = FormatHelpers.parseNumber(this.filterMaxDurationControl.value);
+      }
+      if (this.isFilterMinDistanceEnabled) {
+        minDistance = FormatHelpers.parseNumber(this.filterMinDistanceControl.value);
+      }
+      if (this.isFilterMaxDistanceEnabled) {
+        maxDistance = FormatHelpers.parseNumber(this.filterMaxDistanceControl.value);
+      }
+    }
+
+    this.userTripService.updateTripLocationRestrictions(minDuration, maxDuration, minDistance, maxDistance);
   }
 
   public onTripModeChange() {
@@ -147,40 +178,13 @@ export class TripModeTypeComponent implements OnInit {
       this.tripTransportMode = this.tripTransportModes[0];
     }
 
-    this.userTripService.updateTripMode(this.tripModeType, this.tripTransportMode, this.tripModeTypeIdx);
-    this.userTripService.updateTripLocationCustomMode(this.tripModeTypeIdx);
+    this.userTripService.updateTripMode(this.tripModeType, this.tripTransportMode);
+    this.userTripService.updateTripLocationCustomMode();
   }
 
   public onTransportModeChange() {
-    this.userTripService.updateTripMode(this.tripModeType, this.tripTransportMode, this.tripModeTypeIdx);
-    this.userTripService.updateTripLocationCustomMode(this.tripModeTypeIdx);
-
-    if (this.tripTransportMode === 'public_transport') {
-      this.settingsContainer.nativeElement.classList.remove('show');
-    }
-  }
-
-  private updateRequestDataModel() {
-    const tripRequest = this.userTripService.journeyTripRequests[this.tripModeTypeIdx] ?? null;
-    if (tripRequest === null) {
-      // mocks or the TripRequest parser callback are not complete
-      this.tripMotTypeDataModel.requestInfo = null;
-      return;
-    }
-
-    this.tripMotTypeDataModel.requestInfo = tripRequest.requestInfo;
-  }
-
-  public showRequestXmlPopover() {
-    const dialogRef = this.debugXmlPopover.open(DebugXmlPopoverComponent, {
-      position: { top: '10px' },
-    });
-    dialogRef.afterOpened().subscribe(() => {
-      if (this.tripMotTypeDataModel.requestInfo) {
-        const popover = dialogRef.componentInstance as DebugXmlPopoverComponent
-        popover.updateRequestData(this.tripMotTypeDataModel.requestInfo)
-      }
-    });
+    this.userTripService.updateTripMode(this.tripModeType, this.tripTransportMode);
+    this.userTripService.updateTripLocationCustomMode();
   }
 
   public computeTripModeTypeText(tripModeType: OJP.TripModeType): string {
@@ -210,6 +214,7 @@ export class TripModeTypeComponent implements OnInit {
       'car-shuttle-train': 'Autoverlad',
       'car': 'Car',
       'car-ferry': 'Ferry',
+      'foot': 'Foot (walking)',
     }
 
     const text = MapIndividualTransportMode[transportMode] ?? 'n/a';
@@ -217,12 +222,9 @@ export class TripModeTypeComponent implements OnInit {
     return text;
   }
 
-  public onRestrictionsChange() {
-    const minDuration = parseInt(this.endpointMinDurationS, 10);
-    const maxDuration = parseInt(this.endpointMaxDurationS, 10);
-    const minDistance = parseInt(this.endpointMinDistanceS, 10);
-    const maxDistance = parseInt(this.endpointMaxDistanceS, 10);
+  public toggleAdditionalRestrictions() {
+    this.isAdditionalRestrictionsEnabled = !this.isAdditionalRestrictionsEnabled;
 
-    this.userTripService.updateTripLocationRestrictions(minDuration, maxDuration, minDistance, maxDistance, this.tripModeTypeIdx);
+    this.updateAdditionalRestrictions();
   }
 }

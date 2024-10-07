@@ -1,6 +1,7 @@
 import * as OJP from 'ojp-sdk';
 
 import { LegStopPointData } from '../shared/components/service-stops.component';
+import { DEBUG_LEVEL } from '../config/app-config';
 
 export class OJPHelpers {
   public static computeIconFilenameForService(service: OJP.JourneyService): string {
@@ -63,20 +64,12 @@ export class OJPHelpers {
         stopPointData.depText = depArrTimeS;
       }
 
-      const delayMinutes = depArrTime.delayMinutes;
-      if (delayMinutes) {
-        const delayTextParts: string[] = []
-        delayTextParts.push(' ')
-        delayTextParts.push(delayMinutes > 0 ? '+' : '')
-        delayTextParts.push('' + delayMinutes)
-        delayTextParts.push("'");
-
-        const delayTextS = delayTextParts.join('');
-
+      const delayText = OJPHelpers.computeStopPointDelayText(depArrType, stopPoint);
+      if (delayText !== null) {
         if (isArr) {
-          stopPointData.arrDelayText = delayTextS;
+          stopPointData.arrDelayText = delayText;
         } else {
-          stopPointData.depDelayText = delayTextS;
+          stopPointData.depDelayText = delayText;
         }
       }
     });
@@ -94,6 +87,60 @@ export class OJPHelpers {
     stopPointData.isNotServicedStop = stopPoint.isNotServicedStop === true;
   }
 
+  private static computeStopPointDelayText(depArrType: OJP.TripRequestBoardingType, stopPoint: OJP.StopPoint): string | null {
+    const isArr = depArrType === 'Arr';
+    const depArrTime = isArr ? stopPoint.arrivalData : stopPoint.departureData;
+    if (depArrTime === null) {
+      return null;
+    }
+
+    if (depArrTime.estimatedTime === null) {
+      return null;
+    }
+      
+    const dateDiffSeconds = (depArrTime.estimatedTime.getTime() - depArrTime.timetableTime.getTime()) / 1000;
+    if (Math.abs(dateDiffSeconds) < 0.1) {
+      return null;
+    }      
+
+    const delayTextParts: string[] = [];
+    delayTextParts.push(' ');
+    
+    if (dateDiffSeconds > 0) {
+      delayTextParts.push('+');
+    } else {
+      delayTextParts.push('-');
+    }
+
+    const absDateDiffSeconds = Math.abs(dateDiffSeconds);
+
+    if (DEBUG_LEVEL === 'DEBUG') {
+      // On DEV show full minutes:seconds delays
+      const dateDiffMinutes = Math.floor(absDateDiffSeconds / 60);
+      if (dateDiffMinutes) {
+        delayTextParts.push('' + dateDiffMinutes);
+        delayTextParts.push("'");
+      }
+
+      const dateDiffSecondsRemaining = absDateDiffSeconds - dateDiffMinutes * 60;
+      delayTextParts.push('' + dateDiffSecondsRemaining);
+      delayTextParts.push("\"");
+    } else {
+      // On PROD show just minutes
+      const delayMinutes = depArrTime.delayMinutes;
+      if (delayMinutes === 0) {
+        return null;
+      }
+        
+      delayTextParts.push('' + delayMinutes)
+      delayTextParts.push("'");
+    }
+
+    const delayText = delayTextParts.join('');
+
+    return delayText;
+  }
+
   public static computeSituationsData(siriSituations: OJP.PtSituationElement[]): OJP.SituationContent[] {
     const situationsData: OJP.SituationContent[] = [];
 
@@ -109,8 +156,11 @@ export class OJPHelpers {
 
         if ('Summary' in mapTextualContent) {
           situationData.summary = mapTextualContent['Summary'].join('. ');
+        } else {
+          situationData.summary = 'Summary n/a';
         }
 
+        situationData.descriptions = [];
         if ('Description' in mapTextualContent) {
           situationData.descriptions = mapTextualContent['Description'];
         }

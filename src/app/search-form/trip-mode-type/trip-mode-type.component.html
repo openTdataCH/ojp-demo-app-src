@@ -1,38 +1,28 @@
 <div class="trip-mot-type-container">
 
-  <div class="d-flex align-items-center via-mot">
-    <div class="flex-grow-1">
+  <div class="d-flex gap-1 align-items-center via-mot">
+    <div>
       <sbb-form-field class="w-100">
-        <sbb-label>Choose Monomodal / Multimodal</sbb-label>
+        <sbb-label>Mono-/Multi-modal</sbb-label>
           <sbb-select
           [(ngModel)]="this.tripModeType"
           (selectionChange)="onTripModeChange()">
           <sbb-option
             *ngFor="let tripTransportMode of this.tripTransportModeData"
-            [value]="tripTransportMode.modeType">{{ this.computeTripModeTypeText(tripTransportMode.modeType) }}</sbb-option>
+            [value]="tripTransportMode.modeType">{{ computeTripModeTypeText(tripTransportMode.modeType) }}</sbb-option>
         </sbb-select>
       </sbb-form-field>
     </div>
 
-    <div
-      *ngIf="this.tripMotTypeDataModel.requestInfo"
-      class="xml-info"
-      (click)="this.showRequestXmlPopover()"
-    >
-      <span class="layer-xml-info badge bg-info text-dark">XML</span>
-    </div>
-  </div>
-
-  <div class="d-flex align-items-center via-mot">
     <div class="flex-grow-1">
       <sbb-form-field class="w-100">
-        <sbb-label>Choose MOT (Mode of Transport)</sbb-label>
+        <sbb-label>Mode of Transport</sbb-label>
           <sbb-select
           [(ngModel)]="this.tripTransportMode"
-          (selectionChange)="this.onTransportModeChange()">
+          (selectionChange)="onTransportModeChange()">
           <sbb-option
             *ngFor="let tripTransportMode of this.tripTransportModes"
-            [value]="tripTransportMode">{{ this.computeTripTransportModeText(tripTransportMode) }}</sbb-option>
+            [value]="tripTransportMode">{{ computeTripTransportModeText(tripTransportMode) }}</sbb-option>
         </sbb-select>
       </sbb-form-field>
     </div>
@@ -41,44 +31,67 @@
       <button 
         sbb-secondary-button
         type="button" 
-        disabled="{{ this.tripModeType === 'monomodal' }}"
-        [attr.data-bs-target]="'#' + this.settingsCollapseID + (this.tripModeType === 'monomodal' ? '_DISABLED' : '')"
+        [attr.data-bs-target]="'#' + this.settingsCollapseID"
         [attr.aria-controls]="this.settingsCollapseID"
+        (click)="toggleAdditionalRestrictions()"
         data-bs-toggle="collapse" 
         aria-expanded="false">
-          <sbb-icon svgIcon="kom:combined-mobility-small"></sbb-icon>
+          <sbb-icon *ngIf="!this.isAdditionalRestrictionsEnabled" svgIcon="kom:filter-small"></sbb-icon>
+          <sbb-icon *ngIf="this.isAdditionalRestrictionsEnabled" svgIcon="kom:filter-x-small"></sbb-icon>
       </button>
     </div>
   </div>
 
-  <div class="mobility-settings-left-v2 endpoint-settings-wrapper collapse" id="{{ this.settingsCollapseID }}" #settingsContainer>
-    <div class="endpoint-settings d-none2">
+  <div class="mobility-settings-left-v2 endpoint-settings-wrapper collapse" id="{{ this.settingsCollapseID }}">
+    <div class="endpoint-settings">
       <div class="d-flex align-items-center mb-2">
         <div class="flex-grow-1">
-          Duration (mins)
+          <sbb-checkbox value="single-checkbox" [(ngModel)]="this.isFilterMinDurationEnabled" (change)="updateAdditionalRestrictions()">
+            MinDuration
+          </sbb-checkbox>
         </div>
         <div>
-          <input sbbInput style="width: 50px;" 
-            [(ngModel)]="this.endpointMinDurationS"
-            (change)="this.onRestrictionsChange()" />
-          <span> to </span>
-          <input sbbInput style="width: 50px;" 
-            [(ngModel)]="this.endpointMaxDurationS"
-            (change)="this.onRestrictionsChange()" />
+          <input sbbInput style="width: 50px;" [formControl]="this.filterMinDurationControl" /> minutes
         </div>
       </div>
       <div class="d-flex align-items-center mb-2">
         <div class="flex-grow-1">
-          Distance (meters)
+          <sbb-checkbox value="single-checkbox" [(ngModel)]="this.isFilterMaxDurationEnabled" (change)="updateAdditionalRestrictions()">
+            MaxDuration
+          </sbb-checkbox>
         </div>
         <div>
-          <input sbbInput style="width: 50px;" 
-            [(ngModel)]="this.endpointMinDistanceS"
-            (change)="this.onRestrictionsChange()" />
-          <span> to </span>
-          <input sbbInput style="width: 70px;" 
-            [(ngModel)]="this.endpointMaxDistanceS"
-            (change)="this.onRestrictionsChange()" />
+          <input sbbInput style="width: 50px;" [formControl]="this.filterMaxDurationControl" /> minutes
+        </div>
+      </div>
+      <div class="d-flex align-items-center mb-2">
+        <div class="flex-grow-1">
+          <sbb-checkbox value="single-checkbox" [(ngModel)]="this.isFilterMinDistanceEnabled" (change)="updateAdditionalRestrictions()">
+            MinDistance
+          </sbb-checkbox>
+        </div>
+        <div>
+          <input sbbInput style="width: 70px;" [formControl]="this.filterMinDistanceControl" /> meters
+        </div>
+      </div>
+      <div class="d-flex align-items-center mb-2">
+        <div class="flex-grow-1">
+          <sbb-checkbox value="single-checkbox" [(ngModel)]="this.isFilterMaxDistanceEnabled" (change)="updateAdditionalRestrictions()">
+            MaxDistance
+          </sbb-checkbox>
+        </div>
+        <div>
+          <input sbbInput style="width: 70px;" [formControl]="this.filterMaxDistanceControl" /> meters
+        </div>
+      </div>
+      <div class="d-flex align-items-center mb-2">
+        <div class="flex-grow-1">
+          <sbb-checkbox value="single-checkbox" [(ngModel)]="this.userTripService.isNumberOfResultsEnabled">
+            NumberOfResults
+          </sbb-checkbox>
+        </div>
+        <div>
+          <input sbbInput style="width: 50px;" [(ngModel)]="this.userTripService.numberOfResults" />
         </div>
       </div>
     </div>

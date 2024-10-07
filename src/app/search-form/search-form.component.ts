@@ -1,4 +1,13 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
+import { FormControl } from '@angular/forms';
+import { debounceTime } from 'rxjs';
+
+import { SbbDialog } from "@sbb-esta/angular/dialog";
+import { SbbExpansionPanel } from '@sbb-esta/angular/accordion';
+import { SbbNotificationToast } from '@sbb-esta/angular/notification-toast';
+import { SbbRadioChange } from '@sbb-esta/angular/radio-button';
+
+import * as OJP from 'ojp-sdk'
 
 import { DateHelpers } from '../helpers/date-helpers';
 
@@ -8,13 +17,7 @@ import { LanguageService } from '../shared/services/language.service';
 import { MapService } from '../shared/services/map.service';
 import { InputXmlPopoverComponent } from './input-xml-popover/input-xml-popover.component';
 import { EmbedSearchPopoverComponent } from './embed-search-popover/embed-search-popover.component';
-
-import { SbbDialog } from "@sbb-esta/angular/dialog";
-import { SbbExpansionPanel } from '@sbb-esta/angular/accordion';
-import { SbbNotificationToast } from '@sbb-esta/angular/notification-toast';
-import { SbbRadioChange } from '@sbb-esta/angular/radio-button';
-
-import * as OJP from 'ojp-sdk'
+import { DebugXmlPopoverComponent } from './debug-xml-popover/debug-xml-popover.component';
 
 import { APP_STAGE, DEBUG_LEVEL } from '../config/app-config';
 import { Router } from '@angular/router';
@@ -31,14 +34,14 @@ export class SearchFormComponent implements OnInit {
   public fromLocationText: string
   public toLocationText: string
   public viaText: string
+  public viaDwellTime = new FormControl('');
 
   public appStageOptions: APP_STAGE[] = []
 
   public isSearching: boolean
 
-  public tripRequestFormattedXML: string
-  public tripResponseFormattedXML: string
   public requestDurationF: string | null
+  public currentRequestInfo: OJP.RequestInfo | null
 
   private lastCustomTripRequestXML: string | null
 
@@ -59,6 +62,7 @@ export class SearchFormComponent implements OnInit {
     private notificationToast: SbbNotificationToast,
     private tripXmlPopover: SbbDialog,
     private embedHTMLPopover: SbbDialog,
+    private debugXMLPopover: SbbDialog,
     private router: Router,
     private languageService: LanguageService,
     public userTripService: UserTripService,
@@ -76,9 +80,8 @@ export class SearchFormComponent implements OnInit {
 
     this.isSearching = false;
 
-    this.tripRequestFormattedXML = 'RequestXML'
-    this.tripResponseFormattedXML = 'ResponseXML'
     this.requestDurationF = null;
+    this.currentRequestInfo = null;
 
     this.lastCustomTripRequestXML = null
 
@@ -99,6 +102,7 @@ export class SearchFormComponent implements OnInit {
   ngOnInit() {
     this.userTripService.locationsUpdated.subscribe(nothing => {
       this.updateLocationTexts();
+      this.updateViaDwellTime();
     })
 
     this.userTripService.tripsUpdated.subscribe(trips => {
@@ -113,6 +117,7 @@ export class SearchFormComponent implements OnInit {
     this.userTripService.searchParamsReset.subscribe(() => {
       this.expandSearchPanel();
       this.requestDurationF = null;
+      this.currentRequestInfo = null;
     });
 
     this.userTripService.defaultsInited.subscribe(nothing => {
@@ -123,10 +128,27 @@ export class SearchFormComponent implements OnInit {
       const requestNetworkDuration = DateHelpers.computeExecutionTime(requestInfo.requestDateTime, requestInfo.responseDateTime);
       const requestParseDuration = DateHelpers.computeExecutionTime(requestInfo.responseDateTime, requestInfo.parseDateTime);
       this.requestDurationF = (requestNetworkDuration + requestParseDuration).toFixed(2) + ' sec';
+
+      this.currentRequestInfo = requestInfo;
     });
 
+    this.viaDwellTime.valueChanges.pipe(debounceTime(300)).subscribe(value => {
+      this.updateViaDwellTime();
+    });
 
     this.userTripService.initDefaults(this.languageService.language);
+  }
+
+  private updateViaDwellTime() {
+    if (this.userTripService.viaTripLocations.length === 0) {
+      return;
+    }
+
+    let viaDwellTimeValue: number | null = Number(this.viaDwellTime.value);
+    viaDwellTimeValue = isNaN(viaDwellTimeValue) ? null : viaDwellTimeValue;
+    
+    const firstVia = this.userTripService.viaTripLocations[0];
+    firstVia.dwellTimeMinutes = viaDwellTimeValue;
   }
 
   private customInitFromParams() {
@@ -285,27 +307,8 @@ export class SearchFormComponent implements OnInit {
 
     const viaTripLocations = this.userTripService.isViaEnabled ? this.userTripService.viaTripLocations : [];
 
-    const numberOfResults: number | null = (() => {
-      const hasPublicTransport = this.userTripService.hasPublicTransport();
-      
-      return hasPublicTransport ? 5 : null;
-    })();
-
     const stageConfig = this.userTripService.getStageConfig();
-    const tripRequest = OJP.TripRequest.initWithTripLocationsAndDate(
-      stageConfig, 
-      this.languageService.language,
-      this.userTripService.fromTripLocation,
-      this.userTripService.toTripLocation,
-      this.userTripService.departureDate,
-      this.userTripService.currentBoardingType,
-      'NumberOfResults',
-      includeLegProjection,
-      this.userTripService.tripModeTypes[0],
-      this.userTripService.tripTransportModes[0],
-      viaTripLocations,
-      numberOfResults,
-    );
+    const tripRequest = this.userTripService.computeTripRequest(this.languageService);
 
     if (tripRequest === null) {
       this.notificationToast.open('Please check from/to input points', {
@@ -398,10 +401,14 @@ export class SearchFormComponent implements OnInit {
   public loadInputTripXMLPopover() {
     const dialogRef = this.tripXmlPopover.open(InputXmlPopoverComponent, {
       position: { top: '20px' },
+      width: '50vw',
     });
     dialogRef.afterOpened().subscribe(() => {
       const popover = dialogRef.componentInstance as InputXmlPopoverComponent
-      popover.inputTripRequestXML = this.userTripService.computeTripRequestXML(this.languageService.language, this.computeFormDepartureDate());
+      const currentTR = this.userTripService.computeTripRequest(this.languageService);
+      if (currentTR) {
+        popover.inputTripRequestXML = currentTR.requestInfo.requestXML ?? 'n/a';
+      }
 
       const handleCustomXMLResponse = (tripsResponseXML: string) => {
         this.lastCustomTripRequestXML = popover.inputTripRequestXML;
@@ -478,5 +485,20 @@ export class SearchFormComponent implements OnInit {
     this.searchDate = nowDateTime;
     this.searchTime = OJP.DateHelpers.formatTimeHHMM(nowDateTime);
     this.userTripService.updateDepartureDateTime(this.computeFormDepartureDate());
+  }
+
+  public showRequestXMLPopover() {
+    const dialogRef = this.debugXMLPopover.open(DebugXmlPopoverComponent, {
+      position: { top: '20px' },
+      width: '50vw',
+      height: '90vh',
+    });
+    dialogRef.afterOpened().subscribe(() => {
+      if (this.currentRequestInfo) {
+        const popover = dialogRef.componentInstance as DebugXmlPopoverComponent;
+        popover.isTripRequest = true;
+        popover.updateRequestData(this.currentRequestInfo);
+      }
+    });
   }
 }

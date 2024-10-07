@@ -1,10 +1,12 @@
 import { EventEmitter, Injectable } from '@angular/core'
 
-import { APP_CONFIG, APP_STAGE, DEBUG_LEVEL } from '../../config/app-config'
-import { MapService } from './map.service'
+import mapboxgl from 'mapbox-gl'
 
 import * as OJP from 'ojp-sdk'
-import mapboxgl from 'mapbox-gl'
+
+import { APP_CONFIG, APP_STAGE, DEBUG_LEVEL } from '../../config/app-config'
+import { MapService } from './map.service'
+import { LanguageService } from './language.service'
 
 type LocationUpdateSource = 'SearchForm' | 'MapDragend' | 'MapPopupClick'
 
@@ -16,6 +18,9 @@ export class UserTripService {
   public toTripLocation: OJP.TripLocationPoint | null
   public viaTripLocations: OJP.TripLocationPoint[]
   public isViaEnabled: boolean
+  
+  public isNumberOfResultsEnabled: boolean
+  public numberOfResults: number
 
   public currentBoardingType: OJP.TripRequestBoardingType
 
@@ -47,6 +52,9 @@ export class UserTripService {
     this.fromTripLocation = null
     this.toTripLocation = null
     this.viaTripLocations = []
+    
+    this.isNumberOfResultsEnabled = true;
+    this.numberOfResults = 5;
     this.isViaEnabled = false;
 
     this.currentBoardingType = 'Dep'
@@ -380,16 +388,6 @@ export class UserTripService {
     this.tripFaresUpdated.emit(fareResults);
   }
 
-  public computeTripRequestXML(language: OJP.Language, departureDate: Date): string {
-    const stageConfig = this.getStageConfig();
-    const request = OJP.TripRequest.initWithTripLocationsAndDate(stageConfig, language, this.fromTripLocation, this.toTripLocation, departureDate);
-    if (request === null || request.requestInfo.requestXML === null) {
-      return 'BROKEN TripsRequestParams';
-    }
-
-    return request.requestInfo.requestXML;
-  }
-
   private updatePermalinkAddress() {
     const queryParams = new URLSearchParams()
 
@@ -490,43 +488,49 @@ export class UserTripService {
     this.updatePermalinkAddress()
   }
 
-  public updateTripMode(tripModeType: OJP.TripModeType, tripTransportMode: OJP.IndividualTransportMode, tripSectionIdx: number) {
+  public updateTripMode(tripModeType: OJP.TripModeType, tripTransportMode: OJP.IndividualTransportMode) {
+    // TODO - remove this, we used to have multiple TR
+    const tripSectionIdx = 0;
+    
     this.tripModeTypes[tripSectionIdx] = tripModeType;
     this.tripTransportModes[tripSectionIdx] = tripTransportMode;
 
     this.updatePermalinkAddress()
   }
 
-  private computeTripLocationsToUpdate(tripSectionIdx: number): OJP.TripLocationPoint[] {
+  private computeTripLocationsToUpdate(): OJP.TripLocationPoint[] {
     const tripLocationsToUpdate: OJP.TripLocationPoint[] = [];
 
-    const tripLocations = [this.fromTripLocation];
-    this.viaTripLocations.forEach(viaTripLocation => {
-      tripLocations.push(viaTripLocation);
-    });
-    tripLocations.push(this.toTripLocation);
-
+    // TODO - remove this, we used to have multiple TR
+    const tripSectionIdx = 0;
     const tripModeType = this.tripModeTypes[tripSectionIdx];
-    
-    const tripLocationPointA = tripLocations[tripSectionIdx];
-    if (tripLocationPointA) {
-      if (tripModeType === 'mode_at_start' || tripModeType === 'mode_at_start_end') {
-        tripLocationsToUpdate.push(tripLocationPointA);
-      }
-    }
 
-    const tripLocationPointB = tripLocations[tripSectionIdx + 1];
-    if (tripLocationPointB) {
-      if (tripModeType === 'mode_at_end' || tripModeType === 'mode_at_start_end') {
-        tripLocationsToUpdate.push(tripLocationPointB);
+    const endpointTypes: OJP.JourneyPointType[] = ['From', 'To'];
+    endpointTypes.forEach(endpointType => {
+      const isFrom = endpointType === 'From';
+      const tripLocation = isFrom ? this.fromTripLocation : this.toTripLocation;
+      if (tripLocation === null) {
+        return;
       }
-    }
+
+      // discard FROM for mode_at_end
+      if ((tripModeType === 'mode_at_end') && isFrom) {
+        return;
+      }
+
+      // discard TO for mode_at_start
+      if ((tripModeType === 'mode_at_start') && !isFrom) {
+        return;
+      }
+
+      tripLocationsToUpdate.push(tripLocation);
+    });
 
     return tripLocationsToUpdate;
   }
 
-  public updateTripLocationRestrictions(minDuration: number, maxDuration: number, minDistance: number, maxDistance: number, tripSectionIdx: number) {
-    const tripLocationsToUpdate = this.computeTripLocationsToUpdate(tripSectionIdx);
+  public updateTripLocationRestrictions(minDuration: number | null, maxDuration: number | null, minDistance: number | null, maxDistance: number | null) {
+    const tripLocationsToUpdate = this.computeTripLocationsToUpdate();
 
     tripLocationsToUpdate.forEach(tripLocation => {
       tripLocation.minDuration = minDuration;
@@ -536,15 +540,18 @@ export class UserTripService {
     });
   }
 
-  public updateTripLocationCustomMode(tripSectionIdx: number) {
-    const tripLocationsToUpdate = this.computeTripLocationsToUpdate(tripSectionIdx);
+  public updateTripLocationCustomMode() {
+    // TODO - remove this, we used to have multiple TR
+    const tripSectionIdx = 0;
+
+    const tripLocationsToUpdate = this.computeTripLocationsToUpdate();
     const tripModeType = this.tripModeTypes[tripSectionIdx];
 
     tripLocationsToUpdate.forEach(tripLocation => {
-      if (tripModeType === 'monomodal') {
+      const tripTransportMode = this.tripTransportModes[tripSectionIdx];
+      if (tripTransportMode === 'public_transport') {
         tripLocation.customTransportMode = null;
       } else {
-        const tripTransportMode = this.tripTransportModes[tripSectionIdx];
         tripLocation.customTransportMode = tripTransportMode;
       }
     });
@@ -772,5 +779,28 @@ export class UserTripService {
     const tripTransportMode = this.tripTransportModes[0];
 
     return tripTransportMode === 'public_transport';
+  }
+
+  public computeTripRequest(languageService: LanguageService) {
+    const stageConfig = this.getStageConfig();
+    const includeLegProjection = true;
+    const viaTripLocations = this.isViaEnabled ? this.viaTripLocations : [];
+    
+    const tripRequest = OJP.TripRequest.initWithTripLocationsAndDate(
+      stageConfig, 
+      languageService.language,
+      this.fromTripLocation,
+      this.toTripLocation,
+      this.departureDate,
+      this.currentBoardingType,
+      'NumberOfResults',
+      includeLegProjection,
+      this.tripModeTypes[0],
+      this.tripTransportModes[0],
+      viaTripLocations,
+      this.numberOfResults,
+    );
+
+    return tripRequest;
   }
 }
