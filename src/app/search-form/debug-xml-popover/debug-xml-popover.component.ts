@@ -12,6 +12,7 @@ export class DebugXmlPopoverComponent {
   public responseXML: string;
   public isTripRequest: boolean;
   
+  public requestXML: string;
   private responseXML_Original: string;
   private responseXML_Stripped: string;
   
@@ -20,12 +21,19 @@ export class DebugXmlPopoverComponent {
   constructor(private clipboard: Clipboard) {
     this.responseXML = 'loading TR...';
     this.isTripRequest = false;
+    this.requestXML = 'n/a';
     this.responseXML_Original = 'n/a';
     this.responseXML_Stripped = 'n/a';
     this.isStrippingTagsEnabled = true;
   }
 
   public updateRequestData(requestInfo: OJP.RequestInfo) {
+    if (requestInfo.requestXML) {
+      this.requestXML = XML_Helpers.prettyPrintXML(requestInfo.requestXML);
+    } else {
+      this.requestXML = 'n/a (error getting request XML)';
+    }
+
     if (requestInfo.responseXML) {
       this.responseXML_Original = XML_Helpers.prettyPrintXML(requestInfo.responseXML);
       if (this.isTripRequest) {
