@@ -56,6 +56,9 @@ export class JourneyResultsComponent implements OnInit {
         trip.tripFareResults = [];
       });
 
+      // See https://github.com/openTdataCH/ojp-nova/issues/49#issuecomment-2393912586
+      const discardFareProductIDs = ['2361'];
+
       fareResults.forEach(fareResult => {
         const trip = this.model.trips.find(trip => {
           return trip.id === fareResult.tripId
@@ -68,7 +71,9 @@ export class JourneyResultsComponent implements OnInit {
           return;
         }
 
-        trip.tripFareResults = fareResult.tripFareResults;
+        // Discard trip fare products with issues
+        const keepTripFareResults = fareResult.tripFareResults.filter(tripFareResult => !discardFareProductIDs.includes(tripFareResult.fareProduct.fareProductId));
+        trip.tripFareResults = keepTripFareResults;
       });
     })
   }
