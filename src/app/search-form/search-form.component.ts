@@ -489,8 +489,9 @@ export class SearchFormComponent implements OnInit {
 
   public showRequestXMLPopover() {
     const dialogRef = this.debugXMLPopover.open(DebugXmlPopoverComponent, {
-      position: { top: '10px' },
+      position: { top: '20px' },
       width: '50vw',
+      height: '90vh',
     });
     dialogRef.afterOpened().subscribe(() => {
       if (this.currentRequestInfo) {

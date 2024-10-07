@@ -179,7 +179,9 @@ export class TripInfoSearchComponent implements OnInit {
 
   public showRequestXmlPopover() {
     const dialogRef = this.debugXmlPopover.open(DebugXmlPopoverComponent, {
-      position: { top: '10px' },
+      position: { top: '20px' },
+      width: '50vw',
+      height: '90vh',
     });
     dialogRef.afterOpened().subscribe(() => {
       if (this.currentRequestInfo) {
