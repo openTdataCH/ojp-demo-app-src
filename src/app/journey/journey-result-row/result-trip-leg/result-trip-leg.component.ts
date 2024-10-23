@@ -536,6 +536,10 @@ export class ResultTripLegComponent implements OnInit {
         return 'platform_no_information';
       }
 
+      if (stopPoint.vehicleAccessType === 'ALTERNATIVE_TRANSPORT') {
+        return 'platform_alternative_transport';
+      }
+
       return null;
     })();
 
@@ -565,6 +569,10 @@ export class ResultTripLegComponent implements OnInit {
 
       if (stopPoint.vehicleAccessType === 'PLATFORM_NOT_WHEELCHAIR_ACCESSIBLE') {
         return 'Not usable for wheelchairs.';
+      }
+
+      if (stopPoint.vehicleAccessType === 'ALTERNATIVE_TRANSPORT') {
+        return 'By shuttle from/to the accessible stop, register in advance.';
       }
 
       return 'No available information about vehicle access.';
