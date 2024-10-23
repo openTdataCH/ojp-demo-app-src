@@ -145,7 +145,7 @@
           (click)="this.handleClickOnLocation('From')"
         >{{ this.legInfoDataModel.fromLocationData.locationText }}</div>
 
-        <sbb-tooltip svgIcon="kom:arrow-change-horizontal-medium" *ngIf="this.legInfoDataModel.hasGuidance">
+        <sbb-tooltip trigger="hover" svgIcon="kom:arrow-change-horizontal-medium" *ngIf="this.legInfoDataModel.hasGuidance">
           <ul class="tooltip-list">
             <li *ngFor="let guidanceText of this.legInfoDataModel.guidanceTextLines">
               {{ guidanceText }}
@@ -216,7 +216,7 @@
     <div class="service-attributes">
       <div class="d-flex gap-1 align-items-center">
         <div class="service-attribute" *ngFor="let attrData of this.legInfoDataModel.serviceAttributes">
-          <sbb-tooltip svgIcon="{{ attrData.icon }}" class="sbb-icon-fit">
+          <sbb-tooltip trigger="hover" svgIcon="{{ attrData.icon }}" class="sbb-icon-fit">
             <div>
               {{ attrData.caption }}
             </div>
@@ -228,7 +228,7 @@
     <div class="mt-2" *ngIf="this.legInfoDataModel.hasSituations">
       <div class="d-flex gap-2">
         <div *ngFor="let situationData of this.legInfoDataModel.situations">
-          <sbb-tooltip svgIcon="fpl:info">
+          <sbb-tooltip trigger="hover" svgIcon="fpl:info">
             <p>
               <strong>{{ situationData.summary }}</strong>
             </p>

@@ -43,7 +43,7 @@
         <div *ngIf="hasSituations(stopEntry)">
           <div class="d-flex gap-2">
             <div *ngFor="let situationData of stopEntry.situations">
-              <sbb-tooltip svgIcon="fpl:info">
+              <sbb-tooltip trigger="hover" svgIcon="fpl:info">
                 <p>
                   <strong>{{ situationData.summary }}</strong>
                 </p>
