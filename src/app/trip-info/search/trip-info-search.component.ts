@@ -53,7 +53,7 @@ export class TripInfoSearchComponent implements OnInit {
     this.model = {
       journeyRef: '',
       journeyDateTime: new Date(),
-      appStageOptions: ['PROD', 'INT', 'TEST', 'LA Beta'],
+      appStageOptions: ['PROD', 'INT', 'TEST', 'LA Beta', 'OJP-SI'],
       isSearching: false,
       permalinkURLAddress: '',
     }
