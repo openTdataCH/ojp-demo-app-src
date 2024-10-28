@@ -24,6 +24,9 @@ export class WebFooterComponent implements OnInit {
       lastUpdate: '29.October 2024',
       isTopograhicPlaceMapLayerEnabled: isTopograhicPlaceMapLayerEnabled,
     }
+    
+    // Disable all-together (i.e. the feature is not ready yet)
+    // this.model.isTopograhicPlaceMapLayerEnabled = false;
   }
 
   ngOnInit() {
