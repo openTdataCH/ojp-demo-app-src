@@ -25,6 +25,9 @@
             - 
             <span>Type: {{ stopEntry.servicePtMode }}</span>
           </div>
+          <div *ngIf="stopEntry.isCancelled === true">
+            <span class="badge rounded-pill bg-danger fw-bolder">Cancelled</span>
+          </div>
         </div>
         
         <div class="text-center">

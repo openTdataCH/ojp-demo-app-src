@@ -29,6 +29,8 @@ interface StationBoardModel {
   stopPlatformActual: string | null
 
   situations: OJP.SituationContent[]
+
+  isCancelled: boolean
 }
 
 @Component({
@@ -207,6 +209,8 @@ export class StationBoardResultComponent implements OnInit, AfterViewInit {
 
     const stopPlatformActual = stopEvent.stopPoint.plannedPlatform === stopEvent.stopPoint.actualPlatform ? null : stopEvent.stopPoint.actualPlatform;
 
+    const isCancelled = stopEvent.journeyService.hasCancellation;
+
     const model = <StationBoardModel>{
         stopEvent: stopEvent,
         serviceLineNumber: serviceLineNumber,
@@ -222,6 +226,8 @@ export class StationBoardResultComponent implements OnInit, AfterViewInit {
         stopPlatformActual: stopPlatformActual,
         
         situations: OJPHelpers.computeSituationsData(stopEvent.stopPoint.siriSituations),
+
+        isCancelled: isCancelled,
     }
 
     return model;
