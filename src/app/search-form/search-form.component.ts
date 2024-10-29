@@ -76,7 +76,10 @@ export class SearchFormComponent implements OnInit {
     this.toLocationText = ''
     this.viaText = ''
 
-    this.appStageOptions = ['PROD', 'INT', 'TEST', 'LA Beta', 'OJP-SI']
+    this.appStageOptions = ['PROD', 'INT', 'TEST', 'LA Beta'];
+    if (DEBUG_LEVEL === 'DEBUG') {
+      this.appStageOptions.push('OJP-SI');
+    }
 
     this.isSearching = false;
 
