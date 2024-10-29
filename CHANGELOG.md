@@ -4,6 +4,11 @@ OJP-Demo URL: https://opentdatach.github.io/ojp-demo-app/
 
 ----
 
+29.October 2024
+- updates platform assistance [PR #172](https://github.com/openTdataCH/ojp-demo-app-src/pull/172)
+  - [New BehiG Info Icon #169](https://github.com/openTdataCH/ojp-demo-app-src/issues/169)
+  - use latest OJP SDK
+
 07.October 2024
 - Improve Trips [PR #166](https://github.com/openTdataCH/ojp-demo-app-src/pull/166)
   - allow additional trip restrictions to be turned on/off individually - [Changing the Monomodal Walk #114](https://github.com/openTdataCH/ojp-demo-app-src/issues/114)
