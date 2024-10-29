@@ -75,17 +75,18 @@
       <div *ngIf="this.legInfoDataModel.fromLocationData.isNotServicedStop"><span class="badge rounded-pill bg-danger fw-bolder">not serviced</span></div>
     </div>
 
-    <div 
-      class="flex-grow-0 leg-time leg-right-side">
-      <img *ngIf="this.legInfoDataModel.fromLocationData.platformAssistanceIconPath !== null"
+    <div class="flex-grow-0 leg-time leg-right-side">
+      <div class="d-flex gap-1 align-items-center">
+        <img *ngIf="this.legInfoDataModel.fromLocationData.platformAssistanceIconPath !== null"
         class="leg-platform-assistance" 
         src="{{ this.legInfoDataModel.fromLocationData.platformAssistanceIconPath }}" 
-        title="{{ this.legInfoDataModel.fromLocationData.platformAssistanceTooltip }}" />
-      
-      <span *ngIf="!this.legInfoDataModel.fromLocationData.isNotServicedStop">{{ this.legInfoDataModel.fromLocationData.depText }}</span>
-      <span *ngIf="this.legInfoDataModel.fromLocationData.isNotServicedStop"><del>{{ this.legInfoDataModel.fromLocationData.depText }}</del></span>
-      
-      <span class="time-delay">{{ this.legInfoDataModel.fromLocationData.depDelayText }}</span>
+        sbbTooltip="{{ this.legInfoDataModel.fromLocationData.platformAssistanceTooltip }}" />
+
+        <div *ngIf="!this.legInfoDataModel.fromLocationData.isNotServicedStop">{{ this.legInfoDataModel.fromLocationData.depText }}</div>
+        <div *ngIf="this.legInfoDataModel.fromLocationData.isNotServicedStop"><del>{{ this.legInfoDataModel.fromLocationData.depText }}</del></div>
+        
+        <div class="time-delay">{{ this.legInfoDataModel.fromLocationData.depDelayText }}</div>
+      </div>
     </div>
   </div>
 
@@ -120,17 +121,17 @@
       <div *ngIf="this.legInfoDataModel.toLocationData.isNotServicedStop"><span class="badge rounded-pill bg-danger fw-bolder">not serviced</span></div>
     </div>
     
-    <div 
-      class="flex-grow-0 leg-time leg-right-side">
-      <img *ngIf="this.legInfoDataModel.toLocationData.platformAssistanceIconPath !== null"
+    <div class="flex-grow-0 leg-time leg-right-side">
+      <div class="d-flex gap-1 align-items-center">
+        <img *ngIf="this.legInfoDataModel.toLocationData.platformAssistanceIconPath !== null"
         class="leg-platform-assistance" 
         src="{{ this.legInfoDataModel.toLocationData.platformAssistanceIconPath }}" 
-        title="{{ this.legInfoDataModel.toLocationData.platformAssistanceTooltip }}" />
-      
-      <span *ngIf="!this.legInfoDataModel.toLocationData.isNotServicedStop">{{ this.legInfoDataModel.toLocationData.arrText }}</span>
-      <span *ngIf="this.legInfoDataModel.toLocationData.isNotServicedStop"><del>{{ this.legInfoDataModel.toLocationData.arrText }}</del></span>
-      
-      <span class="time-delay">{{ this.legInfoDataModel.toLocationData.arrDelayText }}</span>
+        sbbTooltip="{{ this.legInfoDataModel.toLocationData.platformAssistanceTooltip }}" />
+
+        <div *ngIf="!this.legInfoDataModel.toLocationData.isNotServicedStop">{{ this.legInfoDataModel.toLocationData.arrText }}</div>
+        <div *ngIf="this.legInfoDataModel.toLocationData.isNotServicedStop"><del>{{ this.legInfoDataModel.toLocationData.arrText }}</del></div>
+        <div class="time-delay">{{ this.legInfoDataModel.toLocationData.arrDelayText }}</div>
+      </div>
     </div>
   </div>
 </ng-template>
@@ -144,7 +145,7 @@
           (click)="this.handleClickOnLocation('From')"
         >{{ this.legInfoDataModel.fromLocationData.locationText }}</div>
 
-        <sbb-tooltip svgIcon="kom:arrow-change-horizontal-medium" *ngIf="this.legInfoDataModel.hasGuidance">
+        <sbb-tooltip trigger="hover" svgIcon="kom:arrow-change-horizontal-medium" *ngIf="this.legInfoDataModel.hasGuidance">
           <ul class="tooltip-list">
             <li *ngFor="let guidanceText of this.legInfoDataModel.guidanceTextLines">
               {{ guidanceText }}
@@ -215,7 +216,7 @@
     <div class="service-attributes">
       <div class="d-flex gap-1 align-items-center">
         <div class="service-attribute" *ngFor="let attrData of this.legInfoDataModel.serviceAttributes">
-          <sbb-tooltip svgIcon="{{ attrData.icon }}" class="sbb-icon-fit">
+          <sbb-tooltip trigger="hover" svgIcon="{{ attrData.icon }}" class="sbb-icon-fit">
             <div>
               {{ attrData.caption }}
             </div>
@@ -227,7 +228,7 @@
     <div class="mt-2" *ngIf="this.legInfoDataModel.hasSituations">
       <div class="d-flex gap-2">
         <div *ngFor="let situationData of this.legInfoDataModel.situations">
-          <sbb-tooltip svgIcon="fpl:info">
+          <sbb-tooltip trigger="hover" svgIcon="fpl:info">
             <p>
               <strong>{{ situationData.summary }}</strong>
             </p>
