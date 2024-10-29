@@ -54,6 +54,14 @@ const map_app_map_layers: Record<string, AppMapLayerOptions> = {
     ],
     click_layer_ids: 'SAME_AS_LAYER_IDS',
   },
+  'topographic_places': {
+    LIR_Restriction_Type: 'topographicPlace',
+    minZoom: 12,
+    layer_ids: [
+      'topographic-place-circle',
+    ],
+    click_layer_ids: 'SAME_AS_LAYER_IDS',
+  },
   'sharing_cars': {
     LIR_Restriction_Type: 'poi',
     LIR_POI_Type: {
