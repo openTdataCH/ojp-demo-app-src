@@ -15,7 +15,7 @@ import { StationBoardInputComponent } from '../input/station-board-input.compone
 import { DebugXmlPopoverComponent } from '../../search-form/debug-xml-popover/debug-xml-popover.component';
 import { CustomStopEventXMLPopoverComponent } from './custom-stop-event-xml-popover/custom-stop-event-xml-popover.component';
 
-import { APP_STAGE } from '../../config/app-config'
+import { APP_STAGE, DEBUG_LEVEL } from '../../config/app-config'
 import { EmbedStationBoardPopoverComponent } from './embed-station-board-popover/embed-station-board-popover.component';
 import { Router } from '@angular/router';
 import { LanguageService } from '../../shared/services/language.service';
@@ -66,6 +66,10 @@ export class StationBoardSearchComponent implements OnInit {
     this.queryParams = new URLSearchParams(document.location.search);
 
     this.appStageOptions = ['PROD', 'INT', 'TEST', 'LA Beta'];
+    if (DEBUG_LEVEL === 'DEBUG') {
+      this.appStageOptions.push('OJP-SI');
+    }
+
     this.stationBoardTypes = ['Departures', 'Arrivals']
 
     this.stationBoardType = this.computeStationBoardType();

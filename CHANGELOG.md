@@ -9,6 +9,8 @@ OJP-Demo URL: https://opentdatach.github.io/ojp-demo-app/
   - [New BehiG Info Icon #169](https://github.com/openTdataCH/ojp-demo-app-src/issues/169)
 - display `TopographicPlace` as map layer [PR #173](https://github.com/openTdataCH/ojp-demo-app-src/pull/173)
   - [New Element "Topographic place" in "Toggle Map Layers" list #92](https://github.com/openTdataCH/ojp-demo-app-src/issues/92)
+- adds new DEV server [PR #174](https://github.com/openTdataCH/ojp-demo-app-src/pull/174)
+  - [New Instance for Beta #165](https://github.com/openTdataCH/ojp-demo-app-src/issues/165)
 - use latest OJP SDK
 
 07.October 2024

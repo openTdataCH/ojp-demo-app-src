@@ -1,9 +1,20 @@
 import * as OJP from 'ojp-sdk'
 
 type DEBUG_LEVEL_Type = 'DEBUG' | 'PROD'
-export const DEBUG_LEVEL: DEBUG_LEVEL_Type = 'PROD'
+export const DEBUG_LEVEL: DEBUG_LEVEL_Type = (() => {
+  const isBrowser = typeof window !== 'undefined' && typeof window.document !== 'undefined';
+  if (!isBrowser) {
+      return 'PROD';
+  }
 
-export type APP_STAGE = OJP.Default_APP_Stage
+  if (window.location.hostname.includes('github.io')) {
+      return 'PROD';
+  }
+
+  return 'DEBUG';
+})();
+
+export type APP_STAGE = OJP.Default_APP_Stage | 'PROD-LB' | 'OJP-SI'
 
 export interface AppMapLayerOptions {
   LIR_Restriction_Type: OJP.RestrictionType
@@ -33,6 +44,11 @@ const app_stages: OJP.StageConfig[] = [
     key: 'LA Beta',
     apiEndpoint: 'https://api.opentransportdata.swiss/ojp-la-aktiv',
     authBearerKey: 'eyJvcmciOiI2NDA2NTFhNTIyZmEwNTAwMDEyOWJiZTEiLCJpZCI6ImE5ZDFkYmI4YWVjMDRiYjFiZjA2ZmUyNmZmZTk2YTY2IiwiaCI6Im11cm11cjEyOCJ9',
+  },
+  {
+    key: 'OJP-SI',
+    apiEndpoint: 'https://dev.simo.si/OpenAPI/LinkingAlpsBetaPhaseSBB/OJP',
+    authBearerKey: 'noKey',
   },
 ]
 
