@@ -31,6 +31,8 @@ interface StationBoardModel {
   situations: OJP.SituationContent[]
 
   isCancelled: boolean
+  hasDeviation: boolean
+  isUnplanned: boolean
 }
 
 @Component({
@@ -209,7 +211,9 @@ export class StationBoardResultComponent implements OnInit, AfterViewInit {
 
     const stopPlatformActual = stopEvent.stopPoint.plannedPlatform === stopEvent.stopPoint.actualPlatform ? null : stopEvent.stopPoint.actualPlatform;
 
-    const isCancelled = stopEvent.journeyService.hasCancellation;
+    const isCancelled = stopEvent.journeyService.hasCancellation === true;
+    const hasDeviation = stopEvent.journeyService.hasDeviation === true;
+    const isUnplanned = stopEvent.journeyService.isUnplanned === true;
 
     const model = <StationBoardModel>{
         stopEvent: stopEvent,
@@ -228,6 +232,8 @@ export class StationBoardResultComponent implements OnInit, AfterViewInit {
         situations: OJPHelpers.computeSituationsData(stopEvent.stopPoint.siriSituations),
 
         isCancelled: isCancelled,
+        hasDeviation: hasDeviation,
+        isUnplanned: isUnplanned,
     }
 
     return model;

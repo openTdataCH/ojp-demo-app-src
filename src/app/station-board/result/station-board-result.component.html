@@ -25,8 +25,16 @@
             - 
             <span>Type: {{ stopEntry.servicePtMode }}</span>
           </div>
-          <div *ngIf="stopEntry.isCancelled === true">
-            <span class="badge rounded-pill bg-danger fw-bolder">Cancelled</span>
+          <div class="d-flex gap-2">
+            <div *ngIf="stopEntry.isCancelled === true">
+              <span class="badge rounded-pill bg-danger fw-bolder">Cancelled</span>
+            </div>
+            <div *ngIf="stopEntry.hasDeviation === true">
+              <span class="badge rounded-pill bg-warning fw-bolder text-dark">Deviation</span>
+            </div>
+            <div *ngIf="stopEntry.isUnplanned === true">
+              <span class="badge rounded-pill bg-warning fw-bolder text-dark">Unplanned</span>
+            </div>
           </div>
         </div>
         
