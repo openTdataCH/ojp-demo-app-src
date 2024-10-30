@@ -11,6 +11,8 @@ OJP-Demo URL: https://opentdatach.github.io/ojp-demo-app/
   - [New Element "Topographic place" in "Toggle Map Layers" list #92](https://github.com/openTdataCH/ojp-demo-app-src/issues/92)
 - adds new DEV server [PR #174](https://github.com/openTdataCH/ojp-demo-app-src/pull/174)
   - [New Instance for Beta #165](https://github.com/openTdataCH/ojp-demo-app-src/issues/165)
+- adds `Cancelled`, `Deviation` and `Unplanned` flags in Station Board [PR #175](https://github.com/openTdataCH/ojp-demo-app-src/pull/175)
+  - [mark cancelled journey in the station board #94](https://github.com/openTdataCH/ojp-demo-app-src/issues/94)
 - use latest OJP SDK
 
 07.October 2024
