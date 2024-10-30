@@ -1,0 +1,12 @@
+{
+  "id": "[LAYER_ID]",
+  "source": "[SOURCE_ID]",
+  "type": "circle",
+  "minzoom": 0.0,
+  "paint": {
+    "circle-color": "#834333",
+    "circle-radius": 4,
+    "circle-stroke-width": 1,
+    "circle-stroke-color": "#fff"
+  }
+}

@@ -36,6 +36,14 @@
           </div>
         </div>
 
+        <div *ngIf="this.model.isTopograhicPlaceMapLayerEnabled" class="map-layer-data mb-2" data-map-layer-key="topographic_places">
+          <div class="d-flex gap-1">
+            <div><input type="checkbox" class="map-layer-checkbox align-middle"></div>
+            <div><span class="layer-text">Topographic Places (z12+)</span></div>
+            <div><span class="layer-xml-info badge bg-info text-dark">XML</span></div>
+          </div>
+        </div>
+
         <div class="d-flex flex-row">
           <div class="flex-grow-1">Shared Mobility</div>
           <div>

@@ -1,17 +1,22 @@
 import * as OJP from 'ojp-sdk'
 
-export type APP_STAGE = OJP.Default_APP_Stage 
-  | 'GR TEST' | 'INT Linux' | 'TEST Linux' 
-  | 'V2-PROD' | 'V2-INT' | 'V2-TEST';
-
-type DEBUG_LEVEL_Type = 'DEBUG' | 'PROD';
+type DEBUG_LEVEL_Type = 'DEBUG' | 'PROD'
 export const DEBUG_LEVEL: DEBUG_LEVEL_Type = (() => {
-    if (window.location.hostname.includes('github.io')) {
-        return 'PROD';
-    }
+  const isBrowser = typeof window !== 'undefined' && typeof window.document !== 'undefined';
+  if (!isBrowser) {
+      return 'PROD';
+  }
 
-    return 'DEBUG';
+  if (window.location.hostname.includes('github.io')) {
+      return 'PROD';
+  }
+
+  return 'DEBUG';
 })();
+
+export type APP_STAGE = OJP.Default_APP_Stage
+| 'GR TEST' | 'INT Linux' | 'TEST Linux' | 'OJP-SI'
+| 'V2-PROD' | 'V2-INT' | 'V2-TEST';
 
 export interface AppMapLayerOptions {
   LIR_Restriction_Type: OJP.RestrictionType
@@ -57,6 +62,11 @@ const app_stages: OJP.StageConfig[] = [
     apiEndpoint: 'https://odpch-api.clients.liip.ch/ojp20-test',
     authBearerKey: 'eyJvcmciOiI2M2Q4ODhiMDNmZmRmODAwMDEzMDIwODkiLCJpZCI6IjUzYzAyNWI2ZTRhNjQyOTM4NzMxMDRjNTg2ODEzNTYyIiwiaCI6Im11cm11cjEyOCJ9',
   },
+  {
+    key: 'OJP-SI',
+    apiEndpoint: 'https://dev.simo.si/OpenAPI/LinkingAlpsBetaPhaseSBB/OJP',
+    authBearerKey: 'noKey',
+  },
 ]
 
 const map_app_map_layers: Record<string, AppMapLayerOptions> = {
@@ -74,6 +84,14 @@ const map_app_map_layers: Record<string, AppMapLayerOptions> = {
     minZoom: 17,
     layer_ids: [
       'address-circle',
+    ],
+    click_layer_ids: 'SAME_AS_LAYER_IDS',
+  },
+  'topographic_places': {
+    LIR_Restriction_Type: 'topographicPlace',
+    minZoom: 12,
+    layer_ids: [
+      'topographic-place-circle',
     ],
     click_layer_ids: 'SAME_AS_LAYER_IDS',
   },
