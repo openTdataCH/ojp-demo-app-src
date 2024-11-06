@@ -4,7 +4,7 @@ import mapboxgl from 'mapbox-gl'
 
 import * as OJP from 'ojp-sdk'
 
-import { APP_CONFIG, APP_STAGE, DEBUG_LEVEL } from '../../config/app-config'
+import { APP_CONFIG, APP_STAGE, DEBUG_LEVEL, TRIP_REQUEST_DEFAULT_NUMBER_OF_RESULTS } from '../../config/app-config'
 import { MapService } from './map.service'
 import { LanguageService } from './language.service'
 
@@ -54,7 +54,7 @@ export class UserTripService {
     this.viaTripLocations = []
     
     this.isNumberOfResultsEnabled = true;
-    this.numberOfResults = 5;
+    this.numberOfResults = TRIP_REQUEST_DEFAULT_NUMBER_OF_RESULTS;
     this.isViaEnabled = false;
 
     this.currentBoardingType = 'Dep'
