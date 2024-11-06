@@ -90,7 +90,7 @@
       </div>
       <div class="d-flex align-items-center mb-2">
         <div class="flex-grow-1">
-          <sbb-checkbox value="single-checkbox" [(ngModel)]="this.userTripService.isNumberOfResultsEnabled">
+          <sbb-checkbox value="single-checkbox" [(ngModel)]="this.isNumberOfResultsEnabled" (change)="updateAdditionalRestrictions()">
             NumberOfResults
           </sbb-checkbox>
         </div>
