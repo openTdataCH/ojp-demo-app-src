@@ -430,14 +430,29 @@ export class UserTripService {
       queryParams.append('via', viaParamParts.join(';'))
     }
     
-    queryParams.append('mode_types', this.tripModeTypes.join(';'));
-    queryParams.append('transport_modes', this.tripTransportModes.join(';'));
+    if (this.tripModeTypes[0] !== 'monomodal') {
+      queryParams.append('mode_types', this.tripModeTypes.join(';'));
+    }
+    
+    if (this.tripTransportModes[0] !== 'public_transport') {
+      queryParams.append('transport_modes', this.tripTransportModes.join(';'));
+    }
 
-    const dateTimeS = OJP.DateHelpers.formatDate(this.departureDate)
-    queryParams.append('trip_datetime', dateTimeS.substring(0, 16))
+    if (this.publicTransportModesFilter.length > 0) {
+      queryParams.append('public_transport_modes', this.publicTransportModesFilter.join(','));
+    }
 
-    const stageS = this.currentAppStage.toLowerCase()
-    queryParams.append('stage', stageS)
+    const now = new Date();
+    const deltaNowMinutes = Math.abs((now.getTime() - this.departureDate.getTime()) / 1000 / 60);
+    if (deltaNowMinutes > 5) {
+      const dateTimeS = OJP.DateHelpers.formatDate(this.departureDate);
+      queryParams.append('trip_datetime', dateTimeS.substring(0, 16));
+    }
+
+    if (this.currentAppStage !== default_APP_STAGE) {
+      const stageS = this.currentAppStage.toLowerCase();
+      queryParams.append('stage', stageS)
+    }
 
     this.permalinkRelativeURL = document.location.pathname.replace('/embed', '') + '?' + queryParams.toString();
 
