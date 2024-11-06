@@ -19,7 +19,6 @@ export class UserTripService {
   public viaTripLocations: OJP.TripLocationPoint[]
   public isViaEnabled: boolean
   
-  public isNumberOfResultsEnabled: boolean
   public numberOfResults: number
 
   public currentBoardingType: OJP.TripRequestBoardingType
@@ -53,7 +52,6 @@ export class UserTripService {
     this.toTripLocation = null
     this.viaTripLocations = []
     
-    this.isNumberOfResultsEnabled = true;
     this.numberOfResults = TRIP_REQUEST_DEFAULT_NUMBER_OF_RESULTS;
     this.isViaEnabled = false;
 

@@ -115,7 +115,7 @@ export class JourneyResultsComponent implements OnInit {
     const numberOfResults: number | null = (() => {
       const hasPublicTransport = this.userTripService.hasPublicTransport();
       
-      return hasPublicTransport ? 5 : null;
+      return hasPublicTransport ? this.userTripService.numberOfResults : null;
     })();
 
     const stageConfig = this.userTripService.getStageConfig();

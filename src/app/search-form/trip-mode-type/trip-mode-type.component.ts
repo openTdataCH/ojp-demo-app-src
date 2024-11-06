@@ -6,6 +6,7 @@ import * as OJP from 'ojp-sdk'
 
 import { UserTripService } from '../../shared/services/user-trip.service';
 import { FormatHelpers } from '../../helpers/format-helpers';
+import { TRIP_REQUEST_DEFAULT_NUMBER_OF_RESULTS } from '../../config/app-config';
 
 interface TripTransportModeData {
   modeType: OJP.TripModeType,
@@ -84,6 +85,9 @@ export class TripModeTypeComponent implements OnInit {
   public isFilterMinDistanceEnabled;
   public isFilterMaxDistanceEnabled;
 
+  public isNumberOfResultsEnabled: boolean;
+  public numberOfResults: number;
+
   constructor(public userTripService: UserTripService) {
     this.tripTransportModeData = appTripTransportModeData;
 
@@ -103,6 +107,9 @@ export class TripModeTypeComponent implements OnInit {
     this.isFilterMaxDurationEnabled = true;
     this.isFilterMinDistanceEnabled = false;
     this.isFilterMaxDistanceEnabled = true;
+
+    this.isNumberOfResultsEnabled = true;
+    this.numberOfResults = TRIP_REQUEST_DEFAULT_NUMBER_OF_RESULTS;
   }
 
   ngOnInit() {
@@ -142,6 +149,7 @@ export class TripModeTypeComponent implements OnInit {
     let maxDuration = null;
     let minDistance = null;
     let maxDistance = null;
+    let numberOfResults = TRIP_REQUEST_DEFAULT_NUMBER_OF_RESULTS;
 
     if (this.isAdditionalRestrictionsEnabled) {
       if (this.isFilterMinDurationEnabled) {
@@ -156,9 +164,12 @@ export class TripModeTypeComponent implements OnInit {
       if (this.isFilterMaxDistanceEnabled) {
         maxDistance = FormatHelpers.parseNumber(this.filterMaxDistanceControl.value);
       }
+
+      numberOfResults = this.numberOfResults;
     }
 
     this.userTripService.updateTripLocationRestrictions(minDuration, maxDuration, minDistance, maxDistance);
+    this.userTripService.numberOfResults = numberOfResults;
   }
 
   public onTripModeChange() {
