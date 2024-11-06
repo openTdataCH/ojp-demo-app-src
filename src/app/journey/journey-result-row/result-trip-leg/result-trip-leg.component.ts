@@ -48,6 +48,8 @@ interface LegInfoDataModel {
   serviceInfo: string | null
   serviceIntermediaryStopsText: string | null
   serviceJourneyRef: string | null
+  debugServicePtMode: boolean
+  servicePtMode: OJP.PublicTransportMode | null
 
   isCancelled: boolean
   hasDeviation: boolean
@@ -417,6 +419,16 @@ export class ResultTripLegComponent implements OnInit {
       const timedLeg = leg as OJP.TripTimedLeg;
 
       return timedLeg.service.journeyRef;
+    })();
+
+    this.legInfoDataModel.debugServicePtMode = DEBUG_LEVEL === 'DEBUG';
+    this.legInfoDataModel.servicePtMode = (() => {
+      if (leg.legType !== 'TimedLeg') {
+        return null;
+      }
+
+      const timedLeg = leg as OJP.TripTimedLeg;
+      return timedLeg.service.ptMode;
     })();
 
     this.legInfoDataModel.isCancelled = (() => {
