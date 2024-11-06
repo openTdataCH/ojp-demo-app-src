@@ -3,9 +3,54 @@ import * as OJP from 'ojp-sdk';
 import { LegStopPointData } from '../shared/components/service-stops.component';
 import { DEBUG_LEVEL } from '../config/app-config';
 
+type PublicTransportPictogram = 'picto-bus' | 'picto-railway' | 'picto-tram' | 'picto-rack-railway' | 'picto-funicular' | 'picto-cablecar' | 'picto-gondola' | 'picto-chairlift' | 'picto-boat' | 'car-sharing' | 'picto-bus-fallback';
+
 export class OJPHelpers {
   public static computeIconFilenameForService(service: OJP.JourneyService): string {
-    return service.ptMode.computePublicTransportPictogram();
+    return OJPHelpers.computePublicTransportPictogram(service.ptMode);
+  }
+
+  private static computePublicTransportPictogram(ptMode: OJP.PublicTransportMode): PublicTransportPictogram {
+    if (ptMode.ptMode === 'bus') {
+      return 'picto-bus';
+    }
+
+    if (ptMode.isRail()) {
+      return 'picto-railway';
+    }
+
+    if (ptMode.ptMode === 'tram') {
+      return 'picto-tram';
+    }
+
+    // ojp:PtMode === funicular
+    if (ptMode.shortName === 'CC') {
+      return 'picto-rack-railway';
+    }
+    
+    // ojp:PtMode === telecabin
+    if (ptMode.shortName === 'FUN') {
+      return 'picto-funicular';
+    }
+    if (ptMode.shortName === 'PB') {
+      return 'picto-cablecar';
+    }
+    if (ptMode.shortName === 'GB') {
+      return 'picto-gondola';
+    }
+    if (ptMode.shortName === 'SL') {
+      return 'picto-chairlift';
+    }
+
+    if (ptMode.ptMode === 'water') {
+      return 'picto-boat';
+    }
+
+    if (ptMode.isDemandMode) {
+      return 'car-sharing';
+    }
+
+    return 'picto-bus-fallback';
   }
 
   public static computeIconFilenameForLeg(leg: OJP.TripLeg): string {
