@@ -132,6 +132,7 @@ export class JourneyResultsComponent implements OnInit {
       this.userTripService.tripTransportModes[0],
       viaTripLocations,
       numberOfResults,
+      this.userTripService.publicTransportModesFilter,
     );
 
     if (request === null) {

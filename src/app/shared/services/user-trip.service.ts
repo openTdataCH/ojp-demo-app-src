@@ -21,6 +21,7 @@ export class UserTripService {
   public isViaEnabled: boolean
   
   public numberOfResults: number
+  public publicTransportModesFilter: OJP.ModeOfTransportType[] = [];
 
   public currentBoardingType: OJP.TripRequestBoardingType
 
@@ -54,6 +55,7 @@ export class UserTripService {
     this.viaTripLocations = []
     
     this.numberOfResults = TRIP_REQUEST_DEFAULT_NUMBER_OF_RESULTS;
+    this.publicTransportModesFilter = [];
     this.isViaEnabled = false;
 
     this.currentBoardingType = 'Dep'
@@ -166,6 +168,30 @@ export class UserTripService {
     } else {
       this.tripTransportModes = ['public_transport'];
     }
+
+    this.publicTransportModesFilter = (() => {
+      const modes: OJP.ModeOfTransportType[] = [];
+
+      const publicTransportModesS = this.queryParams.get('public_transport_modes') ?? null;
+      if (publicTransportModesS === null) {
+        return modes;
+      }
+
+      const userPublicTransportModes = publicTransportModesS.split(',').map(el => el.toLowerCase().trim());
+      userPublicTransportModes.forEach(userPublicTransportMode => {
+        if (userPublicTransportMode === 'bus') {
+          modes.push('bus');
+        }
+        if (['ship', 'water'].includes(userPublicTransportMode)) {
+          modes.push('water');
+        }
+        if (['rail', 'train'].includes(userPublicTransportMode)) {
+          modes.push('rail');
+        }
+      });
+      
+      return modes;
+    })();
 
     Promise.all(promises).then(locationsData => {
       endpointTypes.forEach(endpointType => {

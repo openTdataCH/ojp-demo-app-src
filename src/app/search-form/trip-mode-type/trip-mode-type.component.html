@@ -98,6 +98,12 @@
           <input sbbInput style="width: 50px;" [(ngModel)]="this.numberOfResults" />
         </div>
       </div>
+      <div class="d-flex gap-2 align-items-center mb-2">
+        <div>Travel only with</div>
+        <sbb-checkbox [(ngModel)]="this.mapPublicTransportModesFilter.rail" (change)="updateAdditionalRestrictions()">train</sbb-checkbox>
+        <sbb-checkbox [(ngModel)]="this.mapPublicTransportModesFilter.bus" (change)="updateAdditionalRestrictions()">bus</sbb-checkbox>
+        <sbb-checkbox [(ngModel)]="this.mapPublicTransportModesFilter.water" (change)="updateAdditionalRestrictions()">boat</sbb-checkbox>
+      </div>
     </div>
   </div>
 </div>
