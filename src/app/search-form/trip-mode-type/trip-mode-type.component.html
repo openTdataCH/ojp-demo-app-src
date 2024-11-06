@@ -42,7 +42,11 @@
     </div>
   </div>
 
-  <div class="mobility-settings-left-v2 endpoint-settings-wrapper collapse" id="{{ this.settingsCollapseID }}">
+  <div 
+      class="mobility-settings-left-v2 endpoint-settings-wrapper" 
+      [ngClass]="{ 'collapse': this.isAdditionalRestrictionsEnabled === false }" 
+      id="{{ this.settingsCollapseID }}"
+    >
     <div class="endpoint-settings">
       <div class="d-flex align-items-center mb-2">
         <div class="flex-grow-1">
