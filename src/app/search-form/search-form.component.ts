@@ -306,13 +306,7 @@ export class SearchFormComponent implements OnInit {
   public handleTapOnSearch() {
     this.userTripService.updateDepartureDateTime(this.computeFormDepartureDate())
 
-    const includeLegProjection = true;
-
-    const viaTripLocations = this.userTripService.isViaEnabled ? this.userTripService.viaTripLocations : [];
-
-    const stageConfig = this.userTripService.getStageConfig();
-    const tripRequest = this.userTripService.computeTripRequest(this.languageService);
-
+    const tripRequest = this.computeTripRequest();
     if (tripRequest === null) {
       this.notificationToast.open('Please check from/to input points', {
         type: 'error',
@@ -408,7 +402,7 @@ export class SearchFormComponent implements OnInit {
     });
     dialogRef.afterOpened().subscribe(() => {
       const popover = dialogRef.componentInstance as InputXmlPopoverComponent
-      const currentTR = this.userTripService.computeTripRequest(this.languageService);
+      const currentTR = this.computeTripRequest();
       if (currentTR) {
         popover.inputTripRequestXML = currentTR.requestInfo.requestXML ?? 'n/a';
       }
@@ -503,5 +497,29 @@ export class SearchFormComponent implements OnInit {
         popover.updateRequestData(this.currentRequestInfo);
       }
     });
+  }
+
+  private computeTripRequest() {
+    const stageConfig = this.userTripService.getStageConfig();
+    const includeLegProjection = true;
+    const viaTripLocations = this.userTripService.isViaEnabled ? this.userTripService.viaTripLocations : [];
+
+    const tripRequest = OJP.TripRequest.initWithTripLocationsAndDate(
+      stageConfig, 
+      this.languageService.language,
+      this.userTripService.fromTripLocation,
+      this.userTripService.toTripLocation,
+      this.userTripService.departureDate,
+      this.userTripService.currentBoardingType,
+      'NumberOfResults',
+      includeLegProjection,
+      this.userTripService.tripModeTypes[0],
+      this.userTripService.tripTransportModes[0],
+      viaTripLocations,
+      this.userTripService.numberOfResults,
+      this.userTripService.publicTransportModesFilter,
+    );
+
+    return tripRequest;
   }
 }
