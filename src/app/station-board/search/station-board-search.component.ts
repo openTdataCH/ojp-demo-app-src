@@ -65,11 +65,7 @@ export class StationBoardSearchComponent implements OnInit {
   ) {
     this.queryParams = new URLSearchParams(document.location.search);
 
-    this.appStageOptions = ['PROD', 'INT', 'TEST', 'LA Beta'];
-    if (DEBUG_LEVEL === 'DEBUG') {
-      this.appStageOptions.push('OJP-SI');
-    }
-
+    this.appStageOptions = ['V2-PROD', 'V2-INT', 'V2-TEST'];
     this.stationBoardTypes = ['Departures', 'Arrivals']
 
     this.stationBoardType = this.computeStationBoardType();

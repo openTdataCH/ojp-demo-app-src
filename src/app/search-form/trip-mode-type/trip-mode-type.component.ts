@@ -17,7 +17,7 @@ const appTripTransportModeData: TripTransportModeData[] = [
     modeType: 'monomodal',
     transportModes: [
       'public_transport',
-      'walk', // in v2 is 'foot',
+      'foot', // in v1 is 'walk',
       'cycle',
       'self-drive-car',
       'bicycle_rental',
@@ -30,7 +30,7 @@ const appTripTransportModeData: TripTransportModeData[] = [
   {
     modeType: 'mode_at_start',
     transportModes: [
-      'walk', // in v2 is 'foot',
+      'foot', // in v1 is 'walk',
       'cycle',
       'bicycle_rental',
       'escooter_rental',
@@ -41,7 +41,7 @@ const appTripTransportModeData: TripTransportModeData[] = [
   {
     modeType: 'mode_at_end',
     transportModes: [
-      'walk', // in v2 is 'foot',
+      'foot', // in v1 is 'walk',
       'bicycle_rental',
       'escooter_rental',
       'car_sharing',
@@ -52,7 +52,7 @@ const appTripTransportModeData: TripTransportModeData[] = [
   {
     modeType: 'mode_at_start_end',
     transportModes: [
-      'walk', // in v2 is 'foot',
+      'foot', // in v1 is 'walk',
       'bicycle_rental',
       'escooter_rental'
     ]

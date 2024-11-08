@@ -31,7 +31,11 @@ export class UserTripService {
   public departureDate: Date
   public currentAppStage: APP_STAGE
 
-  public permalinkRelativeURL: string | null
+  public permalinkRelativeURL: string | null;
+  public prodURL: string | null;
+  public betaURL: string | null;
+  public betaV2URL: string | null;
+  public sbbURL: string | null;
   public embedQueryParams = new URLSearchParams()
 
   public defaultsInited = new EventEmitter<void>();
@@ -65,9 +69,13 @@ export class UserTripService {
     this.journeyTripRequests = [];
     
     this.departureDate = this.computeInitialDate()
-    this.currentAppStage = 'PROD'
+    this.currentAppStage = 'V2-PROD';
 
-    this.permalinkRelativeURL = null
+    this.permalinkRelativeURL = null;
+    this.prodURL = null;
+    this.betaURL = null;
+    this.betaV2URL = null;
+    this.sbbURL = null;
   }
 
   public initDefaults(language: OJP.Language) {
@@ -246,6 +254,7 @@ export class UserTripService {
       // Search nearby locations, in a bbox of 200x200m
       const bbox = OJP.GeoPositionBBOX.initFromGeoPosition(geoPosition, 200, 200);
       const stageConfig = this.getStageConfig();
+
       const locationInformationRequest = OJP.LocationInformationRequest.initWithBBOXAndType(
         stageConfig,
         language,
@@ -256,6 +265,7 @@ export class UserTripService {
         ['stop'],
         300
       );
+
       const locationInformationPromise = locationInformationRequest.fetchLocations();
       promises.push(locationInformationPromise)
     });
@@ -440,6 +450,7 @@ export class UserTripService {
     queryParams.append('stage', stageS)
 
     this.permalinkRelativeURL = document.location.pathname.replace('/embed', '') + '?' + queryParams.toString();
+    this.updateLinkedURLs(queryParams);
 
     const embedQueryParams = new URLSearchParams();
     const keepKeys = ['from', 'to'];
@@ -451,6 +462,48 @@ export class UserTripService {
     })
 
     this.embedQueryParams = embedQueryParams;
+  }
+
+  private updateLinkedURLs(queryParams: URLSearchParams) {
+    this.prodURL = 'https://opentdatach.github.io/ojp-demo-app/search?' + queryParams.toString();
+
+    const betaQueryParams = new URLSearchParams(queryParams);
+    this.betaURL = 'https://tools.odpch.ch/beta-ojp-demo/search?' + betaQueryParams.toString();
+
+    betaQueryParams.set('stage', 'v2-prod');
+    this.betaV2URL = 'https://tools.odpch.ch/ojp-demo-v2/search?' + betaQueryParams.toString();
+
+    const sbbURLStopsData: {[key: string]: string}[] = [];
+    const stopKeys = ['from', 'to'];
+    stopKeys.forEach(key => {
+      const value = queryParams.get(key);
+      if (value === null) {
+        return;
+      }
+      const label: string = (() => {
+        const defaultLabel = key.charAt(0).toUpperCase() + key.slice(1) + ' placeholder';
+
+        const isFrom = key === 'from';
+        const tripPoint = isFrom ? this.fromTripLocation : this.toTripLocation;
+        if (tripPoint === null) {
+          return defaultLabel;
+        }
+        const label = tripPoint.location.computeLocationName() ?? defaultLabel;
+
+        return label + ' (OJP Demo)';
+      })();
+      
+      const stopData = {
+        "value": value,
+        "type": "ID",
+        "label": label,
+      };
+      sbbURLStopsData.push(stopData);
+    });
+    const sbbURLQueryParams = new URLSearchParams();
+    sbbURLQueryParams.set('stops', JSON.stringify(sbbURLStopsData));
+    sbbURLQueryParams.set('ref', 'OJP Demo');
+    this.sbbURL = 'https://www.sbb.ch/en?' + sbbURLQueryParams.toString();
   }
 
   private computeInitialDate(): Date {

@@ -14,7 +14,9 @@ export const DEBUG_LEVEL: DEBUG_LEVEL_Type = (() => {
   return 'DEBUG';
 })();
 
-export type APP_STAGE = OJP.Default_APP_Stage | 'PROD-LB' | 'OJP-SI'
+export type APP_STAGE = OJP.Default_APP_Stage
+| 'GR TEST' | 'INT Linux' | 'TEST Linux' | 'OJP-SI'
+| 'V2-PROD' | 'V2-INT' | 'V2-TEST';
 
 export interface AppMapLayerOptions {
   LIR_Restriction_Type: OJP.RestrictionType
@@ -44,6 +46,21 @@ const app_stages: OJP.StageConfig[] = [
     key: 'LA Beta',
     apiEndpoint: 'https://api.opentransportdata.swiss/ojp-la-aktiv',
     authBearerKey: 'eyJvcmciOiI2NDA2NTFhNTIyZmEwNTAwMDEyOWJiZTEiLCJpZCI6ImE5ZDFkYmI4YWVjMDRiYjFiZjA2ZmUyNmZmZTk2YTY2IiwiaCI6Im11cm11cjEyOCJ9',
+  },
+  {
+    key: 'V2-PROD',
+    apiEndpoint: 'https://api.opentransportdata.swiss/ojp20',
+    authBearerKey: 'eyJvcmciOiI2NDA2NTFhNTIyZmEwNTAwMDEyOWJiZTEiLCJpZCI6Ijk0YTFhNjExYjM5ZjQ4MWNiMGI5MjFiNTgyNmM1ZGFjIiwiaCI6Im11cm11cjEyOCJ9',
+  },
+  {
+    key: 'V2-INT',
+    apiEndpoint: 'https://odpch-api.clients.liip.ch/ojp20-beta',
+    authBearerKey: 'eyJvcmciOiI2M2Q4ODhiMDNmZmRmODAwMDEzMDIwODkiLCJpZCI6IjUzYzAyNWI2ZTRhNjQyOTM4NzMxMDRjNTg2ODEzNTYyIiwiaCI6Im11cm11cjEyOCJ9',
+  },
+  {
+    key: 'V2-TEST',
+    apiEndpoint: 'https://odpch-api.clients.liip.ch/ojp20-test',
+    authBearerKey: 'eyJvcmciOiI2M2Q4ODhiMDNmZmRmODAwMDEzMDIwODkiLCJpZCI6IjUzYzAyNWI2ZTRhNjQyOTM4NzMxMDRjNTg2ODEzNTYyIiwiaCI6Im11cm11cjEyOCJ9',
   },
   {
     key: 'OJP-SI',
