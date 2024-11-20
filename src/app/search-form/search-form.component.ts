@@ -202,24 +202,22 @@ export class SearchFormComponent implements OnInit {
       this.viaText = firstViaLocation.computeLocationName() ?? 'Name n/a';
     }
 
-    if (this.isEmbed) {
-      const textParts: string[] = [];
-      if (this.fromLocationText === '') {
-        textParts.push('From Location');
-      } else {
-        textParts.push(this.fromLocationText);
-      }
-
-      textParts.push('-');
-
-      if (this.toLocationText === '') {
-        textParts.push('To Location');
-      } else {
-        textParts.push(this.toLocationText);
-      }
-
-      this.headerText = textParts.join(' ');
+    const textParts: string[] = [];
+    if (this.fromLocationText === '') {
+      textParts.push('From Location');
+    } else {
+      textParts.push(this.fromLocationText);
     }
+
+    textParts.push('-');
+
+    if (this.toLocationText === '') {
+      textParts.push('To Location');
+    } else {
+      textParts.push(this.toLocationText);
+    }
+
+    this.headerText = textParts.join(' ');
   }
 
   private async initLocationsFromMocks() {
