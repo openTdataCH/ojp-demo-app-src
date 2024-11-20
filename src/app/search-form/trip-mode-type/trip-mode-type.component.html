@@ -98,6 +98,26 @@
           <input sbbInput style="width: 50px;" [(ngModel)]="this.numberOfResults" />
         </div>
       </div>
+      <div class="d-flex align-items-center mb-2">
+        <div class="flex-grow-1">
+          <sbb-checkbox value="single-checkbox" [(ngModel)]="this.isNumberOfResultsBeforeEnabled" (change)="updateAdditionalRestrictions()">
+            NumberOfResultsBefore
+          </sbb-checkbox>
+        </div>
+        <div>
+          <input sbbInput style="width: 50px;" [(ngModel)]="this.numberOfResultsBefore" />
+        </div>
+      </div>
+      <div class="d-flex align-items-center mb-2">
+        <div class="flex-grow-1">
+          <sbb-checkbox value="single-checkbox" [(ngModel)]="this.isNumberOfResultsAfterEnabled" (change)="updateAdditionalRestrictions()">
+            NumberOfResultsAfter
+          </sbb-checkbox>
+        </div>
+        <div>
+          <input sbbInput style="width: 50px;" [(ngModel)]="this.numberOfResultsAfter" />
+        </div>
+      </div>
       <div class="d-flex gap-2 align-items-center mb-2">
         <div>Travel only with</div>
         <sbb-checkbox [(ngModel)]="this.mapPublicTransportModesFilter.rail" (change)="updateAdditionalRestrictions()">train</sbb-checkbox>

@@ -86,7 +86,11 @@ export class TripModeTypeComponent implements OnInit {
   public isFilterMaxDistanceEnabled;
 
   public isNumberOfResultsEnabled: boolean;
+  public isNumberOfResultsBeforeEnabled: boolean;
+  public isNumberOfResultsAfterEnabled: boolean;
   public numberOfResults: number;
+  public numberOfResultsBefore: number;
+  public numberOfResultsAfter: number;
 
   public mapPublicTransportModesFilter: Record<OJP.ModeOfTransportType, boolean>;
 
@@ -111,7 +115,11 @@ export class TripModeTypeComponent implements OnInit {
     this.isFilterMaxDistanceEnabled = true;
 
     this.isNumberOfResultsEnabled = true;
+    this.isNumberOfResultsBeforeEnabled = false;
+    this.isNumberOfResultsAfterEnabled = false;
     this.numberOfResults = TRIP_REQUEST_DEFAULT_NUMBER_OF_RESULTS;
+    this.numberOfResultsBefore = 1;
+    this.numberOfResultsAfter = 4;
 
     this.mapPublicTransportModesFilter = <Record<OJP.ModeOfTransportType, boolean>>{};
     this.mapPublicTransportModesFilter.rail = false;
@@ -176,7 +184,10 @@ export class TripModeTypeComponent implements OnInit {
     let maxDuration = null;
     let minDistance = null;
     let maxDistance = null;
-    let numberOfResults = TRIP_REQUEST_DEFAULT_NUMBER_OF_RESULTS;
+    
+    let numberOfResults: number | null = TRIP_REQUEST_DEFAULT_NUMBER_OF_RESULTS;
+    let numberOfResultsBefore: number | null = null;
+    let numberOfResultsAfter: number | null = null;
     
     this.userTripService.publicTransportModesFilter = [];
 
@@ -194,7 +205,18 @@ export class TripModeTypeComponent implements OnInit {
         maxDistance = FormatHelpers.parseNumber(this.filterMaxDistanceControl.value);
       }
 
-      numberOfResults = this.numberOfResults;
+      if (this.isNumberOfResultsEnabled) {
+        numberOfResults = this.numberOfResults;
+      } else {
+        numberOfResults = null;
+      }
+
+      if (this.isNumberOfResultsBeforeEnabled) {
+        numberOfResultsBefore = this.numberOfResultsBefore;
+      }
+      if (this.isNumberOfResultsAfterEnabled) {
+        numberOfResultsAfter = this.numberOfResultsAfter;
+      }
 
       const availablePublicTransportModesFilter: OJP.ModeOfTransportType[] = ['bus', 'tram', 'rail', 'water'];
       availablePublicTransportModesFilter.forEach(modeFilter => {
@@ -206,6 +228,8 @@ export class TripModeTypeComponent implements OnInit {
 
     this.userTripService.updateTripLocationRestrictions(minDuration, maxDuration, minDistance, maxDistance);
     this.userTripService.numberOfResults = numberOfResults;
+    this.userTripService.numberOfResultsAfter = numberOfResultsAfter;
+    this.userTripService.numberOfResultsBefore = numberOfResultsBefore;
   }
 
   public onTripModeChange() {
