@@ -6,6 +6,7 @@ import * as OJP from 'ojp-sdk'
 
 import { UserTripService } from '../../shared/services/user-trip.service';
 import { FormatHelpers } from '../../helpers/format-helpers';
+import { TRIP_REQUEST_DEFAULT_NUMBER_OF_RESULTS } from '../../config/app-config';
 
 interface TripTransportModeData {
   modeType: OJP.TripModeType,
@@ -84,6 +85,11 @@ export class TripModeTypeComponent implements OnInit {
   public isFilterMinDistanceEnabled;
   public isFilterMaxDistanceEnabled;
 
+  public isNumberOfResultsEnabled: boolean;
+  public numberOfResults: number;
+
+  public mapPublicTransportModesFilter: Record<OJP.ModeOfTransportType, boolean>;
+
   constructor(public userTripService: UserTripService) {
     this.tripTransportModeData = appTripTransportModeData;
 
@@ -103,6 +109,15 @@ export class TripModeTypeComponent implements OnInit {
     this.isFilterMaxDurationEnabled = true;
     this.isFilterMinDistanceEnabled = false;
     this.isFilterMaxDistanceEnabled = true;
+
+    this.isNumberOfResultsEnabled = true;
+    this.numberOfResults = TRIP_REQUEST_DEFAULT_NUMBER_OF_RESULTS;
+
+    this.mapPublicTransportModesFilter = <Record<OJP.ModeOfTransportType, boolean>>{};
+    this.mapPublicTransportModesFilter.rail = false;
+    this.mapPublicTransportModesFilter.bus = false;
+    this.mapPublicTransportModesFilter.water = false;
+    this.mapPublicTransportModesFilter.tram = false;
   }
 
   ngOnInit() {
@@ -119,6 +134,25 @@ export class TripModeTypeComponent implements OnInit {
 
     this.userTripService.defaultsInited.subscribe(nothing => {
       this.userTripService.updateTripLocationCustomMode();
+
+      if (this.userTripService.publicTransportModesFilter.length > 0) {
+        this.isAdditionalRestrictionsEnabled = true;
+
+        this.userTripService.publicTransportModesFilter.forEach(userPublicTransportMode => {
+          if (userPublicTransportMode === 'bus') {
+            this.mapPublicTransportModesFilter.bus = true;
+          }
+          if (userPublicTransportMode === 'rail') {
+            this.mapPublicTransportModesFilter.rail = true;
+          }
+          if (userPublicTransportMode === 'water') {
+            this.mapPublicTransportModesFilter.water = true;
+          }
+          if (userPublicTransportMode === 'tram') {
+            this.mapPublicTransportModesFilter.tram = true;
+          }
+        });
+      }
     });
 
     this.filterMinDurationControl.valueChanges.pipe(debounceTime(200)).subscribe(value => {
@@ -142,6 +176,9 @@ export class TripModeTypeComponent implements OnInit {
     let maxDuration = null;
     let minDistance = null;
     let maxDistance = null;
+    let numberOfResults = TRIP_REQUEST_DEFAULT_NUMBER_OF_RESULTS;
+    
+    this.userTripService.publicTransportModesFilter = [];
 
     if (this.isAdditionalRestrictionsEnabled) {
       if (this.isFilterMinDurationEnabled) {
@@ -156,9 +193,19 @@ export class TripModeTypeComponent implements OnInit {
       if (this.isFilterMaxDistanceEnabled) {
         maxDistance = FormatHelpers.parseNumber(this.filterMaxDistanceControl.value);
       }
+
+      numberOfResults = this.numberOfResults;
+
+      const availablePublicTransportModesFilter: OJP.ModeOfTransportType[] = ['bus', 'tram', 'rail', 'water'];
+      availablePublicTransportModesFilter.forEach(modeFilter => {
+        if (this.mapPublicTransportModesFilter[modeFilter] === true) {
+          this.userTripService.publicTransportModesFilter.push(modeFilter);
+        }
+      });
     }
 
     this.userTripService.updateTripLocationRestrictions(minDuration, maxDuration, minDistance, maxDistance);
+    this.userTripService.numberOfResults = numberOfResults;
   }
 
   public onTripModeChange() {

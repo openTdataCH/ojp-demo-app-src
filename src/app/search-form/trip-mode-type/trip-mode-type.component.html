@@ -42,7 +42,11 @@
     </div>
   </div>
 
-  <div class="mobility-settings-left-v2 endpoint-settings-wrapper collapse" id="{{ this.settingsCollapseID }}">
+  <div 
+      class="mobility-settings-left-v2 endpoint-settings-wrapper" 
+      [ngClass]="{ 'collapse': this.isAdditionalRestrictionsEnabled === false }" 
+      id="{{ this.settingsCollapseID }}"
+    >
     <div class="endpoint-settings">
       <div class="d-flex align-items-center mb-2">
         <div class="flex-grow-1">
@@ -86,13 +90,20 @@
       </div>
       <div class="d-flex align-items-center mb-2">
         <div class="flex-grow-1">
-          <sbb-checkbox value="single-checkbox" [(ngModel)]="this.userTripService.isNumberOfResultsEnabled">
+          <sbb-checkbox value="single-checkbox" [(ngModel)]="this.isNumberOfResultsEnabled" (change)="updateAdditionalRestrictions()">
             NumberOfResults
           </sbb-checkbox>
         </div>
         <div>
-          <input sbbInput style="width: 50px;" [(ngModel)]="this.userTripService.numberOfResults" />
+          <input sbbInput style="width: 50px;" [(ngModel)]="this.numberOfResults" />
         </div>
+      </div>
+      <div class="d-flex gap-2 align-items-center mb-2">
+        <div>Travel only with</div>
+        <sbb-checkbox [(ngModel)]="this.mapPublicTransportModesFilter.rail" (change)="updateAdditionalRestrictions()">train</sbb-checkbox>
+        <sbb-checkbox [(ngModel)]="this.mapPublicTransportModesFilter.bus" (change)="updateAdditionalRestrictions()">bus</sbb-checkbox>
+        <sbb-checkbox [(ngModel)]="this.mapPublicTransportModesFilter.tram" (change)="updateAdditionalRestrictions()">tram</sbb-checkbox>
+        <sbb-checkbox [(ngModel)]="this.mapPublicTransportModesFilter.water" (change)="updateAdditionalRestrictions()">boat</sbb-checkbox>
       </div>
     </div>
   </div>

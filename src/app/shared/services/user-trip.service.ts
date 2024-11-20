@@ -4,11 +4,12 @@ import mapboxgl from 'mapbox-gl'
 
 import * as OJP from 'ojp-sdk'
 
-import { APP_CONFIG, APP_STAGE, DEBUG_LEVEL } from '../../config/app-config'
+import { APP_CONFIG, APP_STAGE, DEBUG_LEVEL, TRIP_REQUEST_DEFAULT_NUMBER_OF_RESULTS } from '../../config/app-config'
 import { MapService } from './map.service'
-import { LanguageService } from './language.service'
 
 type LocationUpdateSource = 'SearchForm' | 'MapDragend' | 'MapPopupClick'
+
+const default_APP_STAGE: APP_STAGE = 'PROD';
 
 @Injectable( {providedIn: 'root'} )
 export class UserTripService {
@@ -19,8 +20,8 @@ export class UserTripService {
   public viaTripLocations: OJP.TripLocationPoint[]
   public isViaEnabled: boolean
   
-  public isNumberOfResultsEnabled: boolean
   public numberOfResults: number
+  public publicTransportModesFilter: OJP.ModeOfTransportType[] = [];
 
   public currentBoardingType: OJP.TripRequestBoardingType
 
@@ -53,8 +54,8 @@ export class UserTripService {
     this.toTripLocation = null
     this.viaTripLocations = []
     
-    this.isNumberOfResultsEnabled = true;
-    this.numberOfResults = 5;
+    this.numberOfResults = TRIP_REQUEST_DEFAULT_NUMBER_OF_RESULTS;
+    this.publicTransportModesFilter = [];
     this.isViaEnabled = false;
 
     this.currentBoardingType = 'Dep'
@@ -65,7 +66,7 @@ export class UserTripService {
     this.journeyTripRequests = [];
     
     this.departureDate = this.computeInitialDate()
-    this.currentAppStage = 'PROD'
+    this.currentAppStage = default_APP_STAGE;
 
     this.permalinkRelativeURL = null
   }
@@ -167,6 +168,30 @@ export class UserTripService {
     } else {
       this.tripTransportModes = ['public_transport'];
     }
+
+    this.publicTransportModesFilter = (() => {
+      const modes: OJP.ModeOfTransportType[] = [];
+
+      const publicTransportModesS = this.queryParams.get('public_transport_modes') ?? null;
+      if (publicTransportModesS === null) {
+        return modes;
+      }
+
+      const userPublicTransportModes = publicTransportModesS.split(',').map(el => el.toLowerCase().trim());
+      userPublicTransportModes.forEach(userPublicTransportMode => {
+        if (userPublicTransportMode === 'bus') {
+          modes.push('bus');
+        }
+        if (['ship', 'water'].includes(userPublicTransportMode)) {
+          modes.push('water');
+        }
+        if (['rail', 'train'].includes(userPublicTransportMode)) {
+          modes.push('rail');
+        }
+      });
+      
+      return modes;
+    })();
 
     Promise.all(promises).then(locationsData => {
       endpointTypes.forEach(endpointType => {
@@ -430,14 +455,29 @@ export class UserTripService {
       queryParams.append('via', viaParamParts.join(';'))
     }
     
-    queryParams.append('mode_types', this.tripModeTypes.join(';'));
-    queryParams.append('transport_modes', this.tripTransportModes.join(';'));
+    if (this.tripModeTypes[0] !== 'monomodal') {
+      queryParams.append('mode_types', this.tripModeTypes.join(';'));
+    }
+    
+    if (this.tripTransportModes[0] !== 'public_transport') {
+      queryParams.append('transport_modes', this.tripTransportModes.join(';'));
+    }
 
-    const dateTimeS = OJP.DateHelpers.formatDate(this.departureDate)
-    queryParams.append('trip_datetime', dateTimeS.substring(0, 16))
+    if (this.publicTransportModesFilter.length > 0) {
+      queryParams.append('public_transport_modes', this.publicTransportModesFilter.join(','));
+    }
 
-    const stageS = this.currentAppStage.toLowerCase()
-    queryParams.append('stage', stageS)
+    const now = new Date();
+    const deltaNowMinutes = Math.abs((now.getTime() - this.departureDate.getTime()) / 1000 / 60);
+    if (deltaNowMinutes > 5) {
+      const dateTimeS = OJP.DateHelpers.formatDate(this.departureDate);
+      queryParams.append('trip_datetime', dateTimeS.substring(0, 16));
+    }
+
+    if (this.currentAppStage !== default_APP_STAGE) {
+      const stageS = this.currentAppStage.toLowerCase();
+      queryParams.append('stage', stageS)
+    }
 
     this.permalinkRelativeURL = document.location.pathname.replace('/embed', '') + '?' + queryParams.toString();
 
@@ -779,28 +819,5 @@ export class UserTripService {
     const tripTransportMode = this.tripTransportModes[0];
 
     return tripTransportMode === 'public_transport';
-  }
-
-  public computeTripRequest(languageService: LanguageService) {
-    const stageConfig = this.getStageConfig();
-    const includeLegProjection = true;
-    const viaTripLocations = this.isViaEnabled ? this.viaTripLocations : [];
-    
-    const tripRequest = OJP.TripRequest.initWithTripLocationsAndDate(
-      stageConfig, 
-      languageService.language,
-      this.fromTripLocation,
-      this.toTripLocation,
-      this.departureDate,
-      this.currentBoardingType,
-      'NumberOfResults',
-      includeLegProjection,
-      this.tripModeTypes[0],
-      this.tripTransportModes[0],
-      viaTripLocations,
-      this.numberOfResults,
-    );
-
-    return tripRequest;
   }
 }
