@@ -49,7 +49,7 @@ const app_stages: OJP.StageConfig[] = [
   },
   {
     key: 'OJP-SI',
-    apiEndpoint: 'https://dev.simo.si/OpenAPI/LinkingAlpsBetaPhaseSBB/OJP',
+    apiEndpoint: 'https://dev.simo.si/OpenAPI/LinkingAlpsBetaPhase/OJP',
     authBearerKey: 'noKey',
   },
 ]

@@ -1,12 +1,11 @@
-import * as GeoJSON from 'geojson'
-
-import * as OJP from 'ojp-sdk'
-
 import { Component, OnInit, ViewChild } from '@angular/core';
 
 import { SbbExpansionPanel } from '@sbb-esta/angular/accordion';
 import { SbbDialog } from '@sbb-esta/angular/dialog';
 import { SbbNotificationToast } from '@sbb-esta/angular/notification-toast';
+
+import * as GeoJSON from 'geojson'
+import * as OJP from 'ojp-sdk'
 
 import { UserTripService } from '../../shared/services/user-trip.service';
 import { MapService } from '../../shared/services/map.service';
@@ -15,11 +14,13 @@ import { StationBoardInputComponent } from '../input/station-board-input.compone
 import { DebugXmlPopoverComponent } from '../../search-form/debug-xml-popover/debug-xml-popover.component';
 import { CustomStopEventXMLPopoverComponent } from './custom-stop-event-xml-popover/custom-stop-event-xml-popover.component';
 
-import { APP_STAGE, DEBUG_LEVEL } from '../../config/app-config'
+import { APP_STAGE, DEBUG_LEVEL, DEFAULT_APP_STAGE } from '../../config/app-config'
 import { EmbedStationBoardPopoverComponent } from './embed-station-board-popover/embed-station-board-popover.component';
 import { Router } from '@angular/router';
 import { LanguageService } from '../../shared/services/language.service';
 import { OJPHelpers } from 'src/app/helpers/ojp-helpers';
+
+type URLType = 'prodv1' | 'betav1' | 'betav2';
 
 @Component({
   selector: 'station-board-search',
@@ -34,7 +35,6 @@ export class StationBoardSearchComponent implements OnInit {
 
   public searchLocation: OJP.Location | null
   
-  public searchDate: Date
   public searchTime: string
   
   public appStageOptions: APP_STAGE[];
@@ -43,7 +43,8 @@ export class StationBoardSearchComponent implements OnInit {
 
   private queryParams: URLSearchParams
 
-  public permalinkURLAddress: string
+  public permalinkRelativeURL: string;
+  public mapURLs: Record<URLType, string>;
 
   public currentRequestInfo: OJP.RequestInfo | null;
 
@@ -51,6 +52,14 @@ export class StationBoardSearchComponent implements OnInit {
 
   private useMocks = false;
   public isEmbed: boolean;
+  public showURLS: boolean;
+
+  get searchDate() {
+    return this.stationBoardService.searchDate;
+  }
+  set searchDate(newDate: Date) {
+    this.stationBoardService.searchDate = newDate;
+  }
 
   constructor(
     private notificationToast: SbbNotificationToast,
@@ -76,13 +85,14 @@ export class StationBoardSearchComponent implements OnInit {
 
     this.searchLocation = null;
 
-    this.searchDate = this.computeSearchDateTime();
-    this.searchTime = OJP.DateHelpers.formatTimeHHMM(this.searchDate);
+    this.stationBoardService.searchDate = this.computeSearchDateTime();
+    this.searchTime = OJP.DateHelpers.formatTimeHHMM(this.stationBoardService.searchDate);
     
     this.isSearching = false
 
-    this.permalinkURLAddress = '';
-    this.updatePermalinkURLAddress();
+    this.permalinkRelativeURL = '';
+    this.mapURLs = <Record<URLType, string>>{};
+    this.updateURLs();
 
     this.currentRequestInfo = null;
 
@@ -90,9 +100,8 @@ export class StationBoardSearchComponent implements OnInit {
     this.useMocks = queryParams.get('use_mocks') === 'yes';
 
     this.isEmbed = this.router.url.indexOf('/embed/') !== -1;
-    if (this.isEmbed) {
-      this.headerText = this.stationBoardType;
-    }
+    this.headerText = this.stationBoardType;
+    this.showURLS = DEBUG_LEVEL === 'DEBUG';
   }
 
   ngOnInit(): void {
@@ -167,7 +176,7 @@ export class StationBoardSearchComponent implements OnInit {
     this.searchLocation = location;
     this.mapService.tryToCenterAndZoomToLocation(location)
 
-    this.updatePermalinkURLAddress();
+    this.updateURLs();
     this.updateHeaderText();
     
     this.resetResultList();
@@ -179,15 +188,16 @@ export class StationBoardSearchComponent implements OnInit {
       const timeHours = parseInt(timeParts[0], 10);
       const timeMinutes = parseInt(timeParts[1], 10);
       
-      this.searchDate.setHours(timeHours);
-      this.searchDate.setMinutes(timeMinutes);
+      this.stationBoardService.searchDate.setHours(timeHours);
+      this.stationBoardService.searchDate.setMinutes(timeMinutes);
     }
 
-    this.updatePermalinkURLAddress();
+    this.updateURLs();
   }
 
   public onTypeChanged() {
-    this.updatePermalinkURLAddress();
+    this.updateURLs();
+    this.updateHeaderText();
   }
 
   public isSearchButtonDisabled(): boolean {
@@ -253,8 +263,9 @@ export class StationBoardSearchComponent implements OnInit {
     return defaultValue;
   }
 
-  private updatePermalinkURLAddress() {
+  private updateURLs() {
     const queryParams = new URLSearchParams()
+    
     if (this.stationBoardType === 'Arrivals') {
       queryParams.set('type', 'arr');
     }
@@ -264,24 +275,39 @@ export class StationBoardSearchComponent implements OnInit {
       queryParams.set('stop_id', stopPlaceRef);
     }
 
-    const nowDateF = OJP.DateHelpers.formatDate(new Date());
-    const searchDateF = OJP.DateHelpers.formatDate(this.searchDate);
+    const searchDate = this.stationBoardService.searchDate;
+    const now = new Date();
+    const deltaNowMinutes = Math.abs((now.getTime() - searchDate.getTime()) / 1000 / 60);
+    if (deltaNowMinutes > 5) {
+      const nowDateF = OJP.DateHelpers.formatDate(new Date());
+      const searchDateF = OJP.DateHelpers.formatDate(searchDate);
 
-    const nowDayF = nowDateF.substring(0, 10);
-    const searchDayF = searchDateF.substring(0, 10);
-    if (searchDayF !== nowDayF) {
-      queryParams.set('day', searchDayF);
+      const nowDayF = nowDateF.substring(0, 10);
+      const searchDayF = searchDateF.substring(0, 10);
+      if (searchDayF !== nowDayF) {
+        queryParams.set('day', searchDayF);
+      }
+
+      const nowTimeF = nowDateF.substring(11, 16);
+      const searchTimeF = searchDateF.substring(11, 16);
+      if (nowTimeF !== searchTimeF) {
+        queryParams.set('time', searchTimeF);
+      }
     }
 
-    const nowTimeF = nowDateF.substring(11, 16);
-    const searchTimeF = searchDateF.substring(11, 16);
-    if (nowTimeF !== searchTimeF) {
-      queryParams.set('time', searchTimeF);
+    if (this.userTripService.currentAppStage !== DEFAULT_APP_STAGE) {
+      const stageS = this.userTripService.currentAppStage.toLowerCase();
+      queryParams.append('stage', stageS)
     }
 
-    const urlAddress = document.location.pathname.replace('/embed', '') + '?' + queryParams.toString();
-    
-    this.permalinkURLAddress = urlAddress;
+    this.permalinkRelativeURL = document.location.pathname.replace('/embed', '') + '?' + queryParams.toString();
+    this.updateLinkedURLs(queryParams);
+  }
+
+  private updateLinkedURLs(queryParams: URLSearchParams) {
+    this.mapURLs.prodv1 = 'https://opentdatach.github.io/ojp-demo-app/board?' + queryParams.toString();
+    this.mapURLs.betav1 = 'https://tools.odpch.ch/beta-ojp-demo/board?' + queryParams.toString();
+    this.mapURLs.betav2 = 'https://tools.odpch.ch/ojp-demo-v2/board?' + queryParams.toString();
   }
 
   private fetchStopEventsForStopRef(stopPlaceRef: string) {
@@ -325,8 +351,11 @@ export class StationBoardSearchComponent implements OnInit {
   }
 
   private parseStopEvents(stopEvents: OJP.StopEvent[]): void {
-    if (stopEvents.length > 0) {
-      this.searchPanel?.close()
+    const hasResults = stopEvents.length > 0;
+    if (hasResults) {
+      this.searchPanel?.close();
+
+      this.updateHeaderText();
     }
 
     const stationBoardData: StationBoardData = {
@@ -350,7 +379,7 @@ export class StationBoardSearchComponent implements OnInit {
     this.searchLocation = firstLocation;
 
     this.mapService.tryToCenterAndZoomToLocation(firstLocation);
-    this.updatePermalinkURLAddress();
+    this.updateURLs();
     this.updateHeaderText();
 
     if (this.autocompleteInputComponent) {
@@ -359,10 +388,6 @@ export class StationBoardSearchComponent implements OnInit {
   }
 
   private updateHeaderText() {
-    if (!this.isEmbed) {
-      return;
-    }
-
     if (this.searchLocation === null) {
       return;
     }
@@ -372,7 +397,7 @@ export class StationBoardSearchComponent implements OnInit {
       return;
     }
 
-    this.headerText = locationName + ' ' + this.stationBoardType;
+    this.headerText = this.stationBoardType + ' ' + locationName;
   }
 
   private handleMapClick(feature: GeoJSON.Feature) {
@@ -387,7 +412,7 @@ export class StationBoardSearchComponent implements OnInit {
     }
 
     this.resetResultList();
-    this.updatePermalinkURLAddress();
+    this.updateURLs();
 
     this.searchPanel?.open();
   }
@@ -401,7 +426,7 @@ export class StationBoardSearchComponent implements OnInit {
   }
 
   private computeStopBoardDate(): Date {
-    const departureDate = this.searchDate;
+    const departureDate = this.stationBoardService.searchDate;
     
     const timeParts = this.searchTime.split(':');
     if (timeParts.length === 2) {
@@ -503,5 +528,12 @@ export class StationBoardSearchComponent implements OnInit {
         popover.updateEmbedHTML(this.searchLocation);
       }
     })
+  }
+
+  public resetDateTime() {
+    const nowDateTime = new Date();
+    this.searchDate = nowDateTime;
+    this.searchTime = OJP.DateHelpers.formatTimeHHMM(nowDateTime);
+    this.stationBoardService.searchDate = nowDateTime;
   }
 }

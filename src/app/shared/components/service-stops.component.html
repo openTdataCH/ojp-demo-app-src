@@ -7,10 +7,14 @@
         <th scope="col">Arr</th>
         <th scope="col">Dep</th>
         <th scope="col">Stop</th>
+        <th scope="col">Route</th>
       </tr>
     </thead>
     <tbody>
-      <tr *ngFor="let stopPointData of this.stopPointsData" (click)="zoomToLocation(stopPointData)">
+      <tr 
+        *ngFor="let stopPointData of this.stopPointsData; index as stopIdx"
+        (click)="zoomToLocation(stopPointData)"
+      >
         <td class="fit stop-time">
           <div *ngIf="stopPointData.isNotServicedStop">
             <span><del>{{ stopPointData.arrText }}</del></span>
@@ -41,6 +45,14 @@
               <div>Pl. <del> {{ stopPointData.platformText }}</del> <span class="time-delay"> {{ stopPointData.actualPlatformText }}</span></div>
             </div>
           </div>
+        </td>
+        <td class="text-center">
+          <input 
+            class="form-check-input" 
+            type="radio" 
+            [checked]="this.selectedEndpointsIDx.includes(stopIdx)" 
+            (change)="onRouteEndPointSelected(stopIdx)" 
+          />
         </td>
       </tr>
     </tbody>

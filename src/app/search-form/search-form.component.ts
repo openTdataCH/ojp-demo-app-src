@@ -58,6 +58,8 @@ export class SearchFormComponent implements OnInit {
 
   public gistURL: string | null;
 
+  public showURLS: boolean;
+
   constructor(
     private notificationToast: SbbNotificationToast,
     private tripXmlPopover: SbbDialog,
@@ -100,6 +102,7 @@ export class SearchFormComponent implements OnInit {
     this.isEmbed = this.router.url.indexOf('/embed/') !== -1;
 
     this.gistURL = null;
+    this.showURLS = DEBUG_LEVEL === 'DEBUG';
   }
 
   ngOnInit() {
@@ -202,24 +205,22 @@ export class SearchFormComponent implements OnInit {
       this.viaText = firstViaLocation.computeLocationName() ?? 'Name n/a';
     }
 
-    if (this.isEmbed) {
-      const textParts: string[] = [];
-      if (this.fromLocationText === '') {
-        textParts.push('From Location');
-      } else {
-        textParts.push(this.fromLocationText);
-      }
-
-      textParts.push('-');
-
-      if (this.toLocationText === '') {
-        textParts.push('To Location');
-      } else {
-        textParts.push(this.toLocationText);
-      }
-
-      this.headerText = textParts.join(' ');
+    const textParts: string[] = [];
+    if (this.fromLocationText === '') {
+      textParts.push('From Location');
+    } else {
+      textParts.push(this.fromLocationText);
     }
+
+    textParts.push('-');
+
+    if (this.toLocationText === '') {
+      textParts.push('To Location');
+    } else {
+      textParts.push(this.toLocationText);
+    }
+
+    this.headerText = textParts.join(' ');
   }
 
   private async initLocationsFromMocks() {

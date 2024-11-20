@@ -27,11 +27,11 @@ export class TripInfoResultPopoverComponent {
     this.model.isFetching = false;
   }
 
-  public async fetchJourneyRef(journeyRef: string) {
+  public async fetchJourneyRef(journeyRef: string, dayRef: string) {
     this.model.title = 'JourneyRef: ' + journeyRef;
 
     const stageConfig = this.userTripService.getStageConfig();
-    const request = OJP.TripInfoRequest.initWithJourneyRef(stageConfig, this.languageService.language, journeyRef);
+    const request = OJP.TripInfoRequest.initWithJourneyRef(stageConfig, this.languageService.language, journeyRef, dayRef);
 
     this.model.isFetching = true;
     const response = await request.fetchResponse();

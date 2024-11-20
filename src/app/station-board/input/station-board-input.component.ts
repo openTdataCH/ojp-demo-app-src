@@ -116,7 +116,13 @@ export class StationBoardInputComponent implements OnInit {
         return
       }
 
-      const stopName = location.computeLocationName();
+      const stopName: string | null = (() => {
+        if (location.locationName !== null) {
+          return location.locationName;
+        }
+
+        return location.computeLocationName(); 
+      })();
     
       const stopLookup = <StopLookup>{
         stopPlaceRef: stopPlaceRef,
