@@ -14,7 +14,7 @@ import { StationBoardInputComponent } from '../input/station-board-input.compone
 import { DebugXmlPopoverComponent } from '../../search-form/debug-xml-popover/debug-xml-popover.component';
 import { CustomStopEventXMLPopoverComponent } from './custom-stop-event-xml-popover/custom-stop-event-xml-popover.component';
 
-import { APP_STAGE, DEBUG_LEVEL } from '../../config/app-config'
+import { APP_STAGE, DEBUG_LEVEL, DEFAULT_APP_STAGE } from '../../config/app-config'
 import { EmbedStationBoardPopoverComponent } from './embed-station-board-popover/embed-station-board-popover.component';
 import { Router } from '@angular/router';
 import { LanguageService } from '../../shared/services/language.service';
@@ -289,11 +289,13 @@ export class StationBoardSearchComponent implements OnInit {
       }
     }
 
+    if (this.userTripService.currentAppStage !== DEFAULT_APP_STAGE) {
+      const stageS = this.userTripService.currentAppStage.toLowerCase();
+      queryParams.append('stage', stageS)
     }
 
-    const urlAddress = document.location.pathname.replace('/embed', '') + '?' + queryParams.toString();
-    
-    this.permalinkURLAddress = urlAddress;
+    this.permalinkRelativeURL = document.location.pathname.replace('/embed', '') + '?' + queryParams.toString();
+    this.updateLinkedURLs(queryParams);
   }
 
   private fetchStopEventsForStopRef(stopPlaceRef: string) {
