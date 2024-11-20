@@ -167,12 +167,23 @@
       <div *ngIf="this.requestDurationF !== null">
         <span class="badge bg-success">{{ this.requestDurationF }}</span>
       </div>
-      <div style="width: 2px"></div>
       <ng-container *ngIf="this.userTripService.permalinkRelativeURL !== null">
+        <div>
+          <a href="{{ this.userTripService.sbbURL }}" target="_blank">SBB</a>
+        </div>
+        <div clas="text-center"> | </div>
+        <div>
+          <a href="{{ this.userTripService.betaV2URL }}" target="_blank">BETA-v2</a>
+        </div>
+        <div clas="text-center"> | </div>
+        <div>
+          <a href="{{ this.userTripService.prodURL }}" target="_blank">PROD</a>
+        </div>
+        <div clas="text-center"> | </div>
         <div>
           <a href="{{ this.userTripService.permalinkRelativeURL }}" target="_blank">Permalink</a>
         </div>
-        <div clas="text-center" style="width: 7px; margin-left: 4px;"> | </div>
+        <div clas="text-center"> | </div>
         <div>
           <a target="_blank" (click)="loadEmbedHTMLPopover()" class="text-decoration-underline" role="button">Embed</a>
         </div>
