@@ -43,7 +43,7 @@ export class StationBoardSearchComponent implements OnInit {
 
   private queryParams: URLSearchParams
 
-  public permalinkURLAddress: string
+  public permalinkRelativeURL: string;
 
   public currentRequestInfo: OJP.RequestInfo | null;
 
@@ -81,8 +81,8 @@ export class StationBoardSearchComponent implements OnInit {
     
     this.isSearching = false
 
-    this.permalinkURLAddress = '';
-    this.updatePermalinkURLAddress();
+    this.permalinkRelativeURL = '';
+    this.updateURLs();
 
     this.currentRequestInfo = null;
 
@@ -167,7 +167,7 @@ export class StationBoardSearchComponent implements OnInit {
     this.searchLocation = location;
     this.mapService.tryToCenterAndZoomToLocation(location)
 
-    this.updatePermalinkURLAddress();
+    this.updateURLs();
     this.updateHeaderText();
     
     this.resetResultList();
@@ -183,11 +183,11 @@ export class StationBoardSearchComponent implements OnInit {
       this.searchDate.setMinutes(timeMinutes);
     }
 
-    this.updatePermalinkURLAddress();
+    this.updateURLs();
   }
 
   public onTypeChanged() {
-    this.updatePermalinkURLAddress();
+    this.updateURLs();
   }
 
   public isSearchButtonDisabled(): boolean {
@@ -253,8 +253,9 @@ export class StationBoardSearchComponent implements OnInit {
     return defaultValue;
   }
 
-  private updatePermalinkURLAddress() {
+  private updateURLs() {
     const queryParams = new URLSearchParams()
+    
     if (this.stationBoardType === 'Arrivals') {
       queryParams.set('type', 'arr');
     }
@@ -350,7 +351,7 @@ export class StationBoardSearchComponent implements OnInit {
     this.searchLocation = firstLocation;
 
     this.mapService.tryToCenterAndZoomToLocation(firstLocation);
-    this.updatePermalinkURLAddress();
+    this.updateURLs();
     this.updateHeaderText();
 
     if (this.autocompleteInputComponent) {
@@ -387,7 +388,7 @@ export class StationBoardSearchComponent implements OnInit {
     }
 
     this.resetResultList();
-    this.updatePermalinkURLAddress();
+    this.updateURLs();
 
     this.searchPanel?.open();
   }
