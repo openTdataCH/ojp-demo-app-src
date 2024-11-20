@@ -7,6 +7,7 @@ OJP-Demo URL: https://opentdatach.github.io/ojp-demo-app/
 29.November 2024
 - TR: adds GUI filter for public transport modes - [PR #182](https://github.com/openTdataCH/ojp-demo-app-src/pull/182)
   - [Adds mean of transport (bus, boat, etc.) option in the TR #170](https://github.com/openTdataCH/ojp-demo-app-src/issues/170)
+- TR:update GUI for NumberOfResults - [PR #183](https://github.com/openTdataCH/ojp-demo-app-src/pull/183)
 
 29.October 2024
 - updates platform assistance [PR #172](https://github.com/openTdataCH/ojp-demo-app-src/pull/172)
