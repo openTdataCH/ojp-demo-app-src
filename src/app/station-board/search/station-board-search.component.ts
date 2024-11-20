@@ -1,12 +1,11 @@
-import * as GeoJSON from 'geojson'
-
-import * as OJP from 'ojp-sdk'
-
 import { Component, OnInit, ViewChild } from '@angular/core';
 
 import { SbbExpansionPanel } from '@sbb-esta/angular/accordion';
 import { SbbDialog } from '@sbb-esta/angular/dialog';
 import { SbbNotificationToast } from '@sbb-esta/angular/notification-toast';
+
+import * as GeoJSON from 'geojson'
+import * as OJP from 'ojp-sdk'
 
 import { UserTripService } from '../../shared/services/user-trip.service';
 import { MapService } from '../../shared/services/map.service';
