@@ -43,6 +43,13 @@
                 (change)="onDateTimeChanged()" />
             </sbb-form-field>
           </div>
+          <div>
+            <button sbb-secondary-button
+              (click)="resetDateTime()"
+              aria-expanded="false">
+                <sbb-icon svgIcon="kom:arrow-circle-reset-small"></sbb-icon>
+            </button>
+          </div>
         </div>
         
         <div class="mb-3 d-flex" *ngIf="!this.isEmbed">

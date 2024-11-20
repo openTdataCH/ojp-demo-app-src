@@ -517,4 +517,11 @@ export class StationBoardSearchComponent implements OnInit {
       }
     })
   }
+
+  public resetDateTime() {
+    const nowDateTime = new Date();
+    this.searchDate = nowDateTime;
+    this.searchTime = OJP.DateHelpers.formatTimeHHMM(nowDateTime);
+    this.stationBoardService.searchDate = nowDateTime;
+  }
 }
