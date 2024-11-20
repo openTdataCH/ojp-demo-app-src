@@ -21,7 +21,7 @@ export class WebFooterComponent implements OnInit {
 
     this.model = {
       sdkVersion: OJP.SDK_VERSION,
-      lastUpdate: '30.October 2024',
+      lastUpdate: '20.November 2024',
       isTopograhicPlaceMapLayerEnabled: isTopograhicPlaceMapLayerEnabled,
     }
     
