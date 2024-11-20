@@ -5,6 +5,14 @@ OJP-Demo URL: https://opentdatach.github.io/ojp-demo-app/
 ----
 
 29.November 2024
+- SER/TIR: Updates StationBoard / TripInfo - [PR #182](https://github.com/openTdataCH/ojp-demo-app-src/pull/184)
+  - SER: display service info and links to TIR popover - [Link from SER page to TIR page #171](https://github.com/openTdataCH/ojp-demo-app-src/issues/171)
+  - SER: adds test URLs in station board (dev)
+  - SER: display station header text
+  - TIR: allow to choose TR endpoints for testing journeys
+  - TR: display trip header text
+  - TR: propagate service day ref - [Use the selected date when calling popovers for TIR in JourneysTab #176](https://github.com/openTdataCH/ojp-demo-app-src/issues/176)
+  - fixes dev.simo.si URL (dev)
 - TR: adds GUI filter for public transport modes - [PR #182](https://github.com/openTdataCH/ojp-demo-app-src/pull/182)
   - [Adds mean of transport (bus, boat, etc.) option in the TR #170](https://github.com/openTdataCH/ojp-demo-app-src/issues/170)
 - TR:update GUI for NumberOfResults - [PR #183](https://github.com/openTdataCH/ojp-demo-app-src/pull/183)
