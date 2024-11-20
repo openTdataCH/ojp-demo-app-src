@@ -12,6 +12,9 @@
         
         <div class="flex-fill dep-center">
           <div class="trip-heading">{{ stopEntry.tripHeading }}</div>
+          <div class="d-flex">
+            <button class="btn btn-primary btn-sm" (click)="loadTripInfoResultPopover(stopEntry.journeyRef)">{{ stopEntry.serviceInfo }}</button>
+          </div>
           <div *ngIf="stopEntry.stopPlatform" class="stop-platform-text">
             <div *ngIf="!stopEntry.stopPlatformActual">
               <div>Pl. {{ stopEntry.stopPlatform }}</div>  
