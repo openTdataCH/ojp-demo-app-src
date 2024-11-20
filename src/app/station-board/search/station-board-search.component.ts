@@ -52,7 +52,7 @@ export class StationBoardSearchComponent implements OnInit {
 
   private useMocks = false;
   public isEmbed: boolean;
-  public showURLS: boolean
+  public showURLS: boolean;
 
   get searchDate() {
     return this.stationBoardService.searchDate;
