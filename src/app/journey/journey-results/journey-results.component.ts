@@ -5,6 +5,8 @@ import * as OJP from 'ojp-sdk'
 import { MapService } from '../../shared/services/map.service'
 import { LanguageService } from '../../shared/services/language.service';
 
+type NumberOfResultsType = 'NumberOfResults' | 'NumberOfResultsBefore' | 'NumberOfResultsAfter';
+
 interface PageModel {
   trips: OJP.Trip[]
   hasPagination: boolean
@@ -109,14 +111,24 @@ export class JourneyResultsComponent implements OnInit {
     this.loadTrips('NumberOfResultsAfter', depArrDate);
   }
 
-  private loadTrips(numberOfResultsType: OJP.NumberOfResultsType, depArrDate: Date) {
+  private loadTrips(numberOfResultsType: NumberOfResultsType, depArrDate: Date) {
     const viaTripLocations = this.userTripService.isViaEnabled ? this.userTripService.viaTripLocations : [];
 
     const numberOfResults: number | null = (() => {
       const hasPublicTransport = this.userTripService.hasPublicTransport();
       
-      return hasPublicTransport ? 5 : null;
+      return hasPublicTransport ? this.userTripService.numberOfResults : null;
     })();
+
+    let numberOfResultsBefore: number | null = null;
+    if (numberOfResultsType === 'NumberOfResultsBefore') {
+      numberOfResultsBefore = numberOfResults;
+    }
+
+    let numberOfResultsAfter: number | null = null;
+    if (numberOfResultsType === 'NumberOfResultsAfter') {
+      numberOfResultsAfter = numberOfResults;
+    }
 
     const stageConfig = this.userTripService.getStageConfig();
     const request = OJP.TripRequest.initWithTripLocationsAndDate(
@@ -126,12 +138,14 @@ export class JourneyResultsComponent implements OnInit {
       this.userTripService.toTripLocation,
       depArrDate,
       this.userTripService.currentBoardingType,
-      numberOfResultsType,
       true,
       this.userTripService.tripModeTypes[0],
       this.userTripService.tripTransportModes[0],
       viaTripLocations,
-      numberOfResults,
+      null,
+      numberOfResultsBefore,
+      numberOfResultsAfter,
+      this.userTripService.publicTransportModesFilter,
     );
 
     if (request === null) {

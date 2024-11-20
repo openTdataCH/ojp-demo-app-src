@@ -1,9 +1,12 @@
 import { AfterViewInit, Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import { SbbDialog } from '@sbb-esta/angular/dialog';
 
 import * as OJP from 'ojp-sdk'
 
 import { StationBoardService } from '../station-board.service';
 import { OJPHelpers } from '../../helpers/ojp-helpers';
+
+import { TripInfoResultPopoverComponent } from '../../journey/journey-result-row/result-trip-leg/trip-info-result-popover/trip-info-result-popover.component';
 
 interface StationBoardTime {
   stopTime: string
@@ -19,6 +22,9 @@ interface StationBoardModel {
 
   serviceLineNumber: string
   servicePtMode: string
+  serviceInfo: string
+  journeyRef: string
+
   tripNumber: string | null
   tripHeading: string
   tripOperator: string
@@ -46,7 +52,7 @@ export class StationBoardResultComponent implements OnInit, AfterViewInit {
   public selectedIDx: number | null
   public stationBoardType: OJP.StationBoardType
 
-  constructor(private stationBoardService: StationBoardService) {
+  constructor(private stationBoardService: StationBoardService, private tripInfoResultPopover: SbbDialog) {
     this.stopEventsData = [];
     this.selectedIDx = null;
     this.stationBoardType = 'Departures';
@@ -219,6 +225,9 @@ export class StationBoardResultComponent implements OnInit, AfterViewInit {
         stopEvent: stopEvent,
         serviceLineNumber: serviceLineNumber,
         servicePtMode: servicePtMode,
+        serviceInfo: OJPHelpers.formatServiceName(stopEvent.journeyService),
+        journeyRef: stopEvent.journeyService.journeyRef,
+        
         tripNumber: stopEvent.journeyService.journeyNumber, 
         tripHeading: stopEvent.journeyService.destinationStopPlace?.stopPlaceName ?? 'N/A', 
         tripOperator: stopEvent.journeyService.agencyCode,
@@ -237,5 +246,25 @@ export class StationBoardResultComponent implements OnInit, AfterViewInit {
     }
 
     return model;
+  }
+
+  public loadTripInfoResultPopover(journeyRef: string) {
+    const searchDate = this.stationBoardService.searchDate;
+    const dayRef = OJP.DateHelpers.formatDate(searchDate).substring(0, 10);
+
+    if (journeyRef === null) {
+      console.error('loadTripInfoResultPopover: cant fetch empty journeyRef');
+      return;
+    }
+
+    const dialogRef = this.tripInfoResultPopover.open(TripInfoResultPopoverComponent, {
+      position: { top: '20px' },
+      // width: '50vw',
+      // height: '90vh',
+    });
+    dialogRef.afterOpened().subscribe(() => {
+      const popover = dialogRef.componentInstance as TripInfoResultPopoverComponent;
+      popover.fetchJourneyRef(journeyRef, dayRef);
+    });
   }
 }

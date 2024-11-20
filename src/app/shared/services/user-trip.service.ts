@@ -4,9 +4,8 @@ import mapboxgl from 'mapbox-gl'
 
 import * as OJP from 'ojp-sdk'
 
-import { APP_CONFIG, APP_STAGE, DEBUG_LEVEL } from '../../config/app-config'
+import { APP_CONFIG, APP_STAGE, DEBUG_LEVEL, DEFAULT_APP_STAGE, TRIP_REQUEST_DEFAULT_NUMBER_OF_RESULTS } from '../../config/app-config'
 import { MapService } from './map.service'
-import { LanguageService } from './language.service'
 
 type LocationUpdateSource = 'SearchForm' | 'MapDragend' | 'MapPopupClick'
 
@@ -19,8 +18,10 @@ export class UserTripService {
   public viaTripLocations: OJP.TripLocationPoint[]
   public isViaEnabled: boolean
   
-  public isNumberOfResultsEnabled: boolean
-  public numberOfResults: number
+  public numberOfResults: number | null
+  public numberOfResultsBefore: number | null
+  public numberOfResultsAfter: number | null
+  public publicTransportModesFilter: OJP.ModeOfTransportType[] = [];
 
   public currentBoardingType: OJP.TripRequestBoardingType
 
@@ -36,7 +37,7 @@ export class UserTripService {
   public betaURL: string | null;
   public betaV2URL: string | null;
   public sbbURL: string | null;
-  public embedQueryParams = new URLSearchParams()
+  public embedQueryParams = new URLSearchParams();
 
   public defaultsInited = new EventEmitter<void>();
   public locationsUpdated = new EventEmitter<void>();
@@ -57,8 +58,10 @@ export class UserTripService {
     this.toTripLocation = null
     this.viaTripLocations = []
     
-    this.isNumberOfResultsEnabled = true;
-    this.numberOfResults = 5;
+    this.numberOfResults = TRIP_REQUEST_DEFAULT_NUMBER_OF_RESULTS;
+    this.numberOfResultsBefore = null;
+    this.numberOfResultsAfter = null;
+    this.publicTransportModesFilter = [];
     this.isViaEnabled = false;
 
     this.currentBoardingType = 'Dep'
@@ -69,7 +72,7 @@ export class UserTripService {
     this.journeyTripRequests = [];
     
     this.departureDate = this.computeInitialDate()
-    this.currentAppStage = 'V2-PROD';
+    this.currentAppStage = DEFAULT_APP_STAGE;
 
     this.permalinkRelativeURL = null;
     this.prodURL = null;
@@ -176,6 +179,30 @@ export class UserTripService {
       this.tripTransportModes = ['public_transport'];
     }
 
+    this.publicTransportModesFilter = (() => {
+      const modes: OJP.ModeOfTransportType[] = [];
+
+      const publicTransportModesS = this.queryParams.get('public_transport_modes') ?? null;
+      if (publicTransportModesS === null) {
+        return modes;
+      }
+
+      const userPublicTransportModes = publicTransportModesS.split(',').map(el => el.toLowerCase().trim());
+      userPublicTransportModes.forEach(userPublicTransportMode => {
+        if (userPublicTransportMode === 'bus') {
+          modes.push('bus');
+        }
+        if (['ship', 'water'].includes(userPublicTransportMode)) {
+          modes.push('water');
+        }
+        if (['rail', 'train'].includes(userPublicTransportMode)) {
+          modes.push('rail');
+        }
+      });
+      
+      return modes;
+    })();
+
     Promise.all(promises).then(locationsData => {
       endpointTypes.forEach(endpointType => {
         const isFrom = endpointType === 'From'
@@ -211,7 +238,7 @@ export class UserTripService {
 
       this.locationsUpdated.emit();
       this.geoLocationsUpdated.emit();
-      this.updatePermalinkAddress();
+      this.updateURLs();
 
       if (bbox.isValid()) {
         const shouldZoomToBounds = this.queryParams.has('from') || this.queryParams.has('to')
@@ -295,7 +322,7 @@ export class UserTripService {
           this.toTripLocation = new OJP.TripLocationPoint(nearbyLocation.location)
         }
 
-        this.updatePermalinkAddress();
+        this.updateURLs();
         this.locationsUpdated.emit();
         this.geoLocationsUpdated.emit();
       })
@@ -312,7 +339,7 @@ export class UserTripService {
     this.activeTripSelected.emit(null);
 
     this.searchParamsReset.emit();
-    this.updatePermalinkAddress();
+    this.updateURLs();
   }
 
   public updateVia() {
@@ -323,7 +350,7 @@ export class UserTripService {
     this.activeTripSelected.emit(null);
 
     this.searchParamsReset.emit();
-    this.updatePermalinkAddress();
+    this.updateURLs();
   }
 
   private computeAppStageFromString(appStageS: string): APP_STAGE {
@@ -371,7 +398,7 @@ export class UserTripService {
     this.activeTripSelected.emit(null);
 
     this.searchParamsReset.emit();
-    this.updatePermalinkAddress();
+    this.updateURLs();
   }
 
   updateViaPoint(location: OJP.Location, viaIDx: number) {
@@ -382,7 +409,7 @@ export class UserTripService {
     this.activeTripSelected.emit(null);
 
     this.searchParamsReset.emit();
-    this.updatePermalinkAddress();
+    this.updateURLs();
   }
 
   updateTrips(trips: OJP.Trip[]) {
@@ -398,7 +425,7 @@ export class UserTripService {
     this.tripFaresUpdated.emit(fareResults);
   }
 
-  private updatePermalinkAddress() {
+  private updateURLs() {
     const queryParams = new URLSearchParams()
 
     const endpointTypes: OJP.JourneyPointType[] = ['From', 'To']
@@ -440,14 +467,29 @@ export class UserTripService {
       queryParams.append('via', viaParamParts.join(';'))
     }
     
-    queryParams.append('mode_types', this.tripModeTypes.join(';'));
-    queryParams.append('transport_modes', this.tripTransportModes.join(';'));
+    if (this.tripModeTypes[0] !== 'monomodal') {
+      queryParams.append('mode_types', this.tripModeTypes.join(';'));
+    }
+    
+    if (this.tripTransportModes[0] !== 'public_transport') {
+      queryParams.append('transport_modes', this.tripTransportModes.join(';'));
+    }
 
-    const dateTimeS = OJP.DateHelpers.formatDate(this.departureDate)
-    queryParams.append('trip_datetime', dateTimeS.substring(0, 16))
+    if (this.publicTransportModesFilter.length > 0) {
+      queryParams.append('public_transport_modes', this.publicTransportModesFilter.join(','));
+    }
 
-    const stageS = this.currentAppStage.toLowerCase()
-    queryParams.append('stage', stageS)
+    const now = new Date();
+    const deltaNowMinutes = Math.abs((now.getTime() - this.departureDate.getTime()) / 1000 / 60);
+    if (deltaNowMinutes > 5) {
+      const dateTimeS = OJP.DateHelpers.formatDate(this.departureDate);
+      queryParams.append('trip_datetime', dateTimeS.substring(0, 16));
+    }
+
+    if (this.currentAppStage !== DEFAULT_APP_STAGE) {
+      const stageS = this.currentAppStage.toLowerCase();
+      queryParams.append('stage', stageS)
+    }
 
     this.permalinkRelativeURL = document.location.pathname.replace('/embed', '') + '?' + queryParams.toString();
     this.updateLinkedURLs(queryParams);
@@ -533,12 +575,12 @@ export class UserTripService {
 
   public updateAppStage(newStage: APP_STAGE) {
     this.currentAppStage = newStage
-    this.updatePermalinkAddress()
+    this.updateURLs()
   }
 
   public updateDepartureDateTime(newDateTime: Date) {
     this.departureDate = newDateTime
-    this.updatePermalinkAddress()
+    this.updateURLs()
   }
 
   public updateTripMode(tripModeType: OJP.TripModeType, tripTransportMode: OJP.IndividualTransportMode) {
@@ -548,7 +590,7 @@ export class UserTripService {
     this.tripModeTypes[tripSectionIdx] = tripModeType;
     this.tripTransportModes[tripSectionIdx] = tripTransportMode;
 
-    this.updatePermalinkAddress()
+    this.updateURLs()
   }
 
   private computeTripLocationsToUpdate(): OJP.TripLocationPoint[] {
@@ -628,7 +670,7 @@ export class UserTripService {
     this.tripTransportModes = ['public_transport'];
     
     this.geoLocationsUpdated.emit()
-    this.updatePermalinkAddress()
+    this.updateURLs()
   }
 
   public massageTrips(trips: OJP.Trip[]) {
@@ -832,28 +874,5 @@ export class UserTripService {
     const tripTransportMode = this.tripTransportModes[0];
 
     return tripTransportMode === 'public_transport';
-  }
-
-  public computeTripRequest(languageService: LanguageService) {
-    const stageConfig = this.getStageConfig();
-    const includeLegProjection = true;
-    const viaTripLocations = this.isViaEnabled ? this.viaTripLocations : [];
-    
-    const tripRequest = OJP.TripRequest.initWithTripLocationsAndDate(
-      stageConfig, 
-      languageService.language,
-      this.fromTripLocation,
-      this.toTripLocation,
-      this.departureDate,
-      this.currentBoardingType,
-      'NumberOfResults',
-      includeLegProjection,
-      this.tripModeTypes[0],
-      this.tripTransportModes[0],
-      viaTripLocations,
-      this.numberOfResults,
-    );
-
-    return tripRequest;
   }
 }

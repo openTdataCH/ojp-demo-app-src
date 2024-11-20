@@ -58,6 +58,8 @@ export class SearchFormComponent implements OnInit {
 
   public gistURL: string | null;
 
+  public showURLS: boolean;
+
   constructor(
     private notificationToast: SbbNotificationToast,
     private tripXmlPopover: SbbDialog,
@@ -97,6 +99,7 @@ export class SearchFormComponent implements OnInit {
     this.isEmbed = this.router.url.indexOf('/embed/') !== -1;
 
     this.gistURL = null;
+    this.showURLS = DEBUG_LEVEL === 'DEBUG';
   }
 
   ngOnInit() {
@@ -199,24 +202,22 @@ export class SearchFormComponent implements OnInit {
       this.viaText = firstViaLocation.computeLocationName() ?? 'Name n/a';
     }
 
-    if (this.isEmbed) {
-      const textParts: string[] = [];
-      if (this.fromLocationText === '') {
-        textParts.push('From Location');
-      } else {
-        textParts.push(this.fromLocationText);
-      }
-
-      textParts.push('-');
-
-      if (this.toLocationText === '') {
-        textParts.push('To Location');
-      } else {
-        textParts.push(this.toLocationText);
-      }
-
-      this.headerText = textParts.join(' ');
+    const textParts: string[] = [];
+    if (this.fromLocationText === '') {
+      textParts.push('From Location');
+    } else {
+      textParts.push(this.fromLocationText);
     }
+
+    textParts.push('-');
+
+    if (this.toLocationText === '') {
+      textParts.push('To Location');
+    } else {
+      textParts.push(this.toLocationText);
+    }
+
+    this.headerText = textParts.join(' ');
   }
 
   private async initLocationsFromMocks() {
@@ -303,13 +304,7 @@ export class SearchFormComponent implements OnInit {
   public handleTapOnSearch() {
     this.userTripService.updateDepartureDateTime(this.computeFormDepartureDate())
 
-    const includeLegProjection = true;
-
-    const viaTripLocations = this.userTripService.isViaEnabled ? this.userTripService.viaTripLocations : [];
-
-    const stageConfig = this.userTripService.getStageConfig();
-    const tripRequest = this.userTripService.computeTripRequest(this.languageService);
-
+    const tripRequest = this.computeTripRequest();
     if (tripRequest === null) {
       this.notificationToast.open('Please check from/to input points', {
         type: 'error',
@@ -405,7 +400,7 @@ export class SearchFormComponent implements OnInit {
     });
     dialogRef.afterOpened().subscribe(() => {
       const popover = dialogRef.componentInstance as InputXmlPopoverComponent
-      const currentTR = this.userTripService.computeTripRequest(this.languageService);
+      const currentTR = this.computeTripRequest();
       if (currentTR) {
         popover.inputTripRequestXML = currentTR.requestInfo.requestXML ?? 'n/a';
       }
@@ -500,5 +495,30 @@ export class SearchFormComponent implements OnInit {
         popover.updateRequestData(this.currentRequestInfo);
       }
     });
+  }
+
+  private computeTripRequest() {
+    const stageConfig = this.userTripService.getStageConfig();
+    const includeLegProjection = true;
+    const viaTripLocations = this.userTripService.isViaEnabled ? this.userTripService.viaTripLocations : [];
+
+    const tripRequest = OJP.TripRequest.initWithTripLocationsAndDate(
+      stageConfig, 
+      this.languageService.language,
+      this.userTripService.fromTripLocation,
+      this.userTripService.toTripLocation,
+      this.userTripService.departureDate,
+      this.userTripService.currentBoardingType,
+      includeLegProjection,
+      this.userTripService.tripModeTypes[0],
+      this.userTripService.tripTransportModes[0],
+      viaTripLocations,
+      this.userTripService.numberOfResults,
+      this.userTripService.numberOfResultsBefore,
+      this.userTripService.numberOfResultsAfter,
+      this.userTripService.publicTransportModesFilter,
+    );
+
+    return tripRequest;
   }
 }

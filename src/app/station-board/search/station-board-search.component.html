@@ -9,14 +9,6 @@
             <station-board-input (locationSelected)="onLocationSelected($event)">
             </station-board-input>
           </div>
-          
-          <div
-            *ngIf="this.currentRequestInfo?.requestXML && !this.isEmbed"
-            class="xml-info"
-            (click)="showRequestXmlPopover()"
-          >
-            <span class="layer-xml-info badge bg-info text-dark">XML</span>
-          </div>
         </div>
 
         <div class="mb-3 d-flex" *ngIf="!this.isEmbed">
@@ -30,7 +22,7 @@
           </div>
         </div>
 
-        <div class="d-flex">
+        <div class="d-flex align-items-center gap-2">
           <div>
             <sbb-form-field label="Choose Day">
               <sbb-datepicker arrows>
@@ -42,7 +34,7 @@
               </sbb-datepicker>
             </sbb-form-field>
           </div>
-          <div style="margin-left: 8px;">
+          <div style="width:70px;">
             <sbb-form-field label="Time">
               <input 
                 sbbInput
@@ -50,6 +42,13 @@
                 [(ngModel)]="this.searchTime"
                 (change)="onDateTimeChanged()" />
             </sbb-form-field>
+          </div>
+          <div>
+            <button sbb-secondary-button
+              (click)="resetDateTime()"
+              aria-expanded="false">
+                <sbb-icon svgIcon="kom:arrow-circle-reset-small"></sbb-icon>
+            </button>
           </div>
         </div>
         
@@ -101,7 +100,7 @@
   <div class="col">
     <div class="d-flex flex-row-reverse">
       <div>
-        <a href="{{ this.permalinkURLAddress }}" target="_blank">Open in OJP Demo App</a>
+        <a href="{{ this.permalinkRelativeURL }}" target="_blank">Open in OJP Demo App</a>
       </div>
     </div>
   </div>
@@ -110,12 +109,34 @@
 
 <div class="row mb-2" *ngIf="!this.isEmbed">
   <div class="col">
-    <div class="d-flex flex-row-reverse">
+    <div class="d-flex flex-row-reverse gap-2">
+      <ng-container *ngIf="this.currentRequestInfo?.requestXML && !this.isEmbed">
+        <div class="xml-info" (click)="showRequestXmlPopover()">
+          <span class="layer-xml-info badge bg-info text-dark">XML</span>
+        </div>
+        <div>|</div>
+      </ng-container>
+
+      <ng-container *ngIf="this.showURLS && this.searchLocation !== null">
+        <!-- <div>
+          <a href="{{ this.mapURLs.betav1 }}" target="_blank">BETA-v1</a>
+        </div>
+        <div>|</div> -->
+        <div>
+          <a href="{{ this.mapURLs.betav2 }}" target="_blank">BETA-v2</a>
+        </div>
+        <div>|</div>
+        <div>
+          <a href="{{ this.mapURLs.prodv1 }}" target="_blank">PROD</a>
+        </div>
+        <div>|</div>
+      </ng-container>
+      
       <div>
-        <a href="{{ this.permalinkURLAddress }}" target="_blank">Permalink</a>
+        <a href="{{ this.permalinkRelativeURL }}" target="_blank">Permalink</a>
       </div>
       <ng-container *ngIf="this.searchLocation !== null">
-        <div clas="text-center" style="width: 7px; margin-left: 4px;"> | </div>
+        <div>|</div>
         <div>
           <a target="_blank" (click)="loadEmbedHTMLPopover()" class="text-decoration-underline" role="button">Embed</a>
         </div>

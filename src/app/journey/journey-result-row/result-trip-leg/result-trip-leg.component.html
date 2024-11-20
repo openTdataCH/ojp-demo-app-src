@@ -199,18 +199,37 @@
 
 <ng-template #timedLegTemplateVariant2>
   <!-- SERVICE + HEADING -->
-  <div class="d-flex gap-1 align-items-center">
+  <div class="mb-2 d-flex gap-1 align-items-center">
     <div>
-       <button class="btn btn-primary btn-sm" (click)="loadTripInfoResultPopover(this.legInfoDataModel.serviceJourneyRef)">{{ this.legInfoDataModel.serviceInfo }}</button>
+       <button class="btn btn-primary btn-sm" (click)="loadTripInfoResultPopover()">{{ this.legInfoDataModel.serviceInfo }}</button>
     </div>
     
     <div> to {{ this.legInfoDataModel.serviceDestinationText }}</div>
   </div>
 
+  <div *ngIf="this.legInfoDataModel.debugServicePtMode" 
+    class="mb-2 ms-2 d-flex gap-1 service-pt-mode align-items-center"
+  >
+    <span class="badge rounded-pill text-bg-secondary">{{ this.legInfoDataModel.servicePtMode?.ptMode }}</span>
+    <ng-container *ngIf="this.legInfoDataModel.servicePtMode?.subMode !== null">
+      <div>{{ this.legInfoDataModel.servicePtMode?.subMode?.key }} = </div>
+      <span class="badge rounded-pill text-bg-secondary">{{ this.legInfoDataModel.servicePtMode?.subMode?.value }}</span>
+    </ng-container>
+  </div>
+
   <!-- INTERMEDIARY_STOPS + ATTRIBUTES -->
-  <div class="d-flex gap-2 align-items-center mt-2">
+  <div class="ms-2 d-flex gap-2 align-items-center">
     <div *ngIf="this.legInfoDataModel.serviceIntermediaryStopsText !== null">
-      <button type="button" class="btn btn-primary btn-sm btn-collapse collapsed" data-bs-toggle="collapse" [attr.data-bs-target]="'#' + this.legElementId" aria-expanded="false" [attr.aria-controls]="this.legElementId">{{ this.legInfoDataModel.serviceIntermediaryStopsText }} <i class="bi bi-chevron-down"></i><i class="bi bi-chevron-up"></i></button>
+      <button 
+        type="button" 
+        class="btn btn-primary btn-sm btn-collapse collapsed" 
+        data-bs-toggle="collapse" 
+        [attr.data-bs-target]="'#' + this.legElementId" aria-expanded="false" 
+        [attr.aria-controls]="this.legElementId"
+      >
+        {{ this.legInfoDataModel.serviceIntermediaryStopsText }}
+        <i class="bi bi-chevron-down"></i><i class="bi bi-chevron-up"></i>
+      </button>
     </div>
 
     <div class="service-attributes">

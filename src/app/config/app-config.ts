@@ -18,6 +18,8 @@ export type APP_STAGE = OJP.Default_APP_Stage
 | 'GR TEST' | 'INT Linux' | 'TEST Linux' | 'OJP-SI'
 | 'V2-PROD' | 'V2-INT' | 'V2-TEST';
 
+export const DEFAULT_APP_STAGE: APP_STAGE = 'V2-PROD';
+
 export interface AppMapLayerOptions {
   LIR_Restriction_Type: OJP.RestrictionType
   LIR_POI_Type?: OJP.POI_Restriction | null
@@ -64,7 +66,7 @@ const app_stages: OJP.StageConfig[] = [
   },
   {
     key: 'OJP-SI',
-    apiEndpoint: 'https://dev.simo.si/OpenAPI/LinkingAlpsBetaPhaseSBB/OJP',
+    apiEndpoint: 'https://dev.simo.si/OpenAPI/LinkingAlpsBetaPhase/OJP',
     authBearerKey: 'noKey',
   },
 ]
@@ -197,3 +199,5 @@ export const APP_CONFIG = {
   app_stages: app_stages,
   map_app_map_layers: map_app_map_layers,
 }
+
+export const TRIP_REQUEST_DEFAULT_NUMBER_OF_RESULTS = 5;

@@ -6,6 +6,7 @@ import * as OJP from 'ojp-sdk'
 
 import { UserTripService } from '../../shared/services/user-trip.service';
 import { FormatHelpers } from '../../helpers/format-helpers';
+import { TRIP_REQUEST_DEFAULT_NUMBER_OF_RESULTS } from '../../config/app-config';
 
 interface TripTransportModeData {
   modeType: OJP.TripModeType,
@@ -84,6 +85,15 @@ export class TripModeTypeComponent implements OnInit {
   public isFilterMinDistanceEnabled;
   public isFilterMaxDistanceEnabled;
 
+  public isNumberOfResultsEnabled: boolean;
+  public isNumberOfResultsBeforeEnabled: boolean;
+  public isNumberOfResultsAfterEnabled: boolean;
+  public numberOfResults: number;
+  public numberOfResultsBefore: number;
+  public numberOfResultsAfter: number;
+
+  public mapPublicTransportModesFilter: Record<OJP.ModeOfTransportType, boolean>;
+
   constructor(public userTripService: UserTripService) {
     this.tripTransportModeData = appTripTransportModeData;
 
@@ -103,6 +113,19 @@ export class TripModeTypeComponent implements OnInit {
     this.isFilterMaxDurationEnabled = true;
     this.isFilterMinDistanceEnabled = false;
     this.isFilterMaxDistanceEnabled = true;
+
+    this.isNumberOfResultsEnabled = true;
+    this.isNumberOfResultsBeforeEnabled = false;
+    this.isNumberOfResultsAfterEnabled = false;
+    this.numberOfResults = TRIP_REQUEST_DEFAULT_NUMBER_OF_RESULTS;
+    this.numberOfResultsBefore = 1;
+    this.numberOfResultsAfter = 4;
+
+    this.mapPublicTransportModesFilter = <Record<OJP.ModeOfTransportType, boolean>>{};
+    this.mapPublicTransportModesFilter.rail = false;
+    this.mapPublicTransportModesFilter.bus = false;
+    this.mapPublicTransportModesFilter.water = false;
+    this.mapPublicTransportModesFilter.tram = false;
   }
 
   ngOnInit() {
@@ -119,6 +142,25 @@ export class TripModeTypeComponent implements OnInit {
 
     this.userTripService.defaultsInited.subscribe(nothing => {
       this.userTripService.updateTripLocationCustomMode();
+
+      if (this.userTripService.publicTransportModesFilter.length > 0) {
+        this.isAdditionalRestrictionsEnabled = true;
+
+        this.userTripService.publicTransportModesFilter.forEach(userPublicTransportMode => {
+          if (userPublicTransportMode === 'bus') {
+            this.mapPublicTransportModesFilter.bus = true;
+          }
+          if (userPublicTransportMode === 'rail') {
+            this.mapPublicTransportModesFilter.rail = true;
+          }
+          if (userPublicTransportMode === 'water') {
+            this.mapPublicTransportModesFilter.water = true;
+          }
+          if (userPublicTransportMode === 'tram') {
+            this.mapPublicTransportModesFilter.tram = true;
+          }
+        });
+      }
     });
 
     this.filterMinDurationControl.valueChanges.pipe(debounceTime(200)).subscribe(value => {
@@ -142,6 +184,12 @@ export class TripModeTypeComponent implements OnInit {
     let maxDuration = null;
     let minDistance = null;
     let maxDistance = null;
+    
+    let numberOfResults: number | null = TRIP_REQUEST_DEFAULT_NUMBER_OF_RESULTS;
+    let numberOfResultsBefore: number | null = null;
+    let numberOfResultsAfter: number | null = null;
+    
+    this.userTripService.publicTransportModesFilter = [];
 
     if (this.isAdditionalRestrictionsEnabled) {
       if (this.isFilterMinDurationEnabled) {
@@ -156,9 +204,32 @@ export class TripModeTypeComponent implements OnInit {
       if (this.isFilterMaxDistanceEnabled) {
         maxDistance = FormatHelpers.parseNumber(this.filterMaxDistanceControl.value);
       }
+
+      if (this.isNumberOfResultsEnabled) {
+        numberOfResults = this.numberOfResults;
+      } else {
+        numberOfResults = null;
+      }
+
+      if (this.isNumberOfResultsBeforeEnabled) {
+        numberOfResultsBefore = this.numberOfResultsBefore;
+      }
+      if (this.isNumberOfResultsAfterEnabled) {
+        numberOfResultsAfter = this.numberOfResultsAfter;
+      }
+
+      const availablePublicTransportModesFilter: OJP.ModeOfTransportType[] = ['bus', 'tram', 'rail', 'water'];
+      availablePublicTransportModesFilter.forEach(modeFilter => {
+        if (this.mapPublicTransportModesFilter[modeFilter] === true) {
+          this.userTripService.publicTransportModesFilter.push(modeFilter);
+        }
+      });
     }
 
     this.userTripService.updateTripLocationRestrictions(minDuration, maxDuration, minDistance, maxDistance);
+    this.userTripService.numberOfResults = numberOfResults;
+    this.userTripService.numberOfResultsAfter = numberOfResultsAfter;
+    this.userTripService.numberOfResultsBefore = numberOfResultsBefore;
   }
 
   public onTripModeChange() {

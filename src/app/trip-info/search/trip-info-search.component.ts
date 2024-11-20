@@ -90,9 +90,9 @@ export class TripInfoSearchComponent implements OnInit {
     if (journeyRef) {
       this.model.journeyRef = journeyRef;
 
-      this.fetchTripInfo();
+      const dayRef = this.queryParams.get('day');
+      this.fetchTripInfo(dayRef);
     }
-
 
     if (this.useMocks) {
       if (this.useMocks && document.location.hostname === 'localhost') {
@@ -146,9 +146,12 @@ export class TripInfoSearchComponent implements OnInit {
     this.model.permalinkURLAddress = urlAddress;
   }
 
-  private async fetchTripInfo() {
+  private async fetchTripInfo(dayRef: string | null = null) {
     const stageConfig = this.userTripService.getStageConfig();
-    const dayRef = OJP.DateHelpers.formatDate(this.model.journeyDateTime).substring(0, 10);
+
+    if (dayRef === null) {
+      dayRef = OJP.DateHelpers.formatDate(this.model.journeyDateTime).substring(0, 10);
+    }
     const request = OJP.TripInfoRequest.initWithJourneyRef(stageConfig, this.languageService.language, this.model.journeyRef, dayRef);
     this.model.isSearching = true;
     const response = await request.fetchResponse();

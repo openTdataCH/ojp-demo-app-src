@@ -6,11 +6,14 @@ import { SbbDialog } from "@sbb-esta/angular/dialog";
 import mapboxgl from 'mapbox-gl'
 import * as OJP from 'ojp-sdk'
 
-import { MapService } from '../../../shared/services/map.service'
+import { DEBUG_LEVEL } from '../../../config/app-config';
 import { OJPHelpers } from '../../../helpers/ojp-helpers';
+
+import { MapService } from '../../../shared/services/map.service'
+import { UserTripService } from '../../../shared/services/user-trip.service';
 import { LegStopPointData } from '../../../shared/components/service-stops.component'
+
 import { TripInfoResultPopoverComponent } from './trip-info-result-popover/trip-info-result-popover.component';
-import { DEBUG_LEVEL } from 'src/app/config/app-config';
 
 type LegTemplate = 'walk' | 'timed' | 'taxi';
 
@@ -48,6 +51,8 @@ interface LegInfoDataModel {
   serviceInfo: string | null
   serviceIntermediaryStopsText: string | null
   serviceJourneyRef: string | null
+  debugServicePtMode: boolean
+  servicePtMode: OJP.PublicTransportMode | null
 
   isCancelled: boolean
   hasDeviation: boolean
@@ -71,7 +76,7 @@ export class ResultTripLegComponent implements OnInit {
 
   public isEmbed: boolean
 
-  constructor(private mapService: MapService, private router: Router, private tripInfoResultPopover: SbbDialog) {
+  constructor(private mapService: MapService, private router: Router, private tripInfoResultPopover: SbbDialog, private userTripService: UserTripService) {
     this.legInfoDataModel = <LegInfoDataModel>{}
     this.isEmbed = this.router.url.indexOf('/embed/') !== -1;
   }
@@ -419,6 +424,16 @@ export class ResultTripLegComponent implements OnInit {
       return timedLeg.service.journeyRef;
     })();
 
+    this.legInfoDataModel.debugServicePtMode = DEBUG_LEVEL === 'DEBUG';
+    this.legInfoDataModel.servicePtMode = (() => {
+      if (leg.legType !== 'TimedLeg') {
+        return null;
+      }
+
+      const timedLeg = leg as OJP.TripTimedLeg;
+      return timedLeg.service.ptMode;
+    })();
+
     this.legInfoDataModel.isCancelled = (() => {
       if (leg.legType !== 'TimedLeg') {
         return false;
@@ -453,22 +468,9 @@ export class ResultTripLegComponent implements OnInit {
   private formatServiceName(timedLeg: OJP.TripTimedLeg): string {
     const service = timedLeg.service;
 
-    const nameParts: string[] = []
+    const serviceName = OJPHelpers.formatServiceName(service);
 
-    if (service.serviceLineNumber) {
-      if (!service.ptMode.isRail()) {
-        nameParts.push(service.ptMode.shortName ?? service.ptMode.ptMode)
-      }
-
-      nameParts.push(service.serviceLineNumber)
-      nameParts.push(service.journeyNumber ?? '')
-    } else {
-      nameParts.push(service.ptMode.shortName ?? service.ptMode.ptMode)
-    }
-
-    nameParts.push('(' + service.agencyCode + ')')
-
-    return nameParts.join(' ')
+    return serviceName;
   }
 
   private computeServiceAttributeModel(leg: OJP.TripLeg): ServiceAttributeRenderModel[] {
@@ -616,7 +618,10 @@ export class ResultTripLegComponent implements OnInit {
     this.mapService.tryToCenterAndZoomToLocation(location)
   }
 
-  public loadTripInfoResultPopover(journeyRef: string | null) {
+  public loadTripInfoResultPopover() {
+    const journeyRef = this.legInfoDataModel.serviceJourneyRef;
+    const dayRef = OJP.DateHelpers.formatDate(this.userTripService.departureDate).substring(0, 10);
+
     if (journeyRef === null) {
       console.error('loadTripInfoResultPopover: cant fetch empty journeyRef');
       return;
@@ -627,7 +632,7 @@ export class ResultTripLegComponent implements OnInit {
     });
     dialogRef.afterOpened().subscribe(() => {
       const popover = dialogRef.componentInstance as TripInfoResultPopoverComponent;
-      popover.fetchJourneyRef(journeyRef);
+      popover.fetchJourneyRef(journeyRef, dayRef);
     });
   }
 }
