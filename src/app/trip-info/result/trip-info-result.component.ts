@@ -9,6 +9,7 @@ import { LegStopPointData } from '../../shared/components/service-stops.componen
 interface PageModel {
   tripInfoResult: OJP.TripInfoResult | null
   journeyRef: string
+  operatingDayRef: string
   serviceFromText: string
   serviceToText: string
   serviceIconPath: string
@@ -58,7 +59,8 @@ export class TripInfoResultComponent implements OnInit, AfterViewInit {
       return;
     }
 
-    this.model.journeyRef = service.journeyRef
+    this.model.journeyRef = service.journeyRef;
+    this.model.operatingDayRef = service.operatingDayRef ?? 'n/a (serviceDay)';
 
     const fromStop = tripInfoResult.stopPoints[0];
     this.model.serviceFromText = fromStop.location.computeLocationName() ?? 'n/a (from)';
