@@ -4,12 +4,10 @@ import mapboxgl from 'mapbox-gl'
 
 import * as OJP from 'ojp-sdk'
 
-import { APP_CONFIG, APP_STAGE, DEBUG_LEVEL, TRIP_REQUEST_DEFAULT_NUMBER_OF_RESULTS } from '../../config/app-config'
+import { APP_CONFIG, APP_STAGE, DEBUG_LEVEL, DEFAULT_APP_STAGE, TRIP_REQUEST_DEFAULT_NUMBER_OF_RESULTS } from '../../config/app-config'
 import { MapService } from './map.service'
 
 type LocationUpdateSource = 'SearchForm' | 'MapDragend' | 'MapPopupClick'
-
-const default_APP_STAGE: APP_STAGE = 'PROD';
 
 @Injectable( {providedIn: 'root'} )
 export class UserTripService {
@@ -66,7 +64,7 @@ export class UserTripService {
     this.journeyTripRequests = [];
     
     this.departureDate = this.computeInitialDate()
-    this.currentAppStage = default_APP_STAGE;
+    this.currentAppStage = DEFAULT_APP_STAGE;
 
     this.permalinkRelativeURL = null
   }
@@ -474,7 +472,7 @@ export class UserTripService {
       queryParams.append('trip_datetime', dateTimeS.substring(0, 16));
     }
 
-    if (this.currentAppStage !== default_APP_STAGE) {
+    if (this.currentAppStage !== DEFAULT_APP_STAGE) {
       const stageS = this.currentAppStage.toLowerCase();
       queryParams.append('stage', stageS)
     }
