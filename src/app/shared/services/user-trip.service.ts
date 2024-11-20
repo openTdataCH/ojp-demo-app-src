@@ -10,6 +10,8 @@ import { LanguageService } from './language.service'
 
 type LocationUpdateSource = 'SearchForm' | 'MapDragend' | 'MapPopupClick'
 
+const default_APP_STAGE: APP_STAGE = 'PROD';
+
 @Injectable( {providedIn: 'root'} )
 export class UserTripService {
   private queryParams: URLSearchParams
@@ -63,7 +65,7 @@ export class UserTripService {
     this.journeyTripRequests = [];
     
     this.departureDate = this.computeInitialDate()
-    this.currentAppStage = 'PROD'
+    this.currentAppStage = default_APP_STAGE;
 
     this.permalinkRelativeURL = null
   }
