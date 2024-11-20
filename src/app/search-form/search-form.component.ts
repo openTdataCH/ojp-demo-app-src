@@ -58,6 +58,8 @@ export class SearchFormComponent implements OnInit {
 
   public gistURL: string | null;
 
+  public showURLS: boolean;
+
   constructor(
     private notificationToast: SbbNotificationToast,
     private tripXmlPopover: SbbDialog,
@@ -100,6 +102,7 @@ export class SearchFormComponent implements OnInit {
     this.isEmbed = this.router.url.indexOf('/embed/') !== -1;
 
     this.gistURL = null;
+    this.showURLS = DEBUG_LEVEL === 'DEBUG';
   }
 
   ngOnInit() {
