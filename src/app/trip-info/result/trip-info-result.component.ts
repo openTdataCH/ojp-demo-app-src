@@ -1,10 +1,12 @@
-import { AfterViewInit, Component, OnInit } from '@angular/core';
+import { AfterViewInit, ChangeDetectorRef, Component, OnInit } from '@angular/core';
 
 import * as OJP from 'ojp-sdk'
 
 import { TripInfoService } from '../trip-info.service';
 import { OJPHelpers } from '../../helpers/ojp-helpers';
 import { LegStopPointData } from '../../shared/components/service-stops.component';
+import { UserTripService } from '../../shared/services/user-trip.service';
+import { DEFAULT_APP_STAGE } from 'src/app/config/app-config';
 
 interface PageModel {
   tripInfoResult: OJP.TripInfoResult | null
@@ -17,6 +19,9 @@ interface PageModel {
   serviceTripId: string
   serviceOperator: string
   stopPointsData: LegStopPointData[],
+  
+  journeyExampleURL: string,
+  journeyExampleCaption: string,
 }
 
 @Component({
@@ -27,8 +32,9 @@ interface PageModel {
 export class TripInfoResultComponent implements OnInit, AfterViewInit {
   public model: PageModel
 
-  constructor(private tripInfoService: TripInfoService) {
+  constructor(private tripInfoService: TripInfoService, private userTripService: UserTripService, private cdr: ChangeDetectorRef) {
     this.model = <PageModel>{}
+    
     this.model.tripInfoResult = null;
     this.model.stopPointsData = [];
   }
@@ -94,5 +100,54 @@ export class TripInfoResultComponent implements OnInit, AfterViewInit {
 
   public onLocationSelected(locationData: LegStopPointData) {
     this.tripInfoService.locationSelected.emit(locationData);
+  }
+
+  public onExampleTripLocationsUpdated(locationIDXs: number[]) {
+    if (this.model.tripInfoResult === null) {
+      return;
+    }
+
+    if (locationIDXs.length != 2) {
+      console.error('ERROR: expected 2 items only');
+      console.log(locationIDXs);
+      return;
+    }
+
+    locationIDXs = locationIDXs.slice();
+    // sort the ids, first location is the departure
+    locationIDXs.sort((a, b) => a - b);
+
+    const stopPoints = this.model.tripInfoResult.stopPoints;
+
+    const fromLocation = stopPoints[locationIDXs[0]].location;
+    const toLocation = stopPoints[locationIDXs[1]].location;
+    
+    const queryParams = new URLSearchParams();
+    const fromRef = fromLocation.stopPlace?.stopPlaceRef ?? null;
+    const toRef = toLocation.stopPlace?.stopPlaceRef ?? null;
+    if (fromRef === null || toRef === null) {
+      return;
+    }
+
+    queryParams.set('from', fromRef);
+    queryParams.set('to', toRef);
+
+    if (this.userTripService.currentAppStage !== DEFAULT_APP_STAGE) {
+      queryParams.set('stage', this.userTripService.currentAppStage);
+    }
+
+    const nowDateF = OJP.DateHelpers.formatDate(new Date());
+    const nowDayF = nowDateF.substring(0, 10);
+    if (this.model.operatingDayRef !== nowDayF) {
+      queryParams.set('day', this.model.operatingDayRef);
+    }
+
+    queryParams.set('do_search', 'yes');
+
+    this.model.journeyExampleURL = './search?' + queryParams.toString();
+    this.model.journeyExampleCaption = fromLocation.computeLocationName() + ' -> ' + toLocation.computeLocationName();
+
+    // otherwise we get ExpressionChangedAfterItHasBeenCheckedError
+    this.cdr.detectChanges();
   }
 }

@@ -29,18 +29,40 @@ export interface LegStopPointData {
 export class ServiceStopsComponent implements OnInit, AfterViewInit {
   @Input() stopPointsData: LegStopPointData[] = []
   @Output() locationSelected = new EventEmitter<LegStopPointData>()
+  @Output() onExampleTripLocationsUpdated = new EventEmitter<number[]>()
 
-  constructor() {}
+  public selectedEndpointsIDx: number[];
+
+  constructor() {
+    this.selectedEndpointsIDx = [];
+  }
 
   ngOnInit(): void {
-
+    this.selectedEndpointsIDx = [0, this.stopPointsData.length - 1];
   }
 
   ngAfterViewInit(): void {
-
+    this.emitSelectedEndpoints();
   }
 
   zoomToLocation(stopPoint: LegStopPointData) {
     this.locationSelected.emit(stopPoint);
+  }
+
+  private emitSelectedEndpoints() {
+    this.onExampleTripLocationsUpdated.emit(this.selectedEndpointsIDx);
+  } 
+
+  onRouteEndPointSelected(stopIdx: number) {
+    if (this.selectedEndpointsIDx.length != 2) {
+      return;
+    }
+
+    this.selectedEndpointsIDx.push(stopIdx);
+
+    // Keep last 2 elements
+    this.selectedEndpointsIDx = this.selectedEndpointsIDx.slice(-2);
+
+    this.emitSelectedEndpoints();
   }
 }

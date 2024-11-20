@@ -8,8 +8,13 @@
     </div>
     <h2 class="mt-3">{{ this.model.serviceFromText }} → {{ this.model.serviceToText }}</h2>
     <div>Day: {{ this.model.operatingDayRef }}</div>
+    <div class="mt-3 mb-2">Example Trip: <a [href]="this.model.journeyExampleURL" target="_blank">{{ this.model.journeyExampleCaption }}</a></div>
     <div class="p-1">
-      <service-stops [stopPointsData]="this.model.stopPointsData" (locationSelected)="onLocationSelected($event)"></service-stops>
+      <service-stops 
+        [stopPointsData]="this.model.stopPointsData" 
+        (locationSelected)="onLocationSelected($event)"
+        (onExampleTripLocationsUpdated)="onExampleTripLocationsUpdated($event)"
+      ></service-stops>
     </div>
     <div class="mt-3 mb-2">Permalink: <a [href]="('./trip?ref=' + this.model.journeyRef)" target="_blank">{{ this.model.journeyRef }}</a></div>
   </div>
