@@ -465,22 +465,9 @@ export class ResultTripLegComponent implements OnInit {
   private formatServiceName(timedLeg: OJP.TripTimedLeg): string {
     const service = timedLeg.service;
 
-    const nameParts: string[] = []
+    const serviceName = OJPHelpers.formatServiceName(service);
 
-    if (service.serviceLineNumber) {
-      if (!service.ptMode.isRail()) {
-        nameParts.push(service.ptMode.shortName ?? service.ptMode.ptMode)
-      }
-
-      nameParts.push(service.serviceLineNumber)
-      nameParts.push(service.journeyNumber ?? '')
-    } else {
-      nameParts.push(service.ptMode.shortName ?? service.ptMode.ptMode)
-    }
-
-    nameParts.push('(' + service.agencyID + ')')
-
-    return nameParts.join(' ')
+    return serviceName;
   }
 
   private computeServiceAttributeModel(leg: OJP.TripLeg): ServiceAttributeRenderModel[] {

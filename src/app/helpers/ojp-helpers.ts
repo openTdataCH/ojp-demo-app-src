@@ -254,4 +254,23 @@ export class OJPHelpers {
 
     return null;
   }
+
+  public static formatServiceName(service: OJP.JourneyService): string {
+    const nameParts: string[] = [];
+
+    if (service.serviceLineNumber) {
+      if (!service.ptMode.isRail()) {
+        nameParts.push(service.ptMode.shortName ?? service.ptMode.ptMode);
+      }
+
+      nameParts.push(service.serviceLineNumber);
+      nameParts.push(service.journeyNumber ?? '');
+    } else {
+      nameParts.push(service.ptMode.shortName ?? service.ptMode.ptMode);
+    }
+
+    nameParts.push('(' + service.agencyID + ')');
+
+    return nameParts.join(' ');
+  }
 }
