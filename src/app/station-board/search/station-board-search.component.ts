@@ -20,6 +20,8 @@ import { Router } from '@angular/router';
 import { LanguageService } from '../../shared/services/language.service';
 import { OJPHelpers } from 'src/app/helpers/ojp-helpers';
 
+type URLType = 'prodv1' | 'betav1' | 'betav2';
+
 @Component({
   selector: 'station-board-search',
   templateUrl: './station-board-search.component.html',
@@ -42,6 +44,7 @@ export class StationBoardSearchComponent implements OnInit {
   private queryParams: URLSearchParams
 
   public permalinkRelativeURL: string;
+  public mapURLs: Record<URLType, string>;
 
   public currentRequestInfo: OJP.RequestInfo | null;
 
@@ -49,6 +52,7 @@ export class StationBoardSearchComponent implements OnInit {
 
   private useMocks = false;
   public isEmbed: boolean;
+  public showURLS: boolean
 
   get searchDate() {
     return this.stationBoardService.searchDate;
@@ -87,6 +91,7 @@ export class StationBoardSearchComponent implements OnInit {
     this.isSearching = false
 
     this.permalinkRelativeURL = '';
+    this.mapURLs = <Record<URLType, string>>{};
     this.updateURLs();
 
     this.currentRequestInfo = null;
@@ -96,6 +101,7 @@ export class StationBoardSearchComponent implements OnInit {
 
     this.isEmbed = this.router.url.indexOf('/embed/') !== -1;
     this.headerText = this.stationBoardType;
+    this.showURLS = DEBUG_LEVEL === 'DEBUG';
   }
 
   ngOnInit(): void {
@@ -296,6 +302,12 @@ export class StationBoardSearchComponent implements OnInit {
 
     this.permalinkRelativeURL = document.location.pathname.replace('/embed', '') + '?' + queryParams.toString();
     this.updateLinkedURLs(queryParams);
+  }
+
+  private updateLinkedURLs(queryParams: URLSearchParams) {
+    this.mapURLs.prodv1 = 'https://opentdatach.github.io/ojp-demo-app/board?' + queryParams.toString();
+    this.mapURLs.betav1 = 'https://tools.odpch.ch/beta-ojp-demo/board?' + queryParams.toString();
+    this.mapURLs.betav2 = 'https://tools.odpch.ch/ojp-demo-v2/board?' + queryParams.toString();
   }
 
   private fetchStopEventsForStopRef(stopPlaceRef: string) {
