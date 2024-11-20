@@ -4,12 +4,10 @@ import mapboxgl from 'mapbox-gl'
 
 import * as OJP from 'ojp-sdk'
 
-import { APP_CONFIG, APP_STAGE, DEBUG_LEVEL, TRIP_REQUEST_DEFAULT_NUMBER_OF_RESULTS } from '../../config/app-config'
+import { APP_CONFIG, APP_STAGE, DEBUG_LEVEL, DEFAULT_APP_STAGE, TRIP_REQUEST_DEFAULT_NUMBER_OF_RESULTS } from '../../config/app-config'
 import { MapService } from './map.service'
 
 type LocationUpdateSource = 'SearchForm' | 'MapDragend' | 'MapPopupClick'
-
-const default_APP_STAGE: APP_STAGE = 'PROD';
 
 @Injectable( {providedIn: 'root'} )
 export class UserTripService {
@@ -20,7 +18,9 @@ export class UserTripService {
   public viaTripLocations: OJP.TripLocationPoint[]
   public isViaEnabled: boolean
   
-  public numberOfResults: number
+  public numberOfResults: number | null
+  public numberOfResultsBefore: number | null
+  public numberOfResultsAfter: number | null
   public publicTransportModesFilter: OJP.ModeOfTransportType[] = [];
 
   public currentBoardingType: OJP.TripRequestBoardingType
@@ -55,6 +55,8 @@ export class UserTripService {
     this.viaTripLocations = []
     
     this.numberOfResults = TRIP_REQUEST_DEFAULT_NUMBER_OF_RESULTS;
+    this.numberOfResultsBefore = null;
+    this.numberOfResultsAfter = null;
     this.publicTransportModesFilter = [];
     this.isViaEnabled = false;
 
@@ -66,7 +68,7 @@ export class UserTripService {
     this.journeyTripRequests = [];
     
     this.departureDate = this.computeInitialDate()
-    this.currentAppStage = default_APP_STAGE;
+    this.currentAppStage = DEFAULT_APP_STAGE;
 
     this.permalinkRelativeURL = null
   }
@@ -228,7 +230,7 @@ export class UserTripService {
 
       this.locationsUpdated.emit();
       this.geoLocationsUpdated.emit();
-      this.updatePermalinkAddress();
+      this.updateURLs();
 
       if (bbox.isValid()) {
         const shouldZoomToBounds = this.queryParams.has('from') || this.queryParams.has('to')
@@ -310,7 +312,7 @@ export class UserTripService {
           this.toTripLocation = new OJP.TripLocationPoint(nearbyLocation.location)
         }
 
-        this.updatePermalinkAddress();
+        this.updateURLs();
         this.locationsUpdated.emit();
         this.geoLocationsUpdated.emit();
       })
@@ -327,7 +329,7 @@ export class UserTripService {
     this.activeTripSelected.emit(null);
 
     this.searchParamsReset.emit();
-    this.updatePermalinkAddress();
+    this.updateURLs();
   }
 
   public updateVia() {
@@ -338,7 +340,7 @@ export class UserTripService {
     this.activeTripSelected.emit(null);
 
     this.searchParamsReset.emit();
-    this.updatePermalinkAddress();
+    this.updateURLs();
   }
 
   private computeAppStageFromString(appStageS: string): APP_STAGE {
@@ -386,7 +388,7 @@ export class UserTripService {
     this.activeTripSelected.emit(null);
 
     this.searchParamsReset.emit();
-    this.updatePermalinkAddress();
+    this.updateURLs();
   }
 
   updateViaPoint(location: OJP.Location, viaIDx: number) {
@@ -397,7 +399,7 @@ export class UserTripService {
     this.activeTripSelected.emit(null);
 
     this.searchParamsReset.emit();
-    this.updatePermalinkAddress();
+    this.updateURLs();
   }
 
   updateTrips(trips: OJP.Trip[]) {
@@ -413,7 +415,7 @@ export class UserTripService {
     this.tripFaresUpdated.emit(fareResults);
   }
 
-  private updatePermalinkAddress() {
+  private updateURLs() {
     const queryParams = new URLSearchParams()
 
     const endpointTypes: OJP.JourneyPointType[] = ['From', 'To']
@@ -474,7 +476,7 @@ export class UserTripService {
       queryParams.append('trip_datetime', dateTimeS.substring(0, 16));
     }
 
-    if (this.currentAppStage !== default_APP_STAGE) {
+    if (this.currentAppStage !== DEFAULT_APP_STAGE) {
       const stageS = this.currentAppStage.toLowerCase();
       queryParams.append('stage', stageS)
     }
@@ -520,12 +522,12 @@ export class UserTripService {
 
   public updateAppStage(newStage: APP_STAGE) {
     this.currentAppStage = newStage
-    this.updatePermalinkAddress()
+    this.updateURLs()
   }
 
   public updateDepartureDateTime(newDateTime: Date) {
     this.departureDate = newDateTime
-    this.updatePermalinkAddress()
+    this.updateURLs()
   }
 
   public updateTripMode(tripModeType: OJP.TripModeType, tripTransportMode: OJP.IndividualTransportMode) {
@@ -535,7 +537,7 @@ export class UserTripService {
     this.tripModeTypes[tripSectionIdx] = tripModeType;
     this.tripTransportModes[tripSectionIdx] = tripTransportMode;
 
-    this.updatePermalinkAddress()
+    this.updateURLs()
   }
 
   private computeTripLocationsToUpdate(): OJP.TripLocationPoint[] {
@@ -615,7 +617,7 @@ export class UserTripService {
     this.tripTransportModes = ['public_transport'];
     
     this.geoLocationsUpdated.emit()
-    this.updatePermalinkAddress()
+    this.updateURLs()
   }
 
   public massageTrips(trips: OJP.Trip[]) {

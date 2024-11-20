@@ -16,6 +16,8 @@ export const DEBUG_LEVEL: DEBUG_LEVEL_Type = (() => {
 
 export type APP_STAGE = OJP.Default_APP_Stage | 'PROD-LB' | 'OJP-SI'
 
+export const DEFAULT_APP_STAGE: APP_STAGE = 'PROD';
+
 export interface AppMapLayerOptions {
   LIR_Restriction_Type: OJP.RestrictionType
   LIR_POI_Type?: OJP.POI_Restriction | null
