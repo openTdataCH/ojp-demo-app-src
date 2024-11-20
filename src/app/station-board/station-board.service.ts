@@ -15,5 +15,7 @@ export class StationBoardService {
     @Output() stationBoardEntrySelected = new EventEmitter<OJP.StopEvent | null>()
     @Output() stationOnMapClicked = new EventEmitter<mapboxgl.MapboxGeoJSONFeature>()
 
+    public searchDate = new Date();
+
     constructor() {}
 }

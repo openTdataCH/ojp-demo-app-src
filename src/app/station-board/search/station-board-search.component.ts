@@ -33,7 +33,6 @@ export class StationBoardSearchComponent implements OnInit {
 
   public searchLocation: OJP.Location | null
   
-  public searchDate: Date
   public searchTime: string
   
   public appStageOptions: APP_STAGE[];
@@ -50,6 +49,13 @@ export class StationBoardSearchComponent implements OnInit {
 
   private useMocks = false;
   public isEmbed: boolean;
+
+  get searchDate() {
+    return this.stationBoardService.searchDate;
+  }
+  set searchDate(newDate: Date) {
+    this.stationBoardService.searchDate = newDate;
+  }
 
   constructor(
     private notificationToast: SbbNotificationToast,
@@ -75,8 +81,8 @@ export class StationBoardSearchComponent implements OnInit {
 
     this.searchLocation = null;
 
-    this.searchDate = this.computeSearchDateTime();
-    this.searchTime = OJP.DateHelpers.formatTimeHHMM(this.searchDate);
+    this.stationBoardService.searchDate = this.computeSearchDateTime();
+    this.searchTime = OJP.DateHelpers.formatTimeHHMM(this.stationBoardService.searchDate);
     
     this.isSearching = false
 
@@ -178,8 +184,8 @@ export class StationBoardSearchComponent implements OnInit {
       const timeHours = parseInt(timeParts[0], 10);
       const timeMinutes = parseInt(timeParts[1], 10);
       
-      this.searchDate.setHours(timeHours);
-      this.searchDate.setMinutes(timeMinutes);
+      this.stationBoardService.searchDate.setHours(timeHours);
+      this.stationBoardService.searchDate.setMinutes(timeMinutes);
     }
 
     this.updateURLs();
@@ -264,19 +270,26 @@ export class StationBoardSearchComponent implements OnInit {
       queryParams.set('stop_id', stopPlaceRef);
     }
 
-    const nowDateF = OJP.DateHelpers.formatDate(new Date());
-    const searchDateF = OJP.DateHelpers.formatDate(this.searchDate);
+    const searchDate = this.stationBoardService.searchDate;
+    const now = new Date();
+    const deltaNowMinutes = Math.abs((now.getTime() - searchDate.getTime()) / 1000 / 60);
+    if (deltaNowMinutes > 5) {
+      const nowDateF = OJP.DateHelpers.formatDate(new Date());
+      const searchDateF = OJP.DateHelpers.formatDate(searchDate);
 
-    const nowDayF = nowDateF.substring(0, 10);
-    const searchDayF = searchDateF.substring(0, 10);
-    if (searchDayF !== nowDayF) {
-      queryParams.set('day', searchDayF);
+      const nowDayF = nowDateF.substring(0, 10);
+      const searchDayF = searchDateF.substring(0, 10);
+      if (searchDayF !== nowDayF) {
+        queryParams.set('day', searchDayF);
+      }
+
+      const nowTimeF = nowDateF.substring(11, 16);
+      const searchTimeF = searchDateF.substring(11, 16);
+      if (nowTimeF !== searchTimeF) {
+        queryParams.set('time', searchTimeF);
+      }
     }
 
-    const nowTimeF = nowDateF.substring(11, 16);
-    const searchTimeF = searchDateF.substring(11, 16);
-    if (nowTimeF !== searchTimeF) {
-      queryParams.set('time', searchTimeF);
     }
 
     const urlAddress = document.location.pathname.replace('/embed', '') + '?' + queryParams.toString();
@@ -401,7 +414,7 @@ export class StationBoardSearchComponent implements OnInit {
   }
 
   private computeStopBoardDate(): Date {
-    const departureDate = this.searchDate;
+    const departureDate = this.stationBoardService.searchDate;
     
     const timeParts = this.searchTime.split(':');
     if (timeParts.length === 2) {
