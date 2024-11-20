@@ -95,9 +95,7 @@ export class StationBoardSearchComponent implements OnInit {
     this.useMocks = queryParams.get('use_mocks') === 'yes';
 
     this.isEmbed = this.router.url.indexOf('/embed/') !== -1;
-    if (this.isEmbed) {
-      this.headerText = this.stationBoardType;
-    }
+    this.headerText = this.stationBoardType;
   }
 
   ngOnInit(): void {
@@ -193,6 +191,7 @@ export class StationBoardSearchComponent implements OnInit {
 
   public onTypeChanged() {
     this.updateURLs();
+    this.updateHeaderText();
   }
 
   public isSearchButtonDisabled(): boolean {
@@ -338,8 +337,11 @@ export class StationBoardSearchComponent implements OnInit {
   }
 
   private parseStopEvents(stopEvents: OJP.StopEvent[]): void {
-    if (stopEvents.length > 0) {
-      this.searchPanel?.close()
+    const hasResults = stopEvents.length > 0;
+    if (hasResults) {
+      this.searchPanel?.close();
+
+      this.updateHeaderText();
     }
 
     const stationBoardData: StationBoardData = {
@@ -372,10 +374,6 @@ export class StationBoardSearchComponent implements OnInit {
   }
 
   private updateHeaderText() {
-    if (!this.isEmbed) {
-      return;
-    }
-
     if (this.searchLocation === null) {
       return;
     }
@@ -385,7 +383,7 @@ export class StationBoardSearchComponent implements OnInit {
       return;
     }
 
-    this.headerText = locationName + ' ' + this.stationBoardType;
+    this.headerText = this.stationBoardType + ' ' + locationName;
   }
 
   private handleMapClick(feature: GeoJSON.Feature) {
