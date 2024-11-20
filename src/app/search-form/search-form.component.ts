@@ -511,12 +511,13 @@ export class SearchFormComponent implements OnInit {
       this.userTripService.toTripLocation,
       this.userTripService.departureDate,
       this.userTripService.currentBoardingType,
-      'NumberOfResults',
       includeLegProjection,
       this.userTripService.tripModeTypes[0],
       this.userTripService.tripTransportModes[0],
       viaTripLocations,
       this.userTripService.numberOfResults,
+      this.userTripService.numberOfResultsBefore,
+      this.userTripService.numberOfResultsAfter,
       this.userTripService.publicTransportModesFilter,
     );
 
