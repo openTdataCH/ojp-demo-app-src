@@ -117,6 +117,7 @@ export class TripModeTypeComponent implements OnInit {
     this.mapPublicTransportModesFilter.rail = false;
     this.mapPublicTransportModesFilter.bus = false;
     this.mapPublicTransportModesFilter.water = false;
+    this.mapPublicTransportModesFilter.tram = false;
   }
 
   ngOnInit() {
@@ -146,6 +147,9 @@ export class TripModeTypeComponent implements OnInit {
           }
           if (userPublicTransportMode === 'water') {
             this.mapPublicTransportModesFilter.water = true;
+          }
+          if (userPublicTransportMode === 'tram') {
+            this.mapPublicTransportModesFilter.tram = true;
           }
         });
       }
@@ -192,7 +196,7 @@ export class TripModeTypeComponent implements OnInit {
 
       numberOfResults = this.numberOfResults;
 
-      const availablePublicTransportModesFilter: OJP.ModeOfTransportType[] = ['bus', 'rail', 'water'];
+      const availablePublicTransportModesFilter: OJP.ModeOfTransportType[] = ['bus', 'tram', 'rail', 'water'];
       availablePublicTransportModesFilter.forEach(modeFilter => {
         if (this.mapPublicTransportModesFilter[modeFilter] === true) {
           this.userTripService.publicTransportModesFilter.push(modeFilter);

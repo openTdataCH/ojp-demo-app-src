@@ -102,6 +102,7 @@
         <div>Travel only with</div>
         <sbb-checkbox [(ngModel)]="this.mapPublicTransportModesFilter.rail" (change)="updateAdditionalRestrictions()">train</sbb-checkbox>
         <sbb-checkbox [(ngModel)]="this.mapPublicTransportModesFilter.bus" (change)="updateAdditionalRestrictions()">bus</sbb-checkbox>
+        <sbb-checkbox [(ngModel)]="this.mapPublicTransportModesFilter.tram" (change)="updateAdditionalRestrictions()">tram</sbb-checkbox>
         <sbb-checkbox [(ngModel)]="this.mapPublicTransportModesFilter.water" (change)="updateAdditionalRestrictions()">boat</sbb-checkbox>
       </div>
     </div>
