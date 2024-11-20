@@ -220,7 +220,16 @@
   <!-- INTERMEDIARY_STOPS + ATTRIBUTES -->
   <div class="ms-2 d-flex gap-2 align-items-center">
     <div *ngIf="this.legInfoDataModel.serviceIntermediaryStopsText !== null">
-      <button type="button" class="btn btn-primary btn-sm btn-collapse collapsed" data-bs-toggle="collapse" [attr.data-bs-target]="'#' + this.legElementId" aria-expanded="false" [attr.aria-controls]="this.legElementId">{{ this.legInfoDataModel.serviceIntermediaryStopsText }} <i class="bi bi-chevron-down"></i><i class="bi bi-chevron-up"></i></button>
+      <button 
+        type="button" 
+        class="btn btn-primary btn-sm btn-collapse collapsed" 
+        data-bs-toggle="collapse" 
+        [attr.data-bs-target]="'#' + this.legElementId" aria-expanded="false" 
+        [attr.aria-controls]="this.legElementId"
+      >
+        {{ this.legInfoDataModel.serviceIntermediaryStopsText }}
+        <i class="bi bi-chevron-down"></i><i class="bi bi-chevron-up"></i>
+      </button>
     </div>
 
     <div class="service-attributes">
