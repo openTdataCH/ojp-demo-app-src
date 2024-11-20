@@ -4,7 +4,7 @@ OJP-Demo URL: https://opentdatach.github.io/ojp-demo-app/
 
 ----
 
-29.November 2024
+22.November 2024
 - SER/TIR: Updates StationBoard / TripInfo - [PR #182](https://github.com/openTdataCH/ojp-demo-app-src/pull/184)
   - SER: display service info and links to TIR popover - [Link from SER page to TIR page #171](https://github.com/openTdataCH/ojp-demo-app-src/issues/171)
   - SER: adds test URLs in station board (dev)
