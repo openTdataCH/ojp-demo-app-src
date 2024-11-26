@@ -105,9 +105,9 @@ export class TripModeTypeComponent implements OnInit {
     this.filterMinDistanceControl.setValue('100', { emitEvent: false });
     this.filterMaxDistanceControl.setValue('10000', { emitEvent: false });
 
-    this.isFilterMinDurationEnabled = false;
+    this.isFilterMinDurationEnabled = true;
     this.isFilterMaxDurationEnabled = true;
-    this.isFilterMinDistanceEnabled = false;
+    this.isFilterMinDistanceEnabled = true;
     this.isFilterMaxDistanceEnabled = true;
 
     this.isNumberOfResultsEnabled = true;
