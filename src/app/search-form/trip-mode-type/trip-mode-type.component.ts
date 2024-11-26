@@ -221,6 +221,8 @@ export class TripModeTypeComponent implements OnInit {
     this.userTripService.numberOfResults = numberOfResults;
     this.userTripService.numberOfResultsAfter = numberOfResultsAfter;
     this.userTripService.numberOfResultsBefore = numberOfResultsBefore;
+
+    this.userTripService.updateURLs();
   }
 
   public onTripModeChange() {

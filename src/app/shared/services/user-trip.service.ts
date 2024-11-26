@@ -415,7 +415,7 @@ export class UserTripService {
     this.tripFaresUpdated.emit(fareResults);
   }
 
-  private updateURLs() {
+  public updateURLs() {
     const queryParams = new URLSearchParams()
 
     const endpointTypes: OJP.JourneyPointType[] = ['From', 'To']
