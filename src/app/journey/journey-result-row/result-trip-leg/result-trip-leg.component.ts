@@ -487,6 +487,10 @@ export class ResultTripLegComponent implements OnInit {
           return null;
         }
 
+        if (key.toLowerCase() === 'gf') {
+          return 'kom:freight-wagon-container-small';
+        }
+
         if (key.toLowerCase().startsWith('i_')) {
           return 'kom:circle-information-large';
         }
