@@ -359,11 +359,11 @@ export class ResultTripLegComponent implements OnInit {
     if (leg.legType === 'TimedLeg') {
       const timedLeg = leg as OJP.TripTimedLeg;
       
-      this.legInfoDataModel.fromLocationData.platformAssistanceIconPath = this.computePlatformAssistanceIconPath(timedLeg, 'From');
-      this.legInfoDataModel.fromLocationData.platformAssistanceTooltip = this.computePlatformAssistanceTooltip(timedLeg, 'From');
+      this.legInfoDataModel.fromLocationData.platformAssistanceIconPath = OJPHelpers.computePlatformAssistanceIconPath(timedLeg.fromStopPoint);
+      this.legInfoDataModel.fromLocationData.platformAssistanceTooltip = OJPHelpers.computePlatformAssistanceTooltip(timedLeg.fromStopPoint);
 
-      this.legInfoDataModel.toLocationData.platformAssistanceIconPath = this.computePlatformAssistanceIconPath(timedLeg, 'To');
-      this.legInfoDataModel.toLocationData.platformAssistanceTooltip = this.computePlatformAssistanceTooltip(timedLeg, 'To');
+      this.legInfoDataModel.toLocationData.platformAssistanceIconPath = OJPHelpers.computePlatformAssistanceIconPath(timedLeg.toStopPoint);
+      this.legInfoDataModel.toLocationData.platformAssistanceTooltip = OJPHelpers.computePlatformAssistanceTooltip(timedLeg.toStopPoint);
     }
 
     this.legInfoDataModel.serviceAttributes = this.computeServiceAttributeModel(leg);
@@ -512,75 +512,6 @@ export class ResultTripLegComponent implements OnInit {
     }
 
     return rows;
-  }
-
-  private computePlatformAssistanceIconPath(timedLeg: OJP.TripTimedLeg, stopPointType: OJP.JourneyPointType): string | null {
-    const stopPoint = stopPointType === 'From' ? timedLeg.fromStopPoint : timedLeg.toStopPoint;
-
-    const filename: string | null = (() => {
-      if (stopPoint.vehicleAccessType === 'PLATFORM_ACCESS_WITHOUT_ASSISTANCE') {
-        return 'platform_independent';
-      }
-
-      if (stopPoint.vehicleAccessType === 'PLATFORM_ACCESS_WITH_ASSISTANCE') {
-        return 'platform_help_driver';
-      }
-
-      if (stopPoint.vehicleAccessType === 'PLATFORM_ACCESS_WITH_ASSISTANCE_WHEN_NOTIFIED') {
-        return 'platform_advance_notice';
-      }
-
-      if (stopPoint.vehicleAccessType === 'PLATFORM_NOT_WHEELCHAIR_ACCESSIBLE') {
-        return 'platform_not_possible';
-      }
-
-      if (stopPoint.vehicleAccessType === 'NO_DATA') {
-        return 'platform_no_information';
-      }
-
-      if (stopPoint.vehicleAccessType === 'ALTERNATIVE_TRANSPORT') {
-        return 'platform_alternative_transport';
-      }
-
-      return null;
-    })();
-
-    if (filename === null) {
-      return null;
-    }
-    
-    const iconPath = 'assets/platform-assistance/' + filename + '.jpg';
-    return iconPath;
-  }
-
-  private computePlatformAssistanceTooltip(timedLeg: OJP.TripTimedLeg, stopPointType: OJP.JourneyPointType): string {
-    const stopPoint = stopPointType === 'From' ? timedLeg.fromStopPoint : timedLeg.toStopPoint;
-
-    const message: string = (() => {
-      if (stopPoint.vehicleAccessType === 'PLATFORM_ACCESS_WITHOUT_ASSISTANCE') {
-        return 'Step-free access; level entry/exit.';
-      }
-
-      if (stopPoint.vehicleAccessType === 'PLATFORM_ACCESS_WITH_ASSISTANCE') {
-        return 'Step-free access; entry/exit through staff assistance, no prior registration necessary.';
-      }
-
-      if (stopPoint.vehicleAccessType === 'PLATFORM_ACCESS_WITH_ASSISTANCE_WHEN_NOTIFIED') {
-        return 'Step-free access; entry/exit through staff assistance, advance registration required.';
-      }
-
-      if (stopPoint.vehicleAccessType === 'PLATFORM_NOT_WHEELCHAIR_ACCESSIBLE') {
-        return 'Not usable for wheelchairs.';
-      }
-
-      if (stopPoint.vehicleAccessType === 'ALTERNATIVE_TRANSPORT') {
-        return 'By shuttle from/to the accessible stop, register in advance.';
-      }
-
-      return 'No available information about vehicle access.';
-    })();
-
-    return message;
   }
 
   private computeLocationData(leg: OJP.TripLeg, endpointType: OJP.JourneyPointType): LegStopPointData {
