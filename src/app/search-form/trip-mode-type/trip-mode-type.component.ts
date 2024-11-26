@@ -152,6 +152,8 @@ export class TripModeTypeComponent implements OnInit {
           }
         });
       }
+
+      this.userTripService.searchFormAfterDefaultsInited.emit();
     });
 
     this.filterMinDurationControl.valueChanges.pipe(debounceTime(200)).subscribe(value => {

@@ -40,6 +40,7 @@ export class UserTripService {
   public embedQueryParams = new URLSearchParams();
 
   public defaultsInited = new EventEmitter<void>();
+  public searchFormAfterDefaultsInited = new EventEmitter<void>();
   public locationsUpdated = new EventEmitter<void>();
   public geoLocationsUpdated = new EventEmitter<void>();
   public tripsUpdated = new EventEmitter<OJP.Trip[]>();

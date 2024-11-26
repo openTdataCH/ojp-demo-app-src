@@ -126,7 +126,7 @@ export class SearchFormComponent implements OnInit {
       this.currentRequestInfo = null;
     });
 
-    this.userTripService.defaultsInited.subscribe(nothing => {
+    this.userTripService.searchFormAfterDefaultsInited.subscribe(nothing => {
       this.customInitFromParams();
     });
 
