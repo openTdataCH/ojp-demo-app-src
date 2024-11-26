@@ -3,7 +3,7 @@ import * as OJP from 'ojp-sdk';
 import { LegStopPointData } from '../shared/components/service-stops.component';
 import { DEBUG_LEVEL } from '../config/app-config';
 
-type PublicTransportPictogram = 'picto-bus' | 'picto-railway' | 'picto-tram' | 'picto-rack-railway' | 'picto-funicular' | 'picto-cablecar' | 'picto-gondola' | 'picto-chairlift' | 'picto-boat' | 'car-sharing' | 'picto-bus-fallback';
+type PublicTransportPictogram = 'picto-bus' | 'picto-railway' | 'picto-tram' | 'picto-rack-railway' | 'picto-funicular' | 'picto-cablecar' | 'picto-gondola' | 'picto-chairlift' | 'picto-boat' | 'car-sharing' | 'picto-bus-fallback' | 'autozug';
 
 export class OJPHelpers {
   public static computeIconFilenameForService(service: OJP.JourneyService): string {
@@ -13,6 +13,10 @@ export class OJPHelpers {
   private static computePublicTransportPictogram(ptMode: OJP.PublicTransportMode): PublicTransportPictogram {
     if (ptMode.ptMode === 'bus') {
       return 'picto-bus';
+    }
+
+    if (ptMode.shortName === 'ATZ') {
+      return 'autozug';
     }
 
     if (ptMode.isRail()) {
