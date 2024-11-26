@@ -44,8 +44,8 @@
   </div>
 
   <div 
-      class="mobility-settings-left-v2 endpoint-settings-wrapper" 
-      [ngClass]="{ 'collapse': this.isAdditionalRestrictionsEnabled === false }" 
+      class="mobility-settings-left-v2 endpoint-settings-wrapper collapse" 
+      [ngClass]="{ 'show': this.isAdditionalRestrictionsEnabled }" 
       id="{{ this.settingsCollapseID }}"
     >
     <div class="endpoint-settings">
