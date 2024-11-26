@@ -134,6 +134,11 @@ export class TripModeTypeComponent implements OnInit {
     this.userTripService.defaultsInited.subscribe(nothing => {
       this.userTripService.updateTripLocationCustomMode();
 
+      if (this.userTripService.tripModeType !== 'monomodal') {
+        this.isAdditionalRestrictionsEnabled = true;
+        this.updateAdditionalRestrictions();
+      }  
+
       if (this.userTripService.publicTransportModesFilter.length > 0) {
         this.isAdditionalRestrictionsEnabled = true;
 
@@ -236,6 +241,14 @@ export class TripModeTypeComponent implements OnInit {
 
     if (tripTransportModeData === null) {
       return;
+    }
+    
+    if (tripModeType !== 'monomodal') {
+      if (!this.isAdditionalRestrictionsEnabled) {
+        this.isAdditionalRestrictionsEnabled = true;
+      }
+
+      this.updateAdditionalRestrictions();
     }
 
     this.tripTransportModes = JSON.parse(JSON.stringify(tripTransportModeData.transportModes));
