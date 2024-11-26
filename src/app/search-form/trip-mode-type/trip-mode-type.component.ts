@@ -68,9 +68,7 @@ const appTripTransportModeData: TripTransportModeData[] = [
 export class TripModeTypeComponent implements OnInit {
   public tripTransportModeData: TripTransportModeData[]
 
-  public tripModeType: OJP.TripModeType
   public tripTransportModes: OJP.IndividualTransportMode[]
-  public tripTransportMode: OJP.IndividualTransportMode
 
   public isAdditionalRestrictionsEnabled: boolean
   public settingsCollapseID: string
@@ -97,9 +95,7 @@ export class TripModeTypeComponent implements OnInit {
   constructor(public userTripService: UserTripService) {
     this.tripTransportModeData = appTripTransportModeData;
 
-    this.tripModeType = this.tripTransportModeData[0].modeType
     this.tripTransportModes = JSON.parse(JSON.stringify(this.tripTransportModeData[0].transportModes))
-    this.tripTransportMode = this.tripTransportModes[0]
 
     this.isAdditionalRestrictionsEnabled = false;
     this.settingsCollapseID = 'mode_custom_mode_settings_NOT_READY_YET';
@@ -129,16 +125,11 @@ export class TripModeTypeComponent implements OnInit {
   }
 
   ngOnInit() {
-    // TODO - remove this, we used to have multiple TR
-    const tripModeTypeIdx = 0;
-    this.tripModeType = this.userTripService.tripModeTypes[tripModeTypeIdx];
-
     const tripTransportModeData = this.tripTransportModeData.find(tripTransportMode => {
-      return tripTransportMode.modeType === this.tripModeType;
+      return tripTransportMode.modeType === this.userTripService.tripModeType;
     }) ?? this.tripTransportModeData[0];
 
     this.tripTransportModes = JSON.parse(JSON.stringify(tripTransportModeData.transportModes));
-    this.tripTransportMode = this.userTripService.tripTransportModes[tripModeTypeIdx];
 
     this.userTripService.defaultsInited.subscribe(nothing => {
       this.userTripService.updateTripLocationCustomMode();
@@ -176,7 +167,7 @@ export class TripModeTypeComponent implements OnInit {
       this.updateAdditionalRestrictions();
     });
 
-    this.settingsCollapseID = 'mode_custom_mode_settings_' + tripModeTypeIdx;
+    this.settingsCollapseID = 'mode_custom_mode_settings_0';
   }
 
   public updateAdditionalRestrictions() {
@@ -233,8 +224,10 @@ export class TripModeTypeComponent implements OnInit {
   }
 
   public onTripModeChange() {
+    const tripModeType = this.userTripService.tripModeType;
+
     const tripTransportModeData = this.tripTransportModeData.find(tripTransportMode => {
-      return tripTransportMode.modeType === this.tripModeType;
+      return tripTransportMode.modeType === tripModeType;
     }) ?? null;
 
     if (tripTransportModeData === null) {
@@ -244,17 +237,17 @@ export class TripModeTypeComponent implements OnInit {
     this.tripTransportModes = JSON.parse(JSON.stringify(tripTransportModeData.transportModes));
     
     // Preserve the transport mode when switching the trip mode
-    const hasTransportMode = this.tripTransportModes.indexOf(this.tripTransportMode) !== -1;
+    const hasTransportMode = this.tripTransportModes.indexOf(this.userTripService.tripTransportMode) !== -1;
     if (!hasTransportMode) {
-      this.tripTransportMode = this.tripTransportModes[0];
+      this.userTripService.tripTransportMode = this.tripTransportModes[0];
     }
 
-    this.userTripService.updateTripMode(this.tripModeType, this.tripTransportMode);
+    this.userTripService.updateTripMode();
     this.userTripService.updateTripLocationCustomMode();
   }
 
   public onTransportModeChange() {
-    this.userTripService.updateTripMode(this.tripModeType, this.tripTransportMode);
+    this.userTripService.updateTripMode();
     this.userTripService.updateTripLocationCustomMode();
   }
 

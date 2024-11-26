@@ -25,8 +25,8 @@ export class UserTripService {
 
   public currentBoardingType: OJP.TripRequestBoardingType
 
-  public tripModeTypes: OJP.TripModeType[]
-  public tripTransportModes: OJP.IndividualTransportMode[]
+  public tripModeType: OJP.TripModeType
+  public tripTransportMode: OJP.IndividualTransportMode;
 
   public journeyTripRequests: OJP.TripRequest[]
   public departureDate: Date
@@ -66,8 +66,8 @@ export class UserTripService {
 
     this.currentBoardingType = 'Dep'
 
-    this.tripModeTypes = ['monomodal']
-    this.tripTransportModes = ['public_transport']
+    this.tripModeType = 'monomodal';
+    this.tripTransportMode = 'public_transport';
 
     this.journeyTripRequests = [];
     
@@ -159,24 +159,16 @@ export class UserTripService {
       }
     });
     
-    this.tripModeTypes = [];
+    this.tripModeType = 'monomodal';
     const tripModeTypesS = this.queryParams.get('mode_types') ?? null;
-    if (tripModeTypesS) {
-      tripModeTypesS.split(';').forEach(tripModeTypeS => {
-        this.tripModeTypes.push(tripModeTypeS as OJP.TripModeType);
-      });
-    } else {
-      this.tripModeTypes = ['monomodal'];
+    if (tripModeTypesS !== null) {
+      this.tripModeType = tripModeTypesS.split(';')[0] as  OJP.TripModeType;
     }
 
-    this.tripTransportModes = [];
+    this.tripTransportMode = 'public_transport';
     const tripTransportModesS = this.queryParams.get('transport_modes') ?? null;
-    if (tripTransportModesS) {
-      tripTransportModesS.split(';').forEach(tripTransportModeS => {
-        this.tripTransportModes.push(tripTransportModeS as OJP.IndividualTransportMode);
-      });
-    } else {
-      this.tripTransportModes = ['public_transport'];
+    if (tripTransportModesS !== null) {
+      this.tripTransportMode = tripTransportModesS.split(';')[0] as OJP.IndividualTransportMode;
     }
 
     this.publicTransportModesFilter = (() => {
@@ -465,12 +457,12 @@ export class UserTripService {
       queryParams.append('via', viaParamParts.join(';'))
     }
     
-    if (this.tripModeTypes[0] !== 'monomodal') {
-      queryParams.append('mode_types', this.tripModeTypes.join(';'));
+    if (this.tripModeType !== 'monomodal') {
+      queryParams.append('mode_types', this.tripModeType);
     }
     
-    if (this.tripTransportModes[0] !== 'public_transport') {
-      queryParams.append('transport_modes', this.tripTransportModes.join(';'));
+    if (this.tripTransportMode !== 'public_transport') {
+      queryParams.append('transport_modes', this.tripTransportMode);
     }
 
     if (this.publicTransportModesFilter.length > 0) {
@@ -581,22 +573,12 @@ export class UserTripService {
     this.updateURLs()
   }
 
-  public updateTripMode(tripModeType: OJP.TripModeType, tripTransportMode: OJP.IndividualTransportMode) {
-    // TODO - remove this, we used to have multiple TR
-    const tripSectionIdx = 0;
-    
-    this.tripModeTypes[tripSectionIdx] = tripModeType;
-    this.tripTransportModes[tripSectionIdx] = tripTransportMode;
-
+  public updateTripMode() {
     this.updateURLs()
   }
 
   private computeTripLocationsToUpdate(): OJP.TripLocationPoint[] {
     const tripLocationsToUpdate: OJP.TripLocationPoint[] = [];
-
-    // TODO - remove this, we used to have multiple TR
-    const tripSectionIdx = 0;
-    const tripModeType = this.tripModeTypes[tripSectionIdx];
 
     const endpointTypes: OJP.JourneyPointType[] = ['From', 'To'];
     endpointTypes.forEach(endpointType => {
@@ -607,12 +589,12 @@ export class UserTripService {
       }
 
       // discard FROM for mode_at_end
-      if ((tripModeType === 'mode_at_end') && isFrom) {
+      if ((this.tripModeType === 'mode_at_end') && isFrom) {
         return;
       }
 
       // discard TO for mode_at_start
-      if ((tripModeType === 'mode_at_start') && !isFrom) {
+      if ((this.tripModeType === 'mode_at_start') && !isFrom) {
         return;
       }
 
@@ -634,18 +616,13 @@ export class UserTripService {
   }
 
   public updateTripLocationCustomMode() {
-    // TODO - remove this, we used to have multiple TR
-    const tripSectionIdx = 0;
-
     const tripLocationsToUpdate = this.computeTripLocationsToUpdate();
-    const tripModeType = this.tripModeTypes[tripSectionIdx];
 
     tripLocationsToUpdate.forEach(tripLocation => {
-      const tripTransportMode = this.tripTransportModes[tripSectionIdx];
-      if (tripTransportMode === 'public_transport') {
+      if (this.tripTransportMode === 'public_transport') {
         tripLocation.customTransportMode = null;
       } else {
-        tripLocation.customTransportMode = tripTransportMode;
+        tripLocation.customTransportMode = this.tripTransportMode;
       }
     });
   }
@@ -664,9 +641,9 @@ export class UserTripService {
 
     this.viaTripLocations = []
     
-    this.tripModeTypes = ['monomodal'];
-    this.tripTransportModes = ['public_transport'];
-    
+    this.tripModeType = 'monomodal';
+    this.tripTransportMode = 'public_transport';
+
     this.geoLocationsUpdated.emit()
     this.updateURLs()
   }
@@ -678,21 +655,11 @@ export class UserTripService {
   }
 
   private sortTrips(trips: OJP.Trip[]) {
-    const tripModeTypes = this.tripModeTypes;
-    const tripTransportModes = this.tripTransportModes;
-    if (!((tripModeTypes.length === 1) && (tripTransportModes.length === 1))) {
-      // ignore multi-trips journeys
+    if (this.tripModeType !== 'monomodal') {
       return;
     }
 
-    const tripModeType = tripModeTypes[0];
-    const transportMode = tripTransportModes[0];
-
-    if (tripModeType !== 'monomodal') {
-      return;
-    }
-
-    if (transportMode === 'public_transport') {
+    if (this.tripTransportMode === 'public_transport') {
       return;
     }
 
@@ -704,7 +671,7 @@ export class UserTripService {
         }
 
         const continousLeg = trip.legs[0] as OJP.TripContinousLeg;
-        return continousLeg.legTransportMode === transportMode;
+        return continousLeg.legTransportMode === this.tripTransportMode;
       }) ?? null;
 
       return foundLeg !== null;
@@ -863,14 +830,6 @@ export class UserTripService {
   }
 
   public hasPublicTransport(): boolean {
-    const defaultValue = false;
-
-    if (this.tripTransportModes.length === 0) {
-      return defaultValue;
-    }
-
-    const tripTransportMode = this.tripTransportModes[0];
-
-    return tripTransportMode === 'public_transport';
+    return this.tripTransportMode === 'public_transport';
   }
 }
