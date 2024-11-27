@@ -3,6 +3,7 @@ import { SbbExpansionPanel } from '@sbb-esta/angular/accordion';
 
 import * as OJP from 'ojp-sdk'
 
+import { DEBUG_LEVEL } from '../../config/app-config';
 import { UserTripService } from '../../shared/services/user-trip.service';
 import { MapService } from '../../shared/services/map.service';
 
@@ -73,6 +74,16 @@ export class JourneyResultRowComponent implements OnInit {
     this.tripHeaderStats.tripToTime = OJP.DateHelpers.formatTimeHHMM(trip.stats.endDatetime)
 
     this.tripHeaderStats.tripDurationS = trip.stats.duration.formatDuration()
-    this.tripHeaderStats.tripDistanceS = OJP.DateHelpers.formatDistance(trip.stats.distanceMeters)
+
+    this.tripHeaderStats.tripDistanceS = (() => {
+      if (DEBUG_LEVEL !== 'DEBUG') {
+        return OJP.DateHelpers.formatDistance(trip.stats.distanceMeters);
+      }
+
+      const sourceF = trip.stats.distanceSource === 'trip' ? 'Δ' : 'Σ';
+      const distanceF = OJP.DateHelpers.formatDistance(trip.stats.distanceMeters);
+
+      return distanceF + ' ' + sourceF;
+    })()
   }
 }
