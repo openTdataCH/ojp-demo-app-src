@@ -3,7 +3,7 @@ import mapboxgl from "mapbox-gl";
 
 import * as OJP from 'ojp-sdk'
 
-import { AppMapLayerOptions, APP_CONFIG } from '../../config/app-config'
+import { AppMapLayerOptions, APP_CONFIG, DEBUG_LEVEL } from '../../config/app-config'
 import { UserTripService } from "../../shared/services/user-trip.service";
 import { MapHelpers } from "../helpers/map.helpers";
 import { MAP_LAYERS_DEFINITIONS } from "./map-layers-def";
@@ -187,6 +187,14 @@ export class AppMapLayer {
             locationsIdx.push(idx);
         });
 
+        if (DEBUG_LEVEL === 'DEBUG') {
+            if (locationsDiscarded.length > 0) {
+                console.log('AppMapLayer.refreshFeatures -- discarded locations');
+                console.log(locationsDiscarded);
+                console.log('layer config');
+                console.log(layerConfig);
+            }
+        }
 
         this.currentLocations = response.locations;
         
