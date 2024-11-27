@@ -8,6 +8,7 @@ OJP-Demo URL: https://opentdatach.github.io/ojp-demo-app/
 - Improve TripRequest + TripInfoRequest - [PR #186](https://github.com/openTdataCH/ojp-demo-app-src/pull/186)
   - show platform assistance in the TripInfoRequest page
   - handle `A__GF` attribute - [Show "Grossraumprofil" #180](https://github.com/openTdataCH/ojp-demo-app-src/issues/180)
+  - handle `ATZ` train icons
   - adapt logic for showing additional restrictions, always display it for non-`monomodal` modes
 
 22.November 2024
