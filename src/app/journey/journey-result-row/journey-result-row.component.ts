@@ -70,8 +70,13 @@ export class JourneyResultRowComponent implements OnInit {
       this.tripHeaderStats.tripChangesInfo = trip.stats.transferNo + ' transfers'
     }
 
-    this.tripHeaderStats.tripFromTime = OJP.DateHelpers.formatTimeHHMM(trip.stats.startDatetime)
-    this.tripHeaderStats.tripToTime = OJP.DateHelpers.formatTimeHHMM(trip.stats.endDatetime)
+    this.tripHeaderStats.tripFromTime = OJP.DateHelpers.formatTimeHHMM(trip.stats.startDatetime);
+    
+    this.tripHeaderStats.tripToTime = OJP.DateHelpers.formatTimeHHMM(trip.stats.endDatetime);
+    const dayDiff = JourneyResultRowComponent.getDayOffset(trip.stats.endDatetime, trip.stats.startDatetime);
+    if(dayDiff > 0){
+      this.tripHeaderStats.tripToTime = '(+' + dayDiff + 'd) ' + this.tripHeaderStats.tripToTime;
+    }
 
     this.tripHeaderStats.tripDurationS = trip.stats.duration.formatDuration()
 
@@ -84,6 +89,23 @@ export class JourneyResultRowComponent implements OnInit {
       const distanceF = OJP.DateHelpers.formatDistance(trip.stats.distanceMeters);
 
       return distanceF + ' ' + sourceF;
-    })()
+    })();
+  }
+
+  private static getDayOffset(start: Date, end: Date){
+    return Math.ceil(
+      Math.abs(
+        new Date(Date.UTC(
+          end.getUTCFullYear(),
+          end.getUTCMonth(),
+          end.getUTCDate()
+        )).valueOf() -
+        new Date(Date.UTC(
+          start.getUTCFullYear(),
+          start.getUTCMonth(),
+          start.getUTCDate()
+        )).valueOf()
+      ) / (1000 * 3600 * 24)
+    )
   }
 }
