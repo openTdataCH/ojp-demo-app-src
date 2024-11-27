@@ -91,6 +91,9 @@ export class TripInfoResultComponent implements OnInit, AfterViewInit {
 
         OJPHelpers.updateLocationDataWithTime(stopPointData, stopPoint);
 
+        stopPointData.platformAssistanceIconPath = OJPHelpers.computePlatformAssistanceIconPath(stopPoint);
+        stopPointData.platformAssistanceTooltip = OJPHelpers.computePlatformAssistanceTooltip(stopPoint);
+
         stopPointsData.push(stopPointData);
       });
 

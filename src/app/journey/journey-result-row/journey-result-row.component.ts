@@ -1,8 +1,11 @@
 import { Component, Input, OnInit, ViewChild } from '@angular/core';
 import { SbbExpansionPanel } from '@sbb-esta/angular/accordion';
-import { UserTripService } from 'src/app/shared/services/user-trip.service';
+
 import * as OJP from 'ojp-sdk'
-import { MapService } from 'src/app/shared/services/map.service';
+
+import { DEBUG_LEVEL } from '../../config/app-config';
+import { UserTripService } from '../../shared/services/user-trip.service';
+import { MapService } from '../../shared/services/map.service';
 
 interface TripHeaderStats {
   title: string,
@@ -67,10 +70,42 @@ export class JourneyResultRowComponent implements OnInit {
       this.tripHeaderStats.tripChangesInfo = trip.stats.transferNo + ' transfers'
     }
 
-    this.tripHeaderStats.tripFromTime = OJP.DateHelpers.formatTimeHHMM(trip.stats.startDatetime)
-    this.tripHeaderStats.tripToTime = OJP.DateHelpers.formatTimeHHMM(trip.stats.endDatetime)
+    this.tripHeaderStats.tripFromTime = OJP.DateHelpers.formatTimeHHMM(trip.stats.startDatetime);
+    
+    this.tripHeaderStats.tripToTime = OJP.DateHelpers.formatTimeHHMM(trip.stats.endDatetime);
+    const dayDiff = JourneyResultRowComponent.getDayOffset(trip.stats.endDatetime, trip.stats.startDatetime);
+    if(dayDiff > 0){
+      this.tripHeaderStats.tripToTime = '(+' + dayDiff + 'd) ' + this.tripHeaderStats.tripToTime;
+    }
 
     this.tripHeaderStats.tripDurationS = trip.stats.duration.formatDuration()
-    this.tripHeaderStats.tripDistanceS = OJP.DateHelpers.formatDistance(trip.stats.distanceMeters)
+
+    this.tripHeaderStats.tripDistanceS = (() => {
+      if (DEBUG_LEVEL !== 'DEBUG') {
+        return OJP.DateHelpers.formatDistance(trip.stats.distanceMeters);
+      }
+
+      const sourceF = trip.stats.distanceSource === 'trip' ? 'Δ' : 'Σ';
+      const distanceF = OJP.DateHelpers.formatDistance(trip.stats.distanceMeters);
+
+      return distanceF + ' ' + sourceF;
+    })();
+  }
+
+  private static getDayOffset(start: Date, end: Date){
+    return Math.ceil(
+      Math.abs(
+        new Date(Date.UTC(
+          end.getUTCFullYear(),
+          end.getUTCMonth(),
+          end.getUTCDate()
+        )).valueOf() -
+        new Date(Date.UTC(
+          start.getUTCFullYear(),
+          start.getUTCMonth(),
+          start.getUTCDate()
+        )).valueOf()
+      ) / (1000 * 3600 * 24)
+    )
   }
 }

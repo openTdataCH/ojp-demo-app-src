@@ -5,7 +5,7 @@
       <sbb-form-field class="w-100">
         <sbb-label>Mono-/Multi-modal</sbb-label>
           <sbb-select
-          [(ngModel)]="this.tripModeType"
+          [(ngModel)]="this.userTripService.tripModeType"
           (selectionChange)="onTripModeChange()">
           <sbb-option
             *ngFor="let tripTransportMode of this.tripTransportModeData"
@@ -18,7 +18,7 @@
       <sbb-form-field class="w-100">
         <sbb-label>Mode of Transport</sbb-label>
           <sbb-select
-          [(ngModel)]="this.tripTransportMode"
+          [(ngModel)]="this.userTripService.tripTransportMode"
           (selectionChange)="onTransportModeChange()">
           <sbb-option
             *ngFor="let tripTransportMode of this.tripTransportModes"
@@ -31,6 +31,7 @@
       <button 
         sbb-secondary-button
         type="button" 
+        [disabled]="this.userTripService.tripModeType !== 'monomodal'"
         [attr.data-bs-target]="'#' + this.settingsCollapseID"
         [attr.aria-controls]="this.settingsCollapseID"
         (click)="toggleAdditionalRestrictions()"
@@ -43,8 +44,8 @@
   </div>
 
   <div 
-      class="mobility-settings-left-v2 endpoint-settings-wrapper" 
-      [ngClass]="{ 'collapse': this.isAdditionalRestrictionsEnabled === false }" 
+      class="mobility-settings-left-v2 endpoint-settings-wrapper collapse" 
+      [ngClass]="{ 'show': this.isAdditionalRestrictionsEnabled }" 
       id="{{ this.settingsCollapseID }}"
     >
     <div class="endpoint-settings">

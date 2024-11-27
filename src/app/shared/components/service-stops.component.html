@@ -15,7 +15,7 @@
         *ngFor="let stopPointData of this.stopPointsData; index as stopIdx"
         (click)="zoomToLocation(stopPointData)"
       >
-        <td class="fit stop-time">
+        <td class="fit stop-time align-middle">
           <div *ngIf="stopPointData.isNotServicedStop">
             <span><del>{{ stopPointData.arrText }}</del></span>
             <span class="time-delay"><del>{{ stopPointData.arrDelayText }}</del></span>  
@@ -25,7 +25,7 @@
             <span class="time-delay">{{ stopPointData.arrDelayText }}</span>  
           </div>
         </td>
-        <td class="fit stop-time">
+        <td class="fit stop-time align-middle">
           <div *ngIf="stopPointData.isNotServicedStop">
             <span><del>{{ stopPointData.depText }}</del></span>
             <span class="time-delay"><del>{{ stopPointData.depDelayText }}</del></span>
@@ -35,7 +35,7 @@
             <span class="time-delay">{{ stopPointData.depDelayText }}</span>
           </div>
         </td>
-        <td class="stop-info d-flex">
+        <td class="stop-info d-flex gap-2 align-items-center">
           <div class="flex-grow-1">{{ stopPointData.locationText }} <span *ngIf="stopPointData.isNotServicedStop" class="badge rounded-pill bg-danger fw-bolder">not serviced</span></div>
           <div *ngIf="stopPointData.platformText !== null" class="d-flex gap-2">
             <div *ngIf="stopPointData.actualPlatformText === null">
@@ -44,6 +44,13 @@
             <div *ngIf="stopPointData.actualPlatformText !== null">
               <div>Pl. <del> {{ stopPointData.platformText }}</del> <span class="time-delay"> {{ stopPointData.actualPlatformText }}</span></div>
             </div>
+          </div>
+          <div *ngIf="stopPointData.platformAssistanceIconPath !== null">
+            <img
+              class="leg-platform-assistance" 
+              src="{{ stopPointData.platformAssistanceIconPath }}" 
+              sbbTooltip="{{ stopPointData.platformAssistanceTooltip }}" 
+            />
           </div>
         </td>
         <td class="text-center">

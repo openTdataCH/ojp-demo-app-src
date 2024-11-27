@@ -28,7 +28,7 @@
       <sbb-option
         *ngFor="let location of mapLookupLocations[optionLocationType[0]]; index as idx"
         [value]="optionLocationType[0] + '.' + idx">
-        {{ location.computeLocationName() }}
+        {{ location.computeLocationName() }} <b *ngIf="location?.originSystem">({{location.originSystem}})</b>
       </sbb-option>
     </sbb-optgroup>
   </ng-container>

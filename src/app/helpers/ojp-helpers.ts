@@ -3,7 +3,7 @@ import * as OJP from 'ojp-sdk';
 import { LegStopPointData } from '../shared/components/service-stops.component';
 import { DEBUG_LEVEL } from '../config/app-config';
 
-type PublicTransportPictogram = 'picto-bus' | 'picto-railway' | 'picto-tram' | 'picto-rack-railway' | 'picto-funicular' | 'picto-cablecar' | 'picto-gondola' | 'picto-chairlift' | 'picto-boat' | 'car-sharing' | 'picto-bus-fallback';
+type PublicTransportPictogram = 'picto-bus' | 'picto-railway' | 'picto-tram' | 'picto-rack-railway' | 'picto-funicular' | 'picto-cablecar' | 'picto-gondola' | 'picto-chairlift' | 'picto-boat' | 'car-sharing' | 'picto-bus-fallback' | 'autozug';
 
 export class OJPHelpers {
   public static computeIconFilenameForService(service: OJP.JourneyService): string {
@@ -13,6 +13,10 @@ export class OJPHelpers {
   private static computePublicTransportPictogram(ptMode: OJP.PublicTransportMode): PublicTransportPictogram {
     if (ptMode.ptMode === 'bus') {
       return 'picto-bus';
+    }
+
+    if (ptMode.shortName === 'ATZ') {
+      return 'autozug';
     }
 
     if (ptMode.isRail()) {
@@ -272,5 +276,70 @@ export class OJPHelpers {
     nameParts.push('(' + service.agencyCode + ')');
 
     return nameParts.join(' ');
+  }
+
+  public static computePlatformAssistanceIconPath(stopPoint: OJP.StopPoint): string | null {
+    const filename: string | null = (() => {
+      if (stopPoint.vehicleAccessType === 'PLATFORM_ACCESS_WITHOUT_ASSISTANCE') {
+        return 'platform_independent';
+      }
+
+      if (stopPoint.vehicleAccessType === 'PLATFORM_ACCESS_WITH_ASSISTANCE') {
+        return 'platform_help_driver';
+      }
+
+      if (stopPoint.vehicleAccessType === 'PLATFORM_ACCESS_WITH_ASSISTANCE_WHEN_NOTIFIED') {
+        return 'platform_advance_notice';
+      }
+
+      if (stopPoint.vehicleAccessType === 'PLATFORM_NOT_WHEELCHAIR_ACCESSIBLE') {
+        return 'platform_not_possible';
+      }
+
+      if (stopPoint.vehicleAccessType === 'NO_DATA') {
+        return 'platform_no_information';
+      }
+
+      if (stopPoint.vehicleAccessType === 'ALTERNATIVE_TRANSPORT') {
+        return 'platform_alternative_transport';
+      }
+
+      return null;
+    })();
+
+    if (filename === null) {
+      return null;
+    }
+    
+    const iconPath = 'assets/platform-assistance/' + filename + '.jpg';
+    return iconPath;
+  }
+
+  public static computePlatformAssistanceTooltip(stopPoint: OJP.StopPoint): string {
+    const message: string = (() => {
+      if (stopPoint.vehicleAccessType === 'PLATFORM_ACCESS_WITHOUT_ASSISTANCE') {
+        return 'Step-free access; level entry/exit.';
+      }
+
+      if (stopPoint.vehicleAccessType === 'PLATFORM_ACCESS_WITH_ASSISTANCE') {
+        return 'Step-free access; entry/exit through staff assistance, no prior registration necessary.';
+      }
+
+      if (stopPoint.vehicleAccessType === 'PLATFORM_ACCESS_WITH_ASSISTANCE_WHEN_NOTIFIED') {
+        return 'Step-free access; entry/exit through staff assistance, advance registration required.';
+      }
+
+      if (stopPoint.vehicleAccessType === 'PLATFORM_NOT_WHEELCHAIR_ACCESSIBLE') {
+        return 'Not usable for wheelchairs.';
+      }
+
+      if (stopPoint.vehicleAccessType === 'ALTERNATIVE_TRANSPORT') {
+        return 'By shuttle from/to the accessible stop, register in advance.';
+      }
+
+      return 'No available information about vehicle access.';
+    })();
+
+    return message;
   }
 }
