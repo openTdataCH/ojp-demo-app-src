@@ -1,8 +1,10 @@
 import { Component, Input, OnInit, ViewChild } from '@angular/core';
 import { SbbExpansionPanel } from '@sbb-esta/angular/accordion';
-import { UserTripService } from 'src/app/shared/services/user-trip.service';
+
 import * as OJP from 'ojp-sdk'
-import { MapService } from 'src/app/shared/services/map.service';
+
+import { UserTripService } from '../../shared/services/user-trip.service';
+import { MapService } from '../../shared/services/map.service';
 
 interface TripHeaderStats {
   title: string,
