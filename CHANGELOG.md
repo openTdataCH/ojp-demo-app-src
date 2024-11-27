@@ -4,6 +4,13 @@ OJP-Demo URL: https://opentdatach.github.io/ojp-demo-app/
 
 ----
 
+27.November 2024
+- Improve TripRequest + TripInfoRequest - [PR #186](https://github.com/openTdataCH/ojp-demo-app-src/pull/186)
+  - show platform assistance in the TripInfoRequest page
+  - handle `A__GF` attribute - [Show "Grossraumprofil" #180](https://github.com/openTdataCH/ojp-demo-app-src/issues/180)
+  - handle `ATZ` train icons
+  - adapt logic for showing additional restrictions, always display it for non-`monomodal` modes
+
 22.November 2024
 - SER/TIR: Updates StationBoard / TripInfo - [PR #182](https://github.com/openTdataCH/ojp-demo-app-src/pull/184)
   - SER: display service info and links to TIR popover - [Link from SER page to TIR page #171](https://github.com/openTdataCH/ojp-demo-app-src/issues/171)

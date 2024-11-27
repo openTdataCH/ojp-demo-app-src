@@ -126,7 +126,7 @@ export class SearchFormComponent implements OnInit {
       this.currentRequestInfo = null;
     });
 
-    this.userTripService.defaultsInited.subscribe(nothing => {
+    this.userTripService.searchFormAfterDefaultsInited.subscribe(nothing => {
       this.customInitFromParams();
     });
 
@@ -513,8 +513,8 @@ export class SearchFormComponent implements OnInit {
       this.userTripService.departureDate,
       this.userTripService.currentBoardingType,
       includeLegProjection,
-      this.userTripService.tripModeTypes[0],
-      this.userTripService.tripTransportModes[0],
+      this.userTripService.tripModeType,
+      this.userTripService.tripTransportMode,
       viaTripLocations,
       this.userTripService.numberOfResults,
       this.userTripService.numberOfResultsBefore,
