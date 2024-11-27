@@ -93,6 +93,121 @@ export class MapHelpers {
 
     nearbyFeatures.sort((a,b) => a.distance - b.distance);
 
+    // Highlight area clicked
+    MapHelpers.highlightBBOXPxOnMap(bboxPx, map)
+    MapHelpers.highlightLngLatOnMap(lngLat, map)
+
     return nearbyFeatures;
+  }
+
+  public static highlightBBOXPxOnMap(bboxPx: [mapboxgl.PointLike, mapboxgl.PointLike], map: mapboxgl.Map) {
+    const coordSW = map.unproject(bboxPx[0]);
+    const coordNE = map.unproject(bboxPx[1]);
+    const bbox = new mapboxgl.LngLatBounds(coordSW, coordNE);
+    const featureCoords: GeoJSON.Position[] = [
+      bbox.getSouthWest().toArray(),
+      bbox.getSouthEast().toArray(),
+      bbox.getNorthEast().toArray(),
+      bbox.getNorthWest().toArray(),
+      bbox.getSouthWest().toArray(),
+    ];
+    
+    const feature = <GeoJSON.Feature>{
+      type: 'Feature',
+      properties: {},
+      geometry: <GeoJSON.LineString>{
+        type: 'LineString',
+        coordinates: featureCoords,
+      },
+    };
+    
+    const sourceID = 'debug-highlight';
+    if (!map.getSource(sourceID)) {
+      const source = <mapboxgl.GeoJSONSourceRaw>{
+        type: 'geojson',
+        data: <GeoJSON.FeatureCollection>{
+          type: 'FeatureCollection',
+          features: [],
+        },
+      };
+      map.addSource(sourceID, source)
+    }
+    
+    const layerID = sourceID + '-bbox';
+    if (!map.getLayer(layerID)) {
+      const layer = <mapboxgl.LineLayer>{
+        id: layerID,
+        type: 'line',
+        source: sourceID,
+        paint: <mapboxgl.LinePaint>{
+          'line-color': '#630000',
+          'line-width': 2,
+        },
+      };
+      map.addLayer(layer);
+    }
+    
+    const source = map.getSource(sourceID) as mapboxgl.GeoJSONSource;
+    source.setData(<GeoJSON.FeatureCollection>{
+      type: 'FeatureCollection',
+      features: [feature],
+    });
+    
+    setTimeout(() => {
+      source.setData(<GeoJSON.FeatureCollection>{
+        type: 'FeatureCollection',
+        features: [],
+      })
+    }, 500);
+  }
+  
+  public static highlightLngLatOnMap(lngLat: mapboxgl.LngLat, map: mapboxgl.Map) {
+    const feature = <GeoJSON.Feature>{
+      type: 'Feature',
+      properties: {},
+      geometry: <GeoJSON.Point>{
+        type: 'Point',
+        coordinates: lngLat.toArray(),
+      },
+    };
+    
+    const sourceID = 'debug-highlight-layer-coord';
+    if (!map.getSource(sourceID)) {
+      const source = <mapboxgl.GeoJSONSourceRaw>{
+        type: 'geojson',
+        data: <GeoJSON.FeatureCollection>{
+          type: 'FeatureCollection',
+          features: [],
+        },
+      };
+      map.addSource(sourceID, source)
+    }
+    
+    const layerID = sourceID + '-coords';
+    if (!map.getLayer(layerID)) {
+      const layer = <mapboxgl.CircleLayer>{
+        id: layerID,
+        type: 'circle',
+        source: sourceID,
+        paint: <mapboxgl.CirclePaint>{
+          'circle-color': '#630000',
+          'circle-radius': 4
+        },
+      };
+      map.addLayer(layer);
+    }
+    
+    const source = map.getSource(sourceID) as mapboxgl.GeoJSONSource;
+    source.setData(<GeoJSON.FeatureCollection>{
+      type: 'FeatureCollection',
+      features: [feature],
+    })
+    
+    setTimeout(() => {
+      source.setData(<GeoJSON.FeatureCollection>{
+        type: 'FeatureCollection',
+        features: [],
+      })
+    }, 500);
   }
 }

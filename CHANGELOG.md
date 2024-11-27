@@ -10,6 +10,7 @@ OJP-Demo URL: https://opentdatach.github.io/ojp-demo-app/
   - handle `A__GF` attribute - [Show "Grossraumprofil" #180](https://github.com/openTdataCH/ojp-demo-app-src/issues/180)
   - handle `ATZ` train icons
   - adapt logic for showing additional restrictions, always display it for non-`monomodal` modes
+- adds DEV features - [PR #188](https://github.com/openTdataCH/ojp-demo-app-src/pull/188)
 - use latest OJP SDK
 
 22.November 2024
