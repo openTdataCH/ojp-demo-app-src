@@ -6,6 +6,8 @@ import * as OJP from 'ojp-sdk'
 import { MapboxLayerHelpers } from '../../helpers/mapbox-layer-helpers';
 import { MapLegTypeColor } from '../../config/map-colors';
 
+import { TripLegGeoController } from '../../shared/controllers/trip-geo-controller';
+
 import tripLegBeelineLayerJSON from './map-layers-def/ojp-trip-leg-beeline.json'
 import tripTimedLegEndpointCircleLayerJSON from './map-layers-def/ojp-trip-timed-leg-endpoint-circle.json'
 import tripTimedLegTrackLayerJSON from './map-layers-def/ojp-trip-timed-leg-track.json'
@@ -23,7 +25,7 @@ export class TripRenderController {
 
   public renderTrip(trip: OJP.Trip | null) {
     if (trip) {
-      const geojson = trip.computeGeoJSON()
+      const geojson = this.computeGeoJSON(trip);
       this.setSourceFeatures(geojson.features);
     } else {
       this.removeAllFeatures();
@@ -133,5 +135,23 @@ export class TripRenderController {
       'features': features
     }
     source.setData(featureCollection);
+  }
+
+  private computeGeoJSON(trip: OJP.Trip): GeoJSON.FeatureCollection {
+    let features: GeoJSON.Feature[] = [];
+
+    trip.legs.forEach((leg, legIDx) => {
+      const tripLegGeoController = new TripLegGeoController(leg, legIDx);
+
+      const legFeatures = tripLegGeoController.computeGeoJSONFeatures();
+      features = features.concat(legFeatures);
+    });
+
+    const geojson: GeoJSON.FeatureCollection = {
+      type: 'FeatureCollection',
+      features: features,
+    };
+
+    return geojson;
   }
 }

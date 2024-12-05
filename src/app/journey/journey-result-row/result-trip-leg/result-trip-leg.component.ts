@@ -15,6 +15,8 @@ import { MapService } from '../../../shared/services/map.service';
 import { UserTripService } from '../../../shared/services/user-trip.service';
 import { LegStopPointData } from '../../../shared/components/service-stops.component';
 
+import { TripLegGeoController } from '../../../shared/controllers/trip-geo-controller';
+
 import { TripInfoResultPopoverComponent } from './trip-info-result-popover/trip-info-result-popover.component';
 
 type LegTemplate = 'walk' | 'timed' | 'taxi';
@@ -205,7 +207,9 @@ export class ResultTripLegComponent implements OnInit {
       return
     }
 
-    const legFeatures = this.leg.computeGeoJSONFeatures();
+    const tripLegGeoController = new TripLegGeoController(this.leg);
+
+    const legFeatures = tripLegGeoController.computeGeoJSONFeatures();
     const bbox = OJP.GeoPositionBBOX.initFromGeoJSONFeatures(legFeatures);
 
     if (!bbox.isValid()) {
