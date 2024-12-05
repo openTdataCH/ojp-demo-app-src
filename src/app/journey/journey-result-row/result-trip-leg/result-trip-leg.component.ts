@@ -93,16 +93,16 @@ export class ResultTripLegComponent implements OnInit {
 
   private computeLegLeadingText(): string {
     if (this.leg === undefined || this.legIdx === undefined) {
-      return 'n/a'
+      return 'n/a';
     }
 
     const legIdxS = '' + (this.legIdx + 1) + '. ';
 
     if (this.leg.legType === 'TransferLeg') {
-      const leadingTextTitle = 'Transfer'
+      const leadingTextTitle = 'Transfer';
       
-      const continuousLeg = this.leg as OJP.TripContinousLeg
-      let legDurationS = ''
+      const continuousLeg = this.leg as OJP.TripContinousLeg;
+      let legDurationS = '';
       if (continuousLeg.walkDuration) {
         legDurationS = ' ' + continuousLeg.walkDuration.formatDuration()
       }
@@ -111,29 +111,33 @@ export class ResultTripLegComponent implements OnInit {
     }
 
     if (this.leg.legType === 'ContinousLeg') {
-      const continuousLeg = this.leg as OJP.TripContinousLeg
+      const continuousLeg = this.leg as OJP.TripContinousLeg;
 
       const leadingText = this.computeLegLeadingTextContinousLeg(continuousLeg);
 
-      let legDurationS = ''
+      let legDurationS = '';
       if (this.leg.legDuration) {
-        legDurationS = ' ' + this.leg.legDuration.formatDuration()
+        legDurationS = ' ' + this.leg.legDuration.formatDuration();
       }
       
       return legIdxS + leadingText + ' - ' + legDurationS;
     }
 
     if (this.leg.legType === 'TimedLeg') {
-      const timedLeg = this.leg as OJP.TripTimedLeg
+      const timedLeg = this.leg as OJP.TripTimedLeg;
 
       let leadingText = timedLeg.service.ptMode.name;
+      if (leadingText === null) {
+        leadingText = timedLeg.service.ptMode.ptMode;
+      }
+
       if (timedLeg.service.ptMode.isDemandMode) {
         leadingText = 'OnDemand ' + leadingText;
       }
 
-      let legDurationS = ''
+      let legDurationS = '';
       if (this.leg.legDuration) {
-        legDurationS = ' ' + this.leg.legDuration.formatDuration()
+        legDurationS = ' ' + this.leg.legDuration.formatDuration();
       }
 
       return legIdxS + leadingText + ' - ' + legDurationS;

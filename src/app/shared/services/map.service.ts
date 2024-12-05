@@ -110,12 +110,12 @@ export class MapService {
       bottom: 100,
     };
     
-    const onlyIfOutside = mapData.onlyIfOutside ?? false
+    const onlyIfOutside = mapData.onlyIfOutside ?? false;
 
     if (onlyIfOutside) {
       const isInside = MapHelpers.areBoundsInsideOtherBounds(newBounds, map.getBounds())
       if (isInside) {
-        return
+        return;
       }
     }
 
