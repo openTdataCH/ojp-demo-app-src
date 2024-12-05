@@ -34,7 +34,6 @@
     "@angular/cli": "~14.0.6",
     "@angular/compiler-cli": "^14.0.0",
     "@types/jasmine": "~4.0.0",
-    "@types/mapbox-gl": "^2.1.2",
     "@types/sax": "1.2.7",
     "@types/xmldom": "^0.1.30",
     "angular-cli-ghpages": "1.0.3",
