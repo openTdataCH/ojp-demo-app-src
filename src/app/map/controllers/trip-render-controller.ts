@@ -22,9 +22,9 @@ export class TripRenderController {
   public renderTrip(trip: OJP.Trip | null) {
     if (trip) {
       const geojson = trip.computeGeoJSON()
-      this.setSourceFeatures(geojson.features)
+      this.setSourceFeatures(geojson.features);
     } else {
-      this.removeAllFeatures()
+      this.removeAllFeatures();
     }
   }
 
@@ -130,6 +130,6 @@ export class TripRenderController {
       'type': 'FeatureCollection',
       'features': features
     }
-    source.setData(featureCollection)
+    source.setData(featureCollection);
   }
 }
