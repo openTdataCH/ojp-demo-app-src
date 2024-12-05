@@ -9,9 +9,9 @@ import * as OJP from 'ojp-sdk'
 import { DEBUG_LEVEL } from '../../../config/app-config';
 import { OJPHelpers } from '../../../helpers/ojp-helpers';
 
-import { MapService } from '../../../shared/services/map.service'
+import { MapService } from '../../../shared/services/map.service';
 import { UserTripService } from '../../../shared/services/user-trip.service';
-import { LegStopPointData } from '../../../shared/components/service-stops.component'
+import { LegStopPointData } from '../../../shared/components/service-stops.component';
 
 import { TripInfoResultPopoverComponent } from './trip-info-result-popover/trip-info-result-popover.component';
 
