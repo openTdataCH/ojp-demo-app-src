@@ -123,7 +123,7 @@ export class MapHelpers {
     
     const sourceID = 'debug-highlight';
     if (!map.getSource(sourceID)) {
-      const source = <mapboxgl.GeoJSONSourceRaw>{
+      const source = <mapboxgl.GeoJSONSourceSpecification>{
         type: 'geojson',
         data: <GeoJSON.FeatureCollection>{
           type: 'FeatureCollection',
@@ -173,7 +173,7 @@ export class MapHelpers {
     
     const sourceID = 'debug-highlight-layer-coord';
     if (!map.getSource(sourceID)) {
-      const source = <mapboxgl.GeoJSONSourceRaw>{
+      const source = <mapboxgl.GeoJSONSourceSpecification>{
         type: 'geojson',
         data: <GeoJSON.FeatureCollection>{
           type: 'FeatureCollection',
