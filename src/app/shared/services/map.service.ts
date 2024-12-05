@@ -111,9 +111,10 @@ export class MapService {
     };
     
     const onlyIfOutside = mapData.onlyIfOutside ?? false;
+    const mapBounds = map.getBounds();
+    if (onlyIfOutside && mapBounds) {
 
-    if (onlyIfOutside) {
-      const isInside = MapHelpers.areBoundsInsideOtherBounds(newBounds, map.getBounds())
+      const isInside = MapHelpers.areBoundsInsideOtherBounds(newBounds, mapBounds);
       if (isInside) {
         return;
       }

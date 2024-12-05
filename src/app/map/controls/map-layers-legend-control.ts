@@ -206,7 +206,12 @@ export class MapLayersLegendControl implements mapboxgl.IControl {
   }
 
   private handleMapIdleEvents(map: mapboxgl.Map) {
-    const currentMapBoundsHash = map.getBounds().toString();
+    const mapBounds = map.getBounds();
+    if (mapBounds === null) {
+      return;
+    }
+
+    const currentMapBoundsHash = mapBounds.toString();
     const hasSameBounds = this.prevMapBoundsHash === currentMapBoundsHash;
     if (hasSameBounds) {
       return;

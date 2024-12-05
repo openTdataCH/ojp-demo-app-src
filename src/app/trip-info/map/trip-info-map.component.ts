@@ -70,7 +70,7 @@ export class TripInfoMapComponent implements OnInit {
 
       this.mapLoadingPromise?.then(map => {
         this.mapService.zoomToLocation(map, {
-          lnglat: geoPosition.asLngLat() as mapboxgl.LngLat,
+          lnglat: geoPosition.asLngLat(),
           zoom: 16,
         })
       });
