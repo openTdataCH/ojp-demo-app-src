@@ -10,6 +10,7 @@ import { MapHelpers } from '../../map/helpers/map.helpers'
 import { MapDebugControl } from '../../map/controls/map-debug-control'
 import { MapLayersLegendControl } from '../../map/controls/map-layers-legend-control';
 import { LanguageService } from './language.service';
+import { TripGeoController } from '../controllers/trip-geo-controller';
 
 export interface IMapBoundsData {
   bounds: mapboxgl.LngLatBounds
@@ -77,7 +78,9 @@ export class MapService {
   }
 
   public zoomToTrip(trip: OJP.Trip) {
-    const bbox = trip.computeBBOX();
+    const tripController = new TripGeoController(trip);
+
+    const bbox = tripController.computeBBOX();
     if (bbox.isValid() === false) {
       return;
     }
