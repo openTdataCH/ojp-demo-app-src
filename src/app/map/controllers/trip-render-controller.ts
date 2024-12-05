@@ -3,11 +3,13 @@ import mapboxgl from 'mapbox-gl';
 
 import * as OJP from 'ojp-sdk'
 
+import { MapboxLayerHelpers } from '../../helpers/mapbox-layer-helpers';
+import { MapLegTypeColor } from '../../config/map-colors';
+
 import tripLegBeelineLayerJSON from './map-layers-def/ojp-trip-leg-beeline.json'
 import tripTimedLegEndpointCircleLayerJSON from './map-layers-def/ojp-trip-timed-leg-endpoint-circle.json'
 import tripTimedLegTrackLayerJSON from './map-layers-def/ojp-trip-timed-leg-track.json'
 import tripContinousLegWalkingLineLayerJSON from './map-layers-def/ojp-trip-walking-leg-line.json'
-
 
 export class TripRenderController {
   private map: mapboxgl.Map
@@ -37,22 +39,22 @@ export class TripRenderController {
       }
     });
 
-    tripLegBeelineLayer.filter = OJP.MapboxLayerHelpers.FilterBeelines()
     const tripLegBeelineLayer = tripLegBeelineLayerJSON as mapboxgl.LineLayerSpecification;
+    tripLegBeelineLayer.filter = MapboxLayerHelpers.FilterBeelines();
     if (tripLegBeelineLayer.paint) {
-      tripLegBeelineLayer.paint["line-color"] = OJP.MapboxLayerHelpers.ColorCaseByLegLineType()
+      tripLegBeelineLayer.paint["line-color"] = MapboxLayerHelpers.ColorCaseByLegLineType();
     }
 
-    const caseTimedLegColors = OJP.MapboxLayerHelpers.ColorCaseByLegLineType()
+    const caseTimedLegColors = MapboxLayerHelpers.ColorCaseByLegLineType();
 
-    tripTimedLegEndpointCircleLayer.filter = OJP.MapboxLayerHelpers.FilterLegPoints()
     const tripTimedLegEndpointCircleLayer = tripTimedLegEndpointCircleLayerJSON as mapboxgl.CircleLayerSpecification;
+    tripTimedLegEndpointCircleLayer.filter = MapboxLayerHelpers.FilterLegPoints();
     if (tripTimedLegEndpointCircleLayer.paint) {
       const caseCircleRadius: mapboxgl.ExpressionSpecification = [
         'case',
-        OJP.MapboxLayerHelpers.FilterByPointType('From'),
+        MapboxLayerHelpers.FilterByPointType('From'),
         4.0,
-        OJP.MapboxLayerHelpers.FilterByPointType('To'),
+        MapboxLayerHelpers.FilterByPointType('To'),
         8.0,
         2.0
       ];
@@ -60,7 +62,7 @@ export class TripRenderController {
 
       const caseCircleColor: mapboxgl.ExpressionSpecification = [
         'case',
-        OJP.MapboxLayerHelpers.FilterByPointType('To'),
+        MapboxLayerHelpers.FilterByPointType('To'),
         caseTimedLegColors,
         '#FFF'
       ];
@@ -68,7 +70,7 @@ export class TripRenderController {
 
       const caseCircleStrokeColor: mapboxgl.ExpressionSpecification = [
         'case',
-        OJP.MapboxLayerHelpers.FilterByPointType('To'),
+        MapboxLayerHelpers.FilterByPointType('To'),
         '#FFF',
         caseTimedLegColors,
       ];
@@ -76,25 +78,25 @@ export class TripRenderController {
 
       const caseCircleStrokeWidth: mapboxgl.ExpressionSpecification = [
         'case',
-        OJP.MapboxLayerHelpers.FilterByPointType('From'),
+        MapboxLayerHelpers.FilterByPointType('From'),
         4.0,
-        OJP.MapboxLayerHelpers.FilterByPointType('To'),
+        MapboxLayerHelpers.FilterByPointType('To'),
         1.0,
         3.0
       ];
       tripTimedLegEndpointCircleLayer.paint["circle-stroke-width"] = caseCircleStrokeWidth;
     }
 
-    tripTimedLegTrackLayerLayer.filter = OJP.MapboxLayerHelpers.FilterTimedLegTracks()
     const tripTimedLegTrackLayerLayer = tripTimedLegTrackLayerJSON as mapboxgl.LineLayerSpecification;
+    tripTimedLegTrackLayerLayer.filter = MapboxLayerHelpers.FilterTimedLegTracks();
     if (tripTimedLegTrackLayerLayer.paint) {
       tripTimedLegTrackLayerLayer.paint["line-color"] = caseTimedLegColors;
     }
 
-    tripContinousLegWalkingLineLayer.filter = OJP.MapboxLayerHelpers.FilterWalkingLegs()
     const tripContinousLegWalkingLineLayer = tripContinousLegWalkingLineLayerJSON as mapboxgl.LineLayerSpecification;
+    tripContinousLegWalkingLineLayer.filter = MapboxLayerHelpers.FilterWalkingLegs();
     if (tripContinousLegWalkingLineLayer.paint) {
-      tripContinousLegWalkingLineLayer.paint["line-color"] = OJP.MapLegTypeColor['ContinousLeg']
+      tripContinousLegWalkingLineLayer.paint["line-color"] = MapLegTypeColor['ContinousLeg'];
     }
 
     const mapLayers = [

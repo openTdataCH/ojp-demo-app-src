@@ -7,7 +7,9 @@ import mapboxgl from 'mapbox-gl'
 import * as OJP from 'ojp-sdk'
 
 import { DEBUG_LEVEL } from '../../../config/app-config';
+import { MapLegLineTypeColor } from '../../../config/map-colors';
 import { OJPHelpers } from '../../../helpers/ojp-helpers';
+import { OJPMapHelpers } from '../../../helpers/ojp-map-helpers';
 
 import { MapService } from '../../../shared/services/map.service';
 import { UserTripService } from '../../../shared/services/user-trip.service';
@@ -220,7 +222,49 @@ export class ResultTripLegComponent implements OnInit {
   }
 
   private computeLegColor(): string {
-    return this.leg?.computeLegColor() ?? OJP.MapLegTypeColor.TimedLeg
+    const defaultColor = MapLegLineTypeColor.Unknown;
+
+    if (!this.leg) {
+      return defaultColor;
+    }
+
+    const legType = this.leg.legType;
+
+    if (legType === 'ContinousLeg' || legType === 'TransferLeg') {
+      const leg = this.leg as OJP.TripContinousLeg;
+      return this.computeContinousLegColor(leg);
+    }
+
+    if (legType === 'TimedLeg') {
+      const leg = this.leg as OJP.TripTimedLeg;
+      return OJPMapHelpers.computeTimedLegColor(leg);
+    }
+
+    return defaultColor;
+  }
+
+  private computeContinousLegColor(leg: OJP.TripContinousLeg): string {
+    if (leg.isDriveCarLeg()) {
+      return MapLegLineTypeColor['Self-Drive Car']
+    }
+
+    if (leg.isSharedMobility()) {
+      return MapLegLineTypeColor['Shared Mobility']
+    }
+
+    if (leg.legType === 'TransferLeg') {
+      return MapLegLineTypeColor.Transfer
+    }
+
+    if (leg.isTaxi()) {
+      return MapLegLineTypeColor.OnDemand;
+    }
+
+    if (leg.legTransportMode === 'car-ferry') {
+      return MapLegLineTypeColor.Water;
+    }
+
+    return MapLegLineTypeColor.Walk;
   }
 
   private initLegInfo() {
