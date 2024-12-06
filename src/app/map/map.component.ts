@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, AfterViewInit } from '@angular/core';
 import { SbbDialog } from "@sbb-esta/angular/dialog";
 
 import mapboxgl from 'mapbox-gl'
@@ -17,7 +17,7 @@ import { LanguageService } from '../shared/services/language.service';
   templateUrl: './map.component.html',
   styleUrls: ['./map.component.scss']
 })
-export class MapComponent implements OnInit {
+export class MapComponent implements OnInit, AfterViewInit {
   public mapLoadingPromise: Promise<mapboxgl.Map> | null;
 
   private fromMarker: mapboxgl.Marker;
@@ -96,6 +96,12 @@ export class MapComponent implements OnInit {
     });
 
     this.initMap()
+  }
+
+  ngAfterViewInit(): void {
+    this.mapLoadingPromise?.then(map => {
+      map.resize();
+    });
   }
 
   private initMap() {

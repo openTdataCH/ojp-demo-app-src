@@ -7,11 +7,15 @@ import mapboxgl from 'mapbox-gl'
 import * as OJP from 'ojp-sdk'
 
 import { DEBUG_LEVEL } from '../../../config/app-config';
+import { MapLegLineTypeColor } from '../../../config/map-colors';
 import { OJPHelpers } from '../../../helpers/ojp-helpers';
+import { OJPMapHelpers } from '../../../helpers/ojp-map-helpers';
 
-import { MapService } from '../../../shared/services/map.service'
+import { MapService } from '../../../shared/services/map.service';
 import { UserTripService } from '../../../shared/services/user-trip.service';
-import { LegStopPointData } from '../../../shared/components/service-stops.component'
+import { LegStopPointData } from '../../../shared/components/service-stops.component';
+
+import { TripLegGeoController } from '../../../shared/controllers/trip-geo-controller';
 
 import { TripInfoResultPopoverComponent } from './trip-info-result-popover/trip-info-result-popover.component';
 
@@ -93,16 +97,16 @@ export class ResultTripLegComponent implements OnInit {
 
   private computeLegLeadingText(): string {
     if (this.leg === undefined || this.legIdx === undefined) {
-      return 'n/a'
+      return 'n/a';
     }
 
     const legIdxS = '' + (this.legIdx + 1) + '. ';
 
     if (this.leg.legType === 'TransferLeg') {
-      const leadingTextTitle = 'Transfer'
+      const leadingTextTitle = 'Transfer';
       
-      const continuousLeg = this.leg as OJP.TripContinousLeg
-      let legDurationS = ''
+      const continuousLeg = this.leg as OJP.TripContinousLeg;
+      let legDurationS = '';
       if (continuousLeg.walkDuration) {
         legDurationS = ' ' + continuousLeg.walkDuration.formatDuration()
       }
@@ -111,29 +115,33 @@ export class ResultTripLegComponent implements OnInit {
     }
 
     if (this.leg.legType === 'ContinousLeg') {
-      const continuousLeg = this.leg as OJP.TripContinousLeg
+      const continuousLeg = this.leg as OJP.TripContinousLeg;
 
       const leadingText = this.computeLegLeadingTextContinousLeg(continuousLeg);
 
-      let legDurationS = ''
+      let legDurationS = '';
       if (this.leg.legDuration) {
-        legDurationS = ' ' + this.leg.legDuration.formatDuration()
+        legDurationS = ' ' + this.leg.legDuration.formatDuration();
       }
       
       return legIdxS + leadingText + ' - ' + legDurationS;
     }
 
     if (this.leg.legType === 'TimedLeg') {
-      const timedLeg = this.leg as OJP.TripTimedLeg
+      const timedLeg = this.leg as OJP.TripTimedLeg;
 
       let leadingText = timedLeg.service.ptMode.name;
+      if (leadingText === null) {
+        leadingText = timedLeg.service.ptMode.ptMode;
+      }
+
       if (timedLeg.service.ptMode.isDemandMode) {
         leadingText = 'OnDemand ' + leadingText;
       }
 
-      let legDurationS = ''
+      let legDurationS = '';
       if (this.leg.legDuration) {
-        legDurationS = ' ' + this.leg.legDuration.formatDuration()
+        legDurationS = ' ' + this.leg.legDuration.formatDuration();
       }
 
       return legIdxS + leadingText + ' - ' + legDurationS;
@@ -199,7 +207,9 @@ export class ResultTripLegComponent implements OnInit {
       return
     }
 
-    const legFeatures = this.leg.computeGeoJSONFeatures();
+    const tripLegGeoController = new TripLegGeoController(this.leg);
+
+    const legFeatures = tripLegGeoController.computeGeoJSONFeatures();
     const bbox = OJP.GeoPositionBBOX.initFromGeoJSONFeatures(legFeatures);
 
     if (!bbox.isValid()) {
@@ -216,7 +226,49 @@ export class ResultTripLegComponent implements OnInit {
   }
 
   private computeLegColor(): string {
-    return this.leg?.computeLegColor() ?? OJP.MapLegTypeColor.TimedLeg
+    const defaultColor = MapLegLineTypeColor.Unknown;
+
+    if (!this.leg) {
+      return defaultColor;
+    }
+
+    const legType = this.leg.legType;
+
+    if (legType === 'ContinousLeg' || legType === 'TransferLeg') {
+      const leg = this.leg as OJP.TripContinousLeg;
+      return this.computeContinousLegColor(leg);
+    }
+
+    if (legType === 'TimedLeg') {
+      const leg = this.leg as OJP.TripTimedLeg;
+      return OJPMapHelpers.computeTimedLegColor(leg);
+    }
+
+    return defaultColor;
+  }
+
+  private computeContinousLegColor(leg: OJP.TripContinousLeg): string {
+    if (leg.isDriveCarLeg()) {
+      return MapLegLineTypeColor['Self-Drive Car']
+    }
+
+    if (leg.isSharedMobility()) {
+      return MapLegLineTypeColor['Shared Mobility']
+    }
+
+    if (leg.legType === 'TransferLeg') {
+      return MapLegLineTypeColor.Transfer
+    }
+
+    if (leg.isTaxi()) {
+      return MapLegLineTypeColor.OnDemand;
+    }
+
+    if (leg.legTransportMode === 'car-ferry') {
+      return MapLegLineTypeColor.Water;
+    }
+
+    return MapLegLineTypeColor.Walk;
   }
 
   private initLegInfo() {

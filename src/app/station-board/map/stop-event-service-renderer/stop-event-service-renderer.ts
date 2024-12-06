@@ -22,7 +22,7 @@ export class StopEventServiceRenderer {
     }
 
     private addMapLayers(map: mapboxgl.Map) {
-        const source: mapboxgl.GeoJSONSourceRaw = {
+        const source: mapboxgl.GeoJSONSourceSpecification = {
             type: 'geojson',
             data: <GeoJSON.FeatureCollection> {
                 type: 'FeatureCollection',

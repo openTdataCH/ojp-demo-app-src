@@ -58,7 +58,7 @@ export class AppMapLayer {
     }
 
     private addMapSourceAndLayers() {
-        this.map.addSource(this.mapSourceID, <mapboxgl.GeoJSONSourceRaw>{
+        this.map.addSource(this.mapSourceID, <mapboxgl.GeoJSONSourceSpecification>{
             type: 'geojson',
             data: <GeoJSON.FeatureCollection>{
                 'type': 'FeatureCollection',
@@ -111,6 +111,10 @@ export class AppMapLayer {
         const featuresLimit = isPOI_all ? 1000 : 300;
 
         const mapBounds = this.map.getBounds();
+        if (mapBounds === null) {
+            return;
+        }
+
         const request = OJP.LocationInformationRequest.initWithBBOXAndType(
             this.userTripService.getStageConfig(),
             this.language,
