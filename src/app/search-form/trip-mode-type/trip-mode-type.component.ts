@@ -92,6 +92,8 @@ export class TripModeTypeComponent implements OnInit {
 
   public mapPublicTransportModesFilter: Record<OJP.ModeOfTransportType, boolean>;
 
+  public showMonoMultiModalSelect: boolean;
+
   constructor(public userTripService: UserTripService) {
     this.tripTransportModeData = appTripTransportModeData;
 
@@ -122,6 +124,8 @@ export class TripModeTypeComponent implements OnInit {
     this.mapPublicTransportModesFilter.bus = false;
     this.mapPublicTransportModesFilter.water = false;
     this.mapPublicTransportModesFilter.tram = false;
+
+    this.showMonoMultiModalSelect = OJP.OJP_VERSION === '1.0';
   }
 
   ngOnInit() {
