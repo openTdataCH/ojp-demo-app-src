@@ -28,9 +28,9 @@ OJP-Demo URL: https://opentdatach.github.io/ojp-demo-app/
 |-|-|-|-|
 | PublicTransport | [Bern - Zürich](https://tools.odpch.ch/beta-ojp-demo/search?from=8507000&to=8503000&do_search=yes) | [Bern - Zürich](https://tools.odpch.ch/ojp-demo-v2/search?from=8507000&to=8503000&do_search=yes) |  |
 | PublicTransport, Via | [Bern - Luzern - Zürich](https://tools.odpch.ch/beta-ojp-demo/search?from=8507000&to=8503000&via=8505000&do_search=yes) | [Bern - Luzern - Zürich](https://tools.odpch.ch/ojp-demo-v2/search?from=8507000&to=8503000&via=8505000&do_search=yes) |  |
-| PublicTransport, Bus | [BernMobil](https://tools.odpch.ch/beta-ojp-demo/search?from=8589991&to=8576646&public_transport_modes=bus) - DOESNT WORK | [BernMobil](https://tools.odpch.ch/ojp-demo-v2/search?from=8589991&to=8576646&public_transport_modes=bus) |  |
-| OwnCar | [Bern - Zürich](https://tools.odpch.ch/beta-ojp-demo/search?from=8507000&to=8503000&transport_modes=self-drive-car) | [Bern - Zürich](https://tools.odpch.ch/beta-ojp-demo/search?from=8507000&to=8503000&transport_modes=self-drive-car) - DOESNT WORK |  |
-| ATZ (car transport) | [Kandersteg - Goppenestein](https://tools.odpch.ch/beta-ojp-demo/search?from=8511171&to=8519655) | [Kandersteg - Goppenestein](https://tools.odpch.ch/ojp-demo-v2/search?from=8511171&to=8519655) - DOESNT WORK |  |
+| PublicTransport, Boat | [Thun - Spiez](https://tools.odpch.ch/beta-ojp-demo/search?from=8507100&to=8507483&public_transport_modes=water) | [Thun - Spiez](https://tools.odpch.ch/ojp-demo-v2/search?from=8507100&to=8507483&public_transport_modes=water) |  |
+| OwnCar | [Bern - Zürich](https://tools.odpch.ch/beta-ojp-demo/search?from=8507000&to=8503000&transport_modes=self-drive-car) | [Bern - Zürich](https://tools.odpch.ch/beta-ojp-demo/search?from=8507000&to=8503000&transport_modes=self-drive-car) |  |
+| ATZ (car transport) | [Kandersteg - Goppenestein](https://tools.odpch.ch/beta-ojp-demo/search?from=8511171&to=8519655) | [Kandersteg - Goppenestein](https://tools.odpch.ch/ojp-demo-v2/search?from=8511171&to=8519655) |  |
 | Coords - Coords | [Croy-Romainmôtier to Glis](https://tools.odpch.ch/beta-ojp-demo/search?from=46.673066,6.462309&to=46.311076,7.977560) | [Croy to Glis](https://tools.odpch.ch/ojp-demo-v2/search?from=46.695176,6.479795&to=46.311076,7.977560) |  |
 
 ### Multi-modal
