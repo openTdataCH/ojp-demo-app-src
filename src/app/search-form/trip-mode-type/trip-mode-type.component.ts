@@ -20,7 +20,7 @@ const appTripTransportModeData: TripTransportModeData[] = [
       'public_transport',
       'foot', // in v1 is 'walk',
       'cycle',
-      'self-drive-car',
+      'car', // in v1 is 'self-drive-car',
       'bicycle_rental',
       'escooter_rental',
       'car_sharing',
