@@ -99,7 +99,7 @@
           </sbb-checkbox>
         </div>
         <div>
-          <input sbbInput style="width: 50px;" [(ngModel)]="this.numberOfResults" />
+          <input sbbInput style="width: 50px;" [(ngModel)]="this.numberOfResults" (change)="updateAdditionalRestrictions()"/>
         </div>
       </div>
       <div class="d-flex align-items-center mb-2">
@@ -109,7 +109,7 @@
           </sbb-checkbox>
         </div>
         <div>
-          <input sbbInput style="width: 50px;" [(ngModel)]="this.numberOfResultsBefore" />
+          <input sbbInput style="width: 50px;" [(ngModel)]="this.numberOfResultsBefore" (change)="updateAdditionalRestrictions()" />
         </div>
       </div>
       <div class="d-flex align-items-center mb-2">
@@ -119,7 +119,7 @@
           </sbb-checkbox>
         </div>
         <div>
-          <input sbbInput style="width: 50px;" [(ngModel)]="this.numberOfResultsAfter" />
+          <input sbbInput style="width: 50px;" [(ngModel)]="this.numberOfResultsAfter" (change)="updateAdditionalRestrictions()" />
         </div>
       </div>
       <div class="d-flex gap-2 align-items-center mb-2">
