@@ -561,21 +561,21 @@ export class UserTripService {
       return OJP.DEFAULT_STAGE;
     }
     
-    return stageConfig
+    return stageConfig;
   }
 
   public updateAppStage(newStage: APP_STAGE) {
-    this.currentAppStage = newStage
-    this.updateURLs()
+    this.currentAppStage = newStage;
+    this.updateURLs();
   }
 
   public updateDepartureDateTime(newDateTime: Date) {
-    this.departureDate = newDateTime
-    this.updateURLs()
+    this.departureDate = newDateTime;
+    this.updateURLs();
   }
 
   public updateTripMode() {
-    this.updateURLs()
+    this.updateURLs();
   }
 
   private computeTripLocationsToUpdate(): OJP.TripLocationPoint[] {

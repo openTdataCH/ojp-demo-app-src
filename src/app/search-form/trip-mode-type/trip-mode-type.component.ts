@@ -69,13 +69,13 @@ const appTripTransportModeData: TripTransportModeData[] = [
   styleUrls: ['./trip-mode-type.component.scss']
 })
 export class TripModeTypeComponent implements OnInit {
-  public tripTransportModeData: TripTransportModeData[]
+  public tripTransportModeData: TripTransportModeData[];
 
-  public tripTransportModes: OJP.IndividualTransportMode[]
+  public tripTransportModes: OJP.IndividualTransportMode[];
   private prevTransportMode: OJP.IndividualTransportMode;
 
-  public isAdditionalRestrictionsEnabled: boolean
-  public settingsCollapseID: string
+  public isAdditionalRestrictionsEnabled: boolean;
+  public settingsCollapseID: string;
 
   public filterMinDurationControl = new FormControl('');
   public filterMaxDurationControl = new FormControl('');
@@ -101,7 +101,7 @@ export class TripModeTypeComponent implements OnInit {
   constructor(public userTripService: UserTripService) {
     this.tripTransportModeData = appTripTransportModeData;
 
-    this.tripTransportModes = JSON.parse(JSON.stringify(this.tripTransportModeData[0].transportModes))
+    this.tripTransportModes = JSON.parse(JSON.stringify(this.tripTransportModeData[0].transportModes));
     this.prevTransportMode = 'public_transport';
 
     this.isAdditionalRestrictionsEnabled = false;
