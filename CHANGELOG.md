@@ -4,6 +4,12 @@ OJP-Demo URL: https://opentdatach.github.io/ojp-demo-app/
 
 ----
 
+10.December 2024
+- Refactor geo bindings - [PR #191](https://github.com/openTdataCH/ojp-demo-app-src/pull/191)
+  - use latest version of OJP SDK
+  - extract mapbox-gl types form SDK into the GUI
+  - extract GeoJSON creation and map related config from SDK
+
 27.November 2024
 - Improve TripRequest + TripInfoRequest - [PR #186](https://github.com/openTdataCH/ojp-demo-app-src/pull/186)
   - show platform assistance in the TripInfoRequest page
