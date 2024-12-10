@@ -11,16 +11,19 @@ import { TRIP_REQUEST_DEFAULT_NUMBER_OF_RESULTS } from '../../config/app-config'
 interface TripTransportModeData {
   modeType: OJP.TripModeType,
   transportModes: OJP.IndividualTransportMode[],
-}
+};
+
+const walkTransportMode: OJP.IndividualTransportMode = OJP.OJP_VERSION === '1.0' ? 'walk' : 'foot'; 
+const carTransportMode: OJP.IndividualTransportMode = OJP.OJP_VERSION === '1.0' ? 'self-drive-car' : 'car';
 
 const appTripTransportModeData: TripTransportModeData[] = [
   {
     modeType: 'monomodal',
     transportModes: [
       'public_transport',
-      'walk', // in v2 is 'foot',
+      walkTransportMode,
       'cycle',
-      'self-drive-car',
+      carTransportMode,
       'bicycle_rental',
       'escooter_rental',
       'car_sharing',
@@ -31,7 +34,7 @@ const appTripTransportModeData: TripTransportModeData[] = [
   {
     modeType: 'mode_at_start',
     transportModes: [
-      'walk', // in v2 is 'foot',
+      walkTransportMode,
       'cycle',
       'bicycle_rental',
       'escooter_rental',
@@ -66,12 +69,13 @@ const appTripTransportModeData: TripTransportModeData[] = [
   styleUrls: ['./trip-mode-type.component.scss']
 })
 export class TripModeTypeComponent implements OnInit {
-  public tripTransportModeData: TripTransportModeData[]
+  public tripTransportModeData: TripTransportModeData[];
 
-  public tripTransportModes: OJP.IndividualTransportMode[]
+  public tripTransportModes: OJP.IndividualTransportMode[];
+  private prevTransportMode: OJP.IndividualTransportMode;
 
-  public isAdditionalRestrictionsEnabled: boolean
-  public settingsCollapseID: string
+  public isAdditionalRestrictionsEnabled: boolean;
+  public settingsCollapseID: string;
 
   public filterMinDurationControl = new FormControl('');
   public filterMaxDurationControl = new FormControl('');
@@ -92,10 +96,13 @@ export class TripModeTypeComponent implements OnInit {
 
   public mapPublicTransportModesFilter: Record<OJP.ModeOfTransportType, boolean>;
 
+  public showMonoMultiModalSelect: boolean;
+
   constructor(public userTripService: UserTripService) {
     this.tripTransportModeData = appTripTransportModeData;
 
-    this.tripTransportModes = JSON.parse(JSON.stringify(this.tripTransportModeData[0].transportModes))
+    this.tripTransportModes = JSON.parse(JSON.stringify(this.tripTransportModeData[0].transportModes));
+    this.prevTransportMode = 'public_transport';
 
     this.isAdditionalRestrictionsEnabled = false;
     this.settingsCollapseID = 'mode_custom_mode_settings_NOT_READY_YET';
@@ -122,6 +129,8 @@ export class TripModeTypeComponent implements OnInit {
     this.mapPublicTransportModesFilter.bus = false;
     this.mapPublicTransportModesFilter.water = false;
     this.mapPublicTransportModesFilter.tram = false;
+
+    this.showMonoMultiModalSelect = OJP.OJP_VERSION === '1.0';
   }
 
   ngOnInit() {
@@ -130,14 +139,23 @@ export class TripModeTypeComponent implements OnInit {
     }) ?? this.tripTransportModeData[0];
 
     this.tripTransportModes = JSON.parse(JSON.stringify(tripTransportModeData.transportModes));
+    this.prevTransportMode = this.userTripService.tripTransportMode;
 
     this.userTripService.defaultsInited.subscribe(nothing => {
       this.userTripService.updateTripLocationCustomMode();
 
-      if (this.userTripService.tripModeType !== 'monomodal') {
+      const isMonomodal = this.userTripService.tripModeType === 'monomodal';
+
+      if (!isMonomodal) {
         this.isAdditionalRestrictionsEnabled = true;
         this.updateAdditionalRestrictions();
-      }  
+      }
+
+      const isAuto = this.userTripService.tripTransportMode === carTransportMode;
+      if (isMonomodal && isAuto) {
+        this.numberOfResults = 0;
+        this.userTripService.numberOfResults = 0;
+      }
 
       if (this.userTripService.publicTransportModesFilter.length > 0) {
         this.isAdditionalRestrictionsEnabled = true;
@@ -264,8 +282,21 @@ export class TripModeTypeComponent implements OnInit {
   }
 
   public onTransportModeChange() {
+    const isCar = this.userTripService.tripTransportMode === carTransportMode;
+    if (isCar) {
+      this.numberOfResults = 0;
+      this.userTripService.numberOfResults = 0;
+    }
+
+    if (this.prevTransportMode === carTransportMode && !isCar) {
+      this.numberOfResults = TRIP_REQUEST_DEFAULT_NUMBER_OF_RESULTS;
+      this.userTripService.numberOfResults = TRIP_REQUEST_DEFAULT_NUMBER_OF_RESULTS;
+    }
+
     this.userTripService.updateTripMode();
     this.userTripService.updateTripLocationCustomMode();
+
+    this.prevTransportMode = this.userTripService.tripTransportMode;
   }
 
   public computeTripModeTypeText(tripModeType: OJP.TripModeType): string {

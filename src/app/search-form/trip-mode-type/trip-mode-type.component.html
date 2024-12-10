@@ -1,7 +1,7 @@
 <div class="trip-mot-type-container">
 
   <div class="d-flex gap-1 align-items-center via-mot">
-    <div>
+    <div *ngIf="this.showMonoMultiModalSelect">
       <sbb-form-field class="w-100">
         <sbb-label>Mono-/Multi-modal</sbb-label>
           <sbb-select
@@ -49,46 +49,49 @@
       id="{{ this.settingsCollapseID }}"
     >
     <div class="endpoint-settings">
-      <div class="d-flex align-items-center mb-2">
-        <div class="flex-grow-1">
-          <sbb-checkbox value="single-checkbox" [(ngModel)]="this.isFilterMinDurationEnabled" (change)="updateAdditionalRestrictions()">
-            MinDuration
-          </sbb-checkbox>
+      <ng-container *ngIf="this.showMonoMultiModalSelect;">
+        <div class="d-flex align-items-center mb-2">
+          <div class="flex-grow-1">
+            <sbb-checkbox value="single-checkbox" [(ngModel)]="this.isFilterMinDurationEnabled" (change)="updateAdditionalRestrictions()">
+              MinDuration
+            </sbb-checkbox>
+          </div>
+          <div>
+            <input sbbInput style="width: 50px;" [formControl]="this.filterMinDurationControl" /> minutes
+          </div>
         </div>
-        <div>
-          <input sbbInput style="width: 50px;" [formControl]="this.filterMinDurationControl" /> minutes
+        <div class="d-flex align-items-center mb-2">
+          <div class="flex-grow-1">
+            <sbb-checkbox value="single-checkbox" [(ngModel)]="this.isFilterMaxDurationEnabled" (change)="updateAdditionalRestrictions()">
+              MaxDuration
+            </sbb-checkbox>
+          </div>
+          <div>
+            <input sbbInput style="width: 50px;" [formControl]="this.filterMaxDurationControl" /> minutes
+          </div>
         </div>
-      </div>
-      <div class="d-flex align-items-center mb-2">
-        <div class="flex-grow-1">
-          <sbb-checkbox value="single-checkbox" [(ngModel)]="this.isFilterMaxDurationEnabled" (change)="updateAdditionalRestrictions()">
-            MaxDuration
-          </sbb-checkbox>
+        <div class="d-flex align-items-center mb-2">
+          <div class="flex-grow-1">
+            <sbb-checkbox value="single-checkbox" [(ngModel)]="this.isFilterMinDistanceEnabled" (change)="updateAdditionalRestrictions()">
+              MinDistance
+            </sbb-checkbox>
+          </div>
+          <div>
+            <input sbbInput style="width: 70px;" [formControl]="this.filterMinDistanceControl" /> meters
+          </div>
         </div>
-        <div>
-          <input sbbInput style="width: 50px;" [formControl]="this.filterMaxDurationControl" /> minutes
+        <div class="d-flex align-items-center mb-2">
+          <div class="flex-grow-1">
+            <sbb-checkbox value="single-checkbox" [(ngModel)]="this.isFilterMaxDistanceEnabled" (change)="updateAdditionalRestrictions()">
+              MaxDistance
+            </sbb-checkbox>
+          </div>
+          <div>
+            <input sbbInput style="width: 70px;" [formControl]="this.filterMaxDistanceControl" /> meters
+          </div>
         </div>
-      </div>
-      <div class="d-flex align-items-center mb-2">
-        <div class="flex-grow-1">
-          <sbb-checkbox value="single-checkbox" [(ngModel)]="this.isFilterMinDistanceEnabled" (change)="updateAdditionalRestrictions()">
-            MinDistance
-          </sbb-checkbox>
-        </div>
-        <div>
-          <input sbbInput style="width: 70px;" [formControl]="this.filterMinDistanceControl" /> meters
-        </div>
-      </div>
-      <div class="d-flex align-items-center mb-2">
-        <div class="flex-grow-1">
-          <sbb-checkbox value="single-checkbox" [(ngModel)]="this.isFilterMaxDistanceEnabled" (change)="updateAdditionalRestrictions()">
-            MaxDistance
-          </sbb-checkbox>
-        </div>
-        <div>
-          <input sbbInput style="width: 70px;" [formControl]="this.filterMaxDistanceControl" /> meters
-        </div>
-      </div>
+      </ng-container>
+      
       <div class="d-flex align-items-center mb-2">
         <div class="flex-grow-1">
           <sbb-checkbox value="single-checkbox" [(ngModel)]="this.isNumberOfResultsEnabled" (change)="updateAdditionalRestrictions()">
@@ -96,7 +99,7 @@
           </sbb-checkbox>
         </div>
         <div>
-          <input sbbInput style="width: 50px;" [(ngModel)]="this.numberOfResults" />
+          <input sbbInput style="width: 50px;" [(ngModel)]="this.numberOfResults" (change)="updateAdditionalRestrictions()"/>
         </div>
       </div>
       <div class="d-flex align-items-center mb-2">
@@ -106,7 +109,7 @@
           </sbb-checkbox>
         </div>
         <div>
-          <input sbbInput style="width: 50px;" [(ngModel)]="this.numberOfResultsBefore" />
+          <input sbbInput style="width: 50px;" [(ngModel)]="this.numberOfResultsBefore" (change)="updateAdditionalRestrictions()" />
         </div>
       </div>
       <div class="d-flex align-items-center mb-2">
@@ -116,7 +119,7 @@
           </sbb-checkbox>
         </div>
         <div>
-          <input sbbInput style="width: 50px;" [(ngModel)]="this.numberOfResultsAfter" />
+          <input sbbInput style="width: 50px;" [(ngModel)]="this.numberOfResultsAfter" (change)="updateAdditionalRestrictions()" />
         </div>
       </div>
       <div class="d-flex gap-2 align-items-center mb-2">
