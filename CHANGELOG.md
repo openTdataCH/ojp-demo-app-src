@@ -9,6 +9,10 @@ OJP-Demo URL: https://opentdatach.github.io/ojp-demo-app/
   - use latest version of OJP SDK
   - extract mapbox-gl types form SDK into the GUI
   - extract GeoJSON creation and map related config from SDK
+- Improve TripRequest params - [PR #192](https://github.com/openTdataCH/ojp-demo-app-src/pull/192)
+  - updates example [URLs](https://github.com/openTdataCH/ojp-demo-app-src/blob/main/docs/URLs.md)
+  - show multi-modal dropdown / params only to OJP v2
+  - reset the `NumberOfResults` params when switching to/from `car` transport mode  
 
 27.November 2024
 - Improve TripRequest + TripInfoRequest - [PR #186](https://github.com/openTdataCH/ojp-demo-app-src/pull/186)
