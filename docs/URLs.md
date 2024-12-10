@@ -22,12 +22,49 @@ OJP-Demo URL: https://opentdatach.github.io/ojp-demo-app/
 
 ## Examples
 
-- [Bern to Zürich](https://opentdatach.github.io/ojp-demo-app/) - the app will prefill the from/to with Bern/Zürich endpoints and use the current date / time + PROD stage. No `ItModesToCover` will be used.
-- [Bern to Rütli for Aug.1 with stop in Luzern](https://opentdatach.github.io/ojp-demo-app/search?from=46.941621,7.462849&to=8508471&via=47.050180,8.310180&mode_types=monomodal;monomodal&transport_modes=public_transport;public_transport&trip_datetime=2022-08-01%2010:00&stage=prod) - the app will prefill the from/to and via points and set the datetime to 1st of August.
-- [Croy-Romainmôtier to Glis](https://opentdatach.github.io/ojp-demo-app/search?from=46.673066%2C6.462309&to=46.311076%2C7.977560&&mode_types=monomodal&trip_datetime=2022-07-25+17%3A45&stage=test) - use `TEST` stage to demo the `demandAndResponseBus` in the `BusSubmode` TripRequest response. The journey takes place in a Sunday evening.
-- [Meiringen demandAndResponseBus](https://opentdatach.github.io/ojp-demo-app/search?from=46.691000%2C8.223430&to=46.726650%2C8.222980&stage=test) - use `TEST` stage to demo the `demandAndResponseBus` mode in Meiringen area.
-- [Multi-modal trip with shared bicycle at start](https://opentdatach.github.io/ojp-demo-app/search?from=46.925047,7.417903&to=47.056009,7.630737&mode_types=mode_at_start&transport_modes=bicycle_rental&trip_datetime=2022-10-09%2023:28&stage=prod) - use `mode_at_start` mode_type and `cycle` MOT type for `ItModesToCover`.
-- [Self-drive car ride](https://opentdatach.github.io/ojp-demo-app/search?from=46.944397,7.414940&to=46.934726,7.497647&mode_types=monomodal&transport_modes=car_self_driving) - use `monomodal` mode type and `self-drive-car` MOT type for `ItModesToCover`.
+### Mono-modal
+
+| Example | OJP 1 | OJP 2 | Comments |
+|-|-|-|-|
+| PublicTransport | [Bern - Zürich](https://tools.odpch.ch/beta-ojp-demo/search?from=8507000&to=8503000&do_search=yes) | [Bern - Zürich](https://tools.odpch.ch/ojp-demo-v2/search?from=8507000&to=8503000&do_search=yes) |  |
+| PublicTransport, Via | [Bern - Luzern - Zürich](https://tools.odpch.ch/beta-ojp-demo/search?from=8507000&to=8503000&via=8505000&do_search=yes) | [Bern - Luzern - Zürich](https://tools.odpch.ch/ojp-demo-v2/search?from=8507000&to=8503000&via=8505000&do_search=yes) |  |
+| PublicTransport, Boat | [Thun - Spiez](https://tools.odpch.ch/beta-ojp-demo/search?from=8507100&to=8507483&public_transport_modes=water) | [Thun - Spiez](https://tools.odpch.ch/ojp-demo-v2/search?from=8507100&to=8507483&public_transport_modes=water) |  |
+| ATZ (car transport) | [Kandersteg - Goppenestein](https://tools.odpch.ch/beta-ojp-demo/search?from=8511171&to=8519655) | [Kandersteg - Goppenestein](https://tools.odpch.ch/ojp-demo-v2/search?from=8511171&to=8519655) |  |
+| Coords - Coords | [Croy-Romainmôtier to Glis](https://tools.odpch.ch/beta-ojp-demo/search?from=46.673066,6.462309&to=46.311076,7.977560) | [Croy to Glis](https://tools.odpch.ch/ojp-demo-v2/search?from=46.695176,6.479795&to=46.311076,7.977560) |  |
+| Own Car | [Bern - Zürich](https://tools.odpch.ch/beta-ojp-demo/search?from=8507000&to=8503000&transport_modes=self-drive-car) | [Spiez - Bern](https://tools.odpch.ch/ojp-demo-v2/search?from=8507483&to=8507000&transport_modes=car&do_search=yes) |  |
+| Own Car + ATZ train | N / A | [Spiez - Brig](https://tools.odpch.ch/ojp-demo-v2/search?from=8507483&to=8501609&transport_modes=car&do_search=yes) |  |
+| Own Car + Water Ferry | N / A | [Horgen - Meilen](https://tools.odpch.ch/ojp-demo-v2/search?from=8590653&to=8576083&transport_modes=car&do_search=yes) |  |
+
+
+
+### Multi-modal
+
+| Example | OJP 1 | OJP 2 | Comments |
+|-|-|-|-|
+| Own Bycicle + Public Transport | [Bern](https://tools.odpch.ch/beta-ojp-demo/search?from=46.952926,7.426087&to=8588998&mode_types=mode_at_start&transport_modes=cycle) | N / A |  |
+| Shared Scooter + Public Transport | [Bern](https://tools.odpch.ch/beta-ojp-demo/search?from=46.952926,7.426087&to=8588998&mode_types=mode_at_start&transport_modes=escooter_rental) | N / A |  |
+
+
+### Mock TEST URLs
+
+How To
+
+- get an OJP response API and save it to https://gist.github.com
+- for example https://gist.github.com/vasile/86514397dae2038d7024f2228be476d7
+- edit the file if needed
+- copy the `gistId` => `86514397dae2038d7024f2228be476d7`
+- load the XML content in OJP Demo App using `gist=gistId` parameter
+- i.e. https://tools.odpch.ch/ojp-demo-v2/search?gist=86514397dae2038d7024f2228be476d7 for OJP 2.0 GUI
+
+Examples
+
+| URL | Notes |
+|-----|-------|
+| https://tools.odpch.ch/ojp-demo-v2/search?gist=86514397dae2038d7024f2228be476d7 | TR with `Infeasable`, `Unplanned` status |
+| https://tools.odpch.ch/ojp-demo-v2/search?gist=2f9f3554a3f5b7c65ce76f04406319bb | TR with `Deviation` status |
+| https://tools.odpch.ch/ojp-demo-v2/search?gist=1dff55df2c5b3167f59c093261ff4f54 | TR with `Cancelled` status |
+| https://tools.odpch.ch/ojp-demo-v2/search?gist=29843eabbeaaa8e73163b0a22b511513 | TR with `Autoverladezug` |
+
 
 # 2. Station Board
 

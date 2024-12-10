@@ -11,16 +11,19 @@ import { TRIP_REQUEST_DEFAULT_NUMBER_OF_RESULTS } from '../../config/app-config'
 interface TripTransportModeData {
   modeType: OJP.TripModeType,
   transportModes: OJP.IndividualTransportMode[],
-}
+};
+
+const walkTransportMode: OJP.IndividualTransportMode = OJP.OJP_VERSION === '1.0' ? 'walk' : 'foot'; 
+const carTransportMode: OJP.IndividualTransportMode = OJP.OJP_VERSION === '1.0' ? 'self-drive-car' : 'car';
 
 const appTripTransportModeData: TripTransportModeData[] = [
   {
     modeType: 'monomodal',
     transportModes: [
       'public_transport',
-      'foot', // in v1 is 'walk',
+      walkTransportMode,
       'cycle',
-      'car', // in v1 is 'self-drive-car',
+      carTransportMode,
       'bicycle_rental',
       'escooter_rental',
       'car_sharing',
@@ -31,7 +34,7 @@ const appTripTransportModeData: TripTransportModeData[] = [
   {
     modeType: 'mode_at_start',
     transportModes: [
-      'foot', // in v1 is 'walk',
+      walkTransportMode,
       'cycle',
       'bicycle_rental',
       'escooter_rental',
@@ -148,7 +151,7 @@ export class TripModeTypeComponent implements OnInit {
         this.updateAdditionalRestrictions();
       }
 
-      const isAuto = this.userTripService.tripTransportMode === 'car';
+      const isAuto = this.userTripService.tripTransportMode === carTransportMode;
       if (isMonomodal && isAuto) {
         this.numberOfResults = 0;
         this.userTripService.numberOfResults = 0;
@@ -279,13 +282,13 @@ export class TripModeTypeComponent implements OnInit {
   }
 
   public onTransportModeChange() {
-    const isCar = this.userTripService.tripTransportMode === 'car';
+    const isCar = this.userTripService.tripTransportMode === carTransportMode;
     if (isCar) {
       this.numberOfResults = 0;
       this.userTripService.numberOfResults = 0;
     }
 
-    if (this.prevTransportMode === 'car' && !isCar) {
+    if (this.prevTransportMode === carTransportMode && !isCar) {
       this.numberOfResults = TRIP_REQUEST_DEFAULT_NUMBER_OF_RESULTS;
       this.userTripService.numberOfResults = TRIP_REQUEST_DEFAULT_NUMBER_OF_RESULTS;
     }
