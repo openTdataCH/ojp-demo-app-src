@@ -1,13 +1,17 @@
-import * as GeoJSON from 'geojson'
-import mapboxgl from "mapbox-gl";
+import * as GeoJSON from 'geojson';
+import mapboxgl from 'mapbox-gl';
 
 import * as OJP from 'ojp-sdk'
+
+import { MapboxLayerHelpers } from '../../helpers/mapbox-layer-helpers';
+import { MapLegTypeColor } from '../../config/map-colors';
+
+import { TripLegGeoController } from '../../shared/controllers/trip-geo-controller';
 
 import tripLegBeelineLayerJSON from './map-layers-def/ojp-trip-leg-beeline.json'
 import tripTimedLegEndpointCircleLayerJSON from './map-layers-def/ojp-trip-timed-leg-endpoint-circle.json'
 import tripTimedLegTrackLayerJSON from './map-layers-def/ojp-trip-timed-leg-track.json'
 import tripContinousLegWalkingLineLayerJSON from './map-layers-def/ojp-trip-walking-leg-line.json'
-
 
 export class TripRenderController {
   private map: mapboxgl.Map
@@ -21,15 +25,15 @@ export class TripRenderController {
 
   public renderTrip(trip: OJP.Trip | null) {
     if (trip) {
-      const geojson = trip.computeGeoJSON()
-      this.setSourceFeatures(geojson.features)
+      const geojson = this.computeGeoJSON(trip);
+      this.setSourceFeatures(geojson.features);
     } else {
-      this.removeAllFeatures()
+      this.removeAllFeatures();
     }
   }
 
   private addMapSourceAndLayers() {
-    this.map.addSource(this.mapSourceId, <mapboxgl.GeoJSONSourceRaw>{
+    this.map.addSource(this.mapSourceId, <mapboxgl.GeoJSONSourceSpecification>{
       type: 'geojson',
       data: <GeoJSON.FeatureCollection>{
         'type': 'FeatureCollection',
@@ -37,64 +41,64 @@ export class TripRenderController {
       }
     });
 
-    const tripLegBeelineLayer = tripLegBeelineLayerJSON as mapboxgl.LineLayer
-    tripLegBeelineLayer.filter = OJP.MapboxLayerHelpers.FilterBeelines()
+    const tripLegBeelineLayer = tripLegBeelineLayerJSON as mapboxgl.LineLayerSpecification;
+    tripLegBeelineLayer.filter = MapboxLayerHelpers.FilterBeelines();
     if (tripLegBeelineLayer.paint) {
-      tripLegBeelineLayer.paint["line-color"] = OJP.MapboxLayerHelpers.ColorCaseByLegLineType()
+      tripLegBeelineLayer.paint["line-color"] = MapboxLayerHelpers.ColorCaseByLegLineType();
     }
 
-    const caseTimedLegColors = OJP.MapboxLayerHelpers.ColorCaseByLegLineType()
+    const caseTimedLegColors = MapboxLayerHelpers.ColorCaseByLegLineType();
 
-    const tripTimedLegEndpointCircleLayer = tripTimedLegEndpointCircleLayerJSON as mapboxgl.CircleLayer
-    tripTimedLegEndpointCircleLayer.filter = OJP.MapboxLayerHelpers.FilterLegPoints()
+    const tripTimedLegEndpointCircleLayer = tripTimedLegEndpointCircleLayerJSON as mapboxgl.CircleLayerSpecification;
+    tripTimedLegEndpointCircleLayer.filter = MapboxLayerHelpers.FilterLegPoints();
     if (tripTimedLegEndpointCircleLayer.paint) {
-      const caseCircleRadius: mapboxgl.Expression = [
+      const caseCircleRadius: mapboxgl.ExpressionSpecification = [
         'case',
-        OJP.MapboxLayerHelpers.FilterByPointType('From'),
+        MapboxLayerHelpers.FilterByPointType('From'),
         4.0,
-        OJP.MapboxLayerHelpers.FilterByPointType('To'),
+        MapboxLayerHelpers.FilterByPointType('To'),
         8.0,
         2.0
-      ]
-      tripTimedLegEndpointCircleLayer.paint["circle-radius"] = caseCircleRadius
+      ];
+      tripTimedLegEndpointCircleLayer.paint["circle-radius"] = caseCircleRadius;
 
-      const caseCircleColor: mapboxgl.Expression = [
+      const caseCircleColor: mapboxgl.ExpressionSpecification = [
         'case',
-        OJP.MapboxLayerHelpers.FilterByPointType('To'),
+        MapboxLayerHelpers.FilterByPointType('To'),
         caseTimedLegColors,
         '#FFF'
-      ]
-      tripTimedLegEndpointCircleLayer.paint["circle-color"] = caseCircleColor
+      ];
+      tripTimedLegEndpointCircleLayer.paint["circle-color"] = caseCircleColor;
 
-      const caseCircleStrokeColor: mapboxgl.Expression = [
+      const caseCircleStrokeColor: mapboxgl.ExpressionSpecification = [
         'case',
-        OJP.MapboxLayerHelpers.FilterByPointType('To'),
+        MapboxLayerHelpers.FilterByPointType('To'),
         '#FFF',
         caseTimedLegColors,
-      ]
-      tripTimedLegEndpointCircleLayer.paint["circle-stroke-color"] = caseCircleStrokeColor
+      ];
+      tripTimedLegEndpointCircleLayer.paint["circle-stroke-color"] = caseCircleStrokeColor;
 
-      const caseCircleStrokeWidth: mapboxgl.Expression = [
+      const caseCircleStrokeWidth: mapboxgl.ExpressionSpecification = [
         'case',
-        OJP.MapboxLayerHelpers.FilterByPointType('From'),
+        MapboxLayerHelpers.FilterByPointType('From'),
         4.0,
-        OJP.MapboxLayerHelpers.FilterByPointType('To'),
+        MapboxLayerHelpers.FilterByPointType('To'),
         1.0,
         3.0
-      ]
-      tripTimedLegEndpointCircleLayer.paint["circle-stroke-width"] = caseCircleStrokeWidth
+      ];
+      tripTimedLegEndpointCircleLayer.paint["circle-stroke-width"] = caseCircleStrokeWidth;
     }
 
-    const tripTimedLegTrackLayerLayer = tripTimedLegTrackLayerJSON as mapboxgl.LineLayer
-    tripTimedLegTrackLayerLayer.filter = OJP.MapboxLayerHelpers.FilterTimedLegTracks()
+    const tripTimedLegTrackLayerLayer = tripTimedLegTrackLayerJSON as mapboxgl.LineLayerSpecification;
+    tripTimedLegTrackLayerLayer.filter = MapboxLayerHelpers.FilterTimedLegTracks();
     if (tripTimedLegTrackLayerLayer.paint) {
-      tripTimedLegTrackLayerLayer.paint["line-color"] = caseTimedLegColors
+      tripTimedLegTrackLayerLayer.paint["line-color"] = caseTimedLegColors;
     }
 
-    const tripContinousLegWalkingLineLayer = tripContinousLegWalkingLineLayerJSON as mapboxgl.LineLayer
-    tripContinousLegWalkingLineLayer.filter = OJP.MapboxLayerHelpers.FilterWalkingLegs()
+    const tripContinousLegWalkingLineLayer = tripContinousLegWalkingLineLayerJSON as mapboxgl.LineLayerSpecification;
+    tripContinousLegWalkingLineLayer.filter = MapboxLayerHelpers.FilterWalkingLegs();
     if (tripContinousLegWalkingLineLayer.paint) {
-      tripContinousLegWalkingLineLayer.paint["line-color"] = OJP.MapLegTypeColor['ContinousLeg']
+      tripContinousLegWalkingLineLayer.paint["line-color"] = MapLegTypeColor['ContinousLeg'];
     }
 
     const mapLayers = [
@@ -130,6 +134,24 @@ export class TripRenderController {
       'type': 'FeatureCollection',
       'features': features
     }
-    source.setData(featureCollection)
+    source.setData(featureCollection);
+  }
+
+  private computeGeoJSON(trip: OJP.Trip): GeoJSON.FeatureCollection {
+    let features: GeoJSON.Feature[] = [];
+
+    trip.legs.forEach((leg, legIDx) => {
+      const tripLegGeoController = new TripLegGeoController(leg, legIDx);
+
+      const legFeatures = tripLegGeoController.computeGeoJSONFeatures();
+      features = features.concat(legFeatures);
+    });
+
+    const geojson: GeoJSON.FeatureCollection = {
+      type: 'FeatureCollection',
+      features: features,
+    };
+
+    return geojson;
   }
 }
