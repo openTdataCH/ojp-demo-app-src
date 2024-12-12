@@ -274,6 +274,7 @@ export class UserTripService {
       // Search nearby locations, in a bbox of 200x200m
       const bbox = OJP.GeoPositionBBOX.initFromGeoPosition(geoPosition, 200, 200);
       const stageConfig = this.getStageConfig();
+
       const locationInformationRequest = OJP.LocationInformationRequest.initWithBBOXAndType(
         stageConfig,
         language,
@@ -284,6 +285,7 @@ export class UserTripService {
         ['stop'],
         300
       );
+
       const locationInformationPromise = locationInformationRequest.fetchLocations();
       promises.push(locationInformationPromise)
     });

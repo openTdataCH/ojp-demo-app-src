@@ -273,7 +273,7 @@ export class OJPHelpers {
       nameParts.push(service.ptMode.shortName ?? service.ptMode.ptMode);
     }
 
-    nameParts.push('(' + service.agencyID + ')');
+    nameParts.push('(' + service.agencyCode + ')');
 
     return nameParts.join(' ');
   }
