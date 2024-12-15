@@ -4,6 +4,10 @@ OJP-Demo URL: https://opentdatach.github.io/ojp-demo-app/
 
 ----
 
+15.December 2024
+- Updates NOVA fares - [PR #194](https://github.com/openTdataCH/ojp-demo-app-src/pull/194)
+- use latest OJP SDK
+
 10.December 2024
 - Refactor geo bindings - [PR #191](https://github.com/openTdataCH/ojp-demo-app-src/pull/191)
   - use latest version of OJP SDK
