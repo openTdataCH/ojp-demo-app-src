@@ -796,7 +796,7 @@ export class UserTripService {
     return newLeg;
   }
 
-  public fetchFares() {
+  public async fetchFares() {
     if (this.journeyTripRequests.length === 0) {
       return;
     }
@@ -806,28 +806,15 @@ export class UserTripService {
       return;
     }
 
-    const tripRequestResponseRebuilt = new OJP.TripRequestResponse(tripRequestResponse.trips);
-    const tripRequestResponseXML = tripRequestResponseRebuilt.asXML();
+    const novaRequest = new OJP.NovaRequest();
+    const novaResponse = await novaRequest.fetchResponseForTrips(tripRequestResponse.trips);
 
-    const novaURL = 'https://tools.odpch.ch/ojp-nova/ojp2023';
-    const novaHTTP = fetch(novaURL, {
-      body: tripRequestResponseXML,
-      method: 'POST'
-    });
-    novaHTTP.then(response => {
-      response.text().then(novaResponseXML => {
-        const parser = new OJP.NovaFareParser();
-        parser.callback = (response) => {
-          if (response.message === 'NovaFares.DONE') {
-            this.updateFares(response.fareResults);
-          } else {
-            console.error('NOVA ERROR');
-            console.log(novaResponseXML);
-          }
-        };
-        parser.parseXML(novaResponseXML);
-      });
-    });
+    if (novaResponse.message === 'NovaFares.DONE') {
+      this.updateFares(novaResponse.fareResults);
+    } else {
+      console.error('NOVA ERROR');
+      console.log(novaRequest.requestInfo);
+    }
   }
 
   public hasPublicTransport(): boolean {
