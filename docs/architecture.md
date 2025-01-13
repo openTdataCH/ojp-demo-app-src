@@ -3,7 +3,7 @@
 ![image](./img/OJP_Demo_Architecture.jpg)
 
 OJP Demo is a [TypeScript](https://www.typescriptlang.org/) web application, composed of the following:
-- OJP JavaScript SDK - written is TypeScript only, its main responsability is to comunicate with [OJP APIs](https://opentransportdata.swiss/en/cookbook/open-journey-planner-ojp/). Following OSS libraries are used for querying and parsing the XML response:
+- OJP JavaScript SDK - available in a [separate repo](https://github.com/openTdataCH/ojp-js) and as a [npm package](https://www.npmjs.com/package/ojp-sdk) - the main responsability is to comunicate with [OJP APIs](https://opentransportdata.swiss/en/cookbook/open-journey-planner-ojp/). Following OSS libraries are used for querying and parsing the XML response:
   - [xmldom](https://github.com/jindw/xmldom) - JavaScript implementation of W3C DOM for Node.js
   - [xpath](https://github.com/goto100/xpath) - DOM3 XPath 1.0 implemention for JavaScript
 - OJP Demo App - this component is using [Angular](https://angular.io/) web-framework components and services for UI rendering. Following additional libraries are used: 
@@ -19,5 +19,6 @@ See also
 ----
 
 CHANGELOG
+- Nov 2022 - updated OJP SDK
 - Oct 2022 - updated with StopEvent
 - Feb 2022 - created this document
