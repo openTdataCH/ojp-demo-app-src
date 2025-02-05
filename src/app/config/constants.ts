@@ -26,44 +26,6 @@ export interface AppMapLayerOptions {
   click_layer_ids?: string[] | 'SAME_AS_LAYER_IDS' | null
 }
 
-const app_stages: OJP.StageConfig[] = [
-  {
-    key: 'PROD',
-    apiEndpoint: 'https://api.opentransportdata.swiss/ojp2020',
-    authBearerKey: 'eyJvcmciOiI2NDA2NTFhNTIyZmEwNTAwMDEyOWJiZTEiLCJpZCI6Ijk0YTFhNjExYjM5ZjQ4MWNiMGI5MjFiNTgyNmM1ZGFjIiwiaCI6Im11cm11cjEyOCJ9',
-  },
-  {
-    key: 'PROD-LB',
-    apiEndpoint: 'https://tools.odpch.ch/tmp/cors-proxy?url=https://ojp.lb.prod.ojp.odpch.ch/ojp/ojp',
-    authBearerKey: 'eyJvcmciOiI2NDA2NTFhNTIyZmEwNTAwMDEyOWJiZTEiLCJpZCI6Ijk0YTFhNjExYjM5ZjQ4MWNiMGI5MjFiNTgyNmM1ZGFjIiwiaCI6Im11cm11cjEyOCJ9',
-  },
-  {
-    key: 'INT',
-    apiEndpoint: 'https://odpch-api.clients.liip.ch/ojp-passiv-int',
-    authBearerKey: 'eyJvcmciOiI2M2Q4ODhiMDNmZmRmODAwMDEzMDIwODkiLCJpZCI6ImJkOTNmYzA1ZGMwYzQwM2Q4MWYzMmFhNWMxNWZjMjU2IiwiaCI6Im11cm11cjEyOCJ9',
-  },
-  {
-    key: 'TEST',
-    apiEndpoint: 'https://odpch-api.clients.liip.ch/ojp-test',
-    authBearerKey: 'eyJvcmciOiI2M2Q4ODhiMDNmZmRmODAwMDEzMDIwODkiLCJpZCI6ImZlYWJiMjEzZDcyZTRhYmM5N2RhYWJiZDM5YWZmZWIwIiwiaCI6Im11cm11cjEyOCJ9',
-  },
-  {
-    key: 'LA Beta',
-    apiEndpoint: 'https://api.opentransportdata.swiss/ojp-la-aktiv',
-    authBearerKey: 'eyJvcmciOiI2NDA2NTFhNTIyZmEwNTAwMDEyOWJiZTEiLCJpZCI6ImE5ZDFkYmI4YWVjMDRiYjFiZjA2ZmUyNmZmZTk2YTY2IiwiaCI6Im11cm11cjEyOCJ9',
-  },
-  {
-    key: 'OJP-SI',
-    apiEndpoint: 'https://dev.simo.si/OpenAPI/LinkingAlpsBetaPhase/OJP',
-    authBearerKey: 'noKey',
-  },
-  {
-    key: 'NOVA-INT',
-    apiEndpoint: 'https://api.opentransportdata.swiss/ojpfare',
-    authBearerKey: 'PLACEHOLDER_OJPFare_Key',
-  }
-]
-
 export const MAP_APP_MAP_LAYERS: Record<string, AppMapLayerOptions> = {
   'stops': {
     LIR_Restriction_Type: 'stop',
@@ -186,10 +148,6 @@ export const MAP_APP_MAP_LAYERS: Record<string, AppMapLayerOptions> = {
     ],
     click_layer_ids: 'SAME_AS_LAYER_IDS',
   },
-}
-
-export const APP_CONFIG = {
-  app_stages: app_stages,
 }
 
 export const TRIP_REQUEST_DEFAULT_NUMBER_OF_RESULTS = 5;
