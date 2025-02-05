@@ -3,32 +3,32 @@ import { AppConfig } from '../shared/types/app-config'
 export const APP_CONFIG: AppConfig = {
   stages: {
     'PROD': {
-      endpoint: 'https://api.opentransportdata.swiss/ojp2020',
-      authorization: 'PLACEHOLDER_KEY',
+      url: 'https://api.opentransportdata.swiss/ojp2020',
+      authToken: null,
     },
     'PROD-LB': {
-      endpoint: 'https://tools.odpch.ch/tmp/cors-proxy?url=https://ojp.lb.prod.ojp.odpch.ch/ojp/ojp',
-      authorization: 'PLACEHOLDER_KEY',
+      url: 'https://tools.odpch.ch/tmp/cors-proxy?url=https://ojp.lb.prod.ojp.odpch.ch/ojp/ojp',
+      authToken: null,
     },
     'INT': {
-      endpoint: 'https://odpch-api.clients.liip.ch/ojp-passiv-int',
-      authorization: 'PLACEHOLDER_KEY',
+      url: 'https://odpch-api.clients.liip.ch/ojp-passiv-int',
+      authToken: null,
     },
     'TEST': {
-      endpoint: 'https://odpch-api.clients.liip.ch/ojp-test',
-      authorization: 'PLACEHOLDER_KEY',
+      url: 'https://odpch-api.clients.liip.ch/ojp-test',
+      authToken: null,
     },
     'LA Beta': {
-      endpoint: 'https://api.opentransportdata.swiss/ojp-la-aktiv',
-      authorization: 'PLACEHOLDER_KEY',
+      url: 'https://api.opentransportdata.swiss/ojp-la-aktiv',
+      authToken: null,
     },
     'OJP-SI': {
-      endpoint: 'https://dev.simo.si/OpenAPI/LinkingAlpsBetaPhase/OJP',
-      authorization: 'PLACEHOLDER_KEY',
+      url: 'https://dev.simo.si/OpenAPI/LinkingAlpsBetaPhase/OJP',
+      authToken: null,
     },
     'NOVA-INT': {
-      endpoint: 'https://api.opentransportdata.swiss/ojpfare',
-      authorization: 'PLACEHOLDER_KEY',
+      url: 'https://api.opentransportdata.swiss/ojpfare',
+      authToken: null,
     },
   }
 }
