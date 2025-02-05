@@ -806,7 +806,21 @@ export class UserTripService {
       return;
     }
 
-    const novaRequest = new OJP.NovaRequest();
+    const novaRequestStageConfig = APP_CONFIG.app_stages.find(el => el.key === 'NOVA-INT') ?? null;
+    if (novaRequestStageConfig  === null) {
+      console.error('fetchFares: undefined Nova StageConfig');
+      console.log('available stages:');
+      console.log(APP_CONFIG.app_stages);
+      return;
+    }
+
+    if (novaRequestStageConfig.authBearerKey.startsWith('PLACEHOLDER')) {
+      console.error('fetchFares: OJP Service AuthKey not configured');
+      console.log(novaRequestStageConfig);
+      return;
+    }
+
+    const novaRequest = new OJP.NovaRequest(novaRequestStageConfig);
     const novaResponse = await novaRequest.fetchResponseForTrips(tripRequestResponse.trips);
 
     if (novaResponse.message === 'NovaFares.DONE') {
