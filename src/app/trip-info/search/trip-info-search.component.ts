@@ -6,7 +6,7 @@ import { SbbNotificationToast } from '@sbb-esta/angular/notification-toast';
 
 import * as OJP from 'ojp-sdk'
 
-import { APP_STAGE } from '../../config/app-config'
+import { APP_STAGE, DEBUG_LEVEL } from '../../config/constants'
 
 import { UserTripService } from 'src/app/shared/services/user-trip.service';
 import { TripInfoService } from '../trip-info.service';

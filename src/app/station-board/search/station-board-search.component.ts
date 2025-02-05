@@ -14,7 +14,7 @@ import { StationBoardInputComponent } from '../input/station-board-input.compone
 import { DebugXmlPopoverComponent } from '../../search-form/debug-xml-popover/debug-xml-popover.component';
 import { CustomStopEventXMLPopoverComponent } from './custom-stop-event-xml-popover/custom-stop-event-xml-popover.component';
 
-import { APP_STAGE, DEBUG_LEVEL, DEFAULT_APP_STAGE } from '../../config/app-config'
+import { APP_STAGE, DEBUG_LEVEL, DEFAULT_APP_STAGE } from '../../config/constants'
 import { EmbedStationBoardPopoverComponent } from './embed-station-board-popover/embed-station-board-popover.component';
 import { Router } from '@angular/router';
 import { LanguageService } from '../../shared/services/language.service';

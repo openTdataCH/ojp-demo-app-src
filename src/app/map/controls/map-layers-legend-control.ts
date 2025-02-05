@@ -3,7 +3,7 @@ import { SbbDialog } from "@sbb-esta/angular/dialog";
 import mapboxgl from "mapbox-gl";
 import * as OJP from 'ojp-sdk'
 
-import { AppMapLayerOptions, MAP_APP_MAP_LAYERS } from "src/app/config/app-config";
+import { AppMapLayerOptions, MAP_APP_MAP_LAYERS } from "src/app/config/constants";
 import { DebugXmlPopoverComponent } from "src/app/search-form/debug-xml-popover/debug-xml-popover.component";
 import { UserTripService } from "src/app/shared/services/user-trip.service";
 import { AppMapLayer } from "../app-map-layer/app-map-layer";
