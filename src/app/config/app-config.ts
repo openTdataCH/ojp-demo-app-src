@@ -64,7 +64,7 @@ const app_stages: OJP.StageConfig[] = [
   }
 ]
 
-const map_app_map_layers: Record<string, AppMapLayerOptions> = {
+export const MAP_APP_MAP_LAYERS: Record<string, AppMapLayerOptions> = {
   'stops': {
     LIR_Restriction_Type: 'stop',
     minZoom: 13,

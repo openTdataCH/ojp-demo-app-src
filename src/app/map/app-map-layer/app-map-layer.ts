@@ -3,7 +3,7 @@ import mapboxgl from "mapbox-gl";
 
 import * as OJP from 'ojp-sdk'
 
-import { AppMapLayerOptions, APP_CONFIG, DEBUG_LEVEL } from '../../config/app-config'
+import { AppMapLayerOptions, DEBUG_LEVEL, MAP_APP_MAP_LAYERS } from '../../config/app-config'
 import { UserTripService } from "../../shared/services/user-trip.service";
 import { MapHelpers } from "../helpers/map.helpers";
 import { MAP_LAYERS_DEFINITIONS } from "./map-layers-def";
@@ -66,12 +66,12 @@ export class AppMapLayer {
             }
         });
 
-        if (!(this.layerKey in APP_CONFIG.map_app_map_layers)) {
+        if (!(this.layerKey in MAP_APP_MAP_LAYERS)) {
             console.error('ERROR - AppMapLayer.addMapSourceAndLayers no layers defined for ' + this.layerKey);
             return;
         }
 
-        const layerConfig = APP_CONFIG.map_app_map_layers[this.layerKey];
+        const layerConfig = MAP_APP_MAP_LAYERS[this.layerKey];
         const layerIDs = layerConfig.layer_ids ?? [this.layerKey];
         layerIDs.forEach(layerID => {
             if (!(layerID in MAP_LAYERS_DEFINITIONS)) {
@@ -129,7 +129,7 @@ export class AppMapLayer {
 
         this.lastOJPRequest = request;
 
-        const layerConfig = APP_CONFIG.map_app_map_layers[this.layerKey];
+        const layerConfig = MAP_APP_MAP_LAYERS[this.layerKey];
         const response = await request.fetchResponse();
 
         if (response.message === 'ERROR') {
@@ -255,7 +255,7 @@ export class AppMapLayer {
             return false;
         }
 
-        const layersDataConfig = APP_CONFIG.map_app_map_layers[this.layerKey];
+        const layersDataConfig = MAP_APP_MAP_LAYERS[this.layerKey];
 
         let clickLayerIDs = layersDataConfig.click_layer_ids ?? [];
         if (clickLayerIDs.length === 0) {
