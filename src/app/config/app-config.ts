@@ -190,7 +190,6 @@ export const MAP_APP_MAP_LAYERS: Record<string, AppMapLayerOptions> = {
 
 export const APP_CONFIG = {
   app_stages: app_stages,
-  map_app_map_layers: map_app_map_layers,
 }
 
 export const TRIP_REQUEST_DEFAULT_NUMBER_OF_RESULTS = 5;
