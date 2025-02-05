@@ -26,6 +26,20 @@ export const APP_CONFIG: AppConfig = {
       url: 'https://dev.simo.si/OpenAPI/LinkingAlpsBetaPhase/OJP',
       authToken: null,
     },
+
+    'V2-PROD': {
+      url: 'https://api.opentransportdata.swiss/ojp20',
+      authToken: null,
+    },
+    'V2-INT': {
+      url: 'https://odpch-api.clients.liip.ch/ojp20-beta',
+      authToken: null,
+    },
+    'V2-TEST': {
+      url: 'https://odpch-api.clients.liip.ch/ojp20-test',
+      authToken: null,
+    },
+    
     'NOVA-INT': {
       url: 'https://api.opentransportdata.swiss/ojpfare',
       authToken: null,
