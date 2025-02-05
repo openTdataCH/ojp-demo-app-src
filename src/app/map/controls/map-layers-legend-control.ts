@@ -3,12 +3,14 @@ import { SbbDialog } from "@sbb-esta/angular/dialog";
 import mapboxgl from "mapbox-gl";
 import * as OJP from 'ojp-sdk'
 
-import { AppMapLayerOptions, MAP_APP_MAP_LAYERS } from "src/app/config/constants";
-import { DebugXmlPopoverComponent } from "src/app/search-form/debug-xml-popover/debug-xml-popover.component";
-import { UserTripService } from "src/app/shared/services/user-trip.service";
+import { UserTripService } from "../../shared/services/user-trip.service";
+import { LanguageService } from "../../shared/services/language.service";
+
+import { DebugXmlPopoverComponent } from "../../search-form/debug-xml-popover/debug-xml-popover.component";
 import { AppMapLayer } from "../app-map-layer/app-map-layer";
 import { AppMapLayerFactory } from "../app-map-layer/app-map-layer/app-map-layer-factory";
-import { LanguageService } from "src/app/shared/services/language.service";
+
+import { AppMapLayerOptions, MAP_APP_MAP_LAYERS } from "../../config/constants";
 
 interface LayerData {
   inputEls: HTMLInputElement[] | null
