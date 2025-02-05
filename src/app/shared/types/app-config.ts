@@ -1,8 +1,4 @@
-interface AppConfigStage {
-    endpoint: string
-    authorization: string | null
-}
-
+import * as OJP from 'ojp-sdk'
 export interface AppConfig {
-    stages: Record<string, AppConfigStage>,
+    stages: Record<string, OJP.ApiConfig>,
 };
