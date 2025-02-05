@@ -105,6 +105,10 @@ export class UserTripService {
     const promises: Promise<OJP.Location[]>[] = [];
 
     const stageConfig = this.getStageConfig();
+    if (stageConfig.authBearerKey.startsWith('PLACEHOLDER_KEY')) {
+      console.error('WARNING: authorization not set for stage=' + this.currentAppStage);
+      console.log(stageConfig);
+    }
 
     const endpointTypes: OJP.JourneyPointType[] = ['From', 'To']
     endpointTypes.forEach(endpointType => {
