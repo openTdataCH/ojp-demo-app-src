@@ -6,7 +6,7 @@ import * as OJP from 'ojp-sdk'
 
 import { UserTripService } from '../../shared/services/user-trip.service';
 import { FormatHelpers } from '../../helpers/format-helpers';
-import { TRIP_REQUEST_DEFAULT_NUMBER_OF_RESULTS } from '../../config/app-config';
+import { TRIP_REQUEST_DEFAULT_NUMBER_OF_RESULTS } from '../../config/constants';
 
 interface TripTransportModeData {
   modeType: OJP.TripModeType,
