@@ -105,7 +105,7 @@ export class UserTripService {
     const promises: Promise<OJP.Location[]>[] = [];
 
     const stageConfig = this.getStageConfig();
-    if (stageConfig.authBearerKey.startsWith('PLACEHOLDER_KEY')) {
+    if (stageConfig.authToken === null) {
       console.error('WARNING: authorization not set for stage=' + this.currentAppStage);
       console.log(stageConfig);
     }
@@ -557,21 +557,15 @@ export class UserTripService {
     return tripDateTime
   }
 
-  public getStageConfig(forStage: APP_STAGE = this.currentAppStage): OJP.StageConfig {
+  public getStageConfig(forStage: APP_STAGE = this.currentAppStage): OJP.ApiConfig {
     const stageConfig = APP_CONFIG.stages[forStage] ?? null;
 
     if (stageConfig === null) {
       console.error('ERROR - cant find stage' + forStage + ' using PROD');
-      return OJP.DEFAULT_STAGE;
+      return OJP.EMPTY_API_CONFIG;
     }
 
-    const ojpStageConfig: OJP.StageConfig = {
-      key: forStage,
-      apiEndpoint: stageConfig.endpoint,
-      authBearerKey: stageConfig.authorization ?? 'n/a',
-    };
-    
-    return ojpStageConfig;
+    return stageConfig;
   }
 
   public updateAppStage(newStage: APP_STAGE) {
@@ -818,7 +812,7 @@ export class UserTripService {
 
     const novaRequestStageConfig = this.getStageConfig('NOVA-INT');
 
-    if (novaRequestStageConfig.authBearerKey.startsWith('PLACEHOLDER')) {
+    if (novaRequestStageConfig.authToken?.startsWith('PLACEHOLDER')) {
       console.error('fetchFares: OJP Service AuthKey not configured');
       console.log(novaRequestStageConfig);
       return;
