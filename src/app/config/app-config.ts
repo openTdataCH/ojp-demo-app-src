@@ -14,7 +14,7 @@ export const DEBUG_LEVEL: DEBUG_LEVEL_Type = (() => {
   return 'DEBUG';
 })();
 
-export type APP_STAGE = OJP.Default_APP_Stage | 'PROD-LB' | 'OJP-SI'
+export type APP_STAGE = OJP.Default_APP_Stage | 'PROD-LB' | 'OJP-SI' | 'NOVA-INT';
 
 export const DEFAULT_APP_STAGE: APP_STAGE = 'PROD';
 
