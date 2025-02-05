@@ -57,6 +57,11 @@ const app_stages: OJP.StageConfig[] = [
     apiEndpoint: 'https://dev.simo.si/OpenAPI/LinkingAlpsBetaPhase/OJP',
     authBearerKey: 'noKey',
   },
+  {
+    key: 'NOVA-INT',
+    apiEndpoint: 'https://api.opentransportdata.swiss/ojpfare',
+    authBearerKey: 'PLACEHOLDER_OJPFare_Key',
+  }
 ]
 
 const map_app_map_layers: Record<string, AppMapLayerOptions> = {
