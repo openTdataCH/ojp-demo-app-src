@@ -4,7 +4,8 @@ import mapboxgl from 'mapbox-gl'
 
 import * as OJP from 'ojp-sdk'
 
-import { APP_CONFIG, APP_STAGE, DEBUG_LEVEL, DEFAULT_APP_STAGE, TRIP_REQUEST_DEFAULT_NUMBER_OF_RESULTS } from '../../config/constants'
+import { APP_CONFIG } from '../../config/app-config'
+import { APP_STAGE, DEBUG_LEVEL, DEFAULT_APP_STAGE, TRIP_REQUEST_DEFAULT_NUMBER_OF_RESULTS } from '../../config/constants'
 import { MapService } from './map.service'
 
 type LocationUpdateSource = 'SearchForm' | 'MapDragend' | 'MapPopupClick'
@@ -345,9 +346,8 @@ export class UserTripService {
   }
 
   private computeAppStageFromString(appStageS: string): APP_STAGE {
-    const availableStages: APP_STAGE[] = APP_CONFIG.app_stages.map((stage) => {
-      return stage.key as APP_STAGE;
-    });
+    const availableStages = Object.keys(APP_CONFIG.stages) as APP_STAGE[];
+
     const availableStagesLower: string[] = availableStages.map(stage => {
       return stage.toLowerCase();
     });
@@ -552,16 +552,20 @@ export class UserTripService {
   }
 
   public getStageConfig(forStage: APP_STAGE = this.currentAppStage): OJP.StageConfig {
-    const stageConfig = APP_CONFIG.app_stages.find(stage => {
-      return stage.key === forStage
-    }) ?? null;
+    const stageConfig = APP_CONFIG.stages[forStage] ?? null;
 
     if (stageConfig === null) {
       console.error('ERROR - cant find stage' + forStage + ' using PROD');
       return OJP.DEFAULT_STAGE;
     }
+
+    const ojpStageConfig: OJP.StageConfig = {
+      key: forStage,
+      apiEndpoint: stageConfig.endpoint,
+      authBearerKey: stageConfig.authorization ?? 'n/a',
+    };
     
-    return stageConfig;
+    return ojpStageConfig;
   }
 
   public updateAppStage(newStage: APP_STAGE) {
@@ -806,13 +810,7 @@ export class UserTripService {
       return;
     }
 
-    const novaRequestStageConfig = APP_CONFIG.app_stages.find(el => el.key === 'NOVA-INT') ?? null;
-    if (novaRequestStageConfig  === null) {
-      console.error('fetchFares: undefined Nova StageConfig');
-      console.log('available stages:');
-      console.log(APP_CONFIG.app_stages);
-      return;
-    }
+    const novaRequestStageConfig = this.getStageConfig('NOVA-INT');
 
     if (novaRequestStageConfig.authBearerKey.startsWith('PLACEHOLDER')) {
       console.error('fetchFares: OJP Service AuthKey not configured');
