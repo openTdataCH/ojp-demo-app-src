@@ -19,7 +19,7 @@ import { InputXmlPopoverComponent } from './input-xml-popover/input-xml-popover.
 import { EmbedSearchPopoverComponent } from './embed-search-popover/embed-search-popover.component';
 import { DebugXmlPopoverComponent } from './debug-xml-popover/debug-xml-popover.component';
 
-import { APP_STAGE, DEBUG_LEVEL } from '../config/app-config';
+import { APP_STAGE, DEBUG_LEVEL } from '../config/constants';
 import { Router } from '@angular/router';
 import { OJPHelpers } from '../helpers/ojp-helpers';
 
