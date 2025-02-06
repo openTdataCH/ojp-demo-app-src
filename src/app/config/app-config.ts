@@ -14,10 +14,6 @@ export const APP_CONFIG: AppConfig = {
       url: 'https://odpch-api.clients.liip.ch/ojp-test',
       authToken: null,
     },
-    'LA Beta': {
-      url: 'https://api.opentransportdata.swiss/ojp-la-aktiv',
-      authToken: null,
-    },
 
     'V2-PROD': {
       url: 'https://api.opentransportdata.swiss/ojp20',
@@ -34,6 +30,10 @@ export const APP_CONFIG: AppConfig = {
 
     'PROD-LB': {
       url: 'https://tools.odpch.ch/tmp/cors-proxy?url=https://ojp.lb.prod.ojp.odpch.ch/ojp/ojp',
+      authToken: null,
+    },
+    'LA Beta': {
+      url: 'https://api.opentransportdata.swiss/ojp-la-aktiv',
       authToken: null,
     },
     'OJP-SI': {
