@@ -40,6 +40,10 @@ export const APP_CONFIG: AppConfig = {
       url: 'https://dev.simo.si/OpenAPI/LinkingAlpsBetaPhase/OJP',
       authToken: null,
     },
+    'GR TEST': {
+      url: 'https://tools.odpch.ch/ojp-gr-api',
+      authToken: null,
+    },
     
     'NOVA-INT': {
       url: 'https://api.opentransportdata.swiss/ojpfare',
