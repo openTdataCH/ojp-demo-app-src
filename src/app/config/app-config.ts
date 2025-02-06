@@ -2,6 +2,7 @@ import { AppConfig } from '../shared/types/app-config'
 
 export const APP_CONFIG: AppConfig = {
   stages: {
+    // OJP 1.0
     'PROD': {
       url: 'https://api.opentransportdata.swiss/ojp2020',
       authToken: null,
@@ -15,6 +16,7 @@ export const APP_CONFIG: AppConfig = {
       authToken: null,
     },
 
+    // OJP 2.0
     'V2-PROD': {
       url: 'https://api.opentransportdata.swiss/ojp20',
       authToken: null,
@@ -28,6 +30,7 @@ export const APP_CONFIG: AppConfig = {
       authToken: null,
     },
 
+    // POCs
     'PROD-LB': {
       url: 'https://tools.odpch.ch/tmp/cors-proxy?url=https://ojp.lb.prod.ojp.odpch.ch/ojp/ojp',
       authToken: null,
@@ -45,6 +48,7 @@ export const APP_CONFIG: AppConfig = {
       authToken: null,
     },
     
+    // OJP Fare
     'NOVA-INT': {
       url: 'https://api.opentransportdata.swiss/ojpfare',
       authToken: null,
