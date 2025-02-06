@@ -14,6 +14,7 @@ export const DEBUG_LEVEL: DEBUG_LEVEL_Type = (() => {
   return 'DEBUG';
 })();
 
+// TODO - reflect this also to v1
 export type APP_STAGE = 'PROD' | 'INT' | 'TEST' | 'LA Beta' 
   | 'V2-PROD' | 'V2-INT' | 'V2-TEST'
   | 'GR TEST'| 'PROD-LB' | 'OJP-SI' | 'NOVA-INT';
