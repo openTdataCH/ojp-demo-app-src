@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 
 import * as OJP from 'ojp-sdk'
-import { DEBUG_LEVEL } from '../../config/app-config';
+import { DEBUG_LEVEL } from '../../config/constants';
 
 type PageModel = {
   sdkVersion: string,
@@ -21,7 +21,7 @@ export class WebFooterComponent implements OnInit {
 
     this.model = {
       sdkVersion: OJP.SDK_VERSION,
-      lastUpdate: '10.December 2024',
+      lastUpdate: '06.February 2025',
       isTopograhicPlaceMapLayerEnabled: isTopograhicPlaceMapLayerEnabled,
     }
     

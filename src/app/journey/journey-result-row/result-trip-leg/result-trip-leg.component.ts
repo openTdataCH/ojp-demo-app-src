@@ -6,7 +6,7 @@ import { SbbDialog } from "@sbb-esta/angular/dialog";
 import mapboxgl from 'mapbox-gl'
 import * as OJP from 'ojp-sdk'
 
-import { DEBUG_LEVEL } from '../../../config/app-config';
+import { DEBUG_LEVEL } from '../../../config/constants';
 import { MapLegLineTypeColor } from '../../../config/map-colors';
 import { OJPHelpers } from '../../../helpers/ojp-helpers';
 import { OJPMapHelpers } from '../../../helpers/ojp-map-helpers';

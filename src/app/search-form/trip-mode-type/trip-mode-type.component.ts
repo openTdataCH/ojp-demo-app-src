@@ -6,7 +6,7 @@ import * as OJP from 'ojp-sdk'
 
 import { UserTripService } from '../../shared/services/user-trip.service';
 import { FormatHelpers } from '../../helpers/format-helpers';
-import { TRIP_REQUEST_DEFAULT_NUMBER_OF_RESULTS } from '../../config/app-config';
+import { TRIP_REQUEST_DEFAULT_NUMBER_OF_RESULTS } from '../../config/constants';
 
 interface TripTransportModeData {
   modeType: OJP.TripModeType,
@@ -45,7 +45,7 @@ const appTripTransportModeData: TripTransportModeData[] = [
   {
     modeType: 'mode_at_end',
     transportModes: [
-      'walk', // in v2 is 'foot',
+      'foot', // in v1 is 'walk',
       'bicycle_rental',
       'escooter_rental',
       'car_sharing',
@@ -56,7 +56,7 @@ const appTripTransportModeData: TripTransportModeData[] = [
   {
     modeType: 'mode_at_start_end',
     transportModes: [
-      'walk', // in v2 is 'foot',
+      'foot', // in v1 is 'walk',
       'bicycle_rental',
       'escooter_rental'
     ]

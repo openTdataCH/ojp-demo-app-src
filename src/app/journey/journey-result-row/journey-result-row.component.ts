@@ -3,7 +3,7 @@ import { SbbExpansionPanel } from '@sbb-esta/angular/accordion';
 
 import * as OJP from 'ojp-sdk'
 
-import { DEBUG_LEVEL } from '../../config/app-config';
+import { DEBUG_LEVEL } from '../../config/constants';
 import { UserTripService } from '../../shared/services/user-trip.service';
 import { MapService } from '../../shared/services/map.service';
 

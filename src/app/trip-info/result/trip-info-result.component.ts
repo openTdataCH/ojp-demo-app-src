@@ -6,7 +6,7 @@ import { TripInfoService } from '../trip-info.service';
 import { OJPHelpers } from '../../helpers/ojp-helpers';
 import { LegStopPointData } from '../../shared/components/service-stops.component';
 import { UserTripService } from '../../shared/services/user-trip.service';
-import { DEFAULT_APP_STAGE } from 'src/app/config/app-config';
+import { DEFAULT_APP_STAGE } from 'src/app/config/constants';
 
 interface PageModel {
   tripInfoResult: OJP.TripInfoResult | null
@@ -76,7 +76,7 @@ export class TripInfoResultComponent implements OnInit, AfterViewInit {
 
     this.model.serviceLineText = service.serviceLineNumber ?? 'n/a (serviceLineNumber)';
     this.model.serviceTripId = service.journeyNumber ?? 'n/a (journeyNumber)';
-    this.model.serviceOperator = service.agencyID ?? 'n/a (agencyID)';
+    this.model.serviceOperator = service.agencyCode ?? 'n/a (agencyID)';
 
     const legIconFilename = OJPHelpers.computeIconFilenameForService(service);
     this.model.serviceIconPath = 'assets/pictograms/' + legIconFilename + '.png';

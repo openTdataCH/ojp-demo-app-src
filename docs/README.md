@@ -6,3 +6,4 @@
 - [App Features](./features.md)
 - [Project Structure](./project_structure.md)
 - [Query Params Examples](./URLs.md)
+- [Mock URLs Examples](./mock_URLs.md)

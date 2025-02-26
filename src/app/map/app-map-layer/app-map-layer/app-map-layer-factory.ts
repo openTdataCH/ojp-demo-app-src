@@ -1,7 +1,7 @@
 import mapboxgl from 'mapbox-gl'
 import * as OJP from 'ojp-sdk'
 
-import { AppMapLayerOptions } from '../../../config/app-config'
+import { AppMapLayerOptions } from '../../../config/constants'
 import { UserTripService } from "../../../shared/services/user-trip.service";
 
 import { AppMapLayer } from "../app-map-layer";
