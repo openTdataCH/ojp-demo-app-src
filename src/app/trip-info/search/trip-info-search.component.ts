@@ -58,6 +58,16 @@ export class TripInfoSearchComponent implements OnInit {
       permalinkURLAddress: '',
     }
 
+    if (DEBUG_LEVEL === 'DEBUG') {
+      if (OJP.OJP_VERSION === '1.0') {
+        this.model.appStageOptions.push('EFA11');
+        this.model.appStageOptions.push('OJP-SI');
+      }
+      if (OJP.OJP_VERSION === '2.0') {
+        this.model.appStageOptions.push('V2-EFA11');
+      }
+    }
+
     this.updatePermalinkURLAddress();
 
     this.currentRequestInfo = null;
