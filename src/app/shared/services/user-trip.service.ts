@@ -4,7 +4,8 @@ import mapboxgl from 'mapbox-gl'
 
 import * as OJP from 'ojp-sdk'
 
-import { APP_CONFIG, APP_STAGE, DEBUG_LEVEL, DEFAULT_APP_STAGE, TRIP_REQUEST_DEFAULT_NUMBER_OF_RESULTS } from '../../config/app-config'
+import { APP_CONFIG } from '../../config/app-config'
+import { APP_STAGE, DEBUG_LEVEL, DEFAULT_APP_STAGE, TRIP_REQUEST_DEFAULT_NUMBER_OF_RESULTS } from '../../config/constants'
 import { MapService } from './map.service'
 
 type LocationUpdateSource = 'SearchForm' | 'MapDragend' | 'MapPopupClick'
@@ -104,6 +105,10 @@ export class UserTripService {
     const promises: Promise<OJP.Location[]>[] = [];
 
     const stageConfig = this.getStageConfig();
+    if (stageConfig.authToken === null) {
+      console.error('WARNING: authorization not set for stage=' + this.currentAppStage);
+      console.log(stageConfig);
+    }
 
     const endpointTypes: OJP.JourneyPointType[] = ['From', 'To']
     endpointTypes.forEach(endpointType => {
@@ -345,9 +350,8 @@ export class UserTripService {
   }
 
   private computeAppStageFromString(appStageS: string): APP_STAGE {
-    const availableStages: APP_STAGE[] = APP_CONFIG.app_stages.map((stage) => {
-      return stage.key as APP_STAGE;
-    });
+    const availableStages = Object.keys(APP_CONFIG.stages) as APP_STAGE[];
+
     const availableStagesLower: string[] = availableStages.map(stage => {
       return stage.toLowerCase();
     });
@@ -551,16 +555,14 @@ export class UserTripService {
     return tripDateTime
   }
 
-  public getStageConfig(forStage: APP_STAGE = this.currentAppStage): OJP.StageConfig {
-    const stageConfig = APP_CONFIG.app_stages.find(stage => {
-      return stage.key === forStage
-    }) ?? null;
+  public getStageConfig(forStage: APP_STAGE = this.currentAppStage): OJP.ApiConfig {
+    const stageConfig = APP_CONFIG.stages[forStage] ?? null;
 
     if (stageConfig === null) {
       console.error('ERROR - cant find stage' + forStage + ' using PROD');
-      return OJP.DEFAULT_STAGE;
+      return OJP.EMPTY_API_CONFIG;
     }
-    
+
     return stageConfig;
   }
 
@@ -806,7 +808,15 @@ export class UserTripService {
       return;
     }
 
-    const novaRequest = new OJP.NovaRequest();
+    const novaRequestStageConfig = this.getStageConfig('NOVA-INT');
+
+    if (novaRequestStageConfig.authToken?.startsWith('PLACEHOLDER')) {
+      console.error('fetchFares: OJP Service AuthKey not configured');
+      console.log(novaRequestStageConfig);
+      return;
+    }
+
+    const novaRequest = new OJP.NovaRequest(novaRequestStageConfig);
     const novaResponse = await novaRequest.fetchResponseForTrips(tripRequestResponse.trips);
 
     if (novaResponse.message === 'NovaFares.DONE') {

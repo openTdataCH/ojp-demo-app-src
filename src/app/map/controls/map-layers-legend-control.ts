@@ -3,12 +3,14 @@ import { SbbDialog } from "@sbb-esta/angular/dialog";
 import mapboxgl from "mapbox-gl";
 import * as OJP from 'ojp-sdk'
 
-import { AppMapLayerOptions, APP_CONFIG } from "src/app/config/app-config";
-import { DebugXmlPopoverComponent } from "src/app/search-form/debug-xml-popover/debug-xml-popover.component";
-import { UserTripService } from "src/app/shared/services/user-trip.service";
+import { UserTripService } from "../../shared/services/user-trip.service";
+import { LanguageService } from "../../shared/services/language.service";
+
+import { DebugXmlPopoverComponent } from "../../search-form/debug-xml-popover/debug-xml-popover.component";
 import { AppMapLayer } from "../app-map-layer/app-map-layer";
 import { AppMapLayerFactory } from "../app-map-layer/app-map-layer/app-map-layer-factory";
-import { LanguageService } from "src/app/shared/services/language.service";
+
+import { AppMapLayerOptions, MAP_APP_MAP_LAYERS } from "../../config/constants";
 
 interface LayerData {
   inputEls: HTMLInputElement[] | null
@@ -77,7 +79,7 @@ export class MapLayersLegendControl implements mapboxgl.IControl {
 
       const layerXmlInfoEl = divEl.querySelector('.layer-xml-info') as HTMLInputElement
 
-      const appMapLayerOptions = APP_CONFIG.map_app_map_layers[layerKey] ?? null;
+      const appMapLayerOptions = MAP_APP_MAP_LAYERS[layerKey] ?? null;
       if (appMapLayerOptions === null) {
         console.error('ERROR - MapLayersLegendControl - cant find layerKey ' + layerKey + ' in APP_CONFIG');
         inputEl.disabled = true;
@@ -144,7 +146,7 @@ export class MapLayersLegendControl implements mapboxgl.IControl {
 
   private addPOICompositeLayer(wrapperEl: HTMLElement, map: mapboxgl.Map) {
     const layerKey = 'pois-ALL';
-    const appMapLayerOptions: AppMapLayerOptions = JSON.parse(JSON.stringify(APP_CONFIG.map_app_map_layers[layerKey]));
+    const appMapLayerOptions: AppMapLayerOptions = JSON.parse(JSON.stringify(MAP_APP_MAP_LAYERS[layerKey]));
 
     const poiOSMTags: OJP.RestrictionPoiOSMTag[] = [];
     const inputEls: HTMLInputElement[] = [];

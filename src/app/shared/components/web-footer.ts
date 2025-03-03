@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 
 import * as OJP from 'ojp-sdk'
-import { DEBUG_LEVEL } from '../../config/app-config';
+import { DEBUG_LEVEL } from '../../config/constants';
 
 type PageModel = {
   sdkVersion: string,

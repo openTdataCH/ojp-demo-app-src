@@ -1,4 +1,5 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
+import { Router } from '@angular/router';
 
 import { SbbExpansionPanel } from '@sbb-esta/angular/accordion';
 import { SbbDialog } from '@sbb-esta/angular/dialog';
@@ -7,18 +8,19 @@ import { SbbNotificationToast } from '@sbb-esta/angular/notification-toast';
 import * as GeoJSON from 'geojson'
 import * as OJP from 'ojp-sdk'
 
+import { OJPHelpers } from '../../helpers/ojp-helpers';
+
 import { UserTripService } from '../../shared/services/user-trip.service';
 import { MapService } from '../../shared/services/map.service';
+import { LanguageService } from '../../shared/services/language.service';
+
 import { StationBoardData, StationBoardService } from '../station-board.service';
 import { StationBoardInputComponent } from '../input/station-board-input.component';
 import { DebugXmlPopoverComponent } from '../../search-form/debug-xml-popover/debug-xml-popover.component';
 import { CustomStopEventXMLPopoverComponent } from './custom-stop-event-xml-popover/custom-stop-event-xml-popover.component';
-
-import { APP_STAGE, DEBUG_LEVEL, DEFAULT_APP_STAGE } from '../../config/app-config'
 import { EmbedStationBoardPopoverComponent } from './embed-station-board-popover/embed-station-board-popover.component';
-import { Router } from '@angular/router';
-import { LanguageService } from '../../shared/services/language.service';
-import { OJPHelpers } from 'src/app/helpers/ojp-helpers';
+
+import { APP_STAGE, DEBUG_LEVEL, DEFAULT_APP_STAGE } from '../../config/constants'
 
 type URLType = 'prodv1' | 'betav1' | 'betav2';
 

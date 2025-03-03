@@ -1,7 +1,7 @@
 import * as OJP from 'ojp-sdk';
 
 import { LegStopPointData } from '../shared/components/service-stops.component';
-import { DEBUG_LEVEL } from '../config/app-config';
+import { DEBUG_LEVEL } from '../config/constants';
 
 type PublicTransportPictogram = 'picto-bus' | 'picto-railway' | 'picto-tram' | 'picto-rack-railway' | 'picto-funicular' | 'picto-cablecar' | 'picto-gondola' | 'picto-chairlift' | 'picto-boat' | 'car-sharing' | 'picto-bus-fallback' | 'autozug';
 
