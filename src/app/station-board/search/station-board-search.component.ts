@@ -78,7 +78,13 @@ export class StationBoardSearchComponent implements OnInit {
 
     this.appStageOptions = ['PROD', 'INT', 'TEST', 'LA Beta'];
     if (DEBUG_LEVEL === 'DEBUG') {
-      this.appStageOptions.push('OJP-SI');
+      if (OJP.OJP_VERSION === '1.0') {
+        this.appStageOptions.push('EFA11');
+        this.appStageOptions.push('OJP-SI');
+      }
+      if (OJP.OJP_VERSION === '2.0') {
+        this.appStageOptions.push('V2-EFA11');
+      }
     }
 
     this.stationBoardTypes = ['Departures', 'Arrivals']
