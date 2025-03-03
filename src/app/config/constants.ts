@@ -27,7 +27,7 @@ export const APP_STAGEs: APP_STAGE[] = (() => {
   if (OJP.OJP_VERSION === '1.0') {
     stages = ['PROD', 'INT', 'TEST', 'LA Beta'];
     if (DEBUG_LEVEL === 'DEBUG') {
-      stages.push('V2-EFA11');
+      stages.push('EFA11');
       stages.push('OJP-SI');
     }
   }
