@@ -6,7 +6,7 @@ import { SbbNotificationToast } from '@sbb-esta/angular/notification-toast';
 
 import * as OJP from 'ojp-sdk'
 
-import { APP_STAGE, DEBUG_LEVEL } from '../../config/constants'
+import { APP_STAGE, APP_STAGEs } from '../../config/constants'
 
 import { UserTripService } from 'src/app/shared/services/user-trip.service';
 import { TripInfoService } from '../trip-info.service';
@@ -53,19 +53,9 @@ export class TripInfoSearchComponent implements OnInit {
     this.model = {
       journeyRef: '',
       journeyDateTime: new Date(),
-      appStageOptions: ['PROD', 'INT', 'TEST', 'LA Beta'],
+      appStageOptions: APP_STAGEs,
       isSearching: false,
       permalinkURLAddress: '',
-    }
-
-    if (DEBUG_LEVEL === 'DEBUG') {
-      if (OJP.OJP_VERSION === '1.0') {
-        this.model.appStageOptions.push('EFA11');
-        this.model.appStageOptions.push('OJP-SI');
-      }
-      if (OJP.OJP_VERSION === '2.0') {
-        this.model.appStageOptions.push('V2-EFA11');
-      }
     }
 
     this.updatePermalinkURLAddress();
