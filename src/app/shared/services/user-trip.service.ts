@@ -96,11 +96,14 @@ export class UserTripService {
       "St. Gallen": "8506302",
       "Uetliberg": "8503057",
       "Zurich": "8503000",
-      "DemandLegFrom": "46.674360,6.460966",
-      "DemandLegTo": "46.310963,7.977509",
+      "_DemandLegFrom": "46.674360,6.460966",
+      "_DemandLegTo": "46.310963,7.977509",
     }
-    const fromPlaceRef = this.queryParams.get('from') ?? defaultLocationsPlaceRef.Bern
-    const toPlaceRef = this.queryParams.get('to') ?? defaultLocationsPlaceRef.Zurich
+
+    const fromPlaceName = 'Bern';
+    const toPlaceName = 'Zurich';
+    const fromPlaceRef = this.queryParams.get('from') ?? defaultLocationsPlaceRef[fromPlaceName];
+    const toPlaceRef = this.queryParams.get('to') ?? defaultLocationsPlaceRef[toPlaceName];
 
     const promises: Promise<OJP.Location[]>[] = [];
 
@@ -114,7 +117,12 @@ export class UserTripService {
     endpointTypes.forEach(endpointType => {
       const isFrom = endpointType === 'From'
 
-      let stopPlaceRef = isFrom ? fromPlaceRef : toPlaceRef
+      let stopPlaceRef = isFrom ? fromPlaceRef : toPlaceRef;
+      
+      // OJP-SI cant handle StopRefs
+      if (this.currentAppStage === 'OJP-SI') {
+        stopPlaceRef = isFrom ? fromPlaceName : toPlaceName;
+      }
       
       // LA Beta hack, strip everything before |
       if (this.currentAppStage === 'LA Beta') {
@@ -279,18 +287,31 @@ export class UserTripService {
       // Search nearby locations, in a bbox of 200x200m
       const bbox = OJP.GeoPositionBBOX.initFromGeoPosition(geoPosition, 200, 200);
       const stageConfig = this.getStageConfig();
-      const locationInformationRequest = OJP.LocationInformationRequest.initWithBBOXAndType(
-        stageConfig,
-        language,
-        bbox.southWest.longitude,
-        bbox.northEast.latitude,
-        bbox.northEast.longitude,
-        bbox.southWest.latitude,
-        ['stop'],
-        300
-      );
-      const locationInformationPromise = locationInformationRequest.fetchLocations();
-      promises.push(locationInformationPromise)
+
+      const ojpRequest: OJP.LocationInformationRequest = (() => {
+        // OJP-SI cant handle BBOX queries
+        if (this.currentAppStage === 'OJP-SI') {
+          const locationName = tripLocation.location.computeLocationName() ?? 'n/a';
+          const request = OJP.LocationInformationRequest.initWithLocationName(stageConfig, language, locationName, []);
+          
+          return request;
+        }
+
+        const request = OJP.LocationInformationRequest.initWithBBOXAndType(stageConfig, language,
+          bbox.southWest.longitude,
+          bbox.northEast.latitude,
+          bbox.northEast.longitude,
+          bbox.southWest.latitude,
+          
+          ['stop'],
+          300
+        );
+
+        return request;
+      })();
+      
+      const locationInformationPromise = ojpRequest.fetchLocations();
+      promises.push(locationInformationPromise);
     });
 
     Promise.all(promises).then(locationsData => {
