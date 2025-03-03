@@ -21,6 +21,27 @@ export type APP_STAGE = 'PROD' | 'INT' | 'TEST' | 'LA Beta'
 
 export const DEFAULT_APP_STAGE: APP_STAGE = 'V2-PROD';
 
+export const APP_STAGEs: APP_STAGE[] = (() => {
+  let stages: APP_STAGE[] = [];
+
+  if (OJP.OJP_VERSION === '1.0') {
+    stages = ['PROD', 'INT', 'TEST', 'LA Beta'];
+    if (DEBUG_LEVEL === 'DEBUG') {
+      stages.push('V2-EFA11');
+      stages.push('OJP-SI');
+    }
+  }
+
+  if (OJP.OJP_VERSION === '2.0') {
+    stages = ['V2-PROD', 'V2-INT', 'V2-TEST'];
+    if (DEBUG_LEVEL === 'DEBUG') {
+      stages.push('V2-EFA11');
+    }
+  }
+
+  return stages;
+})();
+
 export interface AppMapLayerOptions {
   LIR_Restriction_Type: OJP.RestrictionType
   LIR_POI_Type?: OJP.POI_Restriction | null
