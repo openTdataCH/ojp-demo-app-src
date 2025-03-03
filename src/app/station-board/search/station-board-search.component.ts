@@ -20,7 +20,7 @@ import { DebugXmlPopoverComponent } from '../../search-form/debug-xml-popover/de
 import { CustomStopEventXMLPopoverComponent } from './custom-stop-event-xml-popover/custom-stop-event-xml-popover.component';
 import { EmbedStationBoardPopoverComponent } from './embed-station-board-popover/embed-station-board-popover.component';
 
-import { APP_STAGE, DEBUG_LEVEL, DEFAULT_APP_STAGE } from '../../config/constants'
+import { APP_STAGE, APP_STAGEs, DEBUG_LEVEL, DEFAULT_APP_STAGE } from '../../config/constants'
 
 type URLType = 'prodv1' | 'betav1' | 'betav2';
 
@@ -76,10 +76,7 @@ export class StationBoardSearchComponent implements OnInit {
   ) {
     this.queryParams = new URLSearchParams(document.location.search);
 
-    this.appStageOptions = ['PROD', 'INT', 'TEST', 'LA Beta'];
-    if (DEBUG_LEVEL === 'DEBUG') {
-      this.appStageOptions.push('OJP-SI');
-    }
+    this.appStageOptions = APP_STAGEs;
 
     this.stationBoardTypes = ['Departures', 'Arrivals']
 

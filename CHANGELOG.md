@@ -4,6 +4,12 @@ OJP-Demo URL: https://opentdatach.github.io/ojp-demo-app/
 
 ----
 
+3.March 2025
+- updates Fares API - [PR #199](https://github.com/openTdataCH/ojp-demo-app-src/pull/199)
+- adds OJP-SI support - [PR #202](https://github.com/openTdataCH/ojp-demo-app-src/pull/202)
+- adds EFA11 DEV stage - [PR #203](https://github.com/openTdataCH/ojp-demo-app-src/pull/203)
+- use latest OJP SDK
+
 15.December 2024
 - Updates NOVA fares - [PR #194](https://github.com/openTdataCH/ojp-demo-app-src/pull/194)
 - use latest OJP SDK

@@ -19,7 +19,7 @@ import { InputXmlPopoverComponent } from './input-xml-popover/input-xml-popover.
 import { EmbedSearchPopoverComponent } from './embed-search-popover/embed-search-popover.component';
 import { DebugXmlPopoverComponent } from './debug-xml-popover/debug-xml-popover.component';
 
-import { APP_STAGE, DEBUG_LEVEL } from '../config/constants';
+import { APP_STAGE, APP_STAGEs, DEBUG_LEVEL } from '../config/constants';
 import { Router } from '@angular/router';
 import { OJPHelpers } from '../helpers/ojp-helpers';
 
@@ -78,10 +78,7 @@ export class SearchFormComponent implements OnInit {
     this.toLocationText = ''
     this.viaText = ''
 
-    this.appStageOptions = ['PROD', 'INT', 'TEST', 'LA Beta'];
-    if (DEBUG_LEVEL === 'DEBUG') {
-      this.appStageOptions.push('OJP-SI');
-    }
+    this.appStageOptions = APP_STAGEs;
 
     this.isSearching = false;
 
