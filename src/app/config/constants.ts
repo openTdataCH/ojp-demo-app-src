@@ -16,6 +16,7 @@ export const DEBUG_LEVEL: DEBUG_LEVEL_Type = (() => {
 
 export type APP_STAGE = 'PROD' | 'INT' | 'TEST' | 'LA Beta' 
   | 'V2-PROD' | 'V2-INT' | 'V2-TEST'
+  | 'EFA11' | 'V2-EFA11'
   | 'GR TEST'| 'PROD-LB' | 'OJP-SI' | 'NOVA-INT';
 
 export const DEFAULT_APP_STAGE: APP_STAGE = 'V2-PROD';
