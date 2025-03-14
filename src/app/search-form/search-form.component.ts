@@ -522,6 +522,10 @@ export class SearchFormComponent implements OnInit {
       this.userTripService.publicTransportModesFilter,
     );
 
+    if (tripRequest !== null) {
+      tripRequest.enableExtensions = this.userTripService.currentAppStage !== 'OJP-SI';
+    }
+
     return tripRequest;
   }
 }

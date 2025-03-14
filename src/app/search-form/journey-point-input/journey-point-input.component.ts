@@ -124,6 +124,8 @@ export class JourneyPointInputComponent implements OnInit, OnChanges {
     let stageConfig = this.userTripService.getStageConfig()
 
     const request = OJP.LocationInformationRequest.initWithLocationName(stageConfig, this.languageService.language, searchTerm, []);
+    request.enableExtensions = this.userTripService.currentAppStage !== 'OJP-SI';
+    
     const response = await request.fetchResponse();
 
     this.resetMapLocations();

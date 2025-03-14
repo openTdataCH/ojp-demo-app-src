@@ -370,6 +370,8 @@ export class StationBoardSearchComponent implements OnInit {
   private async lookupStopPlaceRef(stopPlaceRef: string) {
     const stageConfig = this.userTripService.getStageConfig();
     const locationInformationRequest = OJP.LocationInformationRequest.initWithStopPlaceRef(stageConfig, this.languageService.language, stopPlaceRef);
+    locationInformationRequest.enableExtensions = this.userTripService.currentAppStage !== 'OJP-SI';
+
     const response = await locationInformationRequest.fetchResponse();
 
     if (response.locations.length === 0) {
