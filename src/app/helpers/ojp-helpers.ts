@@ -157,8 +157,6 @@ export class OJPHelpers {
     
     if (dateDiffSeconds > 0) {
       delayTextParts.push('+');
-    } else {
-      delayTextParts.push('-');
     }
 
     const absDateDiffSeconds = Math.abs(dateDiffSeconds);

@@ -126,6 +126,7 @@ export class AppMapLayer {
             featuresLimit,
             this.restrictionPOI,
         );
+        request.enableExtensions = this.userTripService.currentAppStage !== 'OJP-SI';
 
         this.lastOJPRequest = request;
 
