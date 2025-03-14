@@ -147,6 +147,7 @@ export class UserTripService {
         if (typeof stopPlaceRef === 'string' && /^[A-Z]/.test(stopPlaceRef)) {
           locationInformationRequest = OJP.LocationInformationRequest.initWithLocationName(stageConfig, language, stopPlaceRef, []);
         }
+        locationInformationRequest.enableExtensions = this.currentAppStage !== 'OJP-SI';
 
         const locationInformationPromise = locationInformationRequest.fetchLocations();
         promises.push(locationInformationPromise);
@@ -168,6 +169,7 @@ export class UserTripService {
         }
       } else {
         const stopPlaceLIR = OJP.LocationInformationRequest.initWithStopPlaceRef(stageConfig, language, viaKey);
+        stopPlaceLIR.enableExtensions = this.currentAppStage !== 'OJP-SI';
         const stopPlacePromise = stopPlaceLIR.fetchLocations();
         promises.push(stopPlacePromise);
       }
@@ -289,14 +291,6 @@ export class UserTripService {
       const stageConfig = this.getStageConfig();
 
       const ojpRequest: OJP.LocationInformationRequest = (() => {
-        // OJP-SI cant handle BBOX queries
-        if (this.currentAppStage === 'OJP-SI') {
-          const locationName = tripLocation.location.computeLocationName() ?? 'n/a';
-          const request = OJP.LocationInformationRequest.initWithLocationName(stageConfig, language, locationName, []);
-          
-          return request;
-        }
-
         const request = OJP.LocationInformationRequest.initWithBBOXAndType(stageConfig, language,
           bbox.southWest.longitude,
           bbox.northEast.latitude,
@@ -306,6 +300,7 @@ export class UserTripService {
           ['stop'],
           300
         );
+        request.enableExtensions = this.currentAppStage !== 'OJP-SI';
 
         return request;
       })();

@@ -146,6 +146,8 @@ export class JourneyResultsComponent implements OnInit {
     if (request === null) {
       return;
     }
+    
+    request.enableExtensions = this.userTripService.currentAppStage !== 'OJP-SI';
 
     this.userTripService.journeyTripRequests = [request];
 
