@@ -4,6 +4,10 @@ OJP-Demo URL: https://opentdatach.github.io/ojp-demo-app/
 
 ----
 
+14.March 2025
+- adds fixes for OJP-SI - TBA PR[PR #205](https://github.com/openTdataCH/ojp-demo-app-src/pull/205)
+- use latest OJP SDK
+
 3.March 2025
 - updates Fares API - [PR #199](https://github.com/openTdataCH/ojp-demo-app-src/pull/199)
 - adds OJP-SI support - [PR #202](https://github.com/openTdataCH/ojp-demo-app-src/pull/202)

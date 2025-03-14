@@ -345,6 +345,9 @@ export class StationBoardSearchComponent implements OnInit {
     const stopEventDate = this.computeStopBoardDate();
     const appStageConfig = this.userTripService.getStageConfig();
     const stopEventRequest = OJP.StopEventRequest.initWithStopPlaceRef(appStageConfig, this.languageService.language, stopPlaceRef, stopEventType, stopEventDate);
+    
+    // for debug XML dialog
+    stopEventRequest.updateRequestXML();
 
     return stopEventRequest;
   }
@@ -367,6 +370,8 @@ export class StationBoardSearchComponent implements OnInit {
   private async lookupStopPlaceRef(stopPlaceRef: string) {
     const stageConfig = this.userTripService.getStageConfig();
     const locationInformationRequest = OJP.LocationInformationRequest.initWithStopPlaceRef(stageConfig, this.languageService.language, stopPlaceRef);
+    locationInformationRequest.enableExtensions = this.userTripService.currentAppStage !== 'OJP-SI';
+
     const response = await locationInformationRequest.fetchResponse();
 
     if (response.locations.length === 0) {

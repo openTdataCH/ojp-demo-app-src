@@ -158,6 +158,9 @@ export class TripInfoSearchComponent implements OnInit {
 
     this.model.isSearching = false;
 
+    // for debug XML dialog
+    request.updateRequestXML();
+
     if (response.tripInfoResult === null) {
       this.notificationToast.open('Invalid TripInfoRequest result', {
         type: 'error',

@@ -100,6 +100,7 @@ export class StationBoardInputComponent implements OnInit {
     const restrictionType: OJP.RestrictionType = 'stop';
     const stageConfig = this.userTripService.getStageConfig();
     const locationInformationRequest = OJP.LocationInformationRequest.initWithLocationName(stageConfig, this.languageService.language, searchTerm, [restrictionType]);
+    locationInformationRequest.enableExtensions = this.userTripService.currentAppStage !== 'OJP-SI';
 
     const response = await locationInformationRequest.fetchResponse();
     
@@ -217,6 +218,8 @@ export class StationBoardInputComponent implements OnInit {
       ['stop'],
       300,
     );
+    request.enableExtensions = this.userTripService.currentAppStage !== 'OJP-SI';
+
     const response = await request.fetchResponse();
     completion(response.locations);
   }
