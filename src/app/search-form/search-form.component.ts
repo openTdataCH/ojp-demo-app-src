@@ -402,6 +402,9 @@ export class SearchFormComponent implements OnInit {
       const popover = dialogRef.componentInstance as InputXmlPopoverComponent
       const currentTR = this.computeTripRequest();
       if (currentTR) {
+        // force re-built of XML request
+        currentTR.updateRequestXML();
+        
         popover.inputTripRequestXML = currentTR.requestInfo.requestXML ?? 'n/a';
       }
 

@@ -345,6 +345,9 @@ export class StationBoardSearchComponent implements OnInit {
     const stopEventDate = this.computeStopBoardDate();
     const appStageConfig = this.userTripService.getStageConfig();
     const stopEventRequest = OJP.StopEventRequest.initWithStopPlaceRef(appStageConfig, this.languageService.language, stopPlaceRef, stopEventType, stopEventDate);
+    
+    // for debug XML dialog
+    stopEventRequest.updateRequestXML();
 
     return stopEventRequest;
   }
