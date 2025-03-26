@@ -311,6 +311,7 @@ export class StationBoardSearchComponent implements OnInit {
 
   private fetchStopEventsForStopRef(stopPlaceRef: string) {
     const stopEventRequest = this.computeStopEventRequest(stopPlaceRef);
+    stopEventRequest.enableExtensions = this.userTripService.currentAppStage !== 'OJP-SI';
 
     stopEventRequest.fetchResponse().then(response => {
       this.currentRequestInfo = stopEventRequest.requestInfo;
