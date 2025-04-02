@@ -22,7 +22,7 @@ export class UserTripService {
   public numberOfResults: number | null
   public numberOfResultsBefore: number | null
   public numberOfResultsAfter: number | null
-  public publicTransportModesFilter: OJP.ModeOfTransportType[] = [];
+  public publicTransportModesFilter: OJP.ModeOfTransportType[];
 
   public currentBoardingType: OJP.TripRequestBoardingType
 
