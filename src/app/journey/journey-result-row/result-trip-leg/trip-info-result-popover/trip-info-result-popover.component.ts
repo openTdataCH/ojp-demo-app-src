@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 
-import * as OJP from 'ojp-sdk'
+import * as OJP from 'ojp-sdk-v1';
 
 import { UserTripService } from '../../../../shared/services/user-trip.service';
 import { TripInfoService } from '../../../../trip-info/trip-info.service';

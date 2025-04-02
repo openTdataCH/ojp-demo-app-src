@@ -1,7 +1,7 @@
 import * as GeoJSON from 'geojson'
 import mapboxgl from "mapbox-gl";
 
-import * as OJP from 'ojp-sdk'
+import * as OJP from 'ojp-sdk-v1';
 
 import serviceTrackLineLayerJSON from './map-layers-def/service-track-line.json'
 import serviceTrackStopLayerJSON from './map-layers-def/service-track-stop.json'
