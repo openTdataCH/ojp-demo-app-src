@@ -51,6 +51,20 @@
             </button>
           </div>
         </div>
+
+        <ng-container *ngIf="!this.isV1;">
+          <div class="d-flex gap-2 align-items-center mb-3">
+            <div>UseRealTimeData</div>
+            <div>
+              <sbb-radio-group class="sbb-radio-group-horizontal" [(ngModel)]="this.userTripService.useRealTimeDataType">
+                <sbb-radio-button *ngFor="let useRealTimeDataType of this.useRealTimeDataTypes"
+                  [value]="useRealTimeDataType">
+                  {{ useRealTimeDataType }}
+                </sbb-radio-button>
+              </sbb-radio-group>
+            </div>
+          </div>
+        </ng-container>
         
         <div class="mb-3 d-flex" *ngIf="!this.isEmbed">
           <div>

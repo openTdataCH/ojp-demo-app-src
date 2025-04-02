@@ -98,6 +98,9 @@ export class TripModeTypeComponent implements OnInit {
 
   public isV1: boolean;
 
+  public useRealTimeDataTypes: OJP.UseRealtimeDataEnumeration[];
+  public selectedUseRealTimeDataType: OJP.UseRealtimeDataEnumeration;
+
   constructor(public userTripService: UserTripService) {
     this.tripTransportModeData = appTripTransportModeData;
 
@@ -131,6 +134,9 @@ export class TripModeTypeComponent implements OnInit {
     this.mapPublicTransportModesFilter.tram = false;
 
     this.isV1 = OJP.OJP_VERSION === '1.0';
+
+    this.useRealTimeDataTypes = ['full', 'explanatory', 'none'];
+    this.selectedUseRealTimeDataType = this.userTripService.useRealTimeDataType;
   }
 
   ngOnInit() {
@@ -246,6 +252,7 @@ export class TripModeTypeComponent implements OnInit {
     this.userTripService.numberOfResults = numberOfResults;
     this.userTripService.numberOfResultsAfter = numberOfResultsAfter;
     this.userTripService.numberOfResultsBefore = numberOfResultsBefore;
+    this.userTripService.useRealTimeDataType = this.selectedUseRealTimeDataType;
 
     this.userTripService.updateURLs();
   }
