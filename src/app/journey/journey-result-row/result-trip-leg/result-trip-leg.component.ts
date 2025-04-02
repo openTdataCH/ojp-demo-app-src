@@ -534,26 +534,15 @@ export class ResultTripLegComponent implements OnInit {
 
     const timedLeg = leg as OJP.TripTimedLeg;
     for (const [key, attrData] of Object.entries(timedLeg.service.serviceAttributes)) {
-      const icon: string | null = (() => {
-        if (key.startsWith('ojp')) {
-          return null;
+      const icon: string = (() => {
+        if (key.startsWith('A_')) {
+          const code = key.replace(/A_*/, '');
+          const standardIcon = 'fpl:sa-' + code.toLowerCase();
+          return standardIcon;
         }
 
-        if (key.toLowerCase() === 'gf') {
-          return 'kom:freight-wagon-container-small';
-        }
-
-        if (key.toLowerCase().startsWith('i_')) {
-          return 'kom:circle-information-large';
-        }
-
-        if (['sa-ba', 'ba', 'sa-hl', 'hl', 'bu'].includes(key.toLowerCase())) {
-          return 'kom:circle-information-large';
-        }
-
-        const icon = 'fpl:sa-' + key.toLowerCase();
-        
-        return icon;
+        const defaultIcon = 'kom:circle-question-mark-medium';
+        return defaultIcon;
       })();
 
       if (icon === null) {
