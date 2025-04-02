@@ -5,8 +5,8 @@ OJP-Demo URL: https://opentdatach.github.io/ojp-demo-app/
 ----
 
 14.March 2025
-- adds fixes for OJP-SI - PR[PR #205](https://github.com/openTdataCH/ojp-demo-app-src/pull/205)
-- avoid double `--` for delays - PR[PR #206](https://github.com/openTdataCH/ojp-demo-app-src/pull/206)
+- adds fixes for OJP-SI - [PR #205](https://github.com/openTdataCH/ojp-demo-app-src/pull/205)
+- avoid double `--` for delays - [PR #206](https://github.com/openTdataCH/ojp-demo-app-src/pull/206)
 - use latest OJP SDK
 
 3.March 2025
