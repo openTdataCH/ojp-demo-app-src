@@ -5,7 +5,7 @@ OJP-Demo URL: https://opentdatach.github.io/ojp-demo-app/
 ----
 
 2.April 2025
-- updates service attributes - TBA PR
+- updates service attributes - [PR #212](https://github.com/openTdataCH/ojp-demo-app-src/pull/212)
   - [TR: catch attributes that are not standard #210](https://github.com/openTdataCH/ojp-demo-app-src/issues/210)
 - updates OJP requests - [PR #211](https://github.com/openTdataCH/ojp-demo-app-src/pull/211)
   - use latest OJP SDK package - `ojp-sdk-v1`, version `0.17.2`
