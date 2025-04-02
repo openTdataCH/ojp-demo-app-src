@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 
-import * as OJP from 'ojp-sdk-v1';
+import * as OJP from 'ojp-sdk-v2';
 
 @Component({
   selector: 'embed-station-board-popover',

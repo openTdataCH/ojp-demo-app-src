@@ -2,7 +2,7 @@ import { EventEmitter, Injectable } from '@angular/core'
 
 import mapboxgl from 'mapbox-gl'
 
-import * as OJP from 'ojp-sdk-v1';
+import * as OJP from 'ojp-sdk-v2';
 
 import { APP_CONFIG } from '../../config/app-config'
 import { APP_STAGE, DEBUG_LEVEL, DEFAULT_APP_STAGE, TRIP_REQUEST_DEFAULT_NUMBER_OF_RESULTS } from '../../config/constants'

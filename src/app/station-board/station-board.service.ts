@@ -2,7 +2,7 @@ import { EventEmitter, Injectable, Output } from "@angular/core";
 
 import mapboxgl from "mapbox-gl";
 
-import * as OJP from 'ojp-sdk-v1';
+import * as OJP from 'ojp-sdk-v2';
 
 export type StationBoardData = {
     type: OJP.StationBoardType,

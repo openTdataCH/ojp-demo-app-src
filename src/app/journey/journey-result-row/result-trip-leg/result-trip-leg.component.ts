@@ -4,7 +4,7 @@ import { Router } from '@angular/router';
 import { SbbDialog } from "@sbb-esta/angular/dialog";
 
 import mapboxgl from 'mapbox-gl'
-import * as OJP from 'ojp-sdk-v1';
+import * as OJP from 'ojp-sdk-v2';
 
 import { DEBUG_LEVEL } from '../../../config/constants';
 import { MapLegLineTypeColor } from '../../../config/map-colors';

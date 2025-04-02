@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { UserTripService } from 'src/app/shared/services/user-trip.service';
 
-import * as OJP from 'ojp-sdk-v1';
+import * as OJP from 'ojp-sdk-v2';
 import { MapService } from '../../shared/services/map.service'
 import { LanguageService } from '../../shared/services/language.service';
 

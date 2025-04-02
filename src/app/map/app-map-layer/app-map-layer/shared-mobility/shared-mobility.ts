@@ -1,4 +1,4 @@
-import * as OJP from 'ojp-sdk-v1';
+import * as OJP from 'ojp-sdk-v2';
 
 // https://github.com/SFOE/sharedmobility/blob/main/providers.csv
 type SharedMobilityProvider = '2EM Car Sharing' | 'Bird' | 'Bolt' | 'Carvelo2go' | 'Donkey Republic'

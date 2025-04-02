@@ -1,4 +1,4 @@
-import * as OJP from 'ojp-sdk-v1';
+import * as OJP from 'ojp-sdk-v2';
 
 import { OJPMapHelpers } from '../../helpers/ojp-map-helpers';
 import { TripLegDrawType, TripLegLineType, TripLegPropertiesEnum } from '../types/map-geometry-types';

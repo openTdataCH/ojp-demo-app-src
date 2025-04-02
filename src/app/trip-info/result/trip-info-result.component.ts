@@ -1,6 +1,6 @@
 import { AfterViewInit, ChangeDetectorRef, Component, OnInit } from '@angular/core';
 
-import * as OJP from 'ojp-sdk-v1';
+import * as OJP from 'ojp-sdk-v2';
 
 import { TripInfoService } from '../trip-info.service';
 import { OJPHelpers } from '../../helpers/ojp-helpers';

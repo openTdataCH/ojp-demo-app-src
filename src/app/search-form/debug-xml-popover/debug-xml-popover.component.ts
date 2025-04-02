@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { Clipboard } from '@angular/cdk/clipboard';
 
-import * as OJP from 'ojp-sdk-v1';
+import * as OJP from 'ojp-sdk-v2';
 import { XML_Helpers } from 'src/app/helpers/xml-helpers';
 
 @Component({

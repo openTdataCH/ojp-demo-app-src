@@ -4,7 +4,7 @@ import { SbbExpansionPanel } from '@sbb-esta/angular/accordion';
 import { SbbDialog } from '@sbb-esta/angular/dialog';
 import { SbbNotificationToast } from '@sbb-esta/angular/notification-toast';
 
-import * as OJP from 'ojp-sdk-v1';
+import * as OJP from 'ojp-sdk-v2';
 
 import { APP_STAGE, APP_STAGEs } from '../../config/constants'
 
