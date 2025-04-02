@@ -1,7 +1,7 @@
 import * as GeoJSON from 'geojson'
 import mapboxgl from "mapbox-gl";
 
-import * as OJP from 'ojp-sdk'
+import * as OJP from 'ojp-sdk-v1';
 
 import { AppMapLayerOptions, DEBUG_LEVEL, MAP_APP_MAP_LAYERS } from '../../config/constants'
 import { UserTripService } from "../../shared/services/user-trip.service";
