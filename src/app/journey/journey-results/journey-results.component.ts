@@ -148,6 +148,7 @@ export class JourneyResultsComponent implements OnInit {
     }
     
     request.enableExtensions = this.userTripService.currentAppStage !== 'OJP-SI';
+    request.useRealTimeDataType = this.userTripService.useRealTimeDataType;
 
     this.userTripService.journeyTripRequests = [request];
 

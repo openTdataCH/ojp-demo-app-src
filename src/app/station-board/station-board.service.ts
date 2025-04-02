@@ -13,7 +13,7 @@ export type StationBoardData = {
 export class StationBoardService {
     @Output() stationBoardDataUpdated = new EventEmitter<StationBoardData>()
     @Output() stationBoardEntrySelected = new EventEmitter<OJP.StopEvent | null>()
-    @Output() stationOnMapClicked = new EventEmitter<mapboxgl.MapboxGeoJSONFeature>()
+    @Output() stationOnMapClicked = new EventEmitter<mapboxgl.GeoJSONFeature>()
 
     public searchDate = new Date();
 

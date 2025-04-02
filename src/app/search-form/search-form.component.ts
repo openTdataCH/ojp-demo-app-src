@@ -524,6 +524,7 @@ export class SearchFormComponent implements OnInit {
 
     if (tripRequest !== null) {
       tripRequest.enableExtensions = this.userTripService.currentAppStage !== 'OJP-SI';
+      tripRequest.useRealTimeDataType = this.userTripService.useRealTimeDataType;
     }
 
     return tripRequest;

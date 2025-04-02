@@ -3,7 +3,7 @@ import mapboxgl from "mapbox-gl";
 
 interface NearbyFeature {
   distance: number
-  feature: mapboxgl.MapboxGeoJSONFeature
+  feature: mapboxgl.GeoJSONFeature
 }
 
 export class MapHelpers {
