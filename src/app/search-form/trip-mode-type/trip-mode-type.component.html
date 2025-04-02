@@ -122,6 +122,19 @@
           <input sbbInput style="width: 50px;" [(ngModel)]="this.numberOfResultsAfter" (change)="updateAdditionalRestrictions()" />
         </div>
       </div>
+      <ng-container *ngIf="!this.isV1;">
+        <div class="d-flex gap-2 align-items-center mb-3">
+          <div>UseRealTimeData</div>
+          <div>
+            <sbb-radio-group class="sbb-radio-group-horizontal" [(ngModel)]="this.selectedUseRealTimeDataType" (change)="updateAdditionalRestrictions()">
+              <sbb-radio-button *ngFor="let useRealTimeDataType of this.useRealTimeDataTypes"
+                [value]="useRealTimeDataType">
+                {{ useRealTimeDataType }}
+              </sbb-radio-button>
+            </sbb-radio-group>
+          </div>
+        </div>
+      </ng-container>
       <div class="d-flex gap-2 align-items-center mb-2">
         <div>Travel only with</div>
         <sbb-checkbox [(ngModel)]="this.mapPublicTransportModesFilter.rail" (change)="updateAdditionalRestrictions()">train</sbb-checkbox>

@@ -23,6 +23,7 @@ export class UserTripService {
   public numberOfResultsBefore: number | null
   public numberOfResultsAfter: number | null
   public publicTransportModesFilter: OJP.ModeOfTransportType[];
+  public useRealTimeDataType: OJP.UseRealtimeDataEnumeration;
 
   public currentBoardingType: OJP.TripRequestBoardingType
 
@@ -64,6 +65,8 @@ export class UserTripService {
     this.numberOfResultsBefore = null;
     this.numberOfResultsAfter = null;
     this.publicTransportModesFilter = [];
+    this.useRealTimeDataType = 'explanatory';
+    
     this.isViaEnabled = false;
 
     this.currentBoardingType = 'Dep'
