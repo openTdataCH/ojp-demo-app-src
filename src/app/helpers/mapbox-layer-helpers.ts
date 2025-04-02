@@ -1,6 +1,6 @@
 import * as mapboxgl from "mapbox-gl";
 
-import * as OJP from 'ojp-sdk'
+import * as OJP from 'ojp-sdk-v1';
 
 import { MapLegTypeColor, MapLegTypes, MapLegLineTypeColor, MapTripLegLineTypes } from '../config/map-colors';
 

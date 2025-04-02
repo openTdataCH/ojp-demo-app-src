@@ -4,7 +4,7 @@ import { FormControl, FormGroupDirective, NgForm, Validators } from '@angular/fo
 
 import { SbbAutocompleteSelectedEvent } from '@sbb-esta/angular/autocomplete';
 
-import * as OJP from 'ojp-sdk'
+import * as OJP from 'ojp-sdk-v1';
 
 import { MapService } from '../../shared/services/map.service';
 import { LanguageService } from '../../shared/services/language.service'
