@@ -5,11 +5,14 @@ OJP-Demo URL: https://opentdatach.github.io/ojp-demo-app/
 ----
 
 2.April 2025
+- set OJP `UseRealtimeDataEnumeration` in GUI - [PR #213](https://github.com/openTdataCH/ojp-demo-app-src/pull/213)
+  - only in OJP v2.0
+  - [Selection for UseRealtimeData in OJP 2.0 #209](https://github.com/openTdataCH/ojp-demo-app-src/issues/209)
 - updates service attributes - [PR #212](https://github.com/openTdataCH/ojp-demo-app-src/pull/212)
   - [TR: catch attributes that are not standard #210](https://github.com/openTdataCH/ojp-demo-app-src/issues/210)
 - updates OJP requests - [PR #211](https://github.com/openTdataCH/ojp-demo-app-src/pull/211)
-  - use latest OJP SDK package - `ojp-sdk-v1`, version `0.17.2`
-  - disable OJP request flags for OJP v1.0 calls - TBA PR
+  - disable OJP request flags for OJP v1.0 calls
+- use latest OJP SDK package - `ojp-sdk-v1`, version `0.17.3`
 
 14.March 2025
 - adds fixes for OJP-SI - [PR #205](https://github.com/openTdataCH/ojp-demo-app-src/pull/205)
