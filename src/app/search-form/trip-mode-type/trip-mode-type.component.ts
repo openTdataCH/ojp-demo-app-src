@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { debounceTime } from 'rxjs';
 
-import * as OJP from 'ojp-sdk'
+import * as OJP from 'ojp-sdk-v1';
 
 import { UserTripService } from '../../shared/services/user-trip.service';
 import { FormatHelpers } from '../../helpers/format-helpers';
@@ -96,7 +96,10 @@ export class TripModeTypeComponent implements OnInit {
 
   public mapPublicTransportModesFilter: Record<OJP.ModeOfTransportType, boolean>;
 
-  public showMonoMultiModalSelect: boolean;
+  public isV1: boolean;
+
+  public useRealTimeDataTypes: OJP.UseRealtimeDataEnumeration[];
+  public selectedUseRealTimeDataType: OJP.UseRealtimeDataEnumeration;
 
   constructor(public userTripService: UserTripService) {
     this.tripTransportModeData = appTripTransportModeData;
@@ -130,7 +133,10 @@ export class TripModeTypeComponent implements OnInit {
     this.mapPublicTransportModesFilter.water = false;
     this.mapPublicTransportModesFilter.tram = false;
 
-    this.showMonoMultiModalSelect = OJP.OJP_VERSION === '1.0';
+    this.isV1 = OJP.OJP_VERSION === '1.0';
+
+    this.useRealTimeDataTypes = ['full', 'explanatory', 'none'];
+    this.selectedUseRealTimeDataType = this.userTripService.useRealTimeDataType;
   }
 
   ngOnInit() {
@@ -246,6 +252,7 @@ export class TripModeTypeComponent implements OnInit {
     this.userTripService.numberOfResults = numberOfResults;
     this.userTripService.numberOfResultsAfter = numberOfResultsAfter;
     this.userTripService.numberOfResultsBefore = numberOfResultsBefore;
+    this.userTripService.useRealTimeDataType = this.selectedUseRealTimeDataType;
 
     this.userTripService.updateURLs();
   }

@@ -1,7 +1,7 @@
 import * as GeoJSON from 'geojson';
 import mapboxgl from 'mapbox-gl';
 
-import * as OJP from 'ojp-sdk'
+import * as OJP from 'ojp-sdk-v1';
 
 import { MapboxLayerHelpers } from '../../helpers/mapbox-layer-helpers';
 import { MapLegTypeColor } from '../../config/map-colors';

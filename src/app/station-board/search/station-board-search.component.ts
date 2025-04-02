@@ -6,7 +6,7 @@ import { SbbDialog } from '@sbb-esta/angular/dialog';
 import { SbbNotificationToast } from '@sbb-esta/angular/notification-toast';
 
 import * as GeoJSON from 'geojson'
-import * as OJP from 'ojp-sdk'
+import * as OJP from 'ojp-sdk-v1';
 
 import { OJPHelpers } from '../../helpers/ojp-helpers';
 
@@ -56,6 +56,9 @@ export class StationBoardSearchComponent implements OnInit {
   public isEmbed: boolean;
   public showURLS: boolean;
 
+  public isV1: boolean;
+  public useRealTimeDataTypes: OJP.UseRealtimeDataEnumeration[];
+
   get searchDate() {
     return this.stationBoardService.searchDate;
   }
@@ -68,7 +71,7 @@ export class StationBoardSearchComponent implements OnInit {
     private debugXmlPopover: SbbDialog,
     private customXmlPopover: SbbDialog,
     private mapService: MapService, 
-    private stationBoardService: StationBoardService,
+    public stationBoardService: StationBoardService,
     private languageService: LanguageService,
     public userTripService: UserTripService,
     private embedHTMLPopover: SbbDialog,
@@ -101,6 +104,9 @@ export class StationBoardSearchComponent implements OnInit {
     this.isEmbed = this.router.url.indexOf('/embed/') !== -1;
     this.headerText = this.stationBoardType;
     this.showURLS = DEBUG_LEVEL === 'DEBUG';
+
+    this.isV1 = OJP.OJP_VERSION === '1.0';
+    this.useRealTimeDataTypes = ['full', 'explanatory', 'none'];
   }
 
   ngOnInit(): void {
@@ -346,6 +352,7 @@ export class StationBoardSearchComponent implements OnInit {
     const stopEventDate = this.computeStopBoardDate();
     const appStageConfig = this.userTripService.getStageConfig();
     const stopEventRequest = OJP.StopEventRequest.initWithStopPlaceRef(appStageConfig, this.languageService.language, stopPlaceRef, stopEventType, stopEventDate);
+    stopEventRequest.useRealTimeDataType = this.userTripService.useRealTimeDataType;
     
     // for debug XML dialog
     stopEventRequest.updateRequestXML();

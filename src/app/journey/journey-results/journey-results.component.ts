@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { UserTripService } from 'src/app/shared/services/user-trip.service';
 
-import * as OJP from 'ojp-sdk'
+import * as OJP from 'ojp-sdk-v1';
 import { MapService } from '../../shared/services/map.service'
 import { LanguageService } from '../../shared/services/language.service';
 
@@ -148,6 +148,7 @@ export class JourneyResultsComponent implements OnInit {
     }
     
     request.enableExtensions = this.userTripService.currentAppStage !== 'OJP-SI';
+    request.useRealTimeDataType = this.userTripService.useRealTimeDataType;
 
     this.userTripService.journeyTripRequests = [request];
 

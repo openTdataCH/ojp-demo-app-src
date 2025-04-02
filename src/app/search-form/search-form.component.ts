@@ -7,7 +7,7 @@ import { SbbExpansionPanel } from '@sbb-esta/angular/accordion';
 import { SbbNotificationToast } from '@sbb-esta/angular/notification-toast';
 import { SbbRadioChange } from '@sbb-esta/angular/radio-button';
 
-import * as OJP from 'ojp-sdk'
+import * as OJP from 'ojp-sdk-v1';
 
 import { DateHelpers } from '../helpers/date-helpers';
 
@@ -524,6 +524,7 @@ export class SearchFormComponent implements OnInit {
 
     if (tripRequest !== null) {
       tripRequest.enableExtensions = this.userTripService.currentAppStage !== 'OJP-SI';
+      tripRequest.useRealTimeDataType = this.userTripService.useRealTimeDataType;
     }
 
     return tripRequest;

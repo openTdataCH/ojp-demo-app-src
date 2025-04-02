@@ -1,4 +1,4 @@
-import * as OJP from 'ojp-sdk'
+import * as OJP from 'ojp-sdk-v1';
 
 type DEBUG_LEVEL_Type = 'DEBUG' | 'PROD'
 export const DEBUG_LEVEL: DEBUG_LEVEL_Type = (() => {

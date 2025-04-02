@@ -1,7 +1,7 @@
 import { Component, EventEmitter, Output } from '@angular/core';
 import { UserTripService } from 'src/app/shared/services/user-trip.service';
 
-import * as OJP from 'ojp-sdk'
+import * as OJP from 'ojp-sdk-v1';
 
 @Component({
   selector: 'input-xml-popover',

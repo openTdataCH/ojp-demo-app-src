@@ -2,7 +2,7 @@ import { EventEmitter, Injectable } from '@angular/core'
 
 import mapboxgl from 'mapbox-gl'
 
-import * as OJP from 'ojp-sdk'
+import * as OJP from 'ojp-sdk-v1';
 
 import { APP_CONFIG } from '../../config/app-config'
 import { APP_STAGE, DEBUG_LEVEL, DEFAULT_APP_STAGE, TRIP_REQUEST_DEFAULT_NUMBER_OF_RESULTS } from '../../config/constants'
@@ -22,7 +22,8 @@ export class UserTripService {
   public numberOfResults: number | null
   public numberOfResultsBefore: number | null
   public numberOfResultsAfter: number | null
-  public publicTransportModesFilter: OJP.ModeOfTransportType[] = [];
+  public publicTransportModesFilter: OJP.ModeOfTransportType[];
+  public useRealTimeDataType: OJP.UseRealtimeDataEnumeration;
 
   public currentBoardingType: OJP.TripRequestBoardingType
 
@@ -64,6 +65,8 @@ export class UserTripService {
     this.numberOfResultsBefore = null;
     this.numberOfResultsAfter = null;
     this.publicTransportModesFilter = [];
+    this.useRealTimeDataType = 'explanatory';
+    
     this.isViaEnabled = false;
 
     this.currentBoardingType = 'Dep'

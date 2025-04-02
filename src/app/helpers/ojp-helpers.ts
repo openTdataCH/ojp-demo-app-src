@@ -1,4 +1,4 @@
-import * as OJP from 'ojp-sdk';
+import * as OJP from 'ojp-sdk-v1';
 
 import { LegStopPointData } from '../shared/components/service-stops.component';
 import { DEBUG_LEVEL } from '../config/constants';
