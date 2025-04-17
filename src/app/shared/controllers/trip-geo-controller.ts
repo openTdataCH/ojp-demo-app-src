@@ -114,12 +114,12 @@ export class TripLegGeoController {
   private static shouldUseBeeline(leg: OJP.TripLeg): boolean {
     const defaultValue = !(leg.legTrack && leg.legTrack.hasGeoData);
 
-    if (leg.legType === 'ContinousLeg') {
+    if (leg.legType === 'ContinuousLeg') {
       return defaultValue;
     }
     
     if (leg.legType === 'TransferLeg') {
-      const transferLeg = leg as OJP.TripContinousLeg;
+      const transferLeg = leg as OJP.TripContinuousLeg;
       if (transferLeg.pathGuidance === null) {
         return defaultValue;
       }
@@ -206,8 +206,8 @@ export class TripLegGeoController {
   private computeLegLineType(): TripLegLineType {
     const defaultType: TripLegLineType = 'Unknown';
 
-    if (this.leg.legType === 'ContinousLeg' || this.leg.legType === 'TransferLeg') {
-      const continuousLeg = this.leg as OJP.TripContinousLeg;
+    if (this.leg.legType === 'ContinuousLeg' || this.leg.legType === 'TransferLeg') {
+      const continuousLeg = this.leg as OJP.TripContinuousLeg;
 
       if (continuousLeg.isDriveCarLeg()) {
         return 'Self-Drive Car';
@@ -325,8 +325,8 @@ export class TripLegGeoController {
   }
 
   private computeLegGeoJSONFeatures(): GeoJSON.Feature[] {
-    if (this.leg.legType === 'ContinousLeg' || this.leg.legType === 'TransferLeg') {
-      const continuousLeg = this.leg as OJP.TripContinousLeg;
+    if (this.leg.legType === 'ContinuousLeg' || this.leg.legType === 'TransferLeg') {
+      const continuousLeg = this.leg as OJP.TripContinuousLeg;
       return this.computeContinousLegGeoJSONFeatures(continuousLeg);
     }
 
@@ -338,7 +338,7 @@ export class TripLegGeoController {
     return [];
   }
 
-  private computeContinousLegGeoJSONFeatures(continuousLeg: OJP.TripContinousLeg): GeoJSON.Feature[] {
+  private computeContinousLegGeoJSONFeatures(continuousLeg: OJP.TripContinuousLeg): GeoJSON.Feature[] {
     const features: GeoJSON.Feature[] = [];
 
     continuousLeg.pathGuidance?.sections.forEach((pathGuidanceSection, guidanceIDx) => {
