@@ -16,7 +16,6 @@ export const DEBUG_LEVEL: DEBUG_LEVEL_Type = (() => {
 
 export type APP_STAGE = 'PROD' | 'INT' | 'TEST' | 'LA Beta' 
   | 'V2-PROD' | 'V2-INT' | 'V2-TEST'
-  | 'EFA11' | 'V2-EFA11'
   | 'GR TEST'| 'PROD-LB' | 'OJP-SI' | 'NOVA-INT';
 
 export const DEFAULT_APP_STAGE: APP_STAGE = 'PROD';
@@ -27,16 +26,12 @@ export const APP_STAGEs: APP_STAGE[] = (() => {
   if (OJP.OJP_VERSION === '1.0') {
     stages = ['PROD', 'INT', 'TEST', 'LA Beta'];
     if (DEBUG_LEVEL === 'DEBUG') {
-      stages.push('EFA11');
       stages.push('OJP-SI');
     }
   }
 
   if (OJP.OJP_VERSION === '2.0') {
     stages = ['V2-PROD', 'V2-INT', 'V2-TEST'];
-    if (DEBUG_LEVEL === 'DEBUG') {
-      stages.push('V2-EFA11');
-    }
   }
 
   return stages;
