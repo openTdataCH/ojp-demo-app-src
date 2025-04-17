@@ -37,6 +37,8 @@ export const APP_STAGEs: APP_STAGE[] = (() => {
   return stages;
 })();
 
+export const REQUESTOR_REF = 'OJP_DemoApp_Beta_OJP' + OJP.OJP_VERSION;
+
 export interface AppMapLayerOptions {
   LIR_Restriction_Type: OJP.RestrictionType
   LIR_POI_Type?: OJP.POI_Restriction | null
