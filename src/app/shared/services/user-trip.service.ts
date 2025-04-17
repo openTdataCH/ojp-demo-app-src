@@ -4,9 +4,9 @@ import mapboxgl from 'mapbox-gl'
 
 import * as OJP from 'ojp-sdk-v1';
 
-import { APP_CONFIG } from '../../config/app-config'
-import { APP_STAGE, DEBUG_LEVEL, DEFAULT_APP_STAGE, TRIP_REQUEST_DEFAULT_NUMBER_OF_RESULTS } from '../../config/constants'
-import { MapService } from './map.service'
+import { APP_CONFIG } from '../../config/app-config';
+import { APP_STAGE, DEBUG_LEVEL, DEFAULT_APP_STAGE, TRIP_REQUEST_DEFAULT_NUMBER_OF_RESULTS } from '../../config/constants';
+import { MapService } from './map.service';
 
 type LocationUpdateSource = 'SearchForm' | 'MapDragend' | 'MapPopupClick'
 
