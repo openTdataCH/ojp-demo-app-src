@@ -77,9 +77,9 @@ export class MapComponent implements OnInit, AfterViewInit {
       this.updateMarkers()
     })
 
-    this.userTripService.activeTripSelected.subscribe(trip => {
+    this.userTripService.activeTripSelected.subscribe(mapTrip => {
       this.mapLoadingPromise?.then(map => {
-        this.tripRenderController?.renderTrip(trip)
+        this.tripRenderController?.renderTrip(mapTrip?.legs ?? []);
       });
     })
 
