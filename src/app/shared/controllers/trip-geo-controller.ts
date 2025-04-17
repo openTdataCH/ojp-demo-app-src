@@ -72,14 +72,12 @@ export class TripGeoController {
 
 export class TripLegGeoController {
   private leg: OJP.TripLeg;
-  private legIDx: number;
   private useBeeLine: boolean;
 
-  constructor(leg: OJP.TripLeg, legIDx: number = 0) {
+  constructor(leg: OJP.TripLeg, useBeeLine = false) {
     this.leg = leg;
-    this.legIDx = legIDx;
 
-    this.useBeeLine = TripLegGeoController.shouldUseBeeline(leg);
+    this.useBeeLine = useBeeLine;
   }
 
   public computeGeoJSONFeatures(): GeoJSON.Feature[] {
@@ -111,7 +109,7 @@ export class TripLegGeoController {
     return features;
   }
 
-  private static shouldUseBeeline(leg: OJP.TripLeg): boolean {
+  public static shouldUseBeeline(leg: OJP.TripLeg): boolean {
     const defaultValue = !(leg.legTrack && leg.legTrack.hasGeoData);
 
     if (leg.legType === 'ContinuousLeg') {
@@ -137,12 +135,28 @@ export class TripLegGeoController {
     if (leg.legType === 'TimedLeg') {
       const timedLeg = leg as OJP.TripTimedLeg;
 
-      const usedDetailedLine = timedLeg.service.ptMode.hasPrecisePolyline();
+      const usedDetailedLine = TripLegGeoController.serviceHasPrecisePolyline(timedLeg.service);
 
       return !usedDetailedLine;
     }
 
     return defaultValue;
+  }
+
+  private static serviceHasPrecisePolyline(service: OJP.JourneyService): boolean {
+    if (service.ptMode.isDemandMode) {
+      return true;
+    }
+
+    const ignorePtModes: string[] = [
+      'bus',
+      'tram'
+    ];
+    if (ignorePtModes.indexOf(service.ptMode.ptMode) !== -1) {
+      return false;
+    }
+
+    return true;
   }
 
   private computeBeelineFeature(): GeoJSON.Feature | null {
