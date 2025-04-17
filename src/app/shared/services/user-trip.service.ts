@@ -7,6 +7,7 @@ import * as OJP from 'ojp-sdk-v1';
 import { APP_CONFIG } from '../../config/app-config';
 import { APP_STAGE, DEBUG_LEVEL, DEFAULT_APP_STAGE, TRIP_REQUEST_DEFAULT_NUMBER_OF_RESULTS } from '../../config/constants';
 import { MapService } from './map.service';
+import { MapTrip } from '../types/map-geometry-types';
 
 type LocationUpdateSource = 'SearchForm' | 'MapDragend' | 'MapPopupClick'
 
@@ -49,7 +50,7 @@ export class UserTripService {
   
   public tripFaresUpdated = new EventEmitter<OJP.FareResult[]>();
   
-  public activeTripSelected = new EventEmitter<OJP.Trip | null>();
+  public activeTripSelected = new EventEmitter<MapTrip | null>();
   public tripRequestFinished = new EventEmitter<OJP.RequestInfo>();
 
   public searchParamsReset = new EventEmitter<void>();
@@ -431,8 +432,8 @@ export class UserTripService {
     this.tripsUpdated.emit(trips);
   }
 
-  selectActiveTrip(trip: OJP.Trip | null) {
-    this.activeTripSelected.emit(trip);
+  selectActiveTrip(mapTrip: MapTrip | null) {
+    this.activeTripSelected.emit(mapTrip);
   }
 
   private updateFares(fareResults: OJP.FareResult[]) {
