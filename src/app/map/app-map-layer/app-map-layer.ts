@@ -85,7 +85,7 @@ export class AppMapLayer {
             layer.id = layerID;
             layer.source = this.mapSourceID;
 
-            this.map.addLayer(layer as mapboxgl.AnyLayer);
+            this.map.addLayer(layer as mapboxgl.LayerSpecification);
         });
     }
 
