@@ -40,15 +40,6 @@ export const APP_CONFIG: AppConfig = {
       authToken: null,
     },
     
-    'EFA11': {
-      url: 'https://odpch-api.clients.liip.ch/ojp-efa11-test',
-      authToken: null,
-    },
-    'V2-EFA11': {
-      url: 'https://odpch-api.clients.liip.ch/ojp20-efa11-test',
-      authToken: null,
-    },    
-    
     'OJP-SI': {
       url: 'https://dev.simo.si/OpenAPI/LinkingAlpsBetaPhase/OJP',
       authToken: null,
