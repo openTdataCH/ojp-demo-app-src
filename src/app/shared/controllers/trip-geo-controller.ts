@@ -389,6 +389,13 @@ export class TripLegGeoController {
       }
     });
 
+    if (features.length === 0) {
+      const feature = this.computeBeelineFeature();
+      if (feature) {
+        features.push(feature);  
+      }
+    }
+
     return features;
   }
 
