@@ -1,25 +1,29 @@
-<div class="container">
-  <web-header></web-header>
+<div class="d-flex flex-column vh-100 overflow-hidden">
+  <web-header class="ms-2"></web-header>
+  <nav sbb-tab-nav-bar>
+    <a sbb-tab-link [active]="'false'" [routerLink]="'../search'">Journey Search</a>
+    <a sbb-tab-link [active]="'true'">Station Board</a>
+    <a sbb-tab-link [active]="'false'" [routerLink]="'../trip'">Trip Info</a>
+  </nav>
 
-  <div class="app-root">
-    <nav sbb-tab-nav-bar [tabPanel]="tabPanel">
-      <a sbb-tab-link [active]="'false'" [routerLink]="'../search'">Journey Search</a>
-      <a sbb-tab-link [active]="'true'">Station Board</a>
-      <a sbb-tab-link [active]="'false'" [routerLink]="'../trip'">Trip Info</a>
-    </nav>
-
-    <sbb-tab-nav-panel #tabPanel>
-      <div class="row">
-        <div class="col-md-5">
+  <div class="flex-grow-1 d-flex flex-column overflow-hidden p-3">
+    <div class="d-flex gap-2 flex-grow-1 overflow-hidden">
+      <div class="d-flex flex-column overflow-x-hidden overflow-y-auto" style="width: 600px;">
+        
+        <div class="flex-shrink-0">
           <station-board-search></station-board-search>
+        </div>
+
+        <div class="flex-grow-1 overflow-x-hidden overflow-y-scroll">
           <station-board-result></station-board-result>
         </div>
-        <div class="col-md-7">
-          <station-board-map></station-board-map>
-        </div>
       </div>
-    </sbb-tab-nav-panel>
+
+      <div class="flex-grow-1 h-100">
+        <station-board-map></station-board-map>
+      </div>
+    </div>
   </div>
 
-  <web-footer></web-footer>
+  <web-footer class="ms-2"></web-footer>
 </div>

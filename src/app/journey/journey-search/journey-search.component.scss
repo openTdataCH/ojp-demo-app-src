@@ -1,6 +1,4 @@
-.app-root {
-  border: 1px solid #CACACA;
-  margin-left: calc(-.5 * var(--bs-gutter-x));
-  margin-right: calc(-.5 * var(--bs-gutter-x));
-  padding: 8px;
+.wrapper-results-content {
+  overflow-x: hidden;
+  overflow-y: scroll;
 }
