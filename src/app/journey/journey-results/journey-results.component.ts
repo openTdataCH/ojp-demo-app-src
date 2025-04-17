@@ -162,9 +162,6 @@ export class JourneyResultsComponent implements OnInit {
       if (trips.length > 0) {
         const firstTrip = trips[0];
 
-        this.userTripService.selectActiveTrip(firstTrip);
-        this.mapService.zoomToTrip(firstTrip);
-
         this.userTripService.fetchFares();
       } else {
         this.userTripService.selectActiveTrip(null);
