@@ -143,6 +143,22 @@ export class TripRenderController {
 
       const legFeatures = tripLegGeoController.computeGeoJSONFeatures();
       
+      // Snap TransferLeg to prev / next legs
+      if ((leg.legType === 'TransferLeg') && (legFeatures.length === 1)) {
+        const featureProperties = legFeatures[0].properties;
+        if (featureProperties && featureProperties['draw.type'] === 'Beeline') {
+          const prevLeg = legs.at(idx - 1) ?? null;
+          const nextLeg = legs.at(idx + 1) ?? null;
+          if (prevLeg?.toLocation.geoPosition && nextLeg?.fromLocation.geoPosition) {
+            const geometry = legFeatures[0].geometry as GeoJSON.LineString;
+            geometry.coordinates = [
+              prevLeg?.toLocation.geoPosition.asPosition(),
+              nextLeg?.fromLocation.geoPosition.asPosition(),
+            ];
+          }
+        }
+      }
+      
       features = features.concat(legFeatures);
     });
 
