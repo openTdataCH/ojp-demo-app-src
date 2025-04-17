@@ -32,6 +32,7 @@
       <result-trip-leg [leg]="leg" [legId]="this.idx + '_' + legIdx" [legIdx]="legIdx"
         [isLastLeg]="idx === ((trip?.legs?.length ?? 1) - 1)"
         [isForceLinkProjection]="(this.mapTrip && this.mapTrip.legs[legIdx].forceLinkProjection) ?? false"
+        (legReloadRequest)="this.reloadTripLegIdx($event)"
         (legMapRedrawRequest)="this.redrawTripOnMap($event)">
       </result-trip-leg>
     </ng-container>
