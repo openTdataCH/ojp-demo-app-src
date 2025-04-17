@@ -2,28 +2,32 @@
   <div class="mb-2 d-flex flex-row"> -->
 
 <div>
-  <div class="mb-2 d-flex flex-row gap-2">
-    <div>
-      <button 
-      type="button" 
-      class="btn btn-primary btn-sm font-weight-bold" 
-      [ngStyle]="{'background-color': this.legInfoDataModel.legColor, 'border-color': this.legInfoDataModel.legColor}"
-      (click)="handleTapOnLegHeading()">{{ this.legInfoDataModel.leadingText }}</button>
+  <div class="mb-2 d-flex">
+    <div class="flex-grow-1 d-flex gap-2">
+      <div>
+        <button 
+        type="button" 
+        class="btn btn-primary btn-sm font-weight-bold" 
+        [ngStyle]="{'background-color': this.legInfoDataModel.legColor, 'border-color': this.legInfoDataModel.legColor}"
+        (click)="handleTapOnLegHeading()">{{ this.legInfoDataModel.leadingText }}</button>
+      </div>
+      <div *ngIf="this.legInfoDataModel.isCancelled === true">
+        <span class="badge rounded-pill bg-danger fw-bolder">Cancelled</span>
+      </div>
+      <div *ngIf="this.legInfoDataModel.hasDeviation === true">
+        <span class="badge rounded-pill bg-warning fw-bolder">Deviation</span>
+      </div>
+      <div *ngIf="this.legInfoDataModel.isUnplanned === true">
+        <span class="badge rounded-pill bg-warning fw-bolder">Unplanned</span>
+      </div>
     </div>
-    <div *ngIf="this.legInfoDataModel.isCancelled === true">
-      <span class="badge rounded-pill bg-danger fw-bolder">Cancelled</span>
-    </div>
-    <div *ngIf="this.legInfoDataModel.hasDeviation === true">
-      <span class="badge rounded-pill bg-warning fw-bolder">Deviation</span>
-    </div>
-    <div *ngIf="this.legInfoDataModel.isUnplanned === true">
-      <span class="badge rounded-pill bg-warning fw-bolder">Unplanned</span>
-    </div>
-    <div class="ms-auto" *ngIf="this.isEmbed === false">
-      <div
-        class="badge leg-pill pill-hover bg-primary"
-        (click)="handleTapOnLegHeading()"
-      >MAP</div>
+    <div class="d-flex gap-1 align-items-center" *ngIf="this.isEmbed === false">
+      <ng-container *ngIf="this.leg?.legType === 'TimedLeg'">
+        <div class="d-flex gap-1">
+          <input class="form-check-input" type="checkbox" [id]="this.checkboxId" [name]="this.checkboxId" [checked]="this.isForceLinkProjection" (change)="this.redrawTripLeg($event)" />
+          <label class="form-check-label" [for]="this.checkboxId">LinkProjection</label>
+        </div>
+      </ng-container>
     </div>
   </div>
   
