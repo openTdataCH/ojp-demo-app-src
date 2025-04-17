@@ -103,7 +103,7 @@ export class TripLegGeoController {
           debugger;
         }
 
-        feature.properties['leg.idx'] = this.legIDx - 1;
+        feature.properties['leg.idx'] = this.leg.legID;
         feature.properties[TripLegPropertiesEnum.LegType] = this.leg.legType;
       }
     });
