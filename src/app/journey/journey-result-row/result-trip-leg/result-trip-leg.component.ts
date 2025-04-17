@@ -75,6 +75,7 @@ export class ResultTripLegComponent implements OnInit {
   @Input() isLastLeg = false;
   @Input() isForceLinkProjection: boolean | undefined;
 
+  @Output() legReloadRequest = new EventEmitter<number>();
   @Output() legMapRedrawRequest = new EventEmitter<{ legIdx: number, checked: boolean }>();
 
   public legElementId: string = 'n/a'
@@ -226,6 +227,14 @@ export class ResultTripLegComponent implements OnInit {
       bounds: bounds,
     }
     this.mapService.newMapBoundsRequested.emit(mapData);
+  }
+
+  public reloadTripLeg() {
+    if (!this.leg || (this.legIdx === undefined)) {
+      return;
+    }
+
+    this.legReloadRequest.emit(this.legIdx);
   }
 
   public get checkboxId() {

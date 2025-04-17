@@ -2,10 +2,12 @@ import { Component, Input, OnInit, ViewChild } from '@angular/core';
 import { SbbExpansionPanel } from '@sbb-esta/angular/accordion';
 
 import * as OJP from 'ojp-sdk-v2';
+import * as OJP_Next from 'ojp-sdk-next';
 
-import { DEBUG_LEVEL } from '../../config/constants';
+import { DEBUG_LEVEL, REQUESTOR_REF } from '../../config/constants';
 import { UserTripService } from '../../shared/services/user-trip.service';
 import { MapService } from '../../shared/services/map.service';
+import { LanguageService } from '../../shared/services/language.service';
 import { MapTrip, MapTripLeg } from '../../shared/types/map-geometry-types';
 import { TripLegGeoController } from '../../shared/controllers/trip-geo-controller';
 
@@ -37,7 +39,7 @@ export class JourneyResultRowComponent implements OnInit {
 
   public mapTrip: MapTrip | null;
 
-  constructor(private userTripService: UserTripService, private mapService: MapService) {
+  constructor(private userTripService: UserTripService, private mapService: MapService, private languageService: LanguageService) {
     this.tripHeaderStats = <TripHeaderStats>{}
     this.mapTrip = null;
   }
@@ -137,6 +139,58 @@ export class JourneyResultRowComponent implements OnInit {
         )).valueOf()
       ) / (1000 * 3600 * 24)
     )
+  }
+
+  public async reloadTripLegIdx(legIdx: number) {
+    if (!this.trip) {
+      return;
+    }
+
+    const tripXML = this.trip.asXML();
+    // console.log(tripXML);
+
+    // TODO - when migrating this code to next version we dont need to serialize/deserialize the obj anymore
+    const tripV2 = OJP_Next.Trip.initWithTripXML(tripXML);
+
+    const trrRequest = OJP_Next.TripRefineRequest.initWithTrip(tripV2);
+
+    const stage = this.userTripService.getStageConfig();
+
+    const ojpSDK_Next = new OJP_Next.SDK(REQUESTOR_REF, stage, this.languageService.language);
+    await ojpSDK_Next.fetchTRR_Trips(trrRequest);
+
+    if (trrRequest.requestInfo.responseXML === null) {
+      console.error('no responseXML');
+      console.log(trrRequest);
+      debugger;
+      return;
+    }
+
+    // TRR response is similar with TR response
+    const trRequest = OJP.TripRequest.initWithResponseMock(trrRequest.requestInfo.responseXML);
+    const trResponse = await trRequest.fetchResponse();
+
+    if (trResponse.trips.length !== 1) {
+      console.error('Expected 1 trip in reponse');
+      console.log(trResponse);
+      return;
+    }
+    
+    const updatedTrip = trResponse.trips[0];
+
+    const fareRequestStageConfig = this.userTripService.getStageConfig('NOVA-INT');
+    const fareRequest = new OJP.NovaRequest(fareRequestStageConfig);
+    const fareRequestResponse = await fareRequest.fetchResponseForTrips([updatedTrip]);
+
+    if (fareRequestResponse.fareResults.length === 1) {
+      updatedTrip.tripFareResults = fareRequestResponse.fareResults[0].tripFareResults;
+    } else {
+      // if curreny NOVA fails, rely on older version of fares
+      console.log('error: nova failed to return new fares, use old ones');
+      updatedTrip.tripFareResults = this.trip.tripFareResults;
+    }
+
+    this.trip = updatedTrip;
   }
 
   public redrawTripOnMap(legData: { legIdx: number, checked: boolean }) {
