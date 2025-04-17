@@ -31,7 +31,7 @@ export class JourneyResultRowComponent implements OnInit {
 
   @ViewChild(SbbExpansionPanel, { static: true }) tripPanel: SbbExpansionPanel | undefined;
 
-  public tripHeaderStats: TripHeaderStats
+  public tripHeaderStats: TripHeaderStats;
 
   constructor(private userTripService: UserTripService, private mapService: MapService) {
     this.tripHeaderStats = <TripHeaderStats>{}
@@ -44,7 +44,7 @@ export class JourneyResultRowComponent implements OnInit {
 
     const isFirstTrip = this.idx === 0
     if (this.tripPanel && isFirstTrip) {
-      this.tripPanel.open()
+      this.tripPanel.open();
     }
 
     this.tripPanel?.afterExpand.subscribe(ev => {
@@ -63,11 +63,11 @@ export class JourneyResultRowComponent implements OnInit {
     this.tripHeaderStats.isUnplanned = trip.stats.isUnplanned === true;
       
     if (trip.stats.transferNo === 0) {
-      this.tripHeaderStats.tripChangesInfo = 'direct'
+      this.tripHeaderStats.tripChangesInfo = 'direct';
     } else if (trip.stats.transferNo === 1) {
-      this.tripHeaderStats.tripChangesInfo = trip.stats.transferNo + ' transfer'
+      this.tripHeaderStats.tripChangesInfo = trip.stats.transferNo + ' transfer';
     } else {
-      this.tripHeaderStats.tripChangesInfo = trip.stats.transferNo + ' transfers'
+      this.tripHeaderStats.tripChangesInfo = trip.stats.transferNo + ' transfers';
     }
 
     this.tripHeaderStats.tripFromTime = OJP.DateHelpers.formatTimeHHMM(trip.stats.startDatetime);

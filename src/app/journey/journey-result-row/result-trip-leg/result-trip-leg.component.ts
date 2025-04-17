@@ -69,10 +69,10 @@ interface LegInfoDataModel {
   styleUrls: ['./result-trip-leg.component.scss']
 })
 export class ResultTripLegComponent implements OnInit {
-  @Input() leg: OJP.TripLeg | undefined
-  @Input() legId: string | undefined
-  @Input() legIdx: number | undefined
-  @Input() isLastLeg = false
+  @Input() leg: OJP.TripLeg | undefined;
+  @Input() legId: string | undefined;
+  @Input() legIdx: number | undefined;
+  @Input() isLastLeg = false;
 
   public legElementId: string = 'n/a'
 
