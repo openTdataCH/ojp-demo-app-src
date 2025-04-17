@@ -688,11 +688,11 @@ export class UserTripService {
     // Push first the monomodal trip with one leg matching the transport mode
     const monomodalTrip = trips.find(trip => {
       const foundLeg = trip.legs.find(leg => {
-        if (leg.legType !== 'ContinousLeg') {
+        if (leg.legType !== 'ContinuousLeg') {
           return false;
         }
 
-        const continousLeg = trip.legs[0] as OJP.TripContinousLeg;
+        const continousLeg = trip.legs[0] as OJP.TripContinuousLeg;
         return continousLeg.legTransportMode === this.tripTransportMode;
       }) ?? null;
 
@@ -774,7 +774,7 @@ export class UserTripService {
         const leg2 = trip.legs[leg2Idx];
         const leg3 = trip.legs[leg3Idx];
         if (leg.legType === 'TimedLeg' && leg2.legType === 'TransferLeg' && leg3.legType === 'TimedLeg') {
-          const continousLeg = leg2 as OJP.TripContinousLeg;
+          const continousLeg = leg2 as OJP.TripContinuousLeg;
           if (continousLeg.transferMode === 'remainInVehicle') {
             shouldMergeLegs = true;
             skipIdx = leg3Idx;

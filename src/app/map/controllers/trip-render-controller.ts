@@ -98,7 +98,7 @@ export class TripRenderController {
     const tripContinousLegWalkingLineLayer = tripContinousLegWalkingLineLayerJSON as mapboxgl.LineLayerSpecification;
     tripContinousLegWalkingLineLayer.filter = MapboxLayerHelpers.FilterWalkingLegs();
     if (tripContinousLegWalkingLineLayer.paint) {
-      tripContinousLegWalkingLineLayer.paint["line-color"] = MapLegTypeColor['ContinousLeg'];
+      tripContinousLegWalkingLineLayer.paint["line-color"] = MapLegTypeColor['ContinuousLeg'];
     }
 
     const mapLayers = [
