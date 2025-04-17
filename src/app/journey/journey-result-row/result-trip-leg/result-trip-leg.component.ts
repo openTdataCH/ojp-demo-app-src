@@ -105,7 +105,7 @@ export class ResultTripLegComponent implements OnInit {
     if (this.leg.legType === 'TransferLeg') {
       const leadingTextTitle = 'Transfer';
       
-      const continuousLeg = this.leg as OJP.TripContinousLeg;
+      const continuousLeg = this.leg as OJP.TripContinuousLeg;
       let legDurationS = '';
       if (continuousLeg.walkDuration) {
         legDurationS = ' ' + continuousLeg.walkDuration.formatDuration()
@@ -114,8 +114,8 @@ export class ResultTripLegComponent implements OnInit {
       return legIdxS + leadingTextTitle + legDurationS;
     }
 
-    if (this.leg.legType === 'ContinousLeg') {
-      const continuousLeg = this.leg as OJP.TripContinousLeg;
+    if (this.leg.legType === 'ContinuousLeg') {
+      const continuousLeg = this.leg as OJP.TripContinuousLeg;
 
       const leadingText = this.computeLegLeadingTextContinousLeg(continuousLeg);
 
@@ -150,7 +150,7 @@ export class ResultTripLegComponent implements OnInit {
     return legIdxS + this.leg.legType;
   }
 
-  private computeLegLeadingTextContinousLeg(continuousLeg: OJP.TripContinousLeg): string {
+  private computeLegLeadingTextContinousLeg(continuousLeg: OJP.TripContinuousLeg): string {
     if (continuousLeg.legTransportMode === 'walk') {
       return 'Walk';
     }
@@ -187,7 +187,7 @@ export class ResultTripLegComponent implements OnInit {
       return ''
     }
 
-    if (this.leg.legType === 'ContinousLeg') {
+    if (this.leg.legType === 'ContinuousLeg') {
       return 'continous-leg-pill'
     }
 
@@ -234,8 +234,8 @@ export class ResultTripLegComponent implements OnInit {
 
     const legType = this.leg.legType;
 
-    if (legType === 'ContinousLeg' || legType === 'TransferLeg') {
-      const leg = this.leg as OJP.TripContinousLeg;
+    if (legType === 'ContinuousLeg' || legType === 'TransferLeg') {
+      const leg = this.leg as OJP.TripContinuousLeg;
       return this.computeContinousLegColor(leg);
     }
 
@@ -247,7 +247,7 @@ export class ResultTripLegComponent implements OnInit {
     return defaultColor;
   }
 
-  private computeContinousLegColor(leg: OJP.TripContinousLeg): string {
+  private computeContinousLegColor(leg: OJP.TripContinuousLeg): string {
     if (leg.isDriveCarLeg()) {
       return MapLegLineTypeColor['Self-Drive Car']
     }
@@ -285,7 +285,7 @@ export class ResultTripLegComponent implements OnInit {
     this.legInfoDataModel.guidanceTextLines = []
 
     if (isTransfer) {
-      const transferLeg = leg as OJP.TripContinousLeg
+      const transferLeg = leg as OJP.TripContinuousLeg;
       const guidanceSections = transferLeg.pathGuidance?.sections ?? []
       guidanceSections.forEach(section => {
         if (section.guidanceAdvice === null) {
@@ -313,9 +313,9 @@ export class ResultTripLegComponent implements OnInit {
     }
 
     let isWalking = leg.legType === 'TransferLeg'
-    const isContinous = leg.legType === 'ContinousLeg'
+    const isContinous = leg.legType === 'ContinuousLeg';
     if (isContinous) {
-      const continousLeg = leg as OJP.TripContinousLeg
+      const continousLeg = leg as OJP.TripContinuousLeg;
       isWalking = continousLeg.isWalking()
 
       if (isWalking) {
@@ -328,7 +328,7 @@ export class ResultTripLegComponent implements OnInit {
       const defaultLegTemplate: LegTemplate = 'walk';
       
       if (isContinous) {
-        const continousLeg = leg as OJP.TripContinousLeg;
+        const continousLeg = leg as OJP.TripContinuousLeg;
         if (continousLeg.isTaxi()) {
           return 'taxi';
         }
@@ -346,7 +346,7 @@ export class ResultTripLegComponent implements OnInit {
         return [];
       }
 
-      const continousLeg = leg as OJP.TripContinousLeg;
+      const continousLeg = leg as OJP.TripContinuousLeg;
       if (continousLeg.serviceBooking === null) {
         return [];
       }

@@ -68,8 +68,8 @@ export class OJPHelpers {
       return service;
     }
 
-    if (leg.legType === 'ContinousLeg') {
-      const continousLeg = leg as OJP.TripContinousLeg;
+    if (leg.legType === 'ContinuousLeg') {
+      const continousLeg = leg as OJP.TripContinuousLeg;
       if (continousLeg.isDriveCarLeg()) {
         return 'car-sharing';
       }
