@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { Router } from '@angular/router';
 
 import { SbbDialog } from "@sbb-esta/angular/dialog";
@@ -73,6 +73,9 @@ export class ResultTripLegComponent implements OnInit {
   @Input() legId: string | undefined;
   @Input() legIdx: number | undefined;
   @Input() isLastLeg = false;
+  @Input() isForceLinkProjection: boolean | undefined;
+
+  @Output() legMapRedrawRequest = new EventEmitter<{ legIdx: number, checked: boolean }>();
 
   public legElementId: string = 'n/a'
 
@@ -92,7 +95,7 @@ export class ResultTripLegComponent implements OnInit {
 
     this.legElementId = 'leg_' + this.legId;
 
-    this.initLegInfo()
+    this.initLegInfo();
   }
 
   private computeLegLeadingText(): string {
@@ -223,6 +226,23 @@ export class ResultTripLegComponent implements OnInit {
       bounds: bounds,
     }
     this.mapService.newMapBoundsRequested.emit(mapData);
+  }
+
+  public get checkboxId() {
+    return 'lp_checkbox_' + this.legId;
+  }
+
+  public redrawTripLeg(event: Event) {
+    if (!this.leg || (this.legIdx === undefined)) {
+      return;
+    }
+
+    const isChecked = (event.target as HTMLInputElement).checked;
+
+    this.legMapRedrawRequest.emit({
+      legIdx: this.legIdx,
+      checked: isChecked,
+    });
   }
 
   private computeLegColor(): string {

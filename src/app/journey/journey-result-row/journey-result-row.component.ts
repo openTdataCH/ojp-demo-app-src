@@ -138,4 +138,13 @@ export class JourneyResultRowComponent implements OnInit {
       ) / (1000 * 3600 * 24)
     )
   }
+
+  public redrawTripOnMap(legData: { legIdx: number, checked: boolean }) {
+    if (!this.mapTrip) {
+      return;
+    }
+
+    this.mapTrip.legs[legData.legIdx].forceLinkProjection = legData.checked;
+    this.userTripService.selectActiveTrip(this.mapTrip);
+  }
 }
