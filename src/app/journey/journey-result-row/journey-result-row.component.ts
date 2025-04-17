@@ -6,6 +6,8 @@ import * as OJP from 'ojp-sdk-v1';
 import { DEBUG_LEVEL } from '../../config/constants';
 import { UserTripService } from '../../shared/services/user-trip.service';
 import { MapService } from '../../shared/services/map.service';
+import { MapTrip, MapTripLeg } from '../../shared/types/map-geometry-types';
+import { TripLegGeoController } from '../../shared/controllers/trip-geo-controller';
 
 interface TripHeaderStats {
   title: string,
@@ -33,26 +35,54 @@ export class JourneyResultRowComponent implements OnInit {
 
   public tripHeaderStats: TripHeaderStats;
 
+  public mapTrip: MapTrip | null;
+
   constructor(private userTripService: UserTripService, private mapService: MapService) {
     this.tripHeaderStats = <TripHeaderStats>{}
+    this.mapTrip = null;
   }
 
   ngOnInit() {
-    if (this.trip) {
-      this.initTripHeaderStats(this.trip)
+    if (!this.trip) {
+      return;
     }
 
-    const isFirstTrip = this.idx === 0
+    this.initTripHeaderStats(this.trip);
+
+    this.mapTrip = {
+      legs: [],
+    };
+
+    this.trip.legs.forEach(leg => {
+      const forceLinkProjection = !TripLegGeoController.shouldUseBeeline(leg);
+
+      const mapTripLeg: MapTripLeg = {
+        leg: leg,
+        forceLinkProjection: forceLinkProjection,
+      };
+      this.mapTrip?.legs.push(mapTripLeg);
+    });
+
+    const isFirstTrip = this.idx === 0;
     if (this.tripPanel && isFirstTrip) {
       this.tripPanel.open();
     }
 
     this.tripPanel?.afterExpand.subscribe(ev => {
-      if (this.trip) {
-        this.userTripService.selectActiveTrip(this.trip);
-        this.mapService.zoomToTrip(this.trip);
-      }
-    })
+      this.drawAndZoomToMapTrip();
+    });
+    if (isFirstTrip) {
+      this.drawAndZoomToMapTrip();
+    }
+  }
+
+  private drawAndZoomToMapTrip() {
+    if (!this.trip) {
+      return;
+    }
+
+    this.userTripService.selectActiveTrip(this.mapTrip);
+    this.mapService.zoomToTrip(this.trip);
   }
 
   private initTripHeaderStats(trip: OJP.Trip) {
