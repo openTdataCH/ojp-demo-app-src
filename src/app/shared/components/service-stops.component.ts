@@ -1,6 +1,6 @@
 import { AfterViewInit, Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 
-import * as OJP_Legacy from 'ojp-sdk-v1';
+import OJP_Legacy from '../../config/ojp-legacy';
 
 export interface LegStopPointData {
   locationText: string,
