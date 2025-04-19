@@ -1,4 +1,4 @@
-import * as OJP_Legacy from 'ojp-sdk-v2';
+import OJP_Legacy from './ojp-legacy';
 
 import { TripLegLineType } from '../shared/types/map-geometry-types'
 

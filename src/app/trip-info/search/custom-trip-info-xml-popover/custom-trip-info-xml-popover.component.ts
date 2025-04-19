@@ -1,7 +1,7 @@
 import { Component, EventEmitter, Output } from '@angular/core';
 import { UserTripService } from 'src/app/shared/services/user-trip.service';
 
-import * as OJP_Legacy from 'ojp-sdk-v2';
+import OJP_Legacy from '../../../config/ojp-legacy';
 
 @Component({
   selector: 'custom-trip-info-popover',

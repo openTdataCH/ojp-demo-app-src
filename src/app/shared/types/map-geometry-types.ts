@@ -1,4 +1,4 @@
-import * as OJP_Legacy from 'ojp-sdk-v2';
+import OJP_Legacy from '../../config/ojp-legacy';
 
 export enum TripLegPropertiesEnum {
   LegType = 'leg.type',

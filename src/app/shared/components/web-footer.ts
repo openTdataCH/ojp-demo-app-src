@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 
-import * as OJP_Legacy from 'ojp-sdk-v2';
+import OJP_Legacy from '../../config/ojp-legacy';
 import { DEBUG_LEVEL } from '../../config/constants';
 
 type PageModel = {

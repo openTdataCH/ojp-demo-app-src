@@ -7,7 +7,7 @@ import { SbbExpansionPanel } from '@sbb-esta/angular/accordion';
 import { SbbNotificationToast } from '@sbb-esta/angular/notification-toast';
 import { SbbRadioChange } from '@sbb-esta/angular/radio-button';
 
-import * as OJP_Legacy from 'ojp-sdk-v2';
+import OJP_Legacy from '../config/ojp-legacy';
 
 import { DateHelpers } from '../helpers/date-helpers';
 
