@@ -559,7 +559,7 @@ export class ResultTripLegComponent implements OnInit {
 
     if (leg.legType !== 'TimedLeg') {
       return rows;
-    }
+    } 
 
     const timedLeg = leg as OJP_Legacy.TripTimedLeg;
     for (const [key, attrData] of Object.entries(timedLeg.service.serviceAttributes)) {
