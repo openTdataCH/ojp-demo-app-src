@@ -230,7 +230,7 @@ export class StationBoardResultComponent implements OnInit, AfterViewInit {
         
         tripNumber: stopEvent.journeyService.journeyNumber, 
         tripHeading: stopEvent.journeyService.destinationStopPlace?.stopPlaceName ?? 'N/A', 
-        tripOperator: stopEvent.journeyService.agencyID,
+        tripOperator: stopEvent.journeyService.operatorRef,
         mapStationBoardTime: {
             Arrivals: arrivalTime,
             Departures: departureTime
