@@ -2,7 +2,7 @@ import { EventEmitter, Injectable } from '@angular/core'
 
 import mapboxgl from 'mapbox-gl'
 
-import * as OJP from 'ojp-sdk-v1';
+import * as OJP_Legacy from 'ojp-sdk-v1';
 
 import { APP_CONFIG } from '../../config/app-config';
 import { APP_STAGE, DEBUG_LEVEL, DEFAULT_APP_STAGE, TRIP_REQUEST_DEFAULT_NUMBER_OF_RESULTS } from '../../config/constants';
@@ -15,23 +15,23 @@ type LocationUpdateSource = 'SearchForm' | 'MapDragend' | 'MapPopupClick'
 export class UserTripService {
   private queryParams: URLSearchParams
 
-  public fromTripLocation: OJP.TripLocationPoint | null
-  public toTripLocation: OJP.TripLocationPoint | null
-  public viaTripLocations: OJP.TripLocationPoint[]
+  public fromTripLocation: OJP_Legacy.TripLocationPoint | null
+  public toTripLocation: OJP_Legacy.TripLocationPoint | null
+  public viaTripLocations: OJP_Legacy.TripLocationPoint[]
   public isViaEnabled: boolean
   
   public numberOfResults: number | null
   public numberOfResultsBefore: number | null
   public numberOfResultsAfter: number | null
-  public publicTransportModesFilter: OJP.ModeOfTransportType[];
-  public useRealTimeDataType: OJP.UseRealtimeDataEnumeration;
+  public publicTransportModesFilter: OJP_Legacy.ModeOfTransportType[];
+  public useRealTimeDataType: OJP_Legacy.UseRealtimeDataEnumeration;
 
-  public currentBoardingType: OJP.TripRequestBoardingType
+  public currentBoardingType: OJP_Legacy.TripRequestBoardingType
 
-  public tripModeType: OJP.TripModeType
-  public tripTransportMode: OJP.IndividualTransportMode;
+  public tripModeType: OJP_Legacy.TripModeType
+  public tripTransportMode: OJP_Legacy.IndividualTransportMode;
 
-  public journeyTripRequests: OJP.TripRequest[]
+  public journeyTripRequests: OJP_Legacy.TripRequest[]
   public departureDate: Date
   public currentAppStage: APP_STAGE
 
@@ -46,12 +46,12 @@ export class UserTripService {
   public searchFormAfterDefaultsInited = new EventEmitter<void>();
   public locationsUpdated = new EventEmitter<void>();
   public geoLocationsUpdated = new EventEmitter<void>();
-  public tripsUpdated = new EventEmitter<OJP.Trip[]>();
+  public tripsUpdated = new EventEmitter<OJP_Legacy.Trip[]>();
   
-  public tripFaresUpdated = new EventEmitter<OJP.FareResult[]>();
+  public tripFaresUpdated = new EventEmitter<OJP_Legacy.FareResult[]>();
   
   public activeTripSelected = new EventEmitter<MapTrip | null>();
-  public tripRequestFinished = new EventEmitter<OJP.RequestInfo>();
+  public tripRequestFinished = new EventEmitter<OJP_Legacy.RequestInfo>();
 
   public searchParamsReset = new EventEmitter<void>();
 
@@ -87,7 +87,7 @@ export class UserTripService {
     this.sbbURL = null;
   }
 
-  public initDefaults(language: OJP.Language) {
+  public initDefaults(language: OJP_Legacy.Language) {
     let appStageS = this.queryParams.get('stage')
     if (appStageS) {
       this.currentAppStage = this.computeAppStageFromString(appStageS)
@@ -109,7 +109,7 @@ export class UserTripService {
     const fromPlaceRef = this.queryParams.get('from') ?? defaultLocationsPlaceRef[fromPlaceName];
     const toPlaceRef = this.queryParams.get('to') ?? defaultLocationsPlaceRef[toPlaceName];
 
-    const promises: Promise<OJP.Location[]>[] = [];
+    const promises: Promise<OJP_Legacy.Location[]>[] = [];
 
     const stageConfig = this.getStageConfig();
     if (stageConfig.authToken === null) {
@@ -117,7 +117,7 @@ export class UserTripService {
       console.log(stageConfig);
     }
 
-    const endpointTypes: OJP.JourneyPointType[] = ['From', 'To']
+    const endpointTypes: OJP_Legacy.JourneyPointType[] = ['From', 'To']
     endpointTypes.forEach(endpointType => {
       const isFrom = endpointType === 'From'
 
@@ -138,18 +138,18 @@ export class UserTripService {
         }
       }
 
-      const coordsLocation = OJP.Location.initFromLiteralCoords(stopPlaceRef);
+      const coordsLocation = OJP_Legacy.Location.initFromLiteralCoords(stopPlaceRef);
 
       if (coordsLocation) {
-        const coordsPromise = new Promise<OJP.Location[]>((resolve) => {
+        const coordsPromise = new Promise<OJP_Legacy.Location[]>((resolve) => {
           resolve([coordsLocation]);
         });
         promises.push(coordsPromise);
       } else {
-        let locationInformationRequest = OJP.LocationInformationRequest.initWithStopPlaceRef(stageConfig, language, stopPlaceRef);
+        let locationInformationRequest = OJP_Legacy.LocationInformationRequest.initWithStopPlaceRef(stageConfig, language, stopPlaceRef);
         // Check if is location name instead of stopId / sloid
         if (typeof stopPlaceRef === 'string' && /^[A-Z]/.test(stopPlaceRef)) {
-          locationInformationRequest = OJP.LocationInformationRequest.initWithLocationName(stageConfig, language, stopPlaceRef, []);
+          locationInformationRequest = OJP_Legacy.LocationInformationRequest.initWithLocationName(stageConfig, language, stopPlaceRef, []);
         }
         locationInformationRequest.enableExtensions = this.currentAppStage !== 'OJP-SI';
 
@@ -158,21 +158,21 @@ export class UserTripService {
       }
     });
 
-    const bbox = new OJP.GeoPositionBBOX([])
+    const bbox = new OJP_Legacy.GeoPositionBBOX([])
 
     const viaPartsS = this.queryParams.get('via') ?? null
     const viaParts: string[] = viaPartsS === null ? [] : viaPartsS.split(';')
     viaParts.forEach(viaKey => {
-      const viaLocationFromCoords = OJP.Location.initFromLiteralCoords(viaKey);
+      const viaLocationFromCoords = OJP_Legacy.Location.initFromLiteralCoords(viaKey);
       if (viaLocationFromCoords) {
-        const viaTripLocation = new OJP.TripLocationPoint(viaLocationFromCoords);
+        const viaTripLocation = new OJP_Legacy.TripLocationPoint(viaLocationFromCoords);
         this.viaTripLocations.push(viaTripLocation);
 
         if (viaLocationFromCoords.geoPosition) {
           bbox.extend(viaLocationFromCoords.geoPosition);
         }
       } else {
-        const stopPlaceLIR = OJP.LocationInformationRequest.initWithStopPlaceRef(stageConfig, language, viaKey);
+        const stopPlaceLIR = OJP_Legacy.LocationInformationRequest.initWithStopPlaceRef(stageConfig, language, viaKey);
         stopPlaceLIR.enableExtensions = this.currentAppStage !== 'OJP-SI';
         const stopPlacePromise = stopPlaceLIR.fetchLocations();
         promises.push(stopPlacePromise);
@@ -182,17 +182,17 @@ export class UserTripService {
     this.tripModeType = 'monomodal';
     const tripModeTypesS = this.queryParams.get('mode_types') ?? null;
     if (tripModeTypesS !== null) {
-      this.tripModeType = tripModeTypesS.split(';')[0] as  OJP.TripModeType;
+      this.tripModeType = tripModeTypesS.split(';')[0] as  OJP_Legacy.TripModeType;
     }
 
     this.tripTransportMode = 'public_transport';
     const tripTransportModesS = this.queryParams.get('transport_modes') ?? null;
     if (tripTransportModesS !== null) {
-      this.tripTransportMode = tripTransportModesS.split(';')[0] as OJP.IndividualTransportMode;
+      this.tripTransportMode = tripTransportModesS.split(';')[0] as OJP_Legacy.IndividualTransportMode;
     }
 
     this.publicTransportModesFilter = (() => {
-      const modes: OJP.ModeOfTransportType[] = [];
+      const modes: OJP_Legacy.ModeOfTransportType[] = [];
 
       const publicTransportModesS = this.queryParams.get('public_transport_modes') ?? null;
       if (publicTransportModesS === null) {
@@ -225,9 +225,9 @@ export class UserTripService {
 
         const firstLocation = locations[0]
         if (isFrom) {
-          this.fromTripLocation = new OJP.TripLocationPoint(firstLocation);
+          this.fromTripLocation = new OJP_Legacy.TripLocationPoint(firstLocation);
         } else {
-          this.toTripLocation = new OJP.TripLocationPoint(firstLocation);
+          this.toTripLocation = new OJP_Legacy.TripLocationPoint(firstLocation);
         }
 
         if (firstLocation.geoPosition) {
@@ -240,7 +240,7 @@ export class UserTripService {
         this.isViaEnabled = true;
         
         const firstLocation = viaLocationsData[0];
-        const viaTripLocation = new OJP.TripLocationPoint(firstLocation);
+        const viaTripLocation = new OJP_Legacy.TripLocationPoint(firstLocation);
         this.viaTripLocations = [viaTripLocation];
 
         if (firstLocation.geoPosition) {
@@ -267,13 +267,13 @@ export class UserTripService {
     });
   }
 
-  public refetchEndpointsByName(language: OJP.Language) {
-    const promises: Promise<OJP.Location[] | null>[] = [];
+  public refetchEndpointsByName(language: OJP_Legacy.Language) {
+    const promises: Promise<OJP_Legacy.Location[] | null>[] = [];
     const emptyPromise = new Promise<null>((resolve, reject) => {
       resolve(null);
     });
 
-    const endpointTypes: OJP.JourneyPointType[] = ['From', 'To']
+    const endpointTypes: OJP_Legacy.JourneyPointType[] = ['From', 'To']
     endpointTypes.forEach(endpointType => {
       const isFrom = endpointType === 'From'
 
@@ -291,11 +291,11 @@ export class UserTripService {
       }
 
       // Search nearby locations, in a bbox of 200x200m
-      const bbox = OJP.GeoPositionBBOX.initFromGeoPosition(geoPosition, 200, 200);
+      const bbox = OJP_Legacy.GeoPositionBBOX.initFromGeoPosition(geoPosition, 200, 200);
       const stageConfig = this.getStageConfig();
 
-      const ojpRequest: OJP.LocationInformationRequest = (() => {
-        const request = OJP.LocationInformationRequest.initWithBBOXAndType(stageConfig, language,
+      const ojpRequest: OJP_Legacy.LocationInformationRequest = (() => {
+        const request = OJP_Legacy.LocationInformationRequest.initWithBBOXAndType(stageConfig, language,
           bbox.southWest.longitude,
           bbox.northEast.latitude,
           bbox.northEast.longitude,
@@ -333,9 +333,9 @@ export class UserTripService {
         }
 
         if (isFrom) {
-          this.fromTripLocation = new OJP.TripLocationPoint(nearbyLocation.location)
+          this.fromTripLocation = new OJP_Legacy.TripLocationPoint(nearbyLocation.location)
         } else {
-          this.toTripLocation = new OJP.TripLocationPoint(nearbyLocation.location)
+          this.toTripLocation = new OJP_Legacy.TripLocationPoint(nearbyLocation.location)
         }
 
         this.updateURLs();
@@ -385,24 +385,24 @@ export class UserTripService {
     return 'PROD';
   }
 
-  updateTripEndpoint(location: OJP.Location | null, endpointType: OJP.JourneyPointType, updateSource: LocationUpdateSource) {
+  updateTripEndpoint(location: OJP_Legacy.Location | null, endpointType: OJP_Legacy.JourneyPointType, updateSource: LocationUpdateSource) {
     if (endpointType === 'From') {
       if (location) {
-        this.fromTripLocation = new OJP.TripLocationPoint(location)
+        this.fromTripLocation = new OJP_Legacy.TripLocationPoint(location)
       } else {
         this.fromTripLocation = null
       }
     }
     if (endpointType === 'To') {
       if (location) {
-        this.toTripLocation = new OJP.TripLocationPoint(location)
+        this.toTripLocation = new OJP_Legacy.TripLocationPoint(location)
       } else {
         this.toTripLocation = null
       }
     }
 
     if (location && endpointType === 'Via') {
-      const viaTripLocation = new OJP.TripLocationPoint(location);
+      const viaTripLocation = new OJP_Legacy.TripLocationPoint(location);
       this.viaTripLocations = [viaTripLocation];
 
       this.isViaEnabled = true;
@@ -416,7 +416,7 @@ export class UserTripService {
     this.updateURLs();
   }
 
-  updateViaPoint(location: OJP.Location, viaIDx: number) {
+  updateViaPoint(location: OJP_Legacy.Location, viaIDx: number) {
     this.viaTripLocations[viaIDx].location = location;
 
     this.locationsUpdated.emit();
@@ -427,7 +427,7 @@ export class UserTripService {
     this.updateURLs();
   }
 
-  updateTrips(trips: OJP.Trip[]) {
+  updateTrips(trips: OJP_Legacy.Trip[]) {
     this.massageTrips(trips);
     this.tripsUpdated.emit(trips);
   }
@@ -436,14 +436,14 @@ export class UserTripService {
     this.activeTripSelected.emit(mapTrip);
   }
 
-  private updateFares(fareResults: OJP.FareResult[]) {
+  private updateFares(fareResults: OJP_Legacy.FareResult[]) {
     this.tripFaresUpdated.emit(fareResults);
   }
 
   public updateURLs() {
     const queryParams = new URLSearchParams()
 
-    const endpointTypes: OJP.JourneyPointType[] = ['From', 'To']
+    const endpointTypes: OJP_Legacy.JourneyPointType[] = ['From', 'To']
     endpointTypes.forEach(endpointType => {
       const tripLocationPoint = endpointType === 'From' ? this.fromTripLocation : this.toTripLocation
 
@@ -497,7 +497,7 @@ export class UserTripService {
     const now = new Date();
     const deltaNowMinutes = Math.abs((now.getTime() - this.departureDate.getTime()) / 1000 / 60);
     if (deltaNowMinutes > 5) {
-      const dateTimeS = OJP.DateHelpers.formatDate(this.departureDate);
+      const dateTimeS = OJP_Legacy.DateHelpers.formatDate(this.departureDate);
       queryParams.append('trip_datetime', dateTimeS.substring(0, 16));
     }
 
@@ -575,12 +575,12 @@ export class UserTripService {
     return tripDateTime
   }
 
-  public getStageConfig(forStage: APP_STAGE = this.currentAppStage): OJP.ApiConfig {
+  public getStageConfig(forStage: APP_STAGE = this.currentAppStage): OJP_Legacy.ApiConfig {
     const stageConfig = APP_CONFIG.stages[forStage] ?? null;
 
     if (stageConfig === null) {
       console.error('ERROR - cant find stage' + forStage + ' using PROD');
-      return OJP.EMPTY_API_CONFIG;
+      return OJP_Legacy.EMPTY_API_CONFIG;
     }
 
     return stageConfig;
@@ -600,10 +600,10 @@ export class UserTripService {
     this.updateURLs();
   }
 
-  private computeTripLocationsToUpdate(): OJP.TripLocationPoint[] {
-    const tripLocationsToUpdate: OJP.TripLocationPoint[] = [];
+  private computeTripLocationsToUpdate(): OJP_Legacy.TripLocationPoint[] {
+    const tripLocationsToUpdate: OJP_Legacy.TripLocationPoint[] = [];
 
-    const endpointTypes: OJP.JourneyPointType[] = ['From', 'To'];
+    const endpointTypes: OJP_Legacy.JourneyPointType[] = ['From', 'To'];
     endpointTypes.forEach(endpointType => {
       const isFrom = endpointType === 'From';
       const tripLocation = isFrom ? this.fromTripLocation : this.toTripLocation;
@@ -650,7 +650,7 @@ export class UserTripService {
     });
   }
 
-  public updateParamsFromTrip(trip: OJP.Trip) {
+  public updateParamsFromTrip(trip: OJP_Legacy.Trip) {
     const hasLegs = trip.legs.length > 0
     if (!hasLegs) {
       return
@@ -659,8 +659,8 @@ export class UserTripService {
     const firstLeg = trip.legs[0]
     const lastLeg = trip.legs[trip.legs.length - 1]
 
-    this.fromTripLocation = new OJP.TripLocationPoint(firstLeg.fromLocation)
-    this.toTripLocation = new OJP.TripLocationPoint(lastLeg.toLocation)
+    this.fromTripLocation = new OJP_Legacy.TripLocationPoint(firstLeg.fromLocation)
+    this.toTripLocation = new OJP_Legacy.TripLocationPoint(lastLeg.toLocation)
 
     this.viaTripLocations = []
     
@@ -671,13 +671,13 @@ export class UserTripService {
     this.updateURLs()
   }
 
-  public massageTrips(trips: OJP.Trip[]) {
+  public massageTrips(trips: OJP_Legacy.Trip[]) {
     this.sortTrips(trips);
     this.patchTripLegEndpointCoords(trips);
     this.mergeTripLegs(trips);
   }
 
-  private sortTrips(trips: OJP.Trip[]) {
+  private sortTrips(trips: OJP_Legacy.Trip[]) {
     if (this.tripModeType !== 'monomodal') {
       return;
     }
@@ -693,7 +693,7 @@ export class UserTripService {
           return false;
         }
 
-        const continousLeg = trip.legs[0] as OJP.TripContinuousLeg;
+        const continousLeg = trip.legs[0] as OJP_Legacy.TripContinuousLeg;
         return continousLeg.legTransportMode === this.tripTransportMode;
       }) ?? null;
 
@@ -711,14 +711,14 @@ export class UserTripService {
     }
   }
 
-  private patchTripLegEndpointCoords(trips: OJP.Trip[]) {
+  private patchTripLegEndpointCoords(trips: OJP_Legacy.Trip[]) {
     trips.forEach(trip => {
       trip.legs.forEach((leg, legIdx) => {
         if (leg.legType !== 'TimedLeg') {
           return;
         }
   
-        const timedLeg = leg as OJP.TripTimedLeg;
+        const timedLeg = leg as OJP_Legacy.TripTimedLeg;
         
         // Check if we have a START geoPosition
         // - use it for prev leg END geoPosition
@@ -752,9 +752,9 @@ export class UserTripService {
   // Some of the legs can be merged
   // ex1: trains with multiple desitinaion units
   // - check for remainInVehicle https://github.com/openTdataCH/ojp-demo-app-src/issues/125  
-  private mergeTripLegs(trips: OJP.Trip[]) {
+  private mergeTripLegs(trips: OJP_Legacy.Trip[]) {
     trips.forEach(trip => {
-      const newLegs: OJP.TripLeg[] = [];
+      const newLegs: OJP_Legacy.TripLeg[] = [];
       let skipIdx: number = -1;
       
       trip.legs.forEach((leg, legIdx) => {
@@ -775,7 +775,7 @@ export class UserTripService {
         const leg2 = trip.legs[leg2Idx];
         const leg3 = trip.legs[leg3Idx];
         if (leg.legType === 'TimedLeg' && leg2.legType === 'TransferLeg' && leg3.legType === 'TimedLeg') {
-          const continousLeg = leg2 as OJP.TripContinuousLeg;
+          const continousLeg = leg2 as OJP_Legacy.TripContinuousLeg;
           if (continousLeg.transferMode === 'remainInVehicle') {
             shouldMergeLegs = true;
             skipIdx = leg3Idx;
@@ -783,7 +783,7 @@ export class UserTripService {
         }
 
         if (shouldMergeLegs) {
-          const newLeg = this.mergeTimedLegs(leg as OJP.TripTimedLeg, leg3 as OJP.TripTimedLeg);
+          const newLeg = this.mergeTimedLegs(leg as OJP_Legacy.TripTimedLeg, leg3 as OJP_Legacy.TripTimedLeg);
           newLegs.push(newLeg);
         } else {
           newLegs.push(leg);
@@ -799,13 +799,13 @@ export class UserTripService {
     });
   }
 
-  private mergeTimedLegs(leg1: OJP.TripTimedLeg, leg2: OJP.TripTimedLeg) {
+  private mergeTimedLegs(leg1: OJP_Legacy.TripTimedLeg, leg2: OJP_Legacy.TripTimedLeg) {
     let newLegIntermediatePoints = leg1.intermediateStopPoints.slice();
     leg1.toStopPoint.stopPointType = 'Intermediate';
     newLegIntermediatePoints.push(leg1.toStopPoint);
     newLegIntermediatePoints = newLegIntermediatePoints.concat(leg2.intermediateStopPoints.slice());
 
-    const newLeg = new OJP.TripTimedLeg(leg1.legID, leg1.service, leg1.fromStopPoint, leg2.toStopPoint, newLegIntermediatePoints);
+    const newLeg = new OJP_Legacy.TripTimedLeg(leg1.legID, leg1.service, leg1.fromStopPoint, leg2.toStopPoint, newLegIntermediatePoints);
 
     if (leg1.legDuration !== null && leg2.legDuration !== null) {
       newLeg.legDuration = leg1.legDuration.plus(leg2.legDuration);
@@ -836,7 +836,7 @@ export class UserTripService {
       return;
     }
 
-    const novaRequest = new OJP.NovaRequest(novaRequestStageConfig);
+    const novaRequest = new OJP_Legacy.NovaRequest(novaRequestStageConfig);
     const novaResponse = await novaRequest.fetchResponseForTrips(tripRequestResponse.trips);
 
     if (novaResponse.message === 'NovaFares.DONE') {

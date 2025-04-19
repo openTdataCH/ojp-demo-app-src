@@ -1,18 +1,18 @@
 import { Injectable } from '@angular/core';
 
-import * as OJP from 'ojp-sdk-v1';
+import * as OJP_Legacy from 'ojp-sdk-v1';
 
 @Injectable({
   providedIn: 'root',
 })
 export class LanguageService {
-  public language: OJP.Language;
+  public language: OJP_Legacy.Language;
 
   constructor() {
     this.language = this.guessLanguage();
   }
 
-  private guessLanguage(): OJP.Language {
+  private guessLanguage(): OJP_Legacy.Language {
     const queryParams = new URLSearchParams(document.location.search);
     let langQueryParam = queryParams.get('lang');
     if (langQueryParam !== null) {
@@ -31,7 +31,7 @@ export class LanguageService {
       }
     }
 
-    const supportedLanguages: Record<string, OJP.Language> = {
+    const supportedLanguages: Record<string, OJP_Legacy.Language> = {
       'de': 'de',
       'de-DE': 'de',
       'de-AT': 'de',

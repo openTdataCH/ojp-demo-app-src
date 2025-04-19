@@ -1,6 +1,6 @@
 import { AfterViewInit, ChangeDetectorRef, Component, OnInit } from '@angular/core';
 
-import * as OJP from 'ojp-sdk-v1';
+import * as OJP_Legacy from 'ojp-sdk-v1';
 
 import { TripInfoService } from '../trip-info.service';
 import { OJPHelpers } from '../../helpers/ojp-helpers';
@@ -9,7 +9,7 @@ import { UserTripService } from '../../shared/services/user-trip.service';
 import { DEFAULT_APP_STAGE } from 'src/app/config/constants';
 
 interface PageModel {
-  tripInfoResult: OJP.TripInfoResult | null
+  tripInfoResult: OJP_Legacy.TripInfoResult | null
   journeyRef: string
   operatingDayRef: string
   serviceFromText: string
@@ -49,7 +49,7 @@ export class TripInfoResultComponent implements OnInit, AfterViewInit {
 
   }
 
-  private updatePageModel(tripInfoResult: OJP.TripInfoResult | null) {
+  private updatePageModel(tripInfoResult: OJP_Legacy.TripInfoResult | null) {
     this.model.tripInfoResult = tripInfoResult;
 
     if (tripInfoResult === null) {
@@ -139,7 +139,7 @@ export class TripInfoResultComponent implements OnInit, AfterViewInit {
       queryParams.set('stage', this.userTripService.currentAppStage);
     }
 
-    const nowDateF = OJP.DateHelpers.formatDate(new Date());
+    const nowDateF = OJP_Legacy.DateHelpers.formatDate(new Date());
     const nowDayF = nowDateF.substring(0, 10);
     if (this.model.operatingDayRef !== nowDayF) {
       queryParams.set('day', this.model.operatingDayRef);
