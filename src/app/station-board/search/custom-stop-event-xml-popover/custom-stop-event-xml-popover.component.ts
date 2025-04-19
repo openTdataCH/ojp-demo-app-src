@@ -1,7 +1,7 @@
 import { Component, EventEmitter, Output } from '@angular/core';
 import { UserTripService } from 'src/app/shared/services/user-trip.service';
 
-import * as OJP from 'ojp-sdk-v1';
+import * as OJP_Legacy from 'ojp-sdk-v1';
 
 @Component({
   selector: 'custom-stop-event-popover',
@@ -27,7 +27,7 @@ export class CustomStopEventXMLPopoverComponent {
     this.isRunningRequest = true
 
     const stageConfig = this.userTripService.getStageConfig();
-    const request = OJP.StopEventRequest.initWithRequestMock(this.customRequestXMLs, stageConfig);
+    const request = OJP_Legacy.StopEventRequest.initWithRequestMock(this.customRequestXMLs, stageConfig);
     request.fetchResponse().then(response => {
       this.isRunningRequest = false;
       const responseXML = request.requestInfo.responseXML;

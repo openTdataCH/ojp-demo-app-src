@@ -1,7 +1,7 @@
 import * as GeoJSON from 'geojson'
 import mapboxgl from "mapbox-gl";
 
-import * as OJP from 'ojp-sdk-v1';
+import * as OJP_Legacy from 'ojp-sdk-v1';
 
 import { AppMapLayerOptions, DEBUG_LEVEL, MAP_APP_MAP_LAYERS } from '../../config/constants'
 import { UserTripService } from "../../shared/services/user-trip.service";
@@ -9,17 +9,17 @@ import { MapHelpers } from "../helpers/map.helpers";
 import { MAP_LAYERS_DEFINITIONS } from "./map-layers-def";
 
 export enum FeaturePropsEnum {
-    OJP_GeoRestrictionType = 'OJP.GeoRestrictionType',
-    OJP_GeoRestrictionPoiOSMTag = 'OJP.GeoRestrictionPoiOSMTag',
+    OJP_GeoRestrictionType = 'OJP_Legacy.GeoRestrictionType',
+    OJP_GeoRestrictionPoiOSMTag = 'OJP_Legacy.GeoRestrictionPoiOSMTag',
 }
 
 export class AppMapLayer {
-    private language: OJP.Language
+    private language: OJP_Legacy.Language
     private layerKey: string
 
     private map: mapboxgl.Map
-    private restrictionType: OJP.RestrictionType
-    public restrictionPOI: OJP.POI_Restriction | null
+    private restrictionType: OJP_Legacy.RestrictionType
+    public restrictionPOI: OJP_Legacy.POI_Restriction | null
     public minZoom: number
 
     private features: GeoJSON.Feature[];
@@ -27,11 +27,11 @@ export class AppMapLayer {
     private userTripService: UserTripService
 
     public isEnabled: boolean
-    public lastOJPRequest: OJP.LocationInformationRequest | null
+    public lastOJPRequest: OJP_Legacy.LocationInformationRequest | null
 
-    protected currentLocations: OJP.Location[];
+    protected currentLocations: OJP_Legacy.Location[];
 
-    constructor(language: OJP.Language, layerKey: string, map: mapboxgl.Map, appMapLayerOptions: AppMapLayerOptions, userTripService: UserTripService) {
+    constructor(language: OJP_Legacy.Language, layerKey: string, map: mapboxgl.Map, appMapLayerOptions: AppMapLayerOptions, userTripService: UserTripService) {
         this.language = language;
         this.layerKey = layerKey;
 
@@ -115,7 +115,7 @@ export class AppMapLayer {
             return;
         }
 
-        const request = OJP.LocationInformationRequest.initWithBBOXAndType(
+        const request = OJP_Legacy.LocationInformationRequest.initWithBBOXAndType(
             this.userTripService.getStageConfig(),
             this.language,
             mapBounds.getWest(),
@@ -139,7 +139,7 @@ export class AppMapLayer {
             return;
         }
 
-        const locationsDiscarded: OJP.Location[] = [];
+        const locationsDiscarded: OJP_Legacy.Location[] = [];
         const mapFeatures: Record<string, GeoJSON.Feature> = {};
 
         response.locations.forEach((location, idx) => {
@@ -210,7 +210,7 @@ export class AppMapLayer {
             }
 
             const locations_idx = feature.properties['locations_idx'] as number[];
-            const featureLocations: OJP.Location[] = []
+            const featureLocations: OJP_Legacy.Location[] = []
             locations_idx.forEach(idx => {
                 const location = response.locations[idx] ?? null;
                 if (location) {
@@ -247,7 +247,7 @@ export class AppMapLayer {
         source.setData(featureCollection)
     }
 
-    protected annotateFeatureFromLocations(feature: GeoJSON.Feature, locations: OJP.Location[]) {
+    protected annotateFeatureFromLocations(feature: GeoJSON.Feature, locations: OJP_Legacy.Location[]) {
         // extend / override
     }
 
@@ -282,7 +282,7 @@ export class AppMapLayer {
         }
 
         // Use a map because the mapbox nearbyFeatures might be duplicated
-        const mapLocations: Record<number, OJP.Location> = [];
+        const mapLocations: Record<number, OJP_Legacy.Location> = [];
         
         const locationsIdx = locationsIdxS.split(',');
         locationsIdx.forEach(idxS => {
@@ -302,7 +302,7 @@ export class AppMapLayer {
         return true;
     }
 
-    private showPopup(locations: OJP.Location[]) {
+    private showPopup(locations: OJP_Legacy.Location[]) {
         const location = locations[0];
         const locationLngLat = location.geoPosition?.asLngLat() ?? null;
         if (locationLngLat === null) { return }
@@ -322,7 +322,7 @@ export class AppMapLayer {
     
         popupContainer.addEventListener('click', ev => {
             const btnEl = ev.target as HTMLButtonElement;
-            const endpointType = btnEl.getAttribute('data-endpoint-type') as OJP.JourneyPointType;
+            const endpointType = btnEl.getAttribute('data-endpoint-type') as OJP_Legacy.JourneyPointType;
             if (endpointType === null) {
                 return;
             }
@@ -337,7 +337,7 @@ export class AppMapLayer {
             .addTo(this.map);
     }
 
-    protected computePopupHTML(locations: OJP.Location[]): string | null {
+    protected computePopupHTML(locations: OJP_Legacy.Location[]): string | null {
         if (locations.length === 0) {
             return null;
         }

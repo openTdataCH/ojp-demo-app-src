@@ -1,4 +1,4 @@
-import * as OJP from 'ojp-sdk-v1';
+import * as OJP_Legacy from 'ojp-sdk-v1';
 
 import { LegStopPointData } from '../shared/components/service-stops.component';
 import { DEBUG_LEVEL } from '../config/constants';
@@ -6,11 +6,11 @@ import { DEBUG_LEVEL } from '../config/constants';
 type PublicTransportPictogram = 'picto-bus' | 'picto-railway' | 'picto-tram' | 'picto-rack-railway' | 'picto-funicular' | 'picto-cablecar' | 'picto-gondola' | 'picto-chairlift' | 'picto-boat' | 'car-sharing' | 'picto-bus-fallback' | 'autozug';
 
 export class OJPHelpers {
-  public static computeIconFilenameForService(service: OJP.JourneyService): string {
+  public static computeIconFilenameForService(service: OJP_Legacy.JourneyService): string {
     return OJPHelpers.computePublicTransportPictogram(service.ptMode);
   }
 
-  private static computePublicTransportPictogram(ptMode: OJP.PublicTransportMode): PublicTransportPictogram {
+  private static computePublicTransportPictogram(ptMode: OJP_Legacy.PublicTransportMode): PublicTransportPictogram {
     if (ptMode.ptMode === 'bus') {
       return 'picto-bus';
     }
@@ -57,19 +57,19 @@ export class OJPHelpers {
     return 'picto-bus-fallback';
   }
 
-  public static computeIconFilenameForLeg(leg: OJP.TripLeg): string {
+  public static computeIconFilenameForLeg(leg: OJP_Legacy.TripLeg): string {
     if (leg.legType === 'TransferLeg') {
       return 'picto-walk';
     }
 
     if (leg.legType === 'TimedLeg') {
-      const timdLeg = leg as OJP.TripTimedLeg;
+      const timdLeg = leg as OJP_Legacy.TripTimedLeg;
       const service = OJPHelpers.computeIconFilenameForService(timdLeg.service);
       return service;
     }
 
     if (leg.legType === 'ContinuousLeg') {
-      const continousLeg = leg as OJP.TripContinuousLeg;
+      const continousLeg = leg as OJP_Legacy.TripContinuousLeg;
       if (continousLeg.isDriveCarLeg()) {
         return 'car-sharing';
       }
@@ -96,8 +96,8 @@ export class OJPHelpers {
     return 'picto-bus-fallback';
   }
 
-  public static updateLocationDataWithTime(stopPointData: LegStopPointData, stopPoint: OJP.StopPoint, isLastStop: boolean = false) {
-    const depArrTypes: OJP.TripRequestBoardingType[] = ['Arr', 'Dep'];
+  public static updateLocationDataWithTime(stopPointData: LegStopPointData, stopPoint: OJP_Legacy.StopPoint, isLastStop: boolean = false) {
+    const depArrTypes: OJP_Legacy.TripRequestBoardingType[] = ['Arr', 'Dep'];
 
     depArrTypes.forEach(depArrType => {
       const isArr = depArrType === 'Arr';
@@ -106,7 +106,7 @@ export class OJPHelpers {
         return;
       }
 
-      const depArrTimeS = OJP.DateHelpers.formatTimeHHMM(depArrTime.timetableTime);
+      const depArrTimeS = OJP_Legacy.DateHelpers.formatTimeHHMM(depArrTime.timetableTime);
       if (isArr) {
         stopPointData.arrText = depArrTimeS;
       } else {
@@ -136,7 +136,7 @@ export class OJPHelpers {
     stopPointData.isNotServicedStop = stopPoint.isNotServicedStop === true;
   }
 
-  private static computeStopPointDelayText(depArrType: OJP.TripRequestBoardingType, stopPoint: OJP.StopPoint): string | null {
+  private static computeStopPointDelayText(depArrType: OJP_Legacy.TripRequestBoardingType, stopPoint: OJP_Legacy.StopPoint): string | null {
     const isArr = depArrType === 'Arr';
     const depArrTime = isArr ? stopPoint.arrivalData : stopPoint.departureData;
     if (depArrTime === null) {
@@ -188,8 +188,8 @@ export class OJPHelpers {
     return delayText;
   }
 
-  public static computeSituationsData(siriSituations: OJP.PtSituationElement[]): OJP.SituationContent[] {
-    const situationsData: OJP.SituationContent[] = [];
+  public static computeSituationsData(siriSituations: OJP_Legacy.PtSituationElement[]): OJP_Legacy.SituationContent[] {
+    const situationsData: OJP_Legacy.SituationContent[] = [];
 
     siriSituations.forEach(situation => {
       if (situation.situationContent !== null) {
@@ -199,7 +199,7 @@ export class OJPHelpers {
       situation.publishingActions.forEach(publishingAction => {
         const mapTextualContent = publishingAction.passengerInformation.mapTextualContent;
 
-        const situationData = <OJP.SituationContent>{};
+        const situationData = <OJP_Legacy.SituationContent>{};
 
         if ('Summary' in mapTextualContent) {
           situationData.summary = mapTextualContent['Summary'].join('. ');
@@ -257,7 +257,7 @@ export class OJPHelpers {
     return null;
   }
 
-  public static formatServiceName(service: OJP.JourneyService): string {
+  public static formatServiceName(service: OJP_Legacy.JourneyService): string {
     const nameParts: string[] = [];
 
     if (service.serviceLineNumber) {
@@ -276,7 +276,7 @@ export class OJPHelpers {
     return nameParts.join(' ');
   }
 
-  public static computePlatformAssistanceIconPath(stopPoint: OJP.StopPoint): string | null {
+  public static computePlatformAssistanceIconPath(stopPoint: OJP_Legacy.StopPoint): string | null {
     const filename: string | null = (() => {
       if (stopPoint.vehicleAccessType === 'PLATFORM_ACCESS_WITHOUT_ASSISTANCE') {
         return 'platform_independent';
@@ -313,7 +313,7 @@ export class OJPHelpers {
     return iconPath;
   }
 
-  public static computePlatformAssistanceTooltip(stopPoint: OJP.StopPoint): string {
+  public static computePlatformAssistanceTooltip(stopPoint: OJP_Legacy.StopPoint): string {
     const message: string = (() => {
       if (stopPoint.vehicleAccessType === 'PLATFORM_ACCESS_WITHOUT_ASSISTANCE') {
         return 'Step-free access; level entry/exit.';

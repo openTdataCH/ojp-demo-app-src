@@ -4,7 +4,7 @@ import { SbbExpansionPanel } from '@sbb-esta/angular/accordion';
 import { SbbDialog } from '@sbb-esta/angular/dialog';
 import { SbbNotificationToast } from '@sbb-esta/angular/notification-toast';
 
-import * as OJP from 'ojp-sdk-v1';
+import * as OJP_Legacy from 'ojp-sdk-v1';
 
 import { APP_STAGE, APP_STAGEs } from '../../config/constants'
 
@@ -34,7 +34,7 @@ export class TripInfoSearchComponent implements OnInit {
 
   public model: PagelModel
 
-  public currentRequestInfo: OJP.RequestInfo | null;
+  public currentRequestInfo: OJP_Legacy.RequestInfo | null;
 
   public headerText: string = 'Search Trip Info'
 
@@ -138,7 +138,7 @@ export class TripInfoSearchComponent implements OnInit {
     const queryParams = new URLSearchParams();
     queryParams.set('ref', this.model.journeyRef);
     
-    const dayS =  OJP.DateHelpers.formatDate(this.model.journeyDateTime).substring(0, 10);
+    const dayS =  OJP_Legacy.DateHelpers.formatDate(this.model.journeyDateTime).substring(0, 10);
     queryParams.set('day', dayS);
 
     const urlAddress = document.location.pathname + '?' + queryParams.toString();
@@ -150,9 +150,9 @@ export class TripInfoSearchComponent implements OnInit {
     const stageConfig = this.userTripService.getStageConfig();
 
     if (dayRef === null) {
-      dayRef = OJP.DateHelpers.formatDate(this.model.journeyDateTime).substring(0, 10);
+      dayRef = OJP_Legacy.DateHelpers.formatDate(this.model.journeyDateTime).substring(0, 10);
     }
-    const request = OJP.TripInfoRequest.initWithJourneyRef(stageConfig, this.languageService.language, this.model.journeyRef, dayRef);
+    const request = OJP_Legacy.TripInfoRequest.initWithJourneyRef(stageConfig, this.languageService.language, this.model.journeyRef, dayRef);
     this.model.isSearching = true;
     const response = await request.fetchResponse();
 
@@ -177,7 +177,7 @@ export class TripInfoSearchComponent implements OnInit {
     const mockURL = '/path/to/mock.xml';
 
     const mockText = await (await fetch(mockURL)).text();
-    const request = OJP.TripInfoRequest.initWithMock(mockText);
+    const request = OJP_Legacy.TripInfoRequest.initWithMock(mockText);
     request.fetchResponse().then(response => {
       this.parseTripInfo(request.requestInfo, response.tripInfoResult);
     });
@@ -197,7 +197,7 @@ export class TripInfoSearchComponent implements OnInit {
     });
   }
 
-  private parseTripInfo(requestInfo: OJP.RequestInfo, tripInfoResult: OJP.TripInfoResult | null): void {
+  private parseTripInfo(requestInfo: OJP_Legacy.RequestInfo, tripInfoResult: OJP_Legacy.TripInfoResult | null): void {
     this.currentRequestInfo = requestInfo;
     this.tripInfoService.tripInfoResultUpdated.emit(tripInfoResult);
   }
@@ -242,7 +242,7 @@ export class TripInfoSearchComponent implements OnInit {
     this.currentRequestInfo.responseDateTime = new Date();
     this.currentRequestInfo.responseXML = responseXML;
 
-    const request = OJP.TripInfoRequest.initWithMock(responseXML);
+    const request = OJP_Legacy.TripInfoRequest.initWithMock(responseXML);
     request.fetchResponse().then(response => {
       this.parseTripInfo(request.requestInfo, response.tripInfoResult);
     });

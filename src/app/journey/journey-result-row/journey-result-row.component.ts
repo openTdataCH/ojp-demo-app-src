@@ -1,7 +1,7 @@
 import { Component, Input, OnInit, ViewChild } from '@angular/core';
 import { SbbExpansionPanel } from '@sbb-esta/angular/accordion';
 
-import * as OJP from 'ojp-sdk-v1';
+import * as OJP_Legacy from 'ojp-sdk-v1';
 import * as OJP_Next from 'ojp-sdk-next';
 
 import { DEBUG_LEVEL, REQUESTOR_REF } from '../../config/constants';
@@ -30,7 +30,7 @@ interface TripHeaderStats {
   styleUrls: ['./journey-result-row.component.scss'],
 })
 export class JourneyResultRowComponent implements OnInit {
-  @Input() trip: OJP.Trip | undefined
+  @Input() trip: OJP_Legacy.Trip | undefined
   @Input() idx: number | undefined
 
   @ViewChild(SbbExpansionPanel, { static: true }) tripPanel: SbbExpansionPanel | undefined;
@@ -87,7 +87,7 @@ export class JourneyResultRowComponent implements OnInit {
     this.mapService.zoomToTrip(this.trip);
   }
 
-  private initTripHeaderStats(trip: OJP.Trip) {
+  private initTripHeaderStats(trip: OJP_Legacy.Trip) {
     this.tripHeaderStats.title = 'Trip ' + ((this.idx ?? 0) + 1);
 
     this.tripHeaderStats.isCancelled = trip.stats.isCancelled === true;
@@ -102,9 +102,9 @@ export class JourneyResultRowComponent implements OnInit {
       this.tripHeaderStats.tripChangesInfo = trip.stats.transferNo + ' transfers';
     }
 
-    this.tripHeaderStats.tripFromTime = OJP.DateHelpers.formatTimeHHMM(trip.stats.startDatetime);
+    this.tripHeaderStats.tripFromTime = OJP_Legacy.DateHelpers.formatTimeHHMM(trip.stats.startDatetime);
     
-    this.tripHeaderStats.tripToTime = OJP.DateHelpers.formatTimeHHMM(trip.stats.endDatetime);
+    this.tripHeaderStats.tripToTime = OJP_Legacy.DateHelpers.formatTimeHHMM(trip.stats.endDatetime);
     const dayDiff = JourneyResultRowComponent.getDayOffset(trip.stats.endDatetime, trip.stats.startDatetime);
     if(dayDiff > 0){
       this.tripHeaderStats.tripToTime = '(+' + dayDiff + 'd) ' + this.tripHeaderStats.tripToTime;
@@ -114,11 +114,11 @@ export class JourneyResultRowComponent implements OnInit {
 
     this.tripHeaderStats.tripDistanceS = (() => {
       if (DEBUG_LEVEL !== 'DEBUG') {
-        return OJP.DateHelpers.formatDistance(trip.stats.distanceMeters);
+        return OJP_Legacy.DateHelpers.formatDistance(trip.stats.distanceMeters);
       }
 
       const sourceF = trip.stats.distanceSource === 'trip' ? 'Δ' : 'Σ';
-      const distanceF = OJP.DateHelpers.formatDistance(trip.stats.distanceMeters);
+      const distanceF = OJP_Legacy.DateHelpers.formatDistance(trip.stats.distanceMeters);
 
       return distanceF + ' ' + sourceF;
     })();
@@ -170,7 +170,7 @@ export class JourneyResultRowComponent implements OnInit {
     }
 
     // TRR response is similar with TR response
-    const trRequest = OJP.TripRequest.initWithResponseMock(trrRequest.requestInfo.responseXML);
+    const trRequest = OJP_Legacy.TripRequest.initWithResponseMock(trrRequest.requestInfo.responseXML);
     const trResponse = await trRequest.fetchResponse();
 
     if (trResponse.trips.length !== 1) {
@@ -182,7 +182,7 @@ export class JourneyResultRowComponent implements OnInit {
     const updatedTrip = trResponse.trips[0];
 
     const fareRequestStageConfig = this.userTripService.getStageConfig('NOVA-INT');
-    const fareRequest = new OJP.NovaRequest(fareRequestStageConfig);
+    const fareRequest = new OJP_Legacy.NovaRequest(fareRequestStageConfig);
     const fareRequestResponse = await fareRequest.fetchResponseForTrips([updatedTrip]);
 
     if (fareRequestResponse.fareResults.length === 1) {

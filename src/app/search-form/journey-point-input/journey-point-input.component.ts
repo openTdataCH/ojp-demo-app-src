@@ -4,7 +4,7 @@ import { FormControl, FormGroupDirective, NgForm, Validators } from '@angular/fo
 
 import { SbbAutocompleteSelectedEvent } from '@sbb-esta/angular/autocomplete';
 
-import * as OJP from 'ojp-sdk-v1';
+import * as OJP_Legacy from 'ojp-sdk-v1';
 
 import { MapService } from '../../shared/services/map.service';
 import { LanguageService } from '../../shared/services/language.service'
@@ -12,8 +12,8 @@ import { UserTripService } from '../../shared/services/user-trip.service';
 
 import { SbbErrorStateMatcher } from '@sbb-esta/angular/core';
 
-type MapLocations = Record<OJP.LocationType, OJP.Location[]>
-type OptionLocationType = [OJP.LocationType, string]
+type MapLocations = Record<OJP_Legacy.LocationType, OJP_Legacy.Location[]>
+type OptionLocationType = [OJP_Legacy.LocationType, string]
 
 export class ErrorStateMatcher implements SbbErrorStateMatcher {
   isErrorState(control: FormControl | null, form: FormGroupDirective | NgForm | null): boolean {
@@ -37,9 +37,9 @@ export class JourneyPointInputComponent implements OnInit, OnChanges {
   public optionLocationTypes: OptionLocationType[]
 
   @Input() placeholder: string = '';
-  @Input() endpointType: OJP.JourneyPointType = 'From';
+  @Input() endpointType: OJP_Legacy.JourneyPointType = 'From';
   @Input() inputValue: string = '';
-  @Output() selectedLocation = new EventEmitter<OJP.Location | null>()
+  @Output() selectedLocation = new EventEmitter<OJP_Legacy.Location | null>()
 
   constructor(private mapService: MapService, private userTripService: UserTripService, private languageService: LanguageService) {
     this.mapLookupLocations = {} as MapLocations
@@ -75,7 +75,7 @@ export class JourneyPointInputComponent implements OnInit, OnChanges {
         return;
       }
 
-      const coordsLocation = OJP.Location.initFromLiteralCoords(searchTerm);
+      const coordsLocation = OJP_Legacy.Location.initFromLiteralCoords(searchTerm);
       if (coordsLocation) {
         this.resetMapLocations()
         
@@ -109,7 +109,7 @@ export class JourneyPointInputComponent implements OnInit, OnChanges {
       return;
     }
     
-    const locationType = optionIdParts[0] as OJP.LocationType;
+    const locationType = optionIdParts[0] as OJP_Legacy.LocationType;
     const locationIdx = parseInt(optionIdParts[1], 10);
 
     const location = this.mapLookupLocations[locationType][locationIdx];
@@ -123,7 +123,7 @@ export class JourneyPointInputComponent implements OnInit, OnChanges {
   private async fetchJourneyPoints(searchTerm: string) {
     let stageConfig = this.userTripService.getStageConfig()
 
-    const request = OJP.LocationInformationRequest.initWithLocationName(stageConfig, this.languageService.language, searchTerm, []);
+    const request = OJP_Legacy.LocationInformationRequest.initWithLocationName(stageConfig, this.languageService.language, searchTerm, []);
     request.enableExtensions = this.userTripService.currentAppStage !== 'OJP-SI';
     
     const response = await request.fetchResponse();
@@ -141,7 +141,7 @@ export class JourneyPointInputComponent implements OnInit, OnChanges {
   }
 
   public handleTapOnMapButton() {
-    const location: OJP.Location | null = (() => {
+    const location: OJP_Legacy.Location | null = (() => {
       if (this.endpointType === 'From') {
         return this.userTripService.fromTripLocation?.location ?? null;
       }
@@ -164,7 +164,7 @@ export class JourneyPointInputComponent implements OnInit, OnChanges {
     this.mapService.tryToCenterAndZoomToLocation(location);
   }
 
-  private handleCoordsPick(location: OJP.Location) {
+  private handleCoordsPick(location: OJP_Legacy.Location) {
     const geoPosition = location.geoPosition
     if (geoPosition === null) {
       return
