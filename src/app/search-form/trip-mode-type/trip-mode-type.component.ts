@@ -59,7 +59,7 @@ const appTripTransportModeData: TripTransportModeData[] = [
   {
     modeType: 'mode_at_start_end',
     transportModes: [
-      'walk', // in v2 is 'foot',
+      walkMode,
       'bicycle_rental',
       'escooter_rental'
     ]
