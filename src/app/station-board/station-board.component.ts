@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { AppService } from '../shared/services/app.service';
 
 @Component({
   selector: 'station-board',
@@ -6,11 +7,9 @@ import { Component, OnInit } from '@angular/core';
   styleUrls: ['./station-board.component.scss'],
 })
 export class StationBoardComponent implements OnInit {
-  constructor() {
-
-  }
+  constructor(private appService: AppService) {}
 
   ngOnInit(): void {
-
+    this.appService.setTitle('StopEventRequest');
   }
 }

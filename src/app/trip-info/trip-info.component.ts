@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { AppService } from '../shared/services/app.service';
 
 @Component({
   selector: 'trip-info',
@@ -6,11 +7,9 @@ import { Component, OnInit } from '@angular/core';
   styleUrls: ['./trip-info.component.scss'],
 })
 export class TripInfoComponent implements OnInit {
-  constructor() {
-
-  }
+  constructor(private appService: AppService) {}
 
   ngOnInit(): void {
-
+    this.appService.setTitle('TripInfoRequest');
   }
 }
