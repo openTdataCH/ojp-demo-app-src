@@ -18,20 +18,20 @@ export type APP_STAGE = 'PROD' | 'INT' | 'TEST' | 'LA Beta'
   | 'V2-PROD' | 'V2-INT' | 'V2-TEST'
   | 'GR TEST'| 'PROD-LB' | 'OJP-SI' | 'NOVA-INT';
 
-export const DEFAULT_APP_STAGE: APP_STAGE = 'PROD';
+const isOJPv2 = OJP_Legacy.OJP_VERSION === '2.0';
+
+export const DEFAULT_APP_STAGE: APP_STAGE = isOJPv2 ? 'PROD' : 'V2-PROD';
 
 export const APP_STAGEs: APP_STAGE[] = (() => {
   let stages: APP_STAGE[] = [];
 
-  if (OJP_Legacy.OJP_VERSION === '1.0') {
+  if (isOJPv2) {
+    stages = ['V2-PROD', 'V2-INT', 'V2-TEST'];
+  } else {
     stages = ['PROD', 'INT', 'TEST', 'LA Beta'];
     if (DEBUG_LEVEL === 'DEBUG') {
       stages.push('OJP-SI');
     }
-  }
-
-  if (OJP_Legacy.OJP_VERSION === '2.0') {
-    stages = ['V2-PROD', 'V2-INT', 'V2-TEST'];
   }
 
   return stages;
