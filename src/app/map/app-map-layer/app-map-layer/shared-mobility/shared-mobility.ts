@@ -1,4 +1,4 @@
-import * as OJP_Legacy from 'ojp-sdk-v1';
+import OJP_Legacy from '../../../../config/ojp-legacy';
 
 // https://github.com/SFOE/sharedmobility/blob/main/providers.csv
 type SharedMobilityProvider = '2EM Car Sharing' | 'Bird' | 'Bolt' | 'Carvelo2go' | 'Donkey Republic'

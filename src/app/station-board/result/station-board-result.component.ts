@@ -1,7 +1,7 @@
 import { AfterViewInit, Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { SbbDialog } from '@sbb-esta/angular/dialog';
 
-import * as OJP_Legacy from 'ojp-sdk-v1';
+import OJP_Legacy from '../../config/ojp-legacy';
 
 import { StationBoardService } from '../station-board.service';
 import { OJPHelpers } from '../../helpers/ojp-helpers';

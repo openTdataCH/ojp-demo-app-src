@@ -1,4 +1,4 @@
-import * as OJP_Legacy from 'ojp-sdk-v1';
+import OJP_Legacy from './ojp-legacy';
 
 type DEBUG_LEVEL_Type = 'DEBUG' | 'PROD'
 export const DEBUG_LEVEL: DEBUG_LEVEL_Type = (() => {
