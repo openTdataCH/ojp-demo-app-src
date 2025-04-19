@@ -16,6 +16,9 @@ interface TripTransportModeData {
 const walkTransportMode: OJP_Legacy.IndividualTransportMode = OJP_Legacy.OJP_VERSION === '1.0' ? 'walk' : 'foot'; 
 const carTransportMode: OJP_Legacy.IndividualTransportMode = OJP_Legacy.OJP_VERSION === '1.0' ? 'self-drive-car' : 'car';
 
+const isOJPv2 = OJP_Legacy.OJP_VERSION === '2.0';
+const walkMode: OJP_Legacy.IndividualTransportMode = isOJPv2 ? 'foot' : 'walk';
+
 const appTripTransportModeData: TripTransportModeData[] = [
   {
     modeType: 'monomodal',
@@ -45,7 +48,7 @@ const appTripTransportModeData: TripTransportModeData[] = [
   {
     modeType: 'mode_at_end',
     transportModes: [
-      'walk', // in v2 is 'foot',
+      walkMode,
       'bicycle_rental',
       'escooter_rental',
       'car_sharing',
