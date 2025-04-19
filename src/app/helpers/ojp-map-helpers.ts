@@ -4,7 +4,7 @@ import { TripLegLineType } from '../shared/types/map-geometry-types';
 
 export class OJPMapHelpers {
   public static computeTimedLegColor(leg: OJP.TripTimedLeg): TripLegLineType {
-    const isPostAuto = leg.service.agencyCode === '801';
+    const isPostAuto = leg.service.operatorRef === '801';
     if (isPostAuto) {
       return 'PostAuto';
     }
