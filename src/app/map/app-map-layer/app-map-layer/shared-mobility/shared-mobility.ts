@@ -1,4 +1,4 @@
-import * as OJP from 'ojp-sdk-v2';
+import * as OJP_Legacy from 'ojp-sdk-v2';
 
 // https://github.com/SFOE/sharedmobility/blob/main/providers.csv
 type SharedMobilityProvider = '2EM Car Sharing' | 'Bird' | 'Bolt' | 'Carvelo2go' | 'Donkey Republic'
@@ -8,7 +8,7 @@ type SharedMobilityProvider = '2EM Car Sharing' | 'Bird' | 'Bolt' | 'Carvelo2go'
 type VehicleType = 'Car' | 'E-Car' | 'Bike' | 'E-Bike' | 'E-CargoBike' | 'E-Scooter' | 'E-Moped'
 
 export class SharedMobility {
-  public poiType: OJP.RestrictionPoiOSMTag
+  public poiType: OJP_Legacy.RestrictionPoiOSMTag
   public vehicleType: VehicleType
   public provider: SharedMobilityProvider
   public code: string
@@ -20,7 +20,7 @@ export class SharedMobility {
   public vehicleName: string | null
 
   constructor(
-    poiType: OJP.RestrictionPoiOSMTag,
+    poiType: OJP_Legacy.RestrictionPoiOSMTag,
     vehicleType: VehicleType,
     provider: SharedMobilityProvider,
     code: string,
@@ -39,7 +39,7 @@ export class SharedMobility {
     this.vehicleName = null
   }
 
-  public static initFromLocation(location: OJP.Location): SharedMobility | null {
+  public static initFromLocation(location: OJP_Legacy.Location): SharedMobility | null {
     if (location.poi === null) {
       return null;
     }

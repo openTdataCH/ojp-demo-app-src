@@ -1,4 +1,4 @@
-import * as OJP from 'ojp-sdk-v2';
+import * as OJP_Legacy from 'ojp-sdk-v2';
 
 export enum TripLegPropertiesEnum {
   LegType = 'leg.type',
@@ -30,7 +30,7 @@ export type TripLegLineType =
 export type TripLegDrawType = 'Beeline' | 'LegPoint' | 'LegLine';
 
 export interface MapTripLeg {
-  leg: OJP.TripLeg,
+  leg: OJP_Legacy.TripLeg,
   forceLinkProjection: boolean,
 }
 

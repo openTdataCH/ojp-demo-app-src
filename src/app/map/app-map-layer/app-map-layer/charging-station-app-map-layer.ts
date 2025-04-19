@@ -1,13 +1,13 @@
 import * as GeoJSON from 'geojson'
 
-import * as OJP from 'ojp-sdk-v2';
+import * as OJP_Legacy from 'ojp-sdk-v2';
 
 import { AppMapLayer } from "../app-map-layer";
 
 type LocationStatus = 'available' | 'occupied' | 'unknown'
 
 export class ChargingStationAppMapLayer extends AppMapLayer {
-  protected override annotateFeatureFromLocations(feature: GeoJSON.Feature, locations: OJP.Location[]): void {
+  protected override annotateFeatureFromLocations(feature: GeoJSON.Feature, locations: OJP_Legacy.Location[]): void {
     if (feature.properties === null) {
       return;
     }
@@ -27,7 +27,7 @@ export class ChargingStationAppMapLayer extends AppMapLayer {
     feature.properties['sharedVehicle.itemsNo'] = itemsNo;
   }
 
-  private computeLocationStatus(location: OJP.Location): LocationStatus | null {
+  private computeLocationStatus(location: OJP_Legacy.Location): LocationStatus | null {
     const locationStatusAttr = location.attributes['locationStatus'] ?? null;
     if (locationStatusAttr === null) {
       return null;
@@ -49,7 +49,7 @@ export class ChargingStationAppMapLayer extends AppMapLayer {
     return null;
   }
 
-  protected override computePopupHTML(locations: OJP.Location[]): string | null {
+  protected override computePopupHTML(locations: OJP_Legacy.Location[]): string | null {
     const popupWrapperDIV = document.getElementById('map-poi-picker-popup') as HTMLElement;
     if (popupWrapperDIV === null) {
       return null;

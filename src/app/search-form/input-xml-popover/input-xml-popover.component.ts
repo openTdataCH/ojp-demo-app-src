@@ -1,7 +1,7 @@
 import { Component, EventEmitter, Output } from '@angular/core';
 import { UserTripService } from 'src/app/shared/services/user-trip.service';
 
-import * as OJP from 'ojp-sdk-v2';
+import * as OJP_Legacy from 'ojp-sdk-v2';
 
 @Component({
   selector: 'input-xml-popover',
@@ -27,7 +27,7 @@ export class InputXmlPopoverComponent {
     this.isRunningTripRequest = true
 
     const stageConfig = this.userTripService.getStageConfig();
-    const request = OJP.TripRequest.initWithRequestMock(this.inputTripRequestXML, stageConfig);
+    const request = OJP_Legacy.TripRequest.initWithRequestMock(this.inputTripRequestXML, stageConfig);
     request.fetchResponse().then(response => {
       if (response.message === 'ERROR') {
         console.error('ERROR fetching OJP response');

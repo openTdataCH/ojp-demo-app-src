@@ -1,7 +1,7 @@
 import { SbbDialog } from "@sbb-esta/angular/dialog";
 
 import mapboxgl from "mapbox-gl";
-import * as OJP from 'ojp-sdk-v2';
+import * as OJP_Legacy from 'ojp-sdk-v2';
 
 import { UserTripService } from "../../shared/services/user-trip.service";
 import { LanguageService } from "../../shared/services/language.service";
@@ -148,12 +148,12 @@ export class MapLayersLegendControl implements mapboxgl.IControl {
     const layerKey = 'pois-ALL';
     const appMapLayerOptions: AppMapLayerOptions = JSON.parse(JSON.stringify(MAP_APP_MAP_LAYERS[layerKey]));
 
-    const poiOSMTags: OJP.RestrictionPoiOSMTag[] = [];
+    const poiOSMTags: OJP_Legacy.RestrictionPoiOSMTag[] = [];
     const inputEls: HTMLInputElement[] = [];
     wrapperEl.querySelectorAll('.map-layer-poi').forEach(el => {
       const inputEl = el as HTMLInputElement;
       
-      const poiOSMTag = inputEl.getAttribute('data-osm-tag') as OJP.RestrictionPoiOSMTag;
+      const poiOSMTag = inputEl.getAttribute('data-osm-tag') as OJP_Legacy.RestrictionPoiOSMTag;
       if (poiOSMTag === null) {
         return;
       }
@@ -165,9 +165,9 @@ export class MapLayersLegendControl implements mapboxgl.IControl {
       }
 
       inputEl.addEventListener('change', ev => {
-        const poiOSMTags: OJP.RestrictionPoiOSMTag[] = [];
+        const poiOSMTags: OJP_Legacy.RestrictionPoiOSMTag[] = [];
         inputEls.forEach(inputEl => {
-          const poiOSMTag = inputEl.getAttribute('data-osm-tag') as OJP.RestrictionPoiOSMTag;
+          const poiOSMTag = inputEl.getAttribute('data-osm-tag') as OJP_Legacy.RestrictionPoiOSMTag;
           if (inputEl.checked && poiOSMTag) {
             poiOSMTags.push(poiOSMTag);
           }

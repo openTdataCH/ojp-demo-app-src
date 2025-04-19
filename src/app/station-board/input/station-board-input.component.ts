@@ -4,7 +4,7 @@ import { debounceTime, distinctUntilChanged } from 'rxjs/operators'
 
 import { SbbAutocompleteSelectedEvent, SbbAutocompleteTrigger } from '@sbb-esta/angular/autocomplete';
 
-import * as OJP from 'ojp-sdk-v2';
+import * as OJP_Legacy from 'ojp-sdk-v2';
 
 import { UserTripService } from '../../shared/services/user-trip.service';
 import { LanguageService } from '../../shared/services/language.service';
@@ -14,7 +14,7 @@ interface StopLookup {
   stopName: string
   special_type?: 'around_me' | null
   distance?: number | null
-  location?: OJP.Location | null
+  location?: OJP_Legacy.Location | null
 }
 
 @Component({
@@ -24,7 +24,7 @@ interface StopLookup {
 export class StationBoardInputComponent implements OnInit {
   @ViewChild(SbbAutocompleteTrigger, { static: true }) autocompleteInputTrigger: SbbAutocompleteTrigger | undefined;
 
-  @Output() locationSelected = new EventEmitter<OJP.Location>()
+  @Output() locationSelected = new EventEmitter<OJP_Legacy.Location>()
 
   public searchInputControl: FormControl;
   public stopLookups: StopLookup[]
@@ -97,9 +97,9 @@ export class StationBoardInputComponent implements OnInit {
   private async fetchLookupLocations(searchTerm: string) {
     this.isBusySearching = true;
 
-    const restrictionType: OJP.RestrictionType = 'stop';
+    const restrictionType: OJP_Legacy.RestrictionType = 'stop';
     const stageConfig = this.userTripService.getStageConfig();
-    const locationInformationRequest = OJP.LocationInformationRequest.initWithLocationName(stageConfig, this.languageService.language, searchTerm, [restrictionType]);
+    const locationInformationRequest = OJP_Legacy.LocationInformationRequest.initWithLocationName(stageConfig, this.languageService.language, searchTerm, [restrictionType]);
     locationInformationRequest.enableExtensions = this.userTripService.currentAppStage !== 'OJP-SI';
 
     const response = await locationInformationRequest.fetchResponse();
@@ -108,7 +108,7 @@ export class StationBoardInputComponent implements OnInit {
     this.isBusySearching = false;
   }
 
-  private parseLocations(locations: OJP.Location[], nearbyGeoPosition: OJP.GeoPosition | null = null) {
+  private parseLocations(locations: OJP_Legacy.Location[], nearbyGeoPosition: OJP_Legacy.GeoPosition | null = null) {
     this.stopLookups = [];
     
     locations.forEach(location => {
@@ -193,7 +193,7 @@ export class StationBoardInputComponent implements OnInit {
       
     navigator.geolocation.getCurrentPosition((position: GeolocationPosition) => {
       this.handleNewGeoPosition(position, locations => {
-        const geoPosition = new OJP.GeoPosition(position.coords.longitude, position.coords.latitude)
+        const geoPosition = new OJP_Legacy.GeoPosition(position.coords.longitude, position.coords.latitude)
         this.parseLocations(locations, geoPosition);
     
         this.autocompleteInputTrigger?.openPanel();
@@ -201,7 +201,7 @@ export class StationBoardInputComponent implements OnInit {
     });
   }
 
-  private async handleNewGeoPosition(position: GeolocationPosition, completion: (locations: OJP.Location[]) => void) {
+  private async handleNewGeoPosition(position: GeolocationPosition, completion: (locations: OJP_Legacy.Location[]) => void) {
     const bbox_width = 0.05;
     const bbox_height = 0.05;
     const bbox_W = position.coords.longitude - bbox_width / 2;
@@ -211,7 +211,7 @@ export class StationBoardInputComponent implements OnInit {
     
     const stageConfig = this.userTripService.getStageConfig();
 
-    const request = OJP.LocationInformationRequest.initWithBBOXAndType(
+    const request = OJP_Legacy.LocationInformationRequest.initWithBBOXAndType(
       stageConfig,
       this.languageService.language,
       bbox_W, bbox_N, bbox_E, bbox_S,
@@ -224,7 +224,7 @@ export class StationBoardInputComponent implements OnInit {
     completion(response.locations);
   }
 
-  public updateLocationText(location: OJP.Location) {
+  public updateLocationText(location: OJP_Legacy.Location) {
     const stopPlaceName = location.stopPlace?.stopPlaceName ?? null
     if (stopPlaceName === null) {
       return;

@@ -1,6 +1,6 @@
 import * as mapboxgl from "mapbox-gl";
 
-import * as OJP from 'ojp-sdk-v2';
+import * as OJP_Legacy from 'ojp-sdk-v2';
 
 import { MapLegTypeColor, MapLegTypes, MapLegLineTypeColor, MapTripLegLineTypes } from '../config/map-colors';
 
@@ -50,7 +50,7 @@ export class MapboxLayerHelpers {
     return filterExpression
   }
 
-  public static FilterByPointType(pointType: OJP.StopPointType): mapboxgl.ExpressionSpecification {
+  public static FilterByPointType(pointType: OJP_Legacy.StopPointType): mapboxgl.ExpressionSpecification {
     const filterExpression: mapboxgl.ExpressionSpecification = [
       "==", ["get", TripLegPropertiesEnum.PointType], pointType
     ]

@@ -1,7 +1,7 @@
 import * as GeoJSON from 'geojson'
 import mapboxgl from "mapbox-gl";
 
-import * as OJP from 'ojp-sdk-v2';
+import * as OJP_Legacy from 'ojp-sdk-v2';
 
 import serviceTrackLineLayerJSON from './map-layers-def/service-track-line.json'
 import serviceTrackStopLayerJSON from './map-layers-def/service-track-stop.json'
@@ -40,15 +40,15 @@ export class StopEventServiceRenderer {
         map.addLayer(serviceTrackStopLayer);
     }
 
-    public drawStopEvent(stopEvent: OJP.StopEvent) {
+    public drawStopEvent(stopEvent: OJP_Legacy.StopEvent) {
         this.drawStopPoints(stopEvent.prevStopPoints, stopEvent.nextStopPoints, stopEvent.stopPoint);
     }
 
-    public drawServiceStopPoints(stopPoints: OJP.StopPoint[]) {
+    public drawServiceStopPoints(stopPoints: OJP_Legacy.StopPoint[]) {
         this.drawStopPoints([], stopPoints, stopPoints[0]);
     }
     
-    private drawStopPoints(prevStopPoints: OJP.StopPoint[], nextStopPoints: OJP.StopPoint[], currentStopPoint: OJP.StopPoint | null) {
+    private drawStopPoints(prevStopPoints: OJP_Legacy.StopPoint[], nextStopPoints: OJP_Legacy.StopPoint[], currentStopPoint: OJP_Legacy.StopPoint | null) {
         this.geojsonFeatures = [];
 
         const lineFeaturePoints: Record<LinePointType, GeoJSON.Position[]> = {

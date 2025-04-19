@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 
-import * as OJP from 'ojp-sdk-v2';
+import * as OJP_Legacy from 'ojp-sdk-v2';
 
 import { UserTripService } from '../../../../shared/services/user-trip.service';
 import { TripInfoService } from '../../../../trip-info/trip-info.service';
@@ -31,7 +31,7 @@ export class TripInfoResultPopoverComponent {
     this.model.title = 'JourneyRef: ' + journeyRef;
 
     const stageConfig = this.userTripService.getStageConfig();
-    const request = OJP.TripInfoRequest.initWithJourneyRef(stageConfig, this.languageService.language, journeyRef, dayRef);
+    const request = OJP_Legacy.TripInfoRequest.initWithJourneyRef(stageConfig, this.languageService.language, journeyRef, dayRef);
 
     this.model.isFetching = true;
     const response = await request.fetchResponse();
