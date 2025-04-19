@@ -1,4 +1,4 @@
-import * as OJP from 'ojp-sdk-v2';
+import * as OJP from 'ojp-sdk-v1';
 
 export enum TripLegPropertiesEnum {
   LegType = 'leg.type',
