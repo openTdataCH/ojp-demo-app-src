@@ -22,7 +22,7 @@ import { EmbedStationBoardPopoverComponent } from './embed-station-board-popover
 
 import { APP_STAGE, APP_STAGEs, DEBUG_LEVEL, DEFAULT_APP_STAGE } from '../../config/constants'
 
-type URLType = 'prodv1' | 'betav1' | 'betav2';
+type URLType = 'prodv1' | 'betav1' | 'betav2' | 'beta';
 
 @Component({
   selector: 'station-board-search',
@@ -313,6 +313,9 @@ export class StationBoardSearchComponent implements OnInit {
     this.mapURLs.prodv1 = 'https://opentdatach.github.io/ojp-demo-app/board?' + queryParams.toString();
     this.mapURLs.betav1 = 'https://tools.odpch.ch/beta-ojp-demo/board?' + queryParams.toString();
     this.mapURLs.betav2 = 'https://tools.odpch.ch/ojp-demo-v2/board?' + queryParams.toString();
+    
+    const isOJPv2 = OJP_Legacy.OJP_VERSION === '2.0';
+    this.mapURLs.beta = isOJPv2 ? this.mapURLs.betav2 : this.mapURLs.betav1;
   }
 
   private fetchStopEventsForStopRef(stopPlaceRef: string) {

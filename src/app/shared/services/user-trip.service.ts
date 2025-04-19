@@ -38,7 +38,9 @@ export class UserTripService {
   public permalinkRelativeURL: string | null;
   public prodURL: string | null;
   public betaURL: string | null;
+  public betaV1URL: string | null;
   public betaV2URL: string | null;
+  public betaURLText: string | null;
   public sbbURL: string | null;
   public embedQueryParams = new URLSearchParams();
 
@@ -83,7 +85,9 @@ export class UserTripService {
     this.permalinkRelativeURL = null;
     this.prodURL = null;
     this.betaURL = null;
+    this.betaV1URL = null;
     this.betaV2URL = null;
+    this.betaURLText = null;
     this.sbbURL = null;
   }
 
@@ -525,10 +529,14 @@ export class UserTripService {
     this.prodURL = 'https://opentdatach.github.io/ojp-demo-app/search?' + queryParams.toString();
 
     const betaQueryParams = new URLSearchParams(queryParams);
-    this.betaURL = 'https://tools.odpch.ch/beta-ojp-demo/search?' + betaQueryParams.toString();
+    this.betaV1URL = 'https://tools.odpch.ch/beta-ojp-demo/search?' + betaQueryParams.toString();
 
     betaQueryParams.set('stage', 'v2-prod');
     this.betaV2URL = 'https://tools.odpch.ch/ojp-demo-v2/search?' + betaQueryParams.toString();
+
+    const isOJPv2 = OJP_Legacy.OJP_VERSION === '2.0';
+    this.betaURL = isOJPv2 ? this.betaV2URL : this.betaV1URL;
+    this.betaURLText = isOJPv2 ? 'BETA-v2' : 'BETA-v1';
 
     const sbbURLStopsData: {[key: string]: string}[] = [];
     const stopKeys = ['from', 'to'];

@@ -133,13 +133,9 @@
 
       <ng-container *ngIf="this.showURLS && this.searchLocation !== null">
         <div>
-          <a href="{{ this.mapURLs.betav1 }}" target="_blank">BETA-v1</a>
+          <a href="{{ this.mapURLs.beta }}" target="_blank">{{ this.userTripService.betaURLText }}</a>
         </div>
         <div>|</div>
-        <!-- <div>
-          <a href="{{ this.mapURLs.betav2 }}" target="_blank">BETA-v2</a>
-        </div>
-        <div>|</div> -->
         <div>
           <a href="{{ this.mapURLs.prodv1 }}" target="_blank">PROD</a>
         </div>
