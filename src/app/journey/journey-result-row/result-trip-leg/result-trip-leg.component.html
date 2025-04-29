@@ -296,22 +296,24 @@
   <div class="py-2 collapse" [id]="this.legElementId">
     <table class="table table-hover table-stops mb-0 align-middle">
       <tbody>
-        <tr *ngFor="let locationData of this.legInfoDataModel.intermediaryLocationsData">
-          <td>
-            <div class="d-flex gap-2">
-              <div>{{ locationData.locationText }}</div>
-              <div *ngIf="locationData.isNotServicedStop"><span class="badge rounded-pill bg-danger fw-bolder">not serviced</span></div>
-            </div>
-          </td>
-          <td class="fit">
-            <div *ngIf="!locationData.isNotServicedStop">{{ locationData.arrText ?? ' ' }} <span class="time-delay">{{ locationData.arrDelayText }}</span></div>
-            <div *ngIf="locationData.isNotServicedStop"><del>{{ locationData.arrText ?? ' ' }}</del> <span class="time-delay">{{ locationData.arrDelayText }}</span></div>
-          </td>
-          <td class="fit stop-time">
-            <div *ngIf="!locationData.isNotServicedStop">{{ locationData.depText }} <span class="time-delay">{{ locationData.depDelayText }}</span></div>
-            <div *ngIf="locationData.isNotServicedStop"><del>{{ locationData.depText }}</del> <span class="time-delay">{{ locationData.depDelayText }}</span></div>
-          </td>
-        </tr>
+        <ng-container *ngFor="let locationData of this.legInfoDataModel.intermediaryLocationsData; index as idx">
+          <tr>
+            <td>
+              <div class="d-flex gap-2">
+                <div>{{ locationData.locationText }}</div>
+                <div *ngIf="locationData.isNotServicedStop"><span class="badge rounded-pill bg-danger fw-bolder">not serviced</span></div>
+              </div>
+            </td>
+            <td class="fit">
+              <div *ngIf="!locationData.isNotServicedStop">{{ locationData.arrText ?? ' ' }} <span class="time-delay">{{ locationData.arrDelayText }}</span></div>
+              <div *ngIf="locationData.isNotServicedStop"><del>{{ locationData.arrText ?? ' ' }}</del> <span class="time-delay">{{ locationData.arrDelayText }}</span></div>
+            </td>
+            <td class="fit stop-time">
+              <div *ngIf="!locationData.isNotServicedStop">{{ locationData.depText }} <span class="time-delay">{{ locationData.depDelayText }}</span></div>
+              <div *ngIf="locationData.isNotServicedStop"><del>{{ locationData.depText }}</del> <span class="time-delay">{{ locationData.depDelayText }}</span></div>
+            </td>
+          </tr>
+        </ng-container>
       </tbody>
     </table>
   </div>
