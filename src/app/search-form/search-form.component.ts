@@ -245,6 +245,7 @@ export class SearchFormComponent implements OnInit {
         }
       }
       if (response.message === 'TripRequest.DONE') {
+        this.collapseSearchPanel();
         this.userTripService.massageTrips(response.trips);
         this.handleCustomTripResponse(response.trips, request, true);
       }
