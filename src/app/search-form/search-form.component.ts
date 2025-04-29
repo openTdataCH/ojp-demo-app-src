@@ -221,7 +221,7 @@ export class SearchFormComponent implements OnInit {
   }
 
   private async initLocationsFromMocks() {
-    const mockURL = 'http://localhost/Work/sbb/ojp-opendata/projects/ojp/openTdataCH--ojp-demo-app-src/_mocks/v1/tr/response/ojp-la-tr.xml';
+    const mockURL = '/path/to/mock';
 
     const mockText = await (await fetch(mockURL)).text();
     this.initFromMockXML(mockText);
