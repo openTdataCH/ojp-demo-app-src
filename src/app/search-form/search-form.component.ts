@@ -103,6 +103,11 @@ export class SearchFormComponent implements OnInit {
   }
 
   ngOnInit() {
+    if (this.useMocks) {
+      this.initLocationsFromMocks()
+      return;
+    }
+
     this.userTripService.locationsUpdated.subscribe(nothing => {
       this.updateLocationTexts();
       this.updateViaDwellTime();
@@ -155,11 +160,6 @@ export class SearchFormComponent implements OnInit {
   }
 
   private customInitFromParams() {
-    if (this.useMocks) {
-      this.initLocationsFromMocks()
-      return;
-    }
-
     const queryParams = new URLSearchParams(document.location.search);
     
     const doSearch = queryParams.get('do_search') ?? false;
