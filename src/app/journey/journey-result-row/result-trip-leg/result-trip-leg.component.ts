@@ -670,7 +670,7 @@ export class ResultTripLegComponent implements OnInit {
     return stopPointData
   }
 
-  public handleClickOnLocation(endpointType: OJP_Legacy.JourneyPointType) {
+  public zoomToEndpoint(endpointType: OJP_Legacy.JourneyPointType) {
     if (!this.leg) {
       return
     }
