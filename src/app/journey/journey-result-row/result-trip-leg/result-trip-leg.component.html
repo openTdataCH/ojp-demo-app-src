@@ -1,4 +1,4 @@
-<div class="card p-3 mb-2">
+<div class="card card-trip-leg p-3 mb-2" (click)="zoomToLeg()">
   <div class="mb-2 d-flex">
     <div class="flex-grow-1 d-flex gap-2">
       <div>
@@ -6,7 +6,7 @@
         type="button" 
         class="btn btn-primary btn-sm font-weight-bold" 
         [ngStyle]="{'background-color': this.legInfoDataModel.legColor, 'border-color': this.legInfoDataModel.legColor}"
-        (click)="handleTapOnLegHeading()">{{ this.legInfoDataModel.leadingText }}</button>
+        (click)="zoomToLeg()">{{ this.legInfoDataModel.leadingText }}</button>
       </div>
       <div *ngIf="this.legInfoDataModel.isCancelled === true">
         <span class="badge rounded-pill bg-danger fw-bolder">Cancelled</span>
