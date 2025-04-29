@@ -1,7 +1,7 @@
 <div class="card card-trip-leg p-3 mb-2" (click)="zoomToLeg()">
-  <div class="mb-2 d-flex">
   
   <!-- Leg Header -->
+  <div class="leg-header mb-2 d-flex">
     <div class="flex-grow-1 d-flex gap-2">
       <div>
         <button 
@@ -20,6 +20,7 @@
         <span class="badge rounded-pill bg-warning fw-bolder">Unplanned</span>
       </div>
     </div>
+    
     <div class="d-flex gap-1 align-items-center" *ngIf="this.isEmbed === false">
       <ng-container *ngIf="this.leg?.legType === 'TimedLeg'">
         <div class="d-flex gap-1">
@@ -38,10 +39,9 @@
       </ng-container>
     </div>
   </div>
-  
-  <div class="mb-2 d-flex flex-row align-items-center">
 
   <!-- Leg Content -->
+  <div class="leg-content mb-2 d-flex flex-row align-items-center">
     <div class="flex-grow-0 leg-left-side">
       <div class="d-flex flex-column leg-icon-wrapper">
         <div class="text-center">
