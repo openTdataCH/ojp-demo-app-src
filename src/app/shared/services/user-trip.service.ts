@@ -535,8 +535,10 @@ export class UserTripService {
     this.betaV2URL = 'https://tools.odpch.ch/ojp-demo-v2/search?' + betaQueryParams.toString();
 
     const isOJPv2 = OJP_Legacy.OJP_VERSION === '2.0';
-    this.betaURL = isOJPv2 ? this.betaV2URL : this.betaV1URL;
-    this.betaURLText = isOJPv2 ? 'BETA-v2' : 'BETA-v1';
+
+    // Beta v1-v2 corespondent URLs
+    this.betaURL = isOJPv2 ? this.betaV1URL : this.betaV2URL;
+    this.betaURLText = isOJPv2 ? 'BETA-v1' : 'BETA-v2';
 
     const sbbURLStopsData: {[key: string]: string}[] = [];
     const stopKeys = ['from', 'to'];
