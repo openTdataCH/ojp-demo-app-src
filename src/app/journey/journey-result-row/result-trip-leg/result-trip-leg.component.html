@@ -297,7 +297,7 @@
     <table class="table table-hover table-stops mb-0 align-middle">
       <tbody>
         <ng-container *ngFor="let locationData of this.legInfoDataModel.intermediaryLocationsData; index as idx">
-          <tr>
+          <tr (click)="this.zoomToIntermediaryPoint(idx)" class="location-hover" stopClickPropagation>
             <td>
               <div class="d-flex gap-2">
                 <div>{{ locationData.locationText }}</div>

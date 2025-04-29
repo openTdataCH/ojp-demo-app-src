@@ -681,6 +681,13 @@ export class ResultTripLegComponent implements OnInit {
     this.mapService.tryToCenterAndZoomToLocation(location)
   }
 
+  public zoomToIntermediaryPoint(idx: number) {
+    const location = new OJP_Legacy.Location();
+    location.geoPosition = this.legInfoDataModel.intermediaryLocationsData[idx].geoPosition;
+
+    this.mapService.tryToCenterAndZoomToLocation(location);
+  }
+
   public loadTripInfoResultPopover() {
     const journeyRef = this.legInfoDataModel.serviceJourneyRef;
     const dayRef = OJP_Legacy.DateHelpers.formatDate(this.userTripService.departureDate).substring(0, 10);
