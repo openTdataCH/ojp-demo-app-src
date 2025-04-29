@@ -27,8 +27,8 @@
           <input class="form-check-input" type="checkbox" 
             [id]="this.checkboxId" [name]="this.checkboxId" 
             [checked]="this.isForceLinkProjection" 
-            (change)="this.redrawTripLeg($event)" (click)="$event.stopPropagation()" />
-          <label class="form-check-label" [for]="this.checkboxId">LinkProjection</label>
+            (change)="this.redrawTripLeg($event)" stopClickPropagation />
+          <label class="form-check-label" [for]="this.checkboxId" stopClickPropagation>LinkProjection</label>
         </div>
         <ng-container *ngIf="this.enableTRR">
           <div>•</div>
@@ -69,9 +69,8 @@
   <!-- TimedLeg From -->
   <div class="d-flex flex-row align-items-center">
     <div 
-      class="flex-grow-1 leg-location location-hover" 
-      (click)="this.handleClickOnLocation('From')"
-    >
+      class="flex-grow-1 leg-location location-hover" stopClickPropagation 
+      (click)="this.zoomToEndpoint('From')">
       <div class="d-flex">
         <div>{{ this.legInfoDataModel.fromLocationData.locationText }}</div>
         <div *ngIf="this.legInfoDataModel.fromLocationData.platformText">
@@ -116,9 +115,8 @@
   <!-- TimedLeg To -->
   <div class="d-flex flex-row align-items-center">
     <div 
-      class="flex-grow-1 leg-location location-hover"
-      (click)="this.handleClickOnLocation('To')"
-    >
+      class="flex-grow-1 leg-location location-hover" stopClickPropagation
+      (click)="this.zoomToEndpoint('To')">
       <div class="d-flex">
         <div>{{ this.legInfoDataModel.toLocationData.locationText }}</div>
         <div *ngIf="this.legInfoDataModel.toLocationData.platformText">
@@ -152,11 +150,9 @@
   <div class="d-flex flex-row align-items-center">
     <div class="flex-grow-1 leg-location">
       <div class="d-flex flex-column leg-location">
-        <div 
-          class="location-hover"
-          (click)="this.handleClickOnLocation('From')"
-        >{{ this.legInfoDataModel.fromLocationData.locationText }}</div>
         <!-- Walking LegFrom -->
+        <div class="location-hover" stopClickPropagation
+          (click)="this.zoomToEndpoint('From')">{{ this.legInfoDataModel.fromLocationData.locationText }}</div>
 
         <sbb-tooltip trigger="hover" svgIcon="kom:arrow-change-horizontal-medium" *ngIf="this.legInfoDataModel.hasGuidance">
           <ul class="tooltip-list">
@@ -172,8 +168,8 @@
         
         <!-- Walking LegTo -->
         <div 
-          class="location-hover"
-          (click)="this.handleClickOnLocation('To')"
+          class="location-hover" stopClickPropagation
+          (click)="this.zoomToEndpoint('To')"
         >{{ this.legInfoDataModel.toLocationData.locationText }}</div>
       </div>
     </div>
@@ -190,7 +186,7 @@
       <div class="d-flex flex-column leg-location">
         <div 
           class="location-hover"
-          (click)="this.handleClickOnLocation('From')"
+          (click)="this.zoomToEndpoint('From')" stopClickPropagation
         >{{ this.legInfoDataModel.fromLocationData.locationText }}</div>
 
         <ul class="booking-arrangement">
@@ -201,7 +197,7 @@
 
         <div 
           class="location-hover"
-          (click)="this.handleClickOnLocation('To')"
+          (click)="this.zoomToEndpoint('To')" stopClickPropagation
         >{{ this.legInfoDataModel.toLocationData.locationText }}</div>
       </div>
     </div>
@@ -215,7 +211,7 @@
   <!-- SERVICE + HEADING -->
   <div class="mb-2 d-flex gap-1 align-items-center">
     <div>
-       <button class="btn btn-primary btn-sm" (click)="loadTripInfoResultPopover()">{{ this.legInfoDataModel.serviceInfo }}</button>
+       <button class="btn btn-primary btn-sm" stopClickPropagation (click)="loadTripInfoResultPopover()">{{ this.legInfoDataModel.serviceInfo }}</button>
     </div>
     
     <div> to {{ this.legInfoDataModel.serviceDestinationText }}</div>
@@ -236,7 +232,8 @@
     <div *ngIf="this.legInfoDataModel.serviceIntermediaryStopsText !== null">
       <button 
         type="button" 
-        class="btn btn-primary btn-sm btn-collapse collapsed" 
+        class="btn btn-primary btn-sm btn-collapse collapsed"
+        stopClickPropagation 
         data-bs-toggle="collapse" 
         [attr.data-bs-target]="'#' + this.legElementId" aria-expanded="false" 
         [attr.aria-controls]="this.legElementId"
