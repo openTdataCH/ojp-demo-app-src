@@ -21,7 +21,10 @@
     <div class="d-flex gap-1 align-items-center" *ngIf="this.isEmbed === false">
       <ng-container *ngIf="this.leg?.legType === 'TimedLeg'">
         <div class="d-flex gap-1">
-          <input class="form-check-input" type="checkbox" [id]="this.checkboxId" [name]="this.checkboxId" [checked]="this.isForceLinkProjection" (change)="this.redrawTripLeg($event)" />
+          <input class="form-check-input" type="checkbox" 
+            [id]="this.checkboxId" [name]="this.checkboxId" 
+            [checked]="this.isForceLinkProjection" 
+            (change)="this.redrawTripLeg($event)" (click)="$event.stopPropagation()" />
           <label class="form-check-label" [for]="this.checkboxId">LinkProjection</label>
         </div>
         <ng-container *ngIf="this.enableTRR">
