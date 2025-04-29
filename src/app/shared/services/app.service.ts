@@ -41,8 +41,6 @@ export class AppService {
         return 'ojpv1-beta';
       }
     })();
-
-    console.log(this.bgMainClassName);
   }
 
   setTitle(title: string, baseTitle = this.baseTitle): void {
