@@ -20,7 +20,7 @@ export type APP_STAGE = 'PROD' | 'INT' | 'TEST' | 'LA Beta'
 
 const isOJPv2 = OJP_Legacy.OJP_VERSION === '2.0';
 
-export const DEFAULT_APP_STAGE: APP_STAGE = isOJPv2 ? 'PROD' : 'V2-PROD';
+export const DEFAULT_APP_STAGE: APP_STAGE = isOJPv2 ? 'V2-PROD' : 'PROD';
 
 export const APP_STAGEs: APP_STAGE[] = (() => {
   let stages: APP_STAGE[] = [];
