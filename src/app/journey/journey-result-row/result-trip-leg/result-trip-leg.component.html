@@ -24,9 +24,13 @@
           <input class="form-check-input" type="checkbox" [id]="this.checkboxId" [name]="this.checkboxId" [checked]="this.isForceLinkProjection" (change)="this.redrawTripLeg($event)" />
           <label class="form-check-label" [for]="this.checkboxId">LinkProjection</label>
         </div>
-        <div>•</div>  
+        <ng-container *ngIf="this.enableTRR">
+          <div>•</div>
+        </ng-container>
       </ng-container>
-      <div class="badge leg-pill pill-hover bg-primary" (click)="this.reloadTripLeg()">Refresh</div>
+      <ng-container *ngIf="this.enableTRR">
+        <div class="badge leg-pill pill-hover bg-primary" (click)="this.reloadTripLeg()">Refresh</div>
+      </ng-container>
     </div>
   </div>
   
