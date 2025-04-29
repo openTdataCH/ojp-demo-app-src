@@ -47,6 +47,8 @@ import { EmbedStationBoardComponent } from './embed/embed-station-board.componen
 import { WebFooterComponent } from './shared/components/web-footer';
 import { WebHeaderComponent } from './shared/components/web-header';
 
+import { StopClickPropagationDirective } from './shared/components/stop-click-propagation.directive';
+
 @NgModule({
   declarations: [
     AppComponent,
@@ -85,6 +87,8 @@ import { WebHeaderComponent } from './shared/components/web-header';
     WebHeaderComponent,
     EmbedSearchComponent,
     EmbedStationBoardComponent,
+
+    StopClickPropagationDirective,
   ],
   imports: [
     CommonModule,
