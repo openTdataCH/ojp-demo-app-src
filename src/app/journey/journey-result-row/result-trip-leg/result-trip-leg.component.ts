@@ -211,7 +211,7 @@ export class ResultTripLegComponent implements OnInit {
     return ''
   }
 
-  handleTapOnLegHeading() {
+  zoomToLeg() {
     if (!this.leg) {
       return
     }
