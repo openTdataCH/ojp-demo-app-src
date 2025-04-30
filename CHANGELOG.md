@@ -4,6 +4,23 @@ OJP-Demo URL: https://opentdatach.github.io/ojp-demo-app/
 
 ----
 
+30.April 2025
+- [Unify OJP 1.0 and 2.0 SDK / Update design / TRR Feature #220](https://github.com/openTdataCH/ojp-demo-app-src/pull/220)
+  - unify OJP 1.0 and 2.0 SDK features - [Unify OJP 1.0 and 2.0 SDK code #155](https://github.com/openTdataCH/ojp-js/pull/155)
+    - deprecates current version of `ojp-js` and use it under `OJP_Legacy` namespace
+    - adds conditional code to distinguish features between OJP 1.0 and OJP 2.0
+  - TRR for indvidual trips - [TRR PoC #207](https://github.com/openTdataCH/ojp-demo-app-src/issues/207)
+    - use [ojp-sdk-next](https://www.npmjs.com/package/ojp-sdk-next) package for TRR API call
+    - 1st version, full-replace of the trip with the new one
+  - redesign webapp - [Redesign OJP DemoApp TR view #168](https://github.com/openTdataCH/ojp-demo-app-src/issues/168)
+    - full-width, tablet-like design
+    - map takes full height
+    - scrollable content for trip leg results
+    - responsive footer / header heights for small devices
+  - toggle display of link projection for each leg - [TR GUI: display LinkProjection button toggle #214](https://github.com/openTdataCH/ojp-demo-app-src/issues/214)
+    - allow zoom to leg / endpoints and intermediary stops - [OJP DemoApp: Harmonize trip leg click handlers #219](https://github.com/openTdataCH/ojp-demo-app-src/issues/219)
+  - [remove EFA-11 #216](https://github.com/openTdataCH/ojp-demo-app-src/issues/216)
+
 2.April 2025
 - set OJP `UseRealtimeDataEnumeration` in GUI - [PR #213](https://github.com/openTdataCH/ojp-demo-app-src/pull/213)
   - only in OJP v2.0
