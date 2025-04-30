@@ -1,7 +1,7 @@
 import { Component, EventEmitter, Output } from '@angular/core';
 import { UserTripService } from 'src/app/shared/services/user-trip.service';
 
-import * as OJP from 'ojp-sdk-v1';
+import OJP_Legacy from '../../../config/ojp-legacy';
 
 @Component({
   selector: 'custom-trip-info-popover',
@@ -13,7 +13,7 @@ export class CustomTripInfoXMLPopoverComponent {
 
   public isRunningRequest: boolean
 
-  @Output() customRequestSaved = new EventEmitter<OJP.TripInfoRequest>()
+  @Output() customRequestSaved = new EventEmitter<OJP_Legacy.TripInfoRequest>()
   @Output() customResponseSaved = new EventEmitter<string>()
 
   constructor(private userTripService: UserTripService) {
@@ -27,7 +27,7 @@ export class CustomTripInfoXMLPopoverComponent {
     this.isRunningRequest = true
 
     const stageConfig = this.userTripService.getStageConfig();
-    const request = OJP.TripInfoRequest.initWithRequestMock(this.customRequestXMLs, stageConfig);
+    const request = OJP_Legacy.TripInfoRequest.initWithRequestMock(this.customRequestXMLs, stageConfig);
     request.fetchResponse().then(response => {
       this.isRunningRequest = false;
       const responseXML = request.requestInfo.responseXML;

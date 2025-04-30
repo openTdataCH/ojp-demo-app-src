@@ -1,11 +1,11 @@
 import * as GeoJSON from 'geojson'
 
-import * as OJP from 'ojp-sdk-v1';
+import OJP_Legacy from '../../../config/ojp-legacy';
 
 import { AppMapLayer } from "../app-map-layer";
 
 export class POIAppMapLayer extends AppMapLayer {
-  protected override annotateFeatureFromLocations(feature: GeoJSON.Feature, locations: OJP.Location[]): void {
+  protected override annotateFeatureFromLocations(feature: GeoJSON.Feature, locations: OJP_Legacy.Location[]): void {
     if (feature.properties === null) {
       return;
     }
@@ -17,7 +17,7 @@ export class POIAppMapLayer extends AppMapLayer {
     feature.properties['style.icon-image'] = locations[0].poi.computePoiMapIcon();
   }
 
-  protected override computePopupHTML(locations: OJP.Location[]): string | null {
+  protected override computePopupHTML(locations: OJP_Legacy.Location[]): string | null {
     if (locations.length === 0) {
       return null;
     }

@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 
-import * as OJP from 'ojp-sdk-v1';
+import OJP_Legacy from '../../config/ojp-legacy';
 
 import { UserTripService } from '../../shared/services/user-trip.service';
 
@@ -24,7 +24,7 @@ export class EmbedSearchPopoverComponent {
     this.updateEmbedHTML();
   }
 
-  private static computeLocationText(location: OJP.Location | null | undefined): string {
+  private static computeLocationText(location: OJP_Legacy.Location | null | undefined): string {
     if (!location) {
       return ''
     }

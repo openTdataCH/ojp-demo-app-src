@@ -3,7 +3,7 @@ import mapboxgl from 'mapbox-gl';
 
 import { SbbDialog } from '@sbb-esta/angular/dialog';
 
-import * as OJP from 'ojp-sdk-v1';
+import OJP_Legacy from '../../config/ojp-legacy';
 
 import { UserTripService } from './user-trip.service';
 import { MapHelpers } from '../../map/helpers/map.helpers'
@@ -28,7 +28,7 @@ export class MapService {
   public newMapBoundsRequested = new EventEmitter<IMapBoundsData>();
   public newMapCenterAndZoomRequested = new EventEmitter<IMapLocationZoomData>();
 
-  public tryToCenterAndZoomToLocation(location: OJP.Location | null, zoomValue: number = 16.0) {
+  public tryToCenterAndZoomToLocation(location: OJP_Legacy.Location | null, zoomValue: number = 16.0) {
     if (location === null) {
       return
     }
@@ -77,7 +77,7 @@ export class MapService {
     return map;
   }
 
-  public zoomToTrip(trip: OJP.Trip) {
+  public zoomToTrip(trip: OJP_Legacy.Trip) {
     const tripController = new TripGeoController(trip);
 
     const bbox = tripController.computeBBOX();

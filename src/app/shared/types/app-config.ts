@@ -1,4 +1,4 @@
-import * as OJP from 'ojp-sdk-v1';
+import OJP_Legacy from '../../config/ojp-legacy';
 export interface AppConfig {
-    stages: Record<string, OJP.ApiConfig>,
+    stages: Record<string, OJP_Legacy.ApiConfig>,
 };

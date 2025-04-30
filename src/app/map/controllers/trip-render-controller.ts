@@ -1,12 +1,10 @@
 import * as GeoJSON from 'geojson';
-import mapboxgl from 'mapbox-gl';
-
-import * as OJP from 'ojp-sdk-v1';
 
 import { MapboxLayerHelpers } from '../../helpers/mapbox-layer-helpers';
 import { MapLegTypeColor } from '../../config/map-colors';
 
 import { TripLegGeoController } from '../../shared/controllers/trip-geo-controller';
+import { MapTrip, MapTripLeg } from '../../shared/types/map-geometry-types';
 
 import tripLegBeelineLayerJSON from './map-layers-def/ojp-trip-leg-beeline.json'
 import tripTimedLegEndpointCircleLayerJSON from './map-layers-def/ojp-trip-timed-leg-endpoint-circle.json'
@@ -23,13 +21,9 @@ export class TripRenderController {
     this.addMapSourceAndLayers()
   }
 
-  public renderTrip(trip: OJP.Trip | null) {
-    if (trip) {
-      const geojson = this.computeGeoJSON(trip);
-      this.setSourceFeatures(geojson.features);
-    } else {
-      this.removeAllFeatures();
-    }
+  public renderTrip(mapTripLegs: MapTripLeg[]) {
+    const geojson = this.computeGeoJSON(mapTripLegs);
+    this.setSourceFeatures(geojson.features);
   }
 
   private addMapSourceAndLayers() {
@@ -98,7 +92,7 @@ export class TripRenderController {
     const tripContinousLegWalkingLineLayer = tripContinousLegWalkingLineLayerJSON as mapboxgl.LineLayerSpecification;
     tripContinousLegWalkingLineLayer.filter = MapboxLayerHelpers.FilterWalkingLegs();
     if (tripContinousLegWalkingLineLayer.paint) {
-      tripContinousLegWalkingLineLayer.paint["line-color"] = MapLegTypeColor['ContinousLeg'];
+      tripContinousLegWalkingLineLayer.paint["line-color"] = MapLegTypeColor['ContinuousLeg'];
     }
 
     const mapLayers = [
@@ -111,7 +105,7 @@ export class TripRenderController {
     mapLayers.forEach(mapLayerJSON => {
       const mapLayerDef = mapLayerJSON as mapboxgl.Layer
       mapLayerDef.source = this.mapSourceId
-      this.map.addLayer(mapLayerDef as mapboxgl.AnyLayer);
+      this.map.addLayer(mapLayerDef as mapboxgl.LayerSpecification);
     });
   }
 
@@ -137,13 +131,34 @@ export class TripRenderController {
     source.setData(featureCollection);
   }
 
-  private computeGeoJSON(trip: OJP.Trip): GeoJSON.FeatureCollection {
+  private computeGeoJSON(mapTripLegs: MapTripLeg[]): GeoJSON.FeatureCollection {
     let features: GeoJSON.Feature[] = [];
+    const legs = mapTripLegs.map(el => el.leg);
 
-    trip.legs.forEach((leg, legIDx) => {
-      const tripLegGeoController = new TripLegGeoController(leg, legIDx);
+    legs.forEach((leg, idx) => {
+      const forceLinkProjection = mapTripLegs[idx].forceLinkProjection;
+
+      const useBeeLine = !forceLinkProjection;
+      const tripLegGeoController = new TripLegGeoController(leg, useBeeLine);
 
       const legFeatures = tripLegGeoController.computeGeoJSONFeatures();
+      
+      // Snap TransferLeg to prev / next legs
+      if ((leg.legType === 'TransferLeg') && (legFeatures.length === 1)) {
+        const featureProperties = legFeatures[0].properties;
+        if (featureProperties && featureProperties['draw.type'] === 'Beeline') {
+          const prevLeg = legs.at(idx - 1) ?? null;
+          const nextLeg = legs.at(idx + 1) ?? null;
+          if (prevLeg?.toLocation.geoPosition && nextLeg?.fromLocation.geoPosition) {
+            const geometry = legFeatures[0].geometry as GeoJSON.LineString;
+            geometry.coordinates = [
+              prevLeg?.toLocation.geoPosition.asPosition(),
+              nextLeg?.fromLocation.geoPosition.asPosition(),
+            ];
+          }
+        }
+      }
+      
       features = features.concat(legFeatures);
     });
 

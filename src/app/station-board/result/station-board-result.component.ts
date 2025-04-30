@@ -1,7 +1,7 @@
 import { AfterViewInit, Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { SbbDialog } from '@sbb-esta/angular/dialog';
 
-import * as OJP from 'ojp-sdk-v1';
+import OJP_Legacy from '../../config/ojp-legacy';
 
 import { StationBoardService } from '../station-board.service';
 import { OJPHelpers } from '../../helpers/ojp-helpers';
@@ -18,7 +18,7 @@ interface StationBoardTime {
 }
 
 interface StationBoardModel {
-  stopEvent: OJP.StopEvent
+  stopEvent: OJP_Legacy.StopEvent
 
   serviceLineNumber: string
   servicePtMode: string
@@ -29,12 +29,12 @@ interface StationBoardModel {
   tripHeading: string
   tripOperator: string
 
-  mapStationBoardTime: Record<OJP.StationBoardType, StationBoardTime>
+  mapStationBoardTime: Record<OJP_Legacy.StationBoardType, StationBoardTime>
   
   stopPlatform: string | null
   stopPlatformActual: string | null
 
-  situations: OJP.SituationContent[]
+  situations: OJP_Legacy.SituationContent[]
 
   isCancelled: boolean
   hasDeviation: boolean
@@ -50,7 +50,7 @@ export class StationBoardResultComponent implements OnInit, AfterViewInit {
   @ViewChild('stationBoardWrapper') stationBoardWrapperRef: ElementRef | undefined;
   public stopEventsData: StationBoardModel[]
   public selectedIDx: number | null
-  public stationBoardType: OJP.StationBoardType
+  public stationBoardType: OJP_Legacy.StationBoardType
 
   constructor(private stationBoardService: StationBoardService, private tripInfoResultPopover: SbbDialog) {
     this.stopEventsData = [];
@@ -134,7 +134,7 @@ export class StationBoardResultComponent implements OnInit, AfterViewInit {
     return stopEvent.situations.length > 0;
   }
 
-  private computeServiceLineNumber(stopEvent: OJP.StopEvent): string {
+  private computeServiceLineNumber(stopEvent: OJP_Legacy.StopEvent): string {
     const serviceShortName = stopEvent.journeyService.ptMode.shortName ?? 'N/A';
     const serviceLineNumber = stopEvent.journeyService.serviceLineNumber;
     if (serviceLineNumber) {
@@ -149,12 +149,12 @@ export class StationBoardResultComponent implements OnInit, AfterViewInit {
       return null
     }
 
-    const stopTimeText = OJP.DateHelpers.formatTimeHHMM(stopTime);
+    const stopTimeText = OJP_Legacy.DateHelpers.formatTimeHHMM(stopTime);
     
     return stopTimeText;
   }
 
-  private computeDelayTime(stopPoint: OJP.StopPoint, forBoardType: OJP.StationBoardType): string | null {
+  private computeDelayTime(stopPoint: OJP_Legacy.StopPoint, forBoardType: OJP_Legacy.StationBoardType): string | null {
     const isArrival = forBoardType === 'Arrivals';
     const stopPointTime = isArrival ? stopPoint.arrivalData : stopPoint.departureData;
 
@@ -177,7 +177,7 @@ export class StationBoardResultComponent implements OnInit, AfterViewInit {
     return delayText;
   }
 
-  private computeStopTimeData(stopPoint: OJP.StopPoint, forBoardType: OJP.StationBoardType): StationBoardTime | null {
+  private computeStopTimeData(stopPoint: OJP_Legacy.StopPoint, forBoardType: OJP_Legacy.StationBoardType): StationBoardTime | null {
     const isArrival = forBoardType === 'Arrivals';
     const stopPointTime = isArrival ? stopPoint.arrivalData : stopPoint.departureData;
 
@@ -187,8 +187,8 @@ export class StationBoardResultComponent implements OnInit, AfterViewInit {
 
     const hasDelay = stopPointTime.delayMinutes !== null;
     
-    const timetableTimeF = OJP.DateHelpers.formatTimeHHMM(stopPointTime.timetableTime);
-    const estimatedTimeF = stopPointTime.estimatedTime ? OJP.DateHelpers.formatTimeHHMM(stopPointTime.estimatedTime) : 'n/a';
+    const timetableTimeF = OJP_Legacy.DateHelpers.formatTimeHHMM(stopPointTime.timetableTime);
+    const estimatedTimeF = stopPointTime.estimatedTime ? OJP_Legacy.DateHelpers.formatTimeHHMM(stopPointTime.estimatedTime) : 'n/a';
     const hasDelayDifferentTime = stopPointTime.estimatedTime ? (timetableTimeF !== estimatedTimeF) : false;
 
     const stopTime = this.computeStopTime(stopPointTime.timetableTime);
@@ -208,7 +208,7 @@ export class StationBoardResultComponent implements OnInit, AfterViewInit {
     return stopTimeData;
   }
 
-  private computeStationBoardModel(stopEvent: OJP.StopEvent): StationBoardModel {
+  private computeStationBoardModel(stopEvent: OJP_Legacy.StopEvent): StationBoardModel {
     const serviceLineNumber = this.computeServiceLineNumber(stopEvent);
     const servicePtMode = stopEvent.journeyService.ptMode.shortName ?? 'N/A';
 
@@ -230,7 +230,7 @@ export class StationBoardResultComponent implements OnInit, AfterViewInit {
         
         tripNumber: stopEvent.journeyService.journeyNumber, 
         tripHeading: stopEvent.journeyService.destinationStopPlace?.stopPlaceName ?? 'N/A', 
-        tripOperator: stopEvent.journeyService.agencyID,
+        tripOperator: stopEvent.journeyService.operatorRef,
         mapStationBoardTime: {
             Arrivals: arrivalTime,
             Departures: departureTime
@@ -250,7 +250,7 @@ export class StationBoardResultComponent implements OnInit, AfterViewInit {
 
   public loadTripInfoResultPopover(journeyRef: string) {
     const searchDate = this.stationBoardService.searchDate;
-    const dayRef = OJP.DateHelpers.formatDate(searchDate).substring(0, 10);
+    const dayRef = OJP_Legacy.DateHelpers.formatDate(searchDate).substring(0, 10);
 
     if (journeyRef === null) {
       console.error('loadTripInfoResultPopover: cant fetch empty journeyRef');

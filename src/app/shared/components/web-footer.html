@@ -130,14 +130,14 @@
 </div>
 
 <div class="row bg-ojp-blue text-white">
-  <div class="bg-ojp-orange w-100" style="height: 5px"></div>
+  <div class="bg-ojp-primary w-100" style="height: 5px"></div>
   <div class="col">
     <div class="footer">
       <div>
         © <a href="https://opentransportdata.swiss/en/" target="_blank">Open-Data-Plattform Mobilität Schweiz</a> 2021 - 2025
       </div>
-      <div>
-        Last Update: <a href="https://github.com/openTdataCH/ojp-demo-app-src/blob/feature/ojp-v1-beta/CHANGELOG.md" target="_blank">{{ this.model.lastUpdate }}</a> - <a href="https://github.com/openTdataCH/ojp-js/blob/feature/ojp-v1/CHANGELOG.md" target="_blank">OJP SDK {{ this.model.sdkVersion }}</a> - <strong>feature/ojp-v1</strong> branch.
+      <div class="d-none d-md-block">
+        Last Update: <a href="{{ this.model.changelogURL }}" target="_blank">{{ this.model.lastUpdate }}</a> - <a href="{{ this.model.githubURL }}" target="_blank">OJP SDK {{ this.model.sdkVersion }}</a>
       </div>
     </div>
   </div>

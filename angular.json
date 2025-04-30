@@ -55,7 +55,8 @@
               "xpath",
               "cross-fetch",
               "@xmldom/xmldom"
-            ]
+            ],
+            "preserveSymlinks": true
           },
           "configurations": {
             "production": {

@@ -1,14 +1,14 @@
 import { Component, OnInit } from '@angular/core';
 import { UserTripService } from 'src/app/shared/services/user-trip.service';
 
-import * as OJP from 'ojp-sdk-v1';
+import OJP_Legacy from '../../config/ojp-legacy';
 import { MapService } from '../../shared/services/map.service'
 import { LanguageService } from '../../shared/services/language.service';
 
 type NumberOfResultsType = 'NumberOfResults' | 'NumberOfResultsBefore' | 'NumberOfResultsAfter';
 
 interface PageModel {
-  trips: OJP.Trip[]
+  trips: OJP_Legacy.Trip[]
   hasPagination: boolean
   isFetchingPrevTrips: boolean
   isFetchingNextTrips: boolean
@@ -126,7 +126,7 @@ export class JourneyResultsComponent implements OnInit {
     }
 
     const stageConfig = this.userTripService.getStageConfig();
-    const request = OJP.TripRequest.initWithTripLocationsAndDate(
+    const request = OJP_Legacy.TripRequest.initWithTripLocationsAndDate(
       stageConfig,
       this.languageService.language,
       this.userTripService.fromTripLocation,
@@ -162,9 +162,6 @@ export class JourneyResultsComponent implements OnInit {
       if (trips.length > 0) {
         const firstTrip = trips[0];
 
-        this.userTripService.selectActiveTrip(firstTrip);
-        this.mapService.zoomToTrip(firstTrip);
-
         this.userTripService.fetchFares();
       } else {
         this.userTripService.selectActiveTrip(null);
@@ -172,7 +169,7 @@ export class JourneyResultsComponent implements OnInit {
     });
   }
 
-  private updatePageModel(trips: OJP.Trip[]) {
+  private updatePageModel(trips: OJP_Legacy.Trip[]) {
     this.model.trips = trips;
     this.model.hasPagination = this.computeHasPagination(trips.length);
     // Update both - TODO - use a completion instead?

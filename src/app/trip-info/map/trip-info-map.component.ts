@@ -3,7 +3,7 @@ import { SbbDialog } from '@sbb-esta/angular/dialog';
 
 import mapboxgl from 'mapbox-gl'
 
-import * as OJP from 'ojp-sdk-v1';
+import OJP_Legacy from '../../config/ojp-legacy';
 
 import { MapDebugControl } from '../../map/controls/map-debug-control'
 import { MapLayersLegendControl } from '../../map/controls/map-layers-legend-control';
@@ -94,7 +94,7 @@ export class TripInfoMapComponent implements OnInit {
       return;
     }
 
-    const bbox = OJP.GeoPositionBBOX.initFromGeoJSONFeatures(geojsonFeatures);
+    const bbox = OJP_Legacy.GeoPositionBBOX.initFromGeoJSONFeatures(geojsonFeatures);
     if (!bbox.isValid()) {
       console.error('Invalid BBOX for features');
       console.log(geojsonFeatures);

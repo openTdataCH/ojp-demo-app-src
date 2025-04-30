@@ -6,7 +6,7 @@ import { SbbDialog } from '@sbb-esta/angular/dialog';
 import { SbbNotificationToast } from '@sbb-esta/angular/notification-toast';
 
 import * as GeoJSON from 'geojson'
-import * as OJP from 'ojp-sdk-v1';
+import OJP_Legacy from '../../config/ojp-legacy';
 
 import { OJPHelpers } from '../../helpers/ojp-helpers';
 
@@ -22,7 +22,7 @@ import { EmbedStationBoardPopoverComponent } from './embed-station-board-popover
 
 import { APP_STAGE, APP_STAGEs, DEBUG_LEVEL, DEFAULT_APP_STAGE } from '../../config/constants'
 
-type URLType = 'prodv1' | 'betav1' | 'betav2';
+type URLType = 'prodv1' | 'betav1' | 'betav2' | 'beta';
 
 @Component({
   selector: 'station-board-search',
@@ -33,14 +33,14 @@ export class StationBoardSearchComponent implements OnInit {
   @ViewChild(SbbExpansionPanel, { static: true }) searchPanel: SbbExpansionPanel | undefined;
   @ViewChild(StationBoardInputComponent) autocompleteInputComponent: StationBoardInputComponent | undefined;
 
-  public stationBoardType: OJP.StationBoardType;
+  public stationBoardType: OJP_Legacy.StationBoardType;
 
-  public searchLocation: OJP.Location | null
+  public searchLocation: OJP_Legacy.Location | null
   
   public searchTime: string
   
   public appStageOptions: APP_STAGE[];
-  public stationBoardTypes: OJP.StationBoardType[]
+  public stationBoardTypes: OJP_Legacy.StationBoardType[]
   public isSearching: boolean
 
   private queryParams: URLSearchParams
@@ -48,7 +48,7 @@ export class StationBoardSearchComponent implements OnInit {
   public permalinkRelativeURL: string;
   public mapURLs: Record<URLType, string>;
 
-  public currentRequestInfo: OJP.RequestInfo | null;
+  public currentRequestInfo: OJP_Legacy.RequestInfo | null;
 
   public headerText: string = 'Search'
 
@@ -57,7 +57,7 @@ export class StationBoardSearchComponent implements OnInit {
   public showURLS: boolean;
 
   public isV1: boolean;
-  public useRealTimeDataTypes: OJP.UseRealtimeDataEnumeration[];
+  public useRealTimeDataTypes: OJP_Legacy.UseRealtimeDataEnumeration[];
 
   get searchDate() {
     return this.stationBoardService.searchDate;
@@ -88,7 +88,7 @@ export class StationBoardSearchComponent implements OnInit {
     this.searchLocation = null;
 
     this.stationBoardService.searchDate = this.computeSearchDateTime();
-    this.searchTime = OJP.DateHelpers.formatTimeHHMM(this.stationBoardService.searchDate);
+    this.searchTime = OJP_Legacy.DateHelpers.formatTimeHHMM(this.stationBoardService.searchDate);
     
     this.isSearching = false
 
@@ -105,7 +105,7 @@ export class StationBoardSearchComponent implements OnInit {
     this.headerText = this.stationBoardType;
     this.showURLS = DEBUG_LEVEL === 'DEBUG';
 
-    this.isV1 = OJP.OJP_VERSION === '1.0';
+    this.isV1 = OJP_Legacy.OJP_VERSION === '1.0';
     this.useRealTimeDataTypes = ['full', 'explanatory', 'none'];
   }
 
@@ -172,7 +172,7 @@ export class StationBoardSearchComponent implements OnInit {
     return null;
   }
 
-  public onLocationSelected(location: OJP.Location) {
+  public onLocationSelected(location: OJP_Legacy.Location) {
     const stopPlaceRef = location.stopPlace?.stopPlaceRef ?? null;
     if (stopPlaceRef) {
       this.updateCurrentRequestData(stopPlaceRef);
@@ -255,7 +255,7 @@ export class StationBoardSearchComponent implements OnInit {
     return searchDate;
   }
 
-  private computeStationBoardType(): OJP.StationBoardType {
+  private computeStationBoardType(): OJP_Legacy.StationBoardType {
     const userSearchTypeStationBoardType = this.queryParams.get('type');
     if (userSearchTypeStationBoardType === 'arr') {
       return 'Arrivals';
@@ -264,7 +264,7 @@ export class StationBoardSearchComponent implements OnInit {
       return 'Departures';
     }
 
-    const defaultValue: OJP.StationBoardType = 'Departures';
+    const defaultValue: OJP_Legacy.StationBoardType = 'Departures';
     return defaultValue;
   }
 
@@ -284,8 +284,8 @@ export class StationBoardSearchComponent implements OnInit {
     const now = new Date();
     const deltaNowMinutes = Math.abs((now.getTime() - searchDate.getTime()) / 1000 / 60);
     if (deltaNowMinutes > 5) {
-      const nowDateF = OJP.DateHelpers.formatDate(new Date());
-      const searchDateF = OJP.DateHelpers.formatDate(searchDate);
+      const nowDateF = OJP_Legacy.DateHelpers.formatDate(new Date());
+      const searchDateF = OJP_Legacy.DateHelpers.formatDate(searchDate);
 
       const nowDayF = nowDateF.substring(0, 10);
       const searchDayF = searchDateF.substring(0, 10);
@@ -313,6 +313,9 @@ export class StationBoardSearchComponent implements OnInit {
     this.mapURLs.prodv1 = 'https://opentdatach.github.io/ojp-demo-app/board?' + queryParams.toString();
     this.mapURLs.betav1 = 'https://tools.odpch.ch/beta-ojp-demo/board?' + queryParams.toString();
     this.mapURLs.betav2 = 'https://tools.odpch.ch/ojp-demo-v2/board?' + queryParams.toString();
+    
+    const isOJPv2 = OJP_Legacy.OJP_VERSION === '2.0';
+    this.mapURLs.beta = isOJPv2 ? this.mapURLs.betav2 : this.mapURLs.betav1;
   }
 
   private fetchStopEventsForStopRef(stopPlaceRef: string) {
@@ -333,7 +336,7 @@ export class StationBoardSearchComponent implements OnInit {
   }
 
   private initFromMockXML(mockText: string) {
-    const request = OJP.StopEventRequest.initWithMock(mockText);
+    const request = OJP_Legacy.StopEventRequest.initWithMock(mockText);
     request.fetchResponse().then(response => {
       if (response.stopEvents.length > 0) {
         const stopEvent = response.stopEvents[0];
@@ -347,11 +350,11 @@ export class StationBoardSearchComponent implements OnInit {
     });
   }
 
-  private computeStopEventRequest(stopPlaceRef: string): OJP.StopEventRequest {
-    const stopEventType: OJP.StopEventType = this.stationBoardType === 'Arrivals' ? 'arrival' : 'departure'
+  private computeStopEventRequest(stopPlaceRef: string): OJP_Legacy.StopEventRequest {
+    const stopEventType: OJP_Legacy.StopEventType = this.stationBoardType === 'Arrivals' ? 'arrival' : 'departure'
     const stopEventDate = this.computeStopBoardDate();
     const appStageConfig = this.userTripService.getStageConfig();
-    const stopEventRequest = OJP.StopEventRequest.initWithStopPlaceRef(appStageConfig, this.languageService.language, stopPlaceRef, stopEventType, stopEventDate);
+    const stopEventRequest = OJP_Legacy.StopEventRequest.initWithStopPlaceRef(appStageConfig, this.languageService.language, stopPlaceRef, stopEventType, stopEventDate);
     stopEventRequest.useRealTimeDataType = this.userTripService.useRealTimeDataType;
     
     // for debug XML dialog
@@ -360,7 +363,7 @@ export class StationBoardSearchComponent implements OnInit {
     return stopEventRequest;
   }
 
-  private parseStopEvents(stopEvents: OJP.StopEvent[]): void {
+  private parseStopEvents(stopEvents: OJP_Legacy.StopEvent[]): void {
     const hasResults = stopEvents.length > 0;
     if (hasResults) {
       this.searchPanel?.close();
@@ -377,7 +380,7 @@ export class StationBoardSearchComponent implements OnInit {
 
   private async lookupStopPlaceRef(stopPlaceRef: string) {
     const stageConfig = this.userTripService.getStageConfig();
-    const locationInformationRequest = OJP.LocationInformationRequest.initWithStopPlaceRef(stageConfig, this.languageService.language, stopPlaceRef);
+    const locationInformationRequest = OJP_Legacy.LocationInformationRequest.initWithStopPlaceRef(stageConfig, this.languageService.language, stopPlaceRef);
     locationInformationRequest.enableExtensions = this.userTripService.currentAppStage !== 'OJP-SI';
 
     const response = await locationInformationRequest.fetchResponse();
@@ -413,7 +416,7 @@ export class StationBoardSearchComponent implements OnInit {
   }
 
   private handleMapClick(feature: GeoJSON.Feature) {
-    const location = OJP.Location.initWithFeature(feature);
+    const location = OJP_Legacy.Location.initWithFeature(feature);
     if (location === null) {
       return;
     }
@@ -508,7 +511,7 @@ export class StationBoardSearchComponent implements OnInit {
     this.currentRequestInfo.responseDateTime = new Date();
     this.currentRequestInfo.responseXML = responseXML;
 
-    const request = OJP.StopEventRequest.initWithMock(responseXML);
+    const request = OJP_Legacy.StopEventRequest.initWithMock(responseXML);
     request.fetchResponse().then(response => {
       const stopEvents = response.stopEvents;
 
@@ -545,7 +548,7 @@ export class StationBoardSearchComponent implements OnInit {
   public resetDateTime() {
     const nowDateTime = new Date();
     this.searchDate = nowDateTime;
-    this.searchTime = OJP.DateHelpers.formatTimeHHMM(nowDateTime);
+    this.searchTime = OJP_Legacy.DateHelpers.formatTimeHHMM(nowDateTime);
     this.stationBoardService.searchDate = nowDateTime;
   }
 }

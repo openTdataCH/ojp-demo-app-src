@@ -1,12 +1,12 @@
 import * as GeoJSON from 'geojson'
 
-import * as OJP from 'ojp-sdk-v1';
+import OJP_Legacy from '../../../config/ojp-legacy';
 
 import { AppMapLayer } from "../app-map-layer";
 import { SharedMobility } from './shared-mobility/shared-mobility';
 
 export class SharedMobilityAppMapLayer extends AppMapLayer {
-  protected override annotateFeatureFromLocations(feature: GeoJSON.Feature, locations: OJP.Location[]): void {
+  protected override annotateFeatureFromLocations(feature: GeoJSON.Feature, locations: OJP_Legacy.Location[]): void {
     if (feature.properties === null) {
       return;
     }
@@ -41,7 +41,7 @@ export class SharedMobilityAppMapLayer extends AppMapLayer {
     }
   }
 
-  protected override computePopupHTML(locations: OJP.Location[]): string | null {
+  protected override computePopupHTML(locations: OJP_Legacy.Location[]): string | null {
     if (locations.length === 0) {
       return null;
     }

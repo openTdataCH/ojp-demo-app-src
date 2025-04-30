@@ -1,10 +1,8 @@
-<sbb-expansion-panel
-  [hideToggle]="true"
->
+<sbb-expansion-panel [hideToggle]="true" class="mb-1">
   <sbb-expansion-panel-header>
     <div class="d-flex justify-content-between w-100 trip-info">
       <div>
-        <div class="trip-info-header d-flex gap-1">
+        <div class="trip-info-header d-flex gap-1 align-items-center">
           <div>{{ this.tripHeaderStats.title }}</div>
           <div *ngIf="this.tripHeaderStats.isCancelled === true">
             <span class="badge rounded-pill bg-danger fw-bolder">Cancelled</span>
@@ -28,14 +26,14 @@
     </div>
   </sbb-expansion-panel-header>
   <div>
-    <result-trip-leg
-      *ngFor="let leg of trip?.legs; index as legIdx"
-      [leg]="leg"
-      [legId]="this.idx + '_' + legIdx"
-      [legIdx]="legIdx"
-      [isLastLeg]="idx === ((trip?.legs?.length ?? 1) - 1)"
-    >
-    </result-trip-leg>
+    <ng-container *ngFor="let leg of trip?.legs; index as legIdx">
+      <result-trip-leg [leg]="leg" [legId]="this.idx + '_' + legIdx" [legIdx]="legIdx"
+        [isLastLeg]="idx === ((trip?.legs?.length ?? 1) - 1)"
+        [isForceLinkProjection]="(this.mapTrip && this.mapTrip.legs[legIdx].forceLinkProjection) ?? false"
+        (legReloadRequest)="this.reloadTripLegIdx($event)"
+        (legMapRedrawRequest)="this.redrawTripOnMap($event)">
+      </result-trip-leg>
+    </ng-container>
   </div>
   <div>Price:
     <ul class="trip-fares">

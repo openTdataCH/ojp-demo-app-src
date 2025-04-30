@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { Clipboard } from '@angular/cdk/clipboard';
 
-import * as OJP from 'ojp-sdk-v1';
+import OJP_Legacy from '../../config/ojp-legacy';
 import { XML_Helpers } from 'src/app/helpers/xml-helpers';
 
 @Component({
@@ -27,7 +27,7 @@ export class DebugXmlPopoverComponent {
     this.isStrippingTagsEnabled = true;
   }
 
-  public updateRequestData(requestInfo: OJP.RequestInfo) {
+  public updateRequestData(requestInfo: OJP_Legacy.RequestInfo) {
     if (requestInfo.requestXML) {
       this.requestXML = XML_Helpers.prettyPrintXML(requestInfo.requestXML);
     } else {

@@ -3,7 +3,7 @@ import { SbbDialog } from "@sbb-esta/angular/dialog";
 
 import mapboxgl from 'mapbox-gl'
 
-import * as OJP from 'ojp-sdk-v1';
+import OJP_Legacy from '../config/ojp-legacy';
 import { MapService } from '../shared/services/map.service';
 import { UserTripService } from '../shared/services/user-trip.service';
 
@@ -38,7 +38,7 @@ export class MapComponent implements OnInit, AfterViewInit {
     this.fromMarker = new mapboxgl.Marker();
     this.toMarker = new mapboxgl.Marker();
 
-    const endpointTypes: OJP.JourneyPointType[] = ['From', 'To'];
+    const endpointTypes: OJP_Legacy.JourneyPointType[] = ['From', 'To'];
     endpointTypes.forEach(endpointType => {
       var markerDIV = document.createElement('div');
       markerDIV.className = 'marker-journey-endpoint marker-journey-endpoint-' + endpointType;
@@ -77,9 +77,9 @@ export class MapComponent implements OnInit, AfterViewInit {
       this.updateMarkers()
     })
 
-    this.userTripService.activeTripSelected.subscribe(trip => {
+    this.userTripService.activeTripSelected.subscribe(mapTrip => {
       this.mapLoadingPromise?.then(map => {
-        this.tripRenderController?.renderTrip(trip)
+        this.tripRenderController?.renderTrip(mapTrip?.legs ?? []);
       });
     })
 
@@ -116,7 +116,7 @@ export class MapComponent implements OnInit, AfterViewInit {
   }
 
   private updateMarkers() {
-    const endpointTypes: OJP.JourneyPointType[] = ['From', 'To']
+    const endpointTypes: OJP_Legacy.JourneyPointType[] = ['From', 'To']
     endpointTypes.forEach(endpointType => {
       const isFrom = endpointType === 'From'
       const tripLocationPoint = isFrom ? this.userTripService.fromTripLocation : this.userTripService.toTripLocation
@@ -144,10 +144,10 @@ export class MapComponent implements OnInit, AfterViewInit {
     }
   }
 
-  private handleMarkerDrag(marker: mapboxgl.Marker, endpointType: OJP.JourneyPointType) {
+  private handleMarkerDrag(marker: mapboxgl.Marker, endpointType: OJP_Legacy.JourneyPointType) {
     const lngLat = marker.getLngLat();
 
-    let location = OJP.Location.initWithLngLat(lngLat.lng, lngLat.lat);
+    let location = OJP_Legacy.Location.initWithLngLat(lngLat.lng, lngLat.lat);
 
     // Try to snap to the nearest stop
     this.userTripService.updateTripEndpoint(location, endpointType, 'MapDragend');
@@ -186,12 +186,12 @@ export class MapComponent implements OnInit, AfterViewInit {
 
     popupContainer.addEventListener('click', ev => {
       const btnEl = ev.target as HTMLButtonElement;
-      const endpointType = btnEl.getAttribute('data-endpoint-type') as OJP.JourneyPointType;
+      const endpointType = btnEl.getAttribute('data-endpoint-type') as OJP_Legacy.JourneyPointType;
       if (endpointType === null) {
         return;
       }
 
-      const location = OJP.Location.initWithLngLat(lngLat.lng, lngLat.lat);
+      const location = OJP_Legacy.Location.initWithLngLat(lngLat.lng, lngLat.lat);
       this.userTripService.updateTripEndpoint(location, endpointType, 'MapPopupClick');
 
       this.popupContextMenu.remove();
@@ -202,7 +202,7 @@ export class MapComponent implements OnInit, AfterViewInit {
       .addTo(map);
   }
 
-  private updateMarkerLocation(marker: mapboxgl.Marker, location: OJP.Location | null) {
+  private updateMarkerLocation(marker: mapboxgl.Marker, location: OJP_Legacy.Location | null) {
     const lnglat = location?.geoPosition?.asLngLat() ?? null;
     if (lnglat === null) {
       marker.remove();
@@ -220,7 +220,7 @@ export class MapComponent implements OnInit, AfterViewInit {
     }
   }
 
-  private createViaMarker(location: OJP.Location, markerIDx: number): mapboxgl.Marker {
+  private createViaMarker(location: OJP_Legacy.Location, markerIDx: number): mapboxgl.Marker {
     const markerDIV = document.createElement('div');
     markerDIV.className = 'marker-journey-endpoint marker-journey-endpoint-Via';
 
@@ -238,7 +238,7 @@ export class MapComponent implements OnInit, AfterViewInit {
 
     marker.on('dragend', ev => {
       const lngLat = marker.getLngLat();
-      let location = OJP.Location.initWithLngLat(lngLat.lng, lngLat.lat);
+      let location = OJP_Legacy.Location.initWithLngLat(lngLat.lng, lngLat.lat);
       this.userTripService.updateViaPoint(location, markerIDx)
     })
 

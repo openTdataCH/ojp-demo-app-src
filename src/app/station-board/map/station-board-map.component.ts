@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { SbbDialog } from '@sbb-esta/angular/dialog';
 
 import mapboxgl from 'mapbox-gl'
-import * as OJP from 'ojp-sdk-v1';
+import OJP_Legacy from '../../config/ojp-legacy';
 
 import { MapDebugControl } from 'src/app/map/controls/map-debug-control';
 import { MapLayersLegendControl } from 'src/app/map/controls/map-layers-legend-control';
@@ -90,7 +90,7 @@ export class StationBoardMapComponent implements OnInit {
     map.addControl(mapLayersLegendControl, 'top-right');
   }
 
-  private updateMapForEntry(stopEvent: OJP.StopEvent | null) {
+  private updateMapForEntry(stopEvent: OJP_Legacy.StopEvent | null) {
     if (stopEvent === null) {
       this.stopEventServiceRenderer?.resetStopEventLayers();
     } else {

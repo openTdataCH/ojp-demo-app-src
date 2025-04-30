@@ -1,11 +1,11 @@
 import * as GeoJSON from 'geojson'
 
-import * as OJP from 'ojp-sdk-v1';
+import OJP_Legacy from '../../../config/ojp-legacy';
 
 import { AppMapLayer } from "../app-map-layer";
 
 export class StopAppMapLayer extends AppMapLayer {
-  protected override annotateFeatureFromLocations(feature: GeoJSON.Feature, locations: OJP.Location[]) {
+  protected override annotateFeatureFromLocations(feature: GeoJSON.Feature, locations: OJP_Legacy.Location[]) {
     if (feature.properties === null) {
       return;
     }
@@ -32,7 +32,7 @@ export class StopAppMapLayer extends AppMapLayer {
     feature.properties['stopPlace.stopPlaceRefLabel'] = featureStopPlaceRefLabel;
   }
 
-  protected override computePopupHTML(locations: OJP.Location[]): string | null {
+  protected override computePopupHTML(locations: OJP_Legacy.Location[]): string | null {
     if (locations.length === 0) {
       return null;
     }

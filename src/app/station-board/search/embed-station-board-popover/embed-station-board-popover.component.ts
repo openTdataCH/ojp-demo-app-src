@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 
-import * as OJP from 'ojp-sdk-v1';
+import OJP_Legacy from '../../../config/ojp-legacy';
 
 @Component({
   selector: 'embed-station-board-popover',
@@ -13,7 +13,7 @@ export class EmbedStationBoardPopoverComponent {
 
   }
 
-  public updateEmbedHTML(selectedLocation: OJP.Location) {
+  public updateEmbedHTML(selectedLocation: OJP_Legacy.Location) {
     const stopRef = selectedLocation.stopPlace?.stopPlaceRef ?? 'n/a';
 
     const embedLinkRelativeURL = document.location.pathname.replace('/board', '/embed/board') + '?stop_id=' +  stopRef;

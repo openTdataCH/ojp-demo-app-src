@@ -1,4 +1,4 @@
-import * as OJP from 'ojp-sdk-v1';
+import OJP_Legacy from './ojp-legacy';
 
 type DEBUG_LEVEL_Type = 'DEBUG' | 'PROD'
 export const DEBUG_LEVEL: DEBUG_LEVEL_Type = (() => {
@@ -16,35 +16,32 @@ export const DEBUG_LEVEL: DEBUG_LEVEL_Type = (() => {
 
 export type APP_STAGE = 'PROD' | 'INT' | 'TEST' | 'LA Beta' 
   | 'V2-PROD' | 'V2-INT' | 'V2-TEST'
-  | 'EFA11' | 'V2-EFA11'
   | 'GR TEST'| 'PROD-LB' | 'OJP-SI' | 'NOVA-INT';
 
-export const DEFAULT_APP_STAGE: APP_STAGE = 'PROD';
+const isOJPv2 = OJP_Legacy.OJP_VERSION === '2.0';
+
+export const DEFAULT_APP_STAGE: APP_STAGE = isOJPv2 ? 'V2-PROD' : 'PROD';
 
 export const APP_STAGEs: APP_STAGE[] = (() => {
   let stages: APP_STAGE[] = [];
 
-  if (OJP.OJP_VERSION === '1.0') {
+  if (isOJPv2) {
+    stages = ['V2-PROD', 'V2-INT', 'V2-TEST'];
+  } else {
     stages = ['PROD', 'INT', 'TEST', 'LA Beta'];
     if (DEBUG_LEVEL === 'DEBUG') {
-      stages.push('EFA11');
       stages.push('OJP-SI');
-    }
-  }
-
-  if (OJP.OJP_VERSION === '2.0') {
-    stages = ['V2-PROD', 'V2-INT', 'V2-TEST'];
-    if (DEBUG_LEVEL === 'DEBUG') {
-      stages.push('V2-EFA11');
     }
   }
 
   return stages;
 })();
 
+export const REQUESTOR_REF = 'OJP_DemoApp_Beta_OJP' + OJP_Legacy.OJP_VERSION;
+
 export interface AppMapLayerOptions {
-  LIR_Restriction_Type: OJP.RestrictionType
-  LIR_POI_Type?: OJP.POI_Restriction | null
+  LIR_Restriction_Type: OJP_Legacy.RestrictionType
+  LIR_POI_Type?: OJP_Legacy.POI_Restriction | null
   minZoom: number
   layer_ids?: string[] | null,
   click_layer_ids?: string[] | 'SAME_AS_LAYER_IDS' | null

@@ -1,10 +1,10 @@
-import * as OJP from 'ojp-sdk-v1';
+import OJP_Legacy from '../config/ojp-legacy';
 
 import { TripLegLineType } from '../shared/types/map-geometry-types';
 
 export class OJPMapHelpers {
-  public static computeTimedLegColor(leg: OJP.TripTimedLeg): TripLegLineType {
-    const isPostAuto = leg.service.agencyID === '801';
+  public static computeTimedLegColor(leg: OJP_Legacy.TripTimedLeg): TripLegLineType {
+    const isPostAuto = leg.service.operatorRef === '801';
     if (isPostAuto) {
       return 'PostAuto';
     }
