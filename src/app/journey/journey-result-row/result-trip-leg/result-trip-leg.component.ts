@@ -70,10 +70,8 @@ interface LegInfoDataModel {
   styleUrls: ['./result-trip-leg.component.scss']
 })
 export class ResultTripLegComponent implements OnInit {
-  @Input() legId: string | undefined;
   @Input() legData: TripLegData | undefined;
   @Input() legIdx: number | undefined;
-  @Input() isLastLeg = false;
   @Input() isForceLinkProjection: boolean | undefined;
 
   @Output() legReloadRequest = new EventEmitter<number>();
