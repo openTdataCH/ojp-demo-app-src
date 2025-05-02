@@ -74,7 +74,7 @@ export class ResultTripLegComponent implements OnInit {
   @Input() legIdx: number | undefined;
   @Input() isForceLinkProjection: boolean | undefined;
 
-  @Output() legReloadRequest = new EventEmitter<number>();
+  @Output() legReloadRequest = new EventEmitter<void>();
   @Output() legMapRedrawRequest = new EventEmitter<{ legIdx: number, checked: boolean }>();
 
   public legElementId: string = 'n/a';
@@ -238,7 +238,7 @@ export class ResultTripLegComponent implements OnInit {
       return;
     }
 
-    this.legReloadRequest.emit(this.legIdx);
+    this.legReloadRequest.emit();
   }
 
   public get checkboxId() {
