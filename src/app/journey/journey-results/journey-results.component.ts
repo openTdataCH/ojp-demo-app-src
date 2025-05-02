@@ -4,11 +4,12 @@ import { UserTripService } from 'src/app/shared/services/user-trip.service';
 import OJP_Legacy from '../../config/ojp-legacy';
 import { MapService } from '../../shared/services/map.service'
 import { LanguageService } from '../../shared/services/language.service';
+import { TripData } from '../../shared/types/trip';
 
 type NumberOfResultsType = 'NumberOfResults' | 'NumberOfResultsBefore' | 'NumberOfResultsAfter';
 
 interface PageModel {
-  trips: OJP_Legacy.Trip[]
+  tripsData: TripData[]
   hasPagination: boolean
   isFetchingPrevTrips: boolean
   isFetchingNextTrips: boolean
@@ -24,7 +25,7 @@ export class JourneyResultsComponent implements OnInit {
 
   constructor(private userTripService: UserTripService, private mapService: MapService, private languageService: LanguageService) {
     this.model = {
-      trips: [],
+      tripsData: [],
       hasPagination: false,
       isFetchingPrevTrips: false,
       isFetchingNextTrips: false,
@@ -45,8 +46,8 @@ export class JourneyResultsComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.userTripService.tripsUpdated.subscribe(trips => {
-      this.updatePageModel(trips);
+    this.userTripService.tripsDataUpdated.subscribe(tripsData => {
+      this.updatePageModel(tripsData);
     });
 
     this.userTripService.searchParamsReset.subscribe(() => {
@@ -54,33 +55,33 @@ export class JourneyResultsComponent implements OnInit {
     });
 
     this.userTripService.tripFaresUpdated.subscribe(fareResults => {
-      this.model.trips.forEach(trip => {
-        trip.tripFareResults = [];
+      this.model.tripsData.forEach(tripData => {
+        tripData.trip.tripFareResults = [];
       });
 
       fareResults.forEach(fareResult => {
-        const trip = this.model.trips.find(trip => {
-          return trip.id === fareResult.tripId
+        const foundTripData = this.model.tripsData.find(tripData => {
+          return tripData.trip.id === fareResult.tripId
         }) ?? null;
 
-        if (trip === null) {
+        if (foundTripData === null) {
           console.error('ERROR - cant find fare for trip ' + fareResult.tripId);
-          console.log(this.model.trips);
+          console.log(this.model.tripsData);
           console.log(fareResult);
           return;
         }
 
-        trip.tripFareResults = fareResult.tripFareResults;
+        foundTripData.trip.tripFareResults = fareResult.tripFareResults;
       });
     })
   }
 
   public loadPreviousTrips() {
-    if (this.model.trips.length === 0) {
+    if (this.model.tripsData.length === 0) {
       return;
     }
 
-    const depArrDate = this.model.trips[0].computeDepartureTime();
+    const depArrDate = this.model.tripsData[0].trip.computeDepartureTime();
     if (depArrDate === null) {
       return;
     }
@@ -91,12 +92,12 @@ export class JourneyResultsComponent implements OnInit {
   }
 
   public loadNextTrips() {
-    if (this.model.trips.length === 0) {
+    if (this.model.tripsData.length === 0) {
       return;
     }
 
-    const lastTrip = this.model.trips[this.model.trips.length - 1];
-    const depArrDate = lastTrip.computeDepartureTime();
+    const lastTripData = this.model.tripsData[this.model.tripsData.length - 1];
+    const depArrDate = lastTripData.trip.computeDepartureTime();
     if (depArrDate === null) {
       return;
     }
@@ -169,9 +170,9 @@ export class JourneyResultsComponent implements OnInit {
     });
   }
 
-  private updatePageModel(trips: OJP_Legacy.Trip[]) {
-    this.model.trips = trips;
-    this.model.hasPagination = this.computeHasPagination(trips.length);
+  private updatePageModel(tripsData: TripData[]) {
+    this.model.tripsData = tripsData;
+    this.model.hasPagination = this.computeHasPagination(tripsData.length);
     // Update both - TODO - use a completion instead?
     this.model.isFetchingPrevTrips = false;
     this.model.isFetchingNextTrips = false;    

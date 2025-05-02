@@ -113,8 +113,8 @@ export class SearchFormComponent implements OnInit {
       this.updateViaDwellTime();
     })
 
-    this.userTripService.tripsUpdated.subscribe(trips => {
-      const hasTrips = trips.length > 0
+    this.userTripService.tripsDataUpdated.subscribe(tripsData => {
+      const hasTrips = tripsData.length > 0
       if (hasTrips) {
         this.collapseSearchPanel()
       } else {

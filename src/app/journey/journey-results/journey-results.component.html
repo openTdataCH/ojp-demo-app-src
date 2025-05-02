@@ -9,8 +9,8 @@
 
 <sbb-accordion>
   <journey-result-row
-    *ngFor="let trip of this.model.trips; index as idx"
-    [trip]="trip"
+    *ngFor="let tripData of this.model.tripsData; index as idx"
+    [tripData]="tripData"
     [idx]="idx"
   ></journey-result-row>
 </sbb-accordion>

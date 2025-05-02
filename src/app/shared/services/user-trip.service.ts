@@ -8,6 +8,7 @@ import { APP_CONFIG } from '../../config/app-config';
 import { APP_STAGE, DEBUG_LEVEL, DEFAULT_APP_STAGE, TRIP_REQUEST_DEFAULT_NUMBER_OF_RESULTS } from '../../config/constants';
 import { MapService } from './map.service';
 import { MapTrip } from '../types/map-geometry-types';
+import { TripData, TripLegData } from '../types/trip';
 
 type LocationUpdateSource = 'SearchForm' | 'MapDragend' | 'MapPopupClick'
 
@@ -48,7 +49,7 @@ export class UserTripService {
   public searchFormAfterDefaultsInited = new EventEmitter<void>();
   public locationsUpdated = new EventEmitter<void>();
   public geoLocationsUpdated = new EventEmitter<void>();
-  public tripsUpdated = new EventEmitter<OJP_Legacy.Trip[]>();
+  public tripsDataUpdated = new EventEmitter<TripData[]>();
   
   public tripFaresUpdated = new EventEmitter<OJP_Legacy.FareResult[]>();
   
@@ -432,8 +433,8 @@ export class UserTripService {
   }
 
   updateTrips(trips: OJP_Legacy.Trip[]) {
-    this.massageTrips(trips);
-    this.tripsUpdated.emit(trips);
+    const tripsData = this.massageTrips(trips);
+    this.tripsDataUpdated.emit(tripsData);
   }
 
   selectActiveTrip(mapTrip: MapTrip | null) {
@@ -681,13 +682,39 @@ export class UserTripService {
     this.updateURLs()
   }
 
-  public massageTrips(trips: OJP_Legacy.Trip[]) {
-    this.sortTrips(trips);
-    this.patchTripLegEndpointCoords(trips);
-    this.mergeTripLegs(trips);
+  public massageTrips(trips: OJP_Legacy.Trip[]): TripData[] {
+    const tripsData = trips.map(trip => {
+      const legsData = trip.legs.map(leg => {
+        const legData: TripLegData = {
+          leg: leg,
+          info: {
+            id: '' + leg.legID,
+            comments: null,
+          },
+        };
+
+        return legData;
+      });
+
+      const tripData: TripData = {
+        trip: trip,
+        legsData: legsData,
+        info: {
+          comments: null,
+        }
+      };
+
+      return tripData;
+    });
+
+    this.sortTrips(tripsData);
+    this.patchTripLegEndpointCoords(tripsData);
+    this.mergeTripLegs(tripsData);
+
+    return tripsData;
   }
 
-  private sortTrips(trips: OJP_Legacy.Trip[]) {
+  private sortTrips(tripsData: TripData[]) {
     if (this.tripModeType !== 'monomodal') {
       return;
     }
@@ -697,13 +724,13 @@ export class UserTripService {
     }
 
     // Push first the monomodal trip with one leg matching the transport mode
-    const monomodalTrip = trips.find(trip => {
-      const foundLeg = trip.legs.find(leg => {
+    const monomodalTrip = tripsData.find(tripData => {
+      const foundLeg = tripData.trip.legs.find(leg => {
         if (leg.legType !== 'ContinuousLeg') {
           return false;
         }
 
-        const continousLeg = trip.legs[0] as OJP_Legacy.TripContinuousLeg;
+        const continousLeg = tripData.trip.legs[0] as OJP_Legacy.TripContinuousLeg;
         return continousLeg.legTransportMode === this.tripTransportMode;
       }) ?? null;
 
@@ -711,19 +738,21 @@ export class UserTripService {
     }) ?? null;
 
     if (monomodalTrip) {
-      const tripIdx = trips.indexOf(monomodalTrip);
-      trips.splice(tripIdx, 1);
-      trips.unshift(monomodalTrip);
+      const tripIdx = tripsData.indexOf(monomodalTrip);
+      tripsData.splice(tripIdx, 1);
+      tripsData.unshift(monomodalTrip);
+
+      monomodalTrip.info.comments = 'SDK HACK - sortTrips - trips were re-sorted to promote the index-' + tripIdx + ' trip first';
 
       if (DEBUG_LEVEL === 'DEBUG') {
-        console.log('SDK HACK - sortTrips - trips were re-sorted to promote the index-' + tripIdx + ' trip first');
+        console.log(monomodalTrip.info.comments);
       }
     }
   }
 
-  private patchTripLegEndpointCoords(trips: OJP_Legacy.Trip[]) {
-    trips.forEach(trip => {
-      trip.legs.forEach((leg, legIdx) => {
+  private patchTripLegEndpointCoords(tripsData: TripData[]) {
+    tripsData.forEach(tripData => {
+      tripData.trip.legs.forEach((leg, legIdx) => {
         if (leg.legType !== 'TimedLeg') {
           return;
         }
@@ -734,10 +763,13 @@ export class UserTripService {
         // - use it for prev leg END geoPosition
         const fromGeoPosition = timedLeg.legTrack?.fromGeoPosition() ?? null;
         if (legIdx > 0 && fromGeoPosition !== null) {
-          const prevLeg = trip.legs[legIdx - 1];
+          const prevLeg = tripData.trip.legs[legIdx - 1];
           if (prevLeg.toLocation.geoPosition === null) {
+            const prevLegData = tripData.legsData[legIdx - 1];
+            prevLegData.info.comments = 'SDK HACK - patchLegEndpointCoords - use legTrack.fromGeoPosition for prevLeg.toLocation.geoPosition';
+
             if (DEBUG_LEVEL === 'DEBUG') {
-              console.log('SDK HACK - patchLegEndpointCoords - use legTrack.fromGeoPosition for prevLeg.toLocation.geoPosition');
+              console.log(prevLegData.info.comments);
             }
             prevLeg.toLocation.geoPosition = fromGeoPosition;
           }
@@ -746,11 +778,14 @@ export class UserTripService {
         // Check if we have a END geoPosition
         // - use it for next leg START geoPosition
         const toGeoPosition = timedLeg.legTrack?.toGeoPosition() ?? null;
-        if (legIdx < (trip.legs.length - 1) && toGeoPosition !== null) {
-          const nextLeg = trip.legs[legIdx + 1];
+        if (legIdx < (tripData.trip.legs.length - 1) && toGeoPosition !== null) {
+          const nextLeg = tripData.trip.legs[legIdx + 1];
           if (nextLeg.fromLocation.geoPosition === null) {
+            const nextLegData = tripData.legsData[legIdx + 1];
+            nextLegData.info.comments = 'SDK HACK - patchLegEndpointCoords - use legTrack.toGeoPosition for nextLeg.fromLocation.geoPosition';
+
             if (DEBUG_LEVEL === 'DEBUG') {
-              console.log('SDK HACK - patchLegEndpointCoords - use legTrack.toGeoPosition for nextLeg.fromLocation.geoPosition');
+              console.log(nextLegData.info.comments);
             }
             nextLeg.fromLocation.geoPosition = toGeoPosition;
           }
@@ -762,28 +797,36 @@ export class UserTripService {
   // Some of the legs can be merged
   // ex1: trains with multiple desitinaion units
   // - check for remainInVehicle https://github.com/openTdataCH/ojp-demo-app-src/issues/125  
-  private mergeTripLegs(trips: OJP_Legacy.Trip[]) {
-    trips.forEach(trip => {
-      const newLegs: OJP_Legacy.TripLeg[] = [];
+  private mergeTripLegs(tripsData: TripData[]) {
+    tripsData.forEach(tripData => {
+      const newLegsData: TripLegData[] = [];
       let skipIdx: number = -1;
       
-      trip.legs.forEach((leg, legIdx) => {
+      tripData.trip.legs.forEach((leg, legIdx) => {
+        const legData: TripLegData = {
+          leg: leg,
+          info: {
+            id: '' + leg.legID,
+            comments: null,
+          },
+        };
+
         if (legIdx <= skipIdx) {
           return;
         }
 
         const leg2Idx = legIdx + 1;
         const leg3Idx = legIdx + 2;
-        if (leg3Idx >= trip.legs.length) {
-          newLegs.push(leg);
+        if (leg3Idx >= tripData.trip.legs.length) {
+          newLegsData.push(legData);
           return;
         }
 
         // If TransferLeg of type 'remainInVehicle'
         // => merge prev / next TimedLeg legs
         let shouldMergeLegs = false;
-        const leg2 = trip.legs[leg2Idx];
-        const leg3 = trip.legs[leg3Idx];
+        const leg2 = tripData.trip.legs[leg2Idx];
+        const leg3 = tripData.trip.legs[leg3Idx];
         if (leg.legType === 'TimedLeg' && leg2.legType === 'TransferLeg' && leg3.legType === 'TimedLeg') {
           const continousLeg = leg2 as OJP_Legacy.TripContinuousLeg;
           if (continousLeg.transferMode === 'remainInVehicle') {
@@ -794,17 +837,22 @@ export class UserTripService {
 
         if (shouldMergeLegs) {
           const newLeg = this.mergeTimedLegs(leg as OJP_Legacy.TripTimedLeg, leg3 as OJP_Legacy.TripTimedLeg);
-          newLegs.push(newLeg);
-        } else {
-          newLegs.push(leg);
+          legData.leg = newLeg;
+          legData.info.id = (legIdx + 1) + '-' + (leg3Idx + 1);
+          legData.info.comments = 'Timed legs were merged: ' +  legData.info.id;
         }
+
+        newLegsData.push(legData);
       });
 
-      if (trip.legs.length > 0 && (trip.legs.length !== newLegs.length)) {
+      if (tripData.trip.legs.length > 0 && (tripData.trip.legs.length !== newLegsData.length)) {
+        tripData.info.comments = 'SDK HACK - mergeTripLegs - remainInVehicle usecase, before: ' + tripData.trip.legs.length + ', after: ' + newLegsData.length + ' legs';
+
         if (DEBUG_LEVEL === 'DEBUG') {
-          console.log('SDK HACK - mergeTripLegs - remainInVehicle usecase, before: ' + trip.legs.length + ', after: ' + newLegs.length + ' legs');
+          console.log(tripData.info.comments);
         }
-        trip.legs = newLegs;
+
+        tripData.legsData = newLegsData;
       }
     });
   }

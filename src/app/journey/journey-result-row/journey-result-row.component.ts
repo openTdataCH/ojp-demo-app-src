@@ -10,6 +10,7 @@ import { MapService } from '../../shared/services/map.service';
 import { LanguageService } from '../../shared/services/language.service';
 import { MapTrip, MapTripLeg } from '../../shared/types/map-geometry-types';
 import { TripLegGeoController } from '../../shared/controllers/trip-geo-controller';
+import { TripData } from '../../shared/types/trip';
 
 interface TripHeaderStats {
   title: string,
@@ -30,7 +31,7 @@ interface TripHeaderStats {
   styleUrls: ['./journey-result-row.component.scss'],
 })
 export class JourneyResultRowComponent implements OnInit {
-  @Input() trip: OJP_Legacy.Trip | undefined
+  @Input() tripData: TripData | undefined
   @Input() idx: number | undefined
 
   @ViewChild(SbbExpansionPanel, { static: true }) tripPanel: SbbExpansionPanel | undefined;
@@ -45,21 +46,21 @@ export class JourneyResultRowComponent implements OnInit {
   }
 
   ngOnInit() {
-    if (!this.trip) {
+    if (!this.tripData) {
       return;
     }
 
-    this.initTripHeaderStats(this.trip);
+    this.initTripHeaderStats(this.tripData.trip);
 
     this.mapTrip = {
       legs: [],
     };
 
-    this.trip.legs.forEach(leg => {
-      const forceLinkProjection = !TripLegGeoController.shouldUseBeeline(leg);
+    this.tripData.legsData.forEach(legData => {
+      const forceLinkProjection = !TripLegGeoController.shouldUseBeeline(legData.leg);
 
       const mapTripLeg: MapTripLeg = {
-        leg: leg,
+        leg: legData.leg,
         forceLinkProjection: forceLinkProjection,
       };
       this.mapTrip?.legs.push(mapTripLeg);
@@ -79,12 +80,12 @@ export class JourneyResultRowComponent implements OnInit {
   }
 
   private drawAndZoomToMapTrip() {
-    if (!this.trip) {
+    if (!this.tripData) {
       return;
     }
 
     this.userTripService.selectActiveTrip(this.mapTrip);
-    this.mapService.zoomToTrip(this.trip);
+    this.mapService.zoomToTrip(this.tripData.trip);
   }
 
   private initTripHeaderStats(trip: OJP_Legacy.Trip) {
@@ -142,11 +143,11 @@ export class JourneyResultRowComponent implements OnInit {
   }
 
   public async reloadTripLegIdx(legIdx: number) {
-    if (!this.trip) {
+    if (!this.tripData) {
       return;
     }
 
-    const tripXML = this.trip.asXML();
+    const tripXML = this.tripData.trip.asXML();
     // console.log(tripXML);
 
     // TODO - when migrating this code to next version we dont need to serialize/deserialize the obj anymore
@@ -190,10 +191,10 @@ export class JourneyResultRowComponent implements OnInit {
     } else {
       // if curreny NOVA fails, rely on older version of fares
       console.log('error: nova failed to return new fares, use old ones');
-      updatedTrip.tripFareResults = this.trip.tripFareResults;
+      updatedTrip.tripFareResults = this.tripData.trip.tripFareResults;
     }
 
-    this.trip = updatedTrip;
+    this.tripData.trip = updatedTrip;
   }
 
   public redrawTripOnMap(legData: { legIdx: number, checked: boolean }) {
