@@ -26,18 +26,20 @@
     </div>
   </sbb-expansion-panel-header>
   <div>
-    <ng-container *ngFor="let leg of trip?.legs; index as legIdx">
-      <result-trip-leg [leg]="leg" [legId]="this.idx + '_' + legIdx" [legIdx]="legIdx"
-        [isLastLeg]="idx === ((trip?.legs?.length ?? 1) - 1)"
+    <ng-container *ngFor="let legData of tripData?.legsData; index as legIdx">
+
+      <result-trip-leg 
+        [legData]="legData" 
+        [legIdx]="legIdx"
         [isForceLinkProjection]="(this.mapTrip && this.mapTrip.legs[legIdx].forceLinkProjection) ?? false"
-        (legReloadRequest)="this.reloadTripLegIdx($event)"
+        (legReloadRequest)="this.reloadTripLegIdx()"
         (legMapRedrawRequest)="this.redrawTripOnMap($event)">
       </result-trip-leg>
     </ng-container>
   </div>
   <div>Price:
     <ul class="trip-fares">
-      <li *ngFor="let tripFareResult of trip?.tripFareResults; index as idx">
+      <li *ngFor="let tripFareResult of tripData?.trip?.tripFareResults; index as idx">
         Legs {{ tripFareResult.fromTripLegIdRef }}-{{ tripFareResult.toTripLegIdRef }} : {{ tripFareResult.fareProduct.price }} CHF ({{ tripFareResult.fareProduct.fareProductName }}, {{ tripFareResult.fareProduct.travelClass }} class)
       </li>
     </ul>

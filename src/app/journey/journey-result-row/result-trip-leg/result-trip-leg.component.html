@@ -22,7 +22,7 @@
     </div>
     
     <div class="d-flex gap-1 align-items-center" *ngIf="this.isEmbed === false">
-      <ng-container *ngIf="this.leg?.legType === 'TimedLeg'">
+      <ng-container *ngIf="this.legData?.leg?.legType === 'TimedLeg'">
         <div class="d-flex gap-1">
           <input class="form-check-input" type="checkbox" 
             [id]="this.checkboxId" [name]="this.checkboxId" 
@@ -63,6 +63,11 @@
       </ng-container>
     </div>
   </div>
+
+  <ng-container *ngIf="this.legData?.info?.comments !== null">
+    <hr />
+    <div>Note: <span>{{ this.legData?.info?.comments }}</span></div>
+  </ng-container>
 </div>
 
 <ng-template #timedLegTemplate>
