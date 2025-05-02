@@ -829,7 +829,7 @@ export class UserTripService {
         const leg3 = tripData.trip.legs[leg3Idx];
         if (leg.legType === 'TimedLeg' && leg2.legType === 'TransferLeg' && leg3.legType === 'TimedLeg') {
           const continousLeg = leg2 as OJP_Legacy.TripContinuousLeg;
-          if (continousLeg.transferMode === 'remainInVehicle') {
+          if ((continousLeg.transferMode === 'remainInVehicle') || (continousLeg.transferMode === 'changeWithinVehicle')) {
             shouldMergeLegs = true;
             skipIdx = leg3Idx;
           }
