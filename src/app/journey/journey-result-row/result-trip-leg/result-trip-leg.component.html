@@ -63,6 +63,11 @@
       </ng-container>
     </div>
   </div>
+
+  <ng-container *ngIf="this.legData?.info?.comments !== null">
+    <hr />
+    <div>Note: <span>{{ this.legData?.info?.comments }}</span></div>
+  </ng-container>
 </div>
 
 <ng-template #timedLegTemplate>
