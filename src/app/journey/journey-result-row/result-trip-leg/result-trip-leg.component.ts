@@ -18,6 +18,7 @@ import { LegStopPointData } from '../../../shared/components/service-stops.compo
 import { TripLegGeoController } from '../../../shared/controllers/trip-geo-controller';
 
 import { TripInfoResultPopoverComponent } from './trip-info-result-popover/trip-info-result-popover.component';
+import { TripLegData } from '../../../shared/types/trip';
 
 type LegTemplate = 'walk' | 'timed' | 'taxi';
 
@@ -69,8 +70,8 @@ interface LegInfoDataModel {
   styleUrls: ['./result-trip-leg.component.scss']
 })
 export class ResultTripLegComponent implements OnInit {
-  @Input() leg: OJP_Legacy.TripLeg | undefined;
   @Input() legId: string | undefined;
+  @Input() legData: TripLegData | undefined;
   @Input() legIdx: number | undefined;
   @Input() isLastLeg = false;
   @Input() isForceLinkProjection: boolean | undefined;
@@ -95,26 +96,26 @@ export class ResultTripLegComponent implements OnInit {
   }
 
   ngOnInit() {
-    if (this.leg === undefined || this.legIdx === undefined) {
+    if (this.legData === undefined) {
       return;
     }
 
-    this.legElementId = 'leg_' + this.legId;
+    this.legElementId = 'leg_' + this.legData.leg.legID;
 
     this.initLegInfo();
   }
 
   private computeLegLeadingText(): string {
-    if (this.leg === undefined || this.legIdx === undefined) {
+    if (this.legData === undefined) {
       return 'n/a';
     }
 
-    const legIdxS = '' + (this.legIdx + 1) + '. ';
+    const legIdxS = '' + (this.legData.info.id) + '. ';
 
-    if (this.leg.legType === 'TransferLeg') {
+    if (this.legData.leg.legType === 'TransferLeg') {
       const leadingTextTitle = 'Transfer';
       
-      const continuousLeg = this.leg as OJP_Legacy.TripContinuousLeg;
+      const continuousLeg = this.legData.leg as OJP_Legacy.TripContinuousLeg;
       let legDurationS = '';
       if (continuousLeg.walkDuration) {
         legDurationS = ' ' + continuousLeg.walkDuration.formatDuration()
@@ -123,21 +124,21 @@ export class ResultTripLegComponent implements OnInit {
       return legIdxS + leadingTextTitle + legDurationS;
     }
 
-    if (this.leg.legType === 'ContinuousLeg') {
-      const continuousLeg = this.leg as OJP_Legacy.TripContinuousLeg;
+    if (this.legData.leg.legType === 'ContinuousLeg') {
+      const continuousLeg = this.legData.leg as OJP_Legacy.TripContinuousLeg;
 
       const leadingText = this.computeLegLeadingTextContinousLeg(continuousLeg);
 
       let legDurationS = '';
-      if (this.leg.legDuration) {
-        legDurationS = ' ' + this.leg.legDuration.formatDuration();
+      if (this.legData.leg.legDuration) {
+        legDurationS = ' ' + this.legData.leg.legDuration.formatDuration();
       }
       
       return legIdxS + leadingText + ' - ' + legDurationS;
     }
 
-    if (this.leg.legType === 'TimedLeg') {
-      const timedLeg = this.leg as OJP_Legacy.TripTimedLeg;
+    if (this.legData.leg.legType === 'TimedLeg') {
+      const timedLeg = this.legData.leg as OJP_Legacy.TripTimedLeg;
 
       let leadingText = timedLeg.service.ptMode.name;
       if (leadingText === null) {
@@ -149,14 +150,14 @@ export class ResultTripLegComponent implements OnInit {
       }
 
       let legDurationS = '';
-      if (this.leg.legDuration) {
-        legDurationS = ' ' + this.leg.legDuration.formatDuration();
+      if (this.legData.leg.legDuration) {
+        legDurationS = ' ' + this.legData.leg.legDuration.formatDuration();
       }
 
       return legIdxS + leadingText + ' - ' + legDurationS;
     }
 
-    return legIdxS + this.leg.legType;
+    return legIdxS + this.legData.leg.legType;
   }
 
   private computeLegLeadingTextContinousLeg(continuousLeg: OJP_Legacy.TripContinuousLeg): string {
@@ -192,19 +193,19 @@ export class ResultTripLegComponent implements OnInit {
   }
 
   computeLegPillClassName(): string {
-    if (!this.leg) {
+    if (!this.legData) {
       return ''
     }
 
-    if (this.leg.legType === 'ContinuousLeg') {
+    if (this.legData.leg.legType === 'ContinuousLeg') {
       return 'continous-leg-pill'
     }
 
-    if (this.leg.legType === 'TimedLeg') {
+    if (this.legData.leg.legType === 'TimedLeg') {
       return 'timed-leg-pill'
     }
 
-    if (this.leg.legType === 'TransferLeg') {
+    if (this.legData.leg.legType === 'TransferLeg') {
       return 'transfer-leg-pill'
     }
 
@@ -212,18 +213,18 @@ export class ResultTripLegComponent implements OnInit {
   }
 
   zoomToLeg() {
-    if (!this.leg) {
+    if (!this.legData) {
       return
     }
 
-    const tripLegGeoController = new TripLegGeoController(this.leg);
+    const tripLegGeoController = new TripLegGeoController(this.legData.leg);
 
     const legFeatures = tripLegGeoController.computeGeoJSONFeatures();
     const bbox = OJP_Legacy.GeoPositionBBOX.initFromGeoJSONFeatures(legFeatures);
 
     if (!bbox.isValid()) {
       console.error('Invalid BBOX for leg');
-      console.log(this.leg);
+      console.log(this.legData);
       return
     }
 
@@ -235,7 +236,7 @@ export class ResultTripLegComponent implements OnInit {
   }
 
   public reloadTripLeg() {
-    if (!this.leg || (this.legIdx === undefined)) {
+    if (!this.legData) {
       return;
     }
 
@@ -243,11 +244,11 @@ export class ResultTripLegComponent implements OnInit {
   }
 
   public get checkboxId() {
-    return 'lp_checkbox_' + this.legId;
+    return 'lp_checkbox_' + (this.legData?.leg.legID ?? 'n/a');
   }
 
   public redrawTripLeg(event: Event) {
-    if (!this.leg || (this.legIdx === undefined)) {
+    if (!this.legData || (this.legIdx === undefined)) {
       return;
     }
 
@@ -262,19 +263,19 @@ export class ResultTripLegComponent implements OnInit {
   private computeLegColor(): string {
     const defaultColor = MapLegLineTypeColor.Unknown;
 
-    if (!this.leg) {
+    if (!this.legData) {
       return defaultColor;
     }
 
-    const legType = this.leg.legType;
+    const legType = this.legData.leg.legType;
 
     if (legType === 'ContinuousLeg' || legType === 'TransferLeg') {
-      const leg = this.leg as OJP_Legacy.TripContinuousLeg;
+      const leg = this.legData.leg as OJP_Legacy.TripContinuousLeg;
       return this.computeContinousLegColor(leg);
     }
 
     if (legType === 'TimedLeg') {
-      const leg = this.leg as OJP_Legacy.TripTimedLeg;
+      const leg = this.legData.leg as OJP_Legacy.TripTimedLeg;
       return OJPMapHelpers.computeTimedLegColor(leg);
     }
 
@@ -306,11 +307,11 @@ export class ResultTripLegComponent implements OnInit {
   }
 
   private initLegInfo() {
-    if (this.leg === undefined) {
+    if (this.legData === undefined) {
       return;
     }
 
-    const leg = this.leg;
+    const leg = this.legData.leg;
 
     this.legInfoDataModel.legColor = this.computeLegColor()
     this.legInfoDataModel.leadingText = this.computeLegLeadingText()
@@ -671,14 +672,14 @@ export class ResultTripLegComponent implements OnInit {
   }
 
   public zoomToEndpoint(endpointType: OJP_Legacy.JourneyPointType) {
-    if (!this.leg) {
-      return
+    if (!this.legData) {
+      return;
     }
 
-    const isFrom = endpointType === 'From'
-    const location = isFrom ? this.leg.fromLocation : this.leg.toLocation
+    const isFrom = endpointType === 'From';
+    const location = isFrom ? this.legData.leg.fromLocation : this.legData.leg.toLocation;
 
-    this.mapService.tryToCenterAndZoomToLocation(location)
+    this.mapService.tryToCenterAndZoomToLocation(location);
   }
 
   public zoomToIntermediaryPoint(idx: number) {
