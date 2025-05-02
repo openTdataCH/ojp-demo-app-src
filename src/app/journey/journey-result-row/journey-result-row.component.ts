@@ -142,7 +142,7 @@ export class JourneyResultRowComponent implements OnInit {
     )
   }
 
-  public async reloadTripLegIdx(legIdx: number) {
+  public async reloadTripLegIdx() {
     if (!this.tripData) {
       return;
     }
