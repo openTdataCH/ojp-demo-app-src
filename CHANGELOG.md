@@ -8,6 +8,7 @@ OJP-Demo URL: https://opentdatach.github.io/ojp-demo-app/
 - Display Occupancy Level - [Occupancy in OJP 2.0 #223](https://github.com/openTdataCH/ojp-demo-app-src/issues/223), [PR #253](https://github.com/openTdataCH/ojp-demo-app-src/pull/225)
 - Display Situation InfoLink - [TR / Siri Situations - Display labels / hyperlinks #224](https://github.com/openTdataCH/ojp-demo-app-src/issues/224), [https://github.com/openTdataCH/ojp-demo-app-src/pull/226](https://github.com/openTdataCH/ojp-demo-app-src/pull/226)
 - Fix SER Request in OJP v1 (SDK) - [Fix SER Request OJPv1 #162](https://github.com/openTdataCH/ojp-js/issues/162)
+- Fix stage URLs - [PR #228](https://github.com/openTdataCH/ojp-demo-app-src/pull/228)
 
 02.May 2025
 - Catch `changeWithinVehicle` for Flügelzüge - [PR #222](https://github.com/openTdataCH/ojp-demo-app-src/pull/222)
