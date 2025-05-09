@@ -52,8 +52,20 @@
   padding-left: 0px;
 }
 
-.leg-platform-assistance {
+.leg-endpoint .leg-platform-assistance {
   width: 30px;
+}
+
+.occupancy svg {
+  width: 24px;
+}
+
+.leg-intermediate .leg-platform-assistance {
+  width: 25px;
+}
+
+.occupancy-icon {
+  width: 64px;
 }
 
 .separator {
