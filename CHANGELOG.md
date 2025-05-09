@@ -5,7 +5,7 @@ OJP-Demo URL: https://opentdatach.github.io/ojp-demo-app/
 ----
 
 09.May 2025
-- Display Occupancy Level - [Occupancy in OJP 2.0 #223](https://github.com/openTdataCH/ojp-demo-app-src/issues/223)
+- Display Occupancy Level - [Occupancy in OJP 2.0 #223](https://github.com/openTdataCH/ojp-demo-app-src/issues/223), [PR #253](https://github.com/openTdataCH/ojp-demo-app-src/pull/225)
 
 02.May 2025
 - Catch `changeWithinVehicle` for Flügelzüge - [PR #222](https://github.com/openTdataCH/ojp-demo-app-src/pull/222)
