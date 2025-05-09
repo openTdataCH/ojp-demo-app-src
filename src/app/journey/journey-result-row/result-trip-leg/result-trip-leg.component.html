@@ -93,6 +93,22 @@
     <div class="flex-grow-0 leg-time leg-right-side">
       <div class="d-flex gap-2 align-items-center leg-endpoint">
         <div class="d-flex gap-1 align-items-center">
+          <ng-container *ngIf="this.legInfoDataModel.fromLocationData.occupancy.firstClassIcon">
+            <div>1.</div>
+            <div class="occupancy">
+              <sbb-icon 
+                svgIcon="{{ this.legInfoDataModel.fromLocationData.occupancy.firstClassIcon }}"
+                sbbTooltip="{{ this.legInfoDataModel.fromLocationData.occupancy.firstClassText }}"
+              ></sbb-icon>
+            </div>
+            <div>2.</div>
+            <div class="occupancy">
+              <sbb-icon 
+                svgIcon="{{ this.legInfoDataModel.fromLocationData.occupancy.secondClassIcon }}"
+                sbbTooltip="{{ this.legInfoDataModel.fromLocationData.occupancy.secondClassText }}"
+              ></sbb-icon>
+            </div>
+          </ng-container>
           <ng-container *ngIf="this.legInfoDataModel.fromLocationData.platformAssistanceIconPath !== null">
             <img class="leg-platform-assistance" 
             src="{{ this.legInfoDataModel.fromLocationData.platformAssistanceIconPath }}" 
@@ -142,6 +158,22 @@
     <div class="flex-grow-0 leg-time leg-right-side">
       <div class="d-flex gap-2 align-items-center leg-endpoint">
         <div class="d-flex gap-1 align-items-center">
+          <ng-container *ngIf="this.legInfoDataModel.toLocationData.occupancy.firstClassIcon">
+            <div>1.</div>
+            <div class="occupancy">
+              <sbb-icon 
+                svgIcon="{{ this.legInfoDataModel.toLocationData.occupancy.firstClassIcon }}"
+                sbbTooltip="{{ this.legInfoDataModel.toLocationData.occupancy.firstClassText }}"
+              ></sbb-icon>
+            </div>
+            <div>2.</div>
+            <div class="occupancy">
+              <sbb-icon 
+                svgIcon="{{ this.legInfoDataModel.toLocationData.occupancy.secondClassIcon }}"
+                sbbTooltip="{{ this.legInfoDataModel.toLocationData.occupancy.secondClassText }}"
+              ></sbb-icon>
+            </div>
+          </ng-container>
           <ng-container *ngIf="this.legInfoDataModel.toLocationData.platformAssistanceIconPath !== null">
             <img class="leg-platform-assistance" 
             src="{{ this.legInfoDataModel.toLocationData.platformAssistanceIconPath }}" 
@@ -314,6 +346,25 @@
               <div class="d-flex gap-2">
                 <div>{{ locationData.locationText }}</div>
                 <div *ngIf="locationData.isNotServicedStop"><span class="badge rounded-pill bg-danger fw-bolder">not serviced</span></div>
+              </div>
+
+              <div class="ps-1 d-flex gap-1 align-items-center">
+                <ng-container *ngIf="locationData.occupancy.firstClassIcon">
+                  <div>1.</div>
+                  <div class="occupancy">
+                    <sbb-icon 
+                      svgIcon="{{ locationData.occupancy.firstClassIcon }}"
+                      sbbTooltip="{{ locationData.occupancy.firstClassText }}"
+                    ></sbb-icon>
+                  </div>
+                  <div>2.</div>
+                  <div class="occupancy">
+                    <sbb-icon 
+                      svgIcon="{{ locationData.occupancy.secondClassIcon }}"
+                      sbbTooltip="{{ locationData.occupancy.secondClassText }}"
+                    ></sbb-icon>
+                  </div>
+                </ng-container>
               </div>
             </td>
             <ng-container *ngIf="locationData.platformAssistanceIconPath !== null">
