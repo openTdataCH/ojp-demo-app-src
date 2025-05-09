@@ -82,8 +82,8 @@
                 </ng-container>
 
                 <ul class="tooltip-list">
-                  <li *ngFor="let detailText of situationData.details">
-                    {{ detailText }}
+                  <li *ngFor="let detailText of situationData.safeDetails">
+                    <div [innerHTML]="detailText"></div>
                   </li>
                 </ul>
               </sbb-tooltip>
