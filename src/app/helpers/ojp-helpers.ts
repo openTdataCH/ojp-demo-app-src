@@ -134,6 +134,13 @@ export class OJPHelpers {
     stopPointData.geoPosition = stopPoint.location.geoPosition;
 
     stopPointData.isNotServicedStop = stopPoint.isNotServicedStop === true;
+
+    stopPointData.occupancy = {
+      firstClassIcon: OJPHelpers.computeOccupancyLevelIcon(stopPoint, 'firstClass'),
+      firstClassText: OJPHelpers.computeOccupancyLevelText(stopPoint, 'firstClass'),
+      secondClassIcon: OJPHelpers.computeOccupancyLevelIcon(stopPoint, 'secondClass'),
+      secondClassText: OJPHelpers.computeOccupancyLevelText(stopPoint, 'secondClass'),
+    };
   }
 
   private static computeStopPointDelayText(depArrType: OJP_Legacy.TripRequestBoardingType, stopPoint: OJP_Legacy.StopPoint): string | null {
