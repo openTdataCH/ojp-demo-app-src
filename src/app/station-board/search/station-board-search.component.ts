@@ -315,7 +315,8 @@ export class StationBoardSearchComponent implements OnInit {
     this.mapURLs.betav2 = 'https://tools.odpch.ch/ojp-demo-v2/board?' + queryParams.toString();
     
     const isOJPv2 = OJP_Legacy.OJP_VERSION === '2.0';
-    this.mapURLs.beta = isOJPv2 ? this.mapURLs.betav2 : this.mapURLs.betav1;
+    this.mapURLs.beta = isOJPv2 ? this.mapURLs.betav1 : this.mapURLs.betav2;
+    this.userTripService.betaURLText = isOJPv2 ? 'BETA-v1' : 'BETA-v2';
   }
 
   private fetchStopEventsForStopRef(stopPlaceRef: string) {
