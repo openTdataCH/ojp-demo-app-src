@@ -2,6 +2,8 @@ import OJP_Legacy from '../config/ojp-legacy';
 
 import { LegStopPointData } from '../shared/components/service-stops.component';
 import { DEBUG_LEVEL } from '../config/constants';
+import { SituationContent } from '../shared/types/situations';
+import { DomSanitizer } from '@angular/platform-browser';
 
 type PublicTransportPictogram = 'picto-bus' | 'picto-railway' | 'picto-tram' | 'picto-rack-railway' | 'picto-funicular' | 'picto-cablecar' | 'picto-gondola' | 'picto-chairlift' | 'picto-boat' | 'car-sharing' | 'picto-bus-fallback' | 'autozug';
 
@@ -195,7 +197,7 @@ export class OJPHelpers {
     return delayText;
   }
 
-  public static computeSituationsData(siriSituations: OJP_Legacy.PtSituationElement[]): OJP_Legacy.SituationContent[] {
+  public static computeSituationsData(sanitizer: DomSanitizer, siriSituations: OJP_Legacy.PtSituationElement[]): SituationContent[] {
     const situationsData: OJP_Legacy.SituationContent[] = [];
 
     siriSituations.forEach(situation => {
@@ -227,11 +229,32 @@ export class OJPHelpers {
           }
         });
 
+        const infoLink = publishingAction.passengerInformation.infoLink
+        if (infoLink) {
+          situationData.details.push(infoLink.label)
+        }
+
         situationsData.push(situationData);
       });
     });
 
-    return situationsData;
+    const safeSituationsData = situationsData.map(el => {
+      const safeEl: SituationContent = {
+        summary: el.summary,
+        descriptions: el.descriptions,
+        // details might contain HTML, sanitize content
+        safeDetails: el.details.map(detailS => {
+          const textarea = document.createElement('textarea');
+          textarea.innerHTML = detailS;
+          const safeDetail = sanitizer.bypassSecurityTrustHtml(textarea.value);
+          return safeDetail;
+        }),
+      };
+
+      return safeEl;
+    });
+
+    return safeSituationsData;
   }
 
   public static async fetchGist(gistId: string): Promise<string | null> {
