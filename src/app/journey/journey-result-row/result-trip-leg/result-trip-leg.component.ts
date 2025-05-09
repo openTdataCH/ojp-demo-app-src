@@ -449,6 +449,16 @@ export class ResultTripLegComponent implements OnInit {
 
       this.legInfoDataModel.toLocationData.platformAssistanceIconPath = OJPHelpers.computePlatformAssistanceIconPath(timedLeg.toStopPoint);
       this.legInfoDataModel.toLocationData.platformAssistanceTooltip = OJPHelpers.computePlatformAssistanceTooltip(timedLeg.toStopPoint);
+
+      timedLeg.intermediateStopPoints.forEach((stopPoint, idx) => {
+        const locationData = this.legInfoDataModel.intermediaryLocationsData[idx] ?? null;
+        if (locationData === null) {
+          return;
+        }
+
+        locationData.platformAssistanceIconPath = OJPHelpers.computePlatformAssistanceIconPath(stopPoint);
+        locationData.platformAssistanceTooltip = OJPHelpers.computePlatformAssistanceTooltip(stopPoint);
+      });
     }
 
     this.legInfoDataModel.serviceAttributes = this.computeServiceAttributeModel(leg);

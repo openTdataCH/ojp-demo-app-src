@@ -134,6 +134,13 @@ export class OJPHelpers {
     stopPointData.geoPosition = stopPoint.location.geoPosition;
 
     stopPointData.isNotServicedStop = stopPoint.isNotServicedStop === true;
+
+    stopPointData.occupancy = {
+      firstClassIcon: OJPHelpers.computeOccupancyLevelIcon(stopPoint, 'firstClass'),
+      firstClassText: OJPHelpers.computeOccupancyLevelText(stopPoint, 'firstClass'),
+      secondClassIcon: OJPHelpers.computeOccupancyLevelIcon(stopPoint, 'secondClass'),
+      secondClassText: OJPHelpers.computeOccupancyLevelText(stopPoint, 'secondClass'),
+    };
   }
 
   private static computeStopPointDelayText(depArrType: OJP_Legacy.TripRequestBoardingType, stopPoint: OJP_Legacy.StopPoint): string | null {
@@ -339,5 +346,48 @@ export class OJPHelpers {
     })();
 
     return message;
+  }
+
+  private static computeOccupancyLevelIcon(stopPoint: OJP_Legacy.StopPoint, fareClassType: OJP_Legacy.FareClassType): string | null {
+    const occupancyLevel = stopPoint.mapFareClassOccupancy[fareClassType] ?? null;
+    if (occupancyLevel === null) {
+      return null;
+    }
+
+    if (occupancyLevel === 'unknown') {
+      return 'fpl:utilization-none';
+    }
+    if (occupancyLevel === 'manySeatsAvailable') {
+      return 'fpl:utilization-low';
+    }
+    if (occupancyLevel === 'fewSeatsAvailable') {
+      return 'fpl:utilization-medium';
+    }
+    if (occupancyLevel === 'standingRoomOnly') {
+      return 'fpl:utilization-high';
+    }
+    
+    return null;
+  }
+
+  private static computeOccupancyLevelText(stopPoint: OJP_Legacy.StopPoint, fareClassType: OJP_Legacy.FareClassType): string {
+    const defaultText = 'No forecast available';
+
+    const occupancyLevel = stopPoint.mapFareClassOccupancy[fareClassType] ?? null;
+    if (occupancyLevel === null) {
+      return defaultText;
+    }
+    
+    if (occupancyLevel === 'manySeatsAvailable') {
+      return 'Low occupancy';
+    }
+    if (occupancyLevel === 'fewSeatsAvailable') {
+      return 'Medium occupancy';
+    }
+    if (occupancyLevel === 'standingRoomOnly') {
+      return 'High occupancy';
+    }
+
+    return defaultText;
   }
 }
