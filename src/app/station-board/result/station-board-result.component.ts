@@ -7,6 +7,8 @@ import { StationBoardService } from '../station-board.service';
 import { OJPHelpers } from '../../helpers/ojp-helpers';
 
 import { TripInfoResultPopoverComponent } from '../../journey/journey-result-row/result-trip-leg/trip-info-result-popover/trip-info-result-popover.component';
+import { SituationContent } from '../../shared/types/situations';
+import { DomSanitizer } from '@angular/platform-browser';
 
 interface StationBoardTime {
   stopTime: string
@@ -34,7 +36,7 @@ interface StationBoardModel {
   stopPlatform: string | null
   stopPlatformActual: string | null
 
-  situations: OJP_Legacy.SituationContent[]
+  situations: SituationContent[]
 
   isCancelled: boolean
   hasDeviation: boolean
@@ -52,7 +54,7 @@ export class StationBoardResultComponent implements OnInit, AfterViewInit {
   public selectedIDx: number | null
   public stationBoardType: OJP_Legacy.StationBoardType
 
-  constructor(private stationBoardService: StationBoardService, private tripInfoResultPopover: SbbDialog) {
+  constructor(private stationBoardService: StationBoardService, private tripInfoResultPopover: SbbDialog, private sanitizer: DomSanitizer) {
     this.stopEventsData = [];
     this.selectedIDx = null;
     this.stationBoardType = 'Departures';
@@ -238,7 +240,7 @@ export class StationBoardResultComponent implements OnInit, AfterViewInit {
         stopPlatform: stopEvent.stopPoint.plannedPlatform, 
         stopPlatformActual: stopPlatformActual,
         
-        situations: OJPHelpers.computeSituationsData(stopEvent.stopPoint.siriSituations),
+        situations: OJPHelpers.computeSituationsData(this.sanitizer, stopEvent.stopPoint.siriSituations),
 
         isCancelled: isCancelled,
         hasDeviation: hasDeviation,

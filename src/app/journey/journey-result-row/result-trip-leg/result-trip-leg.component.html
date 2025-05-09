@@ -91,11 +91,30 @@
     </div>
 
     <div class="flex-grow-0 leg-time leg-right-side">
-      <div class="d-flex gap-1 align-items-center">
-        <img *ngIf="this.legInfoDataModel.fromLocationData.platformAssistanceIconPath !== null"
-        class="leg-platform-assistance" 
-        src="{{ this.legInfoDataModel.fromLocationData.platformAssistanceIconPath }}" 
-        sbbTooltip="{{ this.legInfoDataModel.fromLocationData.platformAssistanceTooltip }}" />
+      <div class="d-flex gap-2 align-items-center leg-endpoint">
+        <div class="d-flex gap-1 align-items-center">
+          <ng-container *ngIf="this.legInfoDataModel.fromLocationData.occupancy.firstClassIcon">
+            <div>1.</div>
+            <div class="occupancy">
+              <sbb-icon 
+                svgIcon="{{ this.legInfoDataModel.fromLocationData.occupancy.firstClassIcon }}"
+                sbbTooltip="{{ this.legInfoDataModel.fromLocationData.occupancy.firstClassText }}"
+              ></sbb-icon>
+            </div>
+            <div>2.</div>
+            <div class="occupancy">
+              <sbb-icon 
+                svgIcon="{{ this.legInfoDataModel.fromLocationData.occupancy.secondClassIcon }}"
+                sbbTooltip="{{ this.legInfoDataModel.fromLocationData.occupancy.secondClassText }}"
+              ></sbb-icon>
+            </div>
+          </ng-container>
+          <ng-container *ngIf="this.legInfoDataModel.fromLocationData.platformAssistanceIconPath !== null">
+            <img class="leg-platform-assistance" 
+            src="{{ this.legInfoDataModel.fromLocationData.platformAssistanceIconPath }}" 
+            sbbTooltip="{{ this.legInfoDataModel.fromLocationData.platformAssistanceTooltip }}" />
+          </ng-container>
+        </div>
 
         <div *ngIf="!this.legInfoDataModel.fromLocationData.isNotServicedStop">{{ this.legInfoDataModel.fromLocationData.depText }}</div>
         <div *ngIf="this.legInfoDataModel.fromLocationData.isNotServicedStop"><del>{{ this.legInfoDataModel.fromLocationData.depText }}</del></div>
@@ -137,14 +156,34 @@
     </div>
     
     <div class="flex-grow-0 leg-time leg-right-side">
-      <div class="d-flex gap-1 align-items-center">
-        <img *ngIf="this.legInfoDataModel.toLocationData.platformAssistanceIconPath !== null"
-        class="leg-platform-assistance" 
-        src="{{ this.legInfoDataModel.toLocationData.platformAssistanceIconPath }}" 
-        sbbTooltip="{{ this.legInfoDataModel.toLocationData.platformAssistanceTooltip }}" />
+      <div class="d-flex gap-2 align-items-center leg-endpoint">
+        <div class="d-flex gap-1 align-items-center">
+          <ng-container *ngIf="this.legInfoDataModel.toLocationData.occupancy.firstClassIcon">
+            <div>1.</div>
+            <div class="occupancy">
+              <sbb-icon 
+                svgIcon="{{ this.legInfoDataModel.toLocationData.occupancy.firstClassIcon }}"
+                sbbTooltip="{{ this.legInfoDataModel.toLocationData.occupancy.firstClassText }}"
+              ></sbb-icon>
+            </div>
+            <div>2.</div>
+            <div class="occupancy">
+              <sbb-icon 
+                svgIcon="{{ this.legInfoDataModel.toLocationData.occupancy.secondClassIcon }}"
+                sbbTooltip="{{ this.legInfoDataModel.toLocationData.occupancy.secondClassText }}"
+              ></sbb-icon>
+            </div>
+          </ng-container>
+          <ng-container *ngIf="this.legInfoDataModel.toLocationData.platformAssistanceIconPath !== null">
+            <img class="leg-platform-assistance" 
+            src="{{ this.legInfoDataModel.toLocationData.platformAssistanceIconPath }}" 
+            sbbTooltip="{{ this.legInfoDataModel.toLocationData.platformAssistanceTooltip }}" />
+          </ng-container>
+        </div>
 
         <div *ngIf="!this.legInfoDataModel.toLocationData.isNotServicedStop">{{ this.legInfoDataModel.toLocationData.arrText }}</div>
         <div *ngIf="this.legInfoDataModel.toLocationData.isNotServicedStop"><del>{{ this.legInfoDataModel.toLocationData.arrText }}</del></div>
+        
         <div class="time-delay">{{ this.legInfoDataModel.toLocationData.arrDelayText }}</div>
       </div>
     </div>
@@ -288,8 +327,8 @@
             </ng-container>
             
             <ul class="tooltip-list">
-              <li *ngFor="let detailText of situationData.details">
-                {{ detailText }}
+              <li *ngFor="let detailText of situationData.safeDetails">
+                <div [innerHTML]="detailText"></div>
               </li>
             </ul>
           </sbb-tooltip>
@@ -302,13 +341,39 @@
     <table class="table table-hover table-stops mb-0 align-middle">
       <tbody>
         <ng-container *ngFor="let locationData of this.legInfoDataModel.intermediaryLocationsData; index as idx">
-          <tr (click)="this.zoomToIntermediaryPoint(idx)" class="location-hover" stopClickPropagation>
+          <tr (click)="this.zoomToIntermediaryPoint(idx)" class="location-hover leg-intermediate" stopClickPropagation>
             <td>
               <div class="d-flex gap-2">
                 <div>{{ locationData.locationText }}</div>
                 <div *ngIf="locationData.isNotServicedStop"><span class="badge rounded-pill bg-danger fw-bolder">not serviced</span></div>
               </div>
+
+              <div class="ps-1 d-flex gap-1 align-items-center">
+                <ng-container *ngIf="locationData.occupancy.firstClassIcon">
+                  <div>1.</div>
+                  <div class="occupancy">
+                    <sbb-icon 
+                      svgIcon="{{ locationData.occupancy.firstClassIcon }}"
+                      sbbTooltip="{{ locationData.occupancy.firstClassText }}"
+                    ></sbb-icon>
+                  </div>
+                  <div>2.</div>
+                  <div class="occupancy">
+                    <sbb-icon 
+                      svgIcon="{{ locationData.occupancy.secondClassIcon }}"
+                      sbbTooltip="{{ locationData.occupancy.secondClassText }}"
+                    ></sbb-icon>
+                  </div>
+                </ng-container>
+              </div>
             </td>
+            <ng-container *ngIf="locationData.platformAssistanceIconPath !== null">
+              <td class="fit">
+                <img class="leg-platform-assistance" 
+                  src="{{ locationData.platformAssistanceIconPath }}" 
+                  sbbTooltip="{{ locationData.platformAssistanceTooltip }}" />
+              </td>              
+            </ng-container>
             <td class="fit">
               <div *ngIf="!locationData.isNotServicedStop">{{ locationData.arrText ?? ' ' }} <span class="time-delay">{{ locationData.arrDelayText }}</span></div>
               <div *ngIf="locationData.isNotServicedStop"><del>{{ locationData.arrText ?? ' ' }}</del> <span class="time-delay">{{ locationData.arrDelayText }}</span></div>

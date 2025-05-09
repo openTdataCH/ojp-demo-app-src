@@ -16,9 +16,16 @@ export interface LegStopPointData {
   platformAssistanceIconPath: string | null,
   platformAssistanceTooltip: string,
 
-  geoPosition: OJP_Legacy.GeoPosition | null
+  geoPosition: OJP_Legacy.GeoPosition | null,
 
-  isNotServicedStop: boolean
+  isNotServicedStop: boolean,
+
+  occupancy: {
+    firstClassIcon: string | null,
+    firstClassText: string,
+    secondClassIcon: string | null,
+    secondClassText: string,
+  }
 }
 
 @Component({

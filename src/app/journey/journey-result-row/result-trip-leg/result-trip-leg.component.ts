@@ -19,6 +19,8 @@ import { TripLegGeoController } from '../../../shared/controllers/trip-geo-contr
 
 import { TripInfoResultPopoverComponent } from './trip-info-result-popover/trip-info-result-popover.component';
 import { TripLegData } from '../../../shared/types/trip';
+import { DomSanitizer } from '@angular/platform-browser';
+import { SituationContent } from '../../../shared/types/situations';
 
 type LegTemplate = 'walk' | 'timed' | 'taxi';
 
@@ -46,7 +48,7 @@ interface LegInfoDataModel {
   intermediaryLocationsData: LegStopPointData[]
 
   hasSituations: boolean
-  situations: OJP_Legacy.SituationContent[]
+  situations: SituationContent[]
 
   legTemplate: LegTemplate
 
@@ -85,7 +87,7 @@ export class ResultTripLegComponent implements OnInit {
 
   public enableTRR: boolean;
 
-  constructor(private mapService: MapService, private router: Router, private tripInfoResultPopover: SbbDialog, private userTripService: UserTripService) {
+  constructor(private mapService: MapService, private router: Router, private tripInfoResultPopover: SbbDialog, private userTripService: UserTripService, private sanitizer: DomSanitizer) {
     this.legInfoDataModel = <LegInfoDataModel>{}
     this.isEmbed = this.router.url.indexOf('/embed/') !== -1;
     
@@ -427,7 +429,7 @@ export class ResultTripLegComponent implements OnInit {
 
       const timedLeg = leg as OJP_Legacy.TripTimedLeg;
       const timedLegSituations = timedLeg.service.siriSituations;
-      const situationsData = OJPHelpers.computeSituationsData(timedLegSituations);
+      const situationsData = OJPHelpers.computeSituationsData(this.sanitizer, timedLegSituations);
       
       if (DEBUG_LEVEL === 'DEBUG') {
         if ((timedLegSituations.length > 0) && (situationsData.length === 0)) {
@@ -449,6 +451,16 @@ export class ResultTripLegComponent implements OnInit {
 
       this.legInfoDataModel.toLocationData.platformAssistanceIconPath = OJPHelpers.computePlatformAssistanceIconPath(timedLeg.toStopPoint);
       this.legInfoDataModel.toLocationData.platformAssistanceTooltip = OJPHelpers.computePlatformAssistanceTooltip(timedLeg.toStopPoint);
+
+      timedLeg.intermediateStopPoints.forEach((stopPoint, idx) => {
+        const locationData = this.legInfoDataModel.intermediaryLocationsData[idx] ?? null;
+        if (locationData === null) {
+          return;
+        }
+
+        locationData.platformAssistanceIconPath = OJPHelpers.computePlatformAssistanceIconPath(stopPoint);
+        locationData.platformAssistanceTooltip = OJPHelpers.computePlatformAssistanceTooltip(stopPoint);
+      });
     }
 
     this.legInfoDataModel.serviceAttributes = this.computeServiceAttributeModel(leg);

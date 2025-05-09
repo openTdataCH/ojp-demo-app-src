@@ -2,6 +2,8 @@ import OJP_Legacy from '../config/ojp-legacy';
 
 import { LegStopPointData } from '../shared/components/service-stops.component';
 import { DEBUG_LEVEL } from '../config/constants';
+import { SituationContent } from '../shared/types/situations';
+import { DomSanitizer } from '@angular/platform-browser';
 
 type PublicTransportPictogram = 'picto-bus' | 'picto-railway' | 'picto-tram' | 'picto-rack-railway' | 'picto-funicular' | 'picto-cablecar' | 'picto-gondola' | 'picto-chairlift' | 'picto-boat' | 'car-sharing' | 'picto-bus-fallback' | 'autozug';
 
@@ -134,6 +136,13 @@ export class OJPHelpers {
     stopPointData.geoPosition = stopPoint.location.geoPosition;
 
     stopPointData.isNotServicedStop = stopPoint.isNotServicedStop === true;
+
+    stopPointData.occupancy = {
+      firstClassIcon: OJPHelpers.computeOccupancyLevelIcon(stopPoint, 'firstClass'),
+      firstClassText: OJPHelpers.computeOccupancyLevelText(stopPoint, 'firstClass'),
+      secondClassIcon: OJPHelpers.computeOccupancyLevelIcon(stopPoint, 'secondClass'),
+      secondClassText: OJPHelpers.computeOccupancyLevelText(stopPoint, 'secondClass'),
+    };
   }
 
   private static computeStopPointDelayText(depArrType: OJP_Legacy.TripRequestBoardingType, stopPoint: OJP_Legacy.StopPoint): string | null {
@@ -188,7 +197,7 @@ export class OJPHelpers {
     return delayText;
   }
 
-  public static computeSituationsData(siriSituations: OJP_Legacy.PtSituationElement[]): OJP_Legacy.SituationContent[] {
+  public static computeSituationsData(sanitizer: DomSanitizer, siriSituations: OJP_Legacy.PtSituationElement[]): SituationContent[] {
     const situationsData: OJP_Legacy.SituationContent[] = [];
 
     siriSituations.forEach(situation => {
@@ -220,11 +229,32 @@ export class OJPHelpers {
           }
         });
 
+        const infoLink = publishingAction.passengerInformation.infoLink
+        if (infoLink) {
+          situationData.details.push(infoLink.label)
+        }
+
         situationsData.push(situationData);
       });
     });
 
-    return situationsData;
+    const safeSituationsData = situationsData.map(el => {
+      const safeEl: SituationContent = {
+        summary: el.summary,
+        descriptions: el.descriptions,
+        // details might contain HTML, sanitize content
+        safeDetails: el.details.map(detailS => {
+          const textarea = document.createElement('textarea');
+          textarea.innerHTML = detailS;
+          const safeDetail = sanitizer.bypassSecurityTrustHtml(textarea.value);
+          return safeDetail;
+        }),
+      };
+
+      return safeEl;
+    });
+
+    return safeSituationsData;
   }
 
   public static async fetchGist(gistId: string): Promise<string | null> {
@@ -339,5 +369,48 @@ export class OJPHelpers {
     })();
 
     return message;
+  }
+
+  private static computeOccupancyLevelIcon(stopPoint: OJP_Legacy.StopPoint, fareClassType: OJP_Legacy.FareClassType): string | null {
+    const occupancyLevel = stopPoint.mapFareClassOccupancy[fareClassType] ?? null;
+    if (occupancyLevel === null) {
+      return null;
+    }
+
+    if (occupancyLevel === 'unknown') {
+      return 'fpl:utilization-none';
+    }
+    if (occupancyLevel === 'manySeatsAvailable') {
+      return 'fpl:utilization-low';
+    }
+    if (occupancyLevel === 'fewSeatsAvailable') {
+      return 'fpl:utilization-medium';
+    }
+    if (occupancyLevel === 'standingRoomOnly') {
+      return 'fpl:utilization-high';
+    }
+    
+    return null;
+  }
+
+  private static computeOccupancyLevelText(stopPoint: OJP_Legacy.StopPoint, fareClassType: OJP_Legacy.FareClassType): string {
+    const defaultText = 'No forecast available';
+
+    const occupancyLevel = stopPoint.mapFareClassOccupancy[fareClassType] ?? null;
+    if (occupancyLevel === null) {
+      return defaultText;
+    }
+    
+    if (occupancyLevel === 'manySeatsAvailable') {
+      return 'Low occupancy';
+    }
+    if (occupancyLevel === 'fewSeatsAvailable') {
+      return 'Medium occupancy';
+    }
+    if (occupancyLevel === 'standingRoomOnly') {
+      return 'High occupancy';
+    }
+
+    return defaultText;
   }
 }
