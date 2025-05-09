@@ -5,7 +5,7 @@ OJP-Demo URL: https://opentdatach.github.io/ojp-demo-app/
 ----
 
 02.May 2025
-- Catch `changeWithinVehicle` for Flügelzüge - [[PR #222](https://github.com/openTdataCH/ojp-demo-app-src/pull/222)
+- Catch `changeWithinVehicle` for Flügelzüge - [PR #222](https://github.com/openTdataCH/ojp-demo-app-src/pull/222)
   - catch TransferLeg `changeWithinVehicle` flag for OJP 2.0
   - refactor trip info to show information when the legs were merged
 
