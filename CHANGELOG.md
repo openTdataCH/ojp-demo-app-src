@@ -10,6 +10,8 @@ OJP-Demo URL: https://opentdatach.github.io/ojp-demo-app/
 - Patch TimeLeg Service attribute `BA` icon - [PR #230](https://github.com/openTdataCH/ojp-demo-app-src/pull/229)
   - the `A__BA` attribute is not in the [SBB Angular](https://angular-v14.app.sbb.ch/angular/icon-overview) lib
 - Fix beta URLs - [PR #231](https://github.com/openTdataCH/ojp-demo-app-src/pull/231)
+- Fix Occupancy (OJP 2.0) - [PR #232](https://github.com/openTdataCH/ojp-demo-app-src/pull/232)
+  - catch cases when we have only 2nd class occupancy data
 
 09.May 2025
 - Display Occupancy Level - [Occupancy in OJP 2.0 #223](https://github.com/openTdataCH/ojp-demo-app-src/issues/223), [PR #253](https://github.com/openTdataCH/ojp-demo-app-src/pull/225)
