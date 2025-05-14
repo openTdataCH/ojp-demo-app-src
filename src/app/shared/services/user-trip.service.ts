@@ -95,9 +95,19 @@ export class UserTripService {
   }
 
   public initDefaults(language: OJP_Legacy.Language) {
-    let appStageS = this.queryParams.get('stage')
+    const appStageS = this.queryParams.get('stage') ?? null;
     if (appStageS) {
-      this.currentAppStage = this.computeAppStageFromString(appStageS)
+      const userAppStage = this.computeAppStageFromString(appStageS);
+      if (userAppStage) {
+        setTimeout(() => {
+          // HACK 
+          // without the setTimeout , the parent src/app/journey/journey-search/journey-search.component.html template 
+          // gives following errors core.mjs:9157 ERROR RuntimeError: NG0100: ExpressionChangedAfterItHasBeenCheckedError: 
+          // Expression has changed after it was checked. Previous value: 'PROD'. Current value: 'INT'. 
+          // Find more at https://angular.io/errors/NG0100
+          this.currentAppStage = userAppStage;
+        });
+      }
     }
 
     const defaultLocationsPlaceRef = {
@@ -529,48 +539,23 @@ export class UserTripService {
   }
 
   private updateLinkedURLs(queryParams: URLSearchParams) {
-    this.prodURL = 'https://opentdatach.github.io/ojp-demo-app/search?' + queryParams.toString();
-
     const isOJPv2 = OJP_Legacy.OJP_VERSION === '2.0';
+
+    const prodQueryParams = new URLSearchParams(queryParams);
+    if (isOJPv2) {
+      this.updateStageLinkedURL(prodQueryParams, isOJPv2);
+    }
+    this.prodURL = 'https://opentdatach.github.io/ojp-demo-app/search?' + prodQueryParams.toString();
 
     const betaV1_QueryParams = new URLSearchParams(queryParams);
     if (isOJPv2) {
-      const newStage: APP_STAGE | null = (() => {
-        if (this.currentAppStage === 'V2-INT') {
-          return 'INT';
-        }
-        if (this.currentAppStage === 'V2-TEST') {
-          return 'TEST';
-        }
-
-        return null;
-      })();
-      
-      if (newStage === null) {
-        betaV1_QueryParams.delete('stage');
-      } else {
-        betaV1_QueryParams.set('stage', newStage);
-      }
+      this.updateStageLinkedURL(betaV1_QueryParams, isOJPv2);
     }
     this.betaV1URL = 'https://tools.odpch.ch/beta-ojp-demo/search?' + betaV1_QueryParams.toString();
 
     const betaV2_QueryParams = new URLSearchParams(queryParams);
     if (!isOJPv2) {
-      const newStage: APP_STAGE | null = (() => {
-        if (this.currentAppStage === 'INT') {
-          return 'V2-INT';
-        }
-        if (this.currentAppStage === 'TEST') {
-          return 'V2-TEST';
-        }
-
-        return null;
-      })();
-      if (newStage === null) {
-        betaV2_QueryParams.delete('stage');
-      } else {
-        betaV2_QueryParams.set('stage', newStage);
-      }
+      this.updateStageLinkedURL(betaV2_QueryParams, isOJPv2);
     }
     this.betaV2URL = 'https://tools.odpch.ch/ojp-demo-v2/search?' + betaV2_QueryParams.toString();
 
@@ -609,6 +594,38 @@ export class UserTripService {
     sbbURLQueryParams.set('stops', JSON.stringify(sbbURLStopsData));
     sbbURLQueryParams.set('ref', 'OJP Demo');
     this.sbbURL = 'https://www.sbb.ch/en?' + sbbURLQueryParams.toString();
+  }
+
+  public updateStageLinkedURL(queryParams: URLSearchParams, isOJPv2: boolean) {
+    const newStage: APP_STAGE | null = (() => {
+      if (isOJPv2) {
+        // target beta is OJPv1
+        if (this.currentAppStage === 'V2-INT') {
+          return 'INT';
+        }
+        if (this.currentAppStage === 'V2-TEST') {
+          return 'TEST';
+        }
+      } else {
+        // target beta is OJPv2
+        if (this.currentAppStage === 'INT') {
+          return 'V2-INT';
+        }
+        if (this.currentAppStage === 'TEST') {
+          return 'V2-TEST';
+        }
+      }
+      
+      return null;
+    })();
+
+    if (newStage === null) {
+      queryParams.delete('stage');
+    } else {
+      queryParams.set('stage', newStage);
+    }
+
+    return queryParams;
   }
 
   private computeInitialDate(): Date {

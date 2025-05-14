@@ -22,6 +22,7 @@ interface PageModel {
   
   journeyExampleURL: string,
   journeyExampleCaption: string,
+  permalinkURL: string,
 }
 
 @Component({
@@ -30,7 +31,7 @@ interface PageModel {
   templateUrl: './trip-info-result.component.html',
 })
 export class TripInfoResultComponent implements OnInit, AfterViewInit {
-  public model: PageModel
+  public model: PageModel;
 
   constructor(private tripInfoService: TripInfoService, private userTripService: UserTripService, private cdr: ChangeDetectorRef) {
     this.model = <PageModel>{}
@@ -149,8 +150,13 @@ export class TripInfoResultComponent implements OnInit, AfterViewInit {
 
     this.model.journeyExampleURL = './search?' + queryParams.toString();
     this.model.journeyExampleCaption = fromLocation.computeLocationName() + ' -> ' + toLocation.computeLocationName();
+    this.updateURLs();
 
     // otherwise we get ExpressionChangedAfterItHasBeenCheckedError
     this.cdr.detectChanges();
+  }
+
+  private updateURLs() {
+    this.model.permalinkURL = './trip?ref=' + this.model.journeyRef + '&stage=' + this.userTripService.currentAppStage;
   }
 }
