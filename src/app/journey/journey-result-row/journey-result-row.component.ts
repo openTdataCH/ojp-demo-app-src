@@ -182,16 +182,12 @@ export class JourneyResultRowComponent implements OnInit {
     
     const updatedTrip = trResponse.trips[0];
 
-    const fareRequestStageConfig = this.userTripService.getStageConfig('NOVA-INT');
-    const fareRequest = new OJP_Legacy.NovaRequest(fareRequestStageConfig);
-    const fareRequestResponse = await fareRequest.fetchResponseForTrips([updatedTrip]);
-
-    if (fareRequestResponse.fareResults.length === 1) {
-      updatedTrip.tripFareResults = fareRequestResponse.fareResults[0].tripFareResults;
+    const fareResults = await this.userTripService.fetchFaresForTrips(this.languageService.language, [updatedTrip]);
+    if (fareResults.length === 1) {
+      this.tripData.fareResult = fareResults[0];
     } else {
       // if curreny NOVA fails, rely on older version of fares
       console.log('error: nova failed to return new fares, use old ones');
-      updatedTrip.tripFareResults = this.tripData.trip.tripFareResults;
     }
 
     this.tripData.trip = updatedTrip;

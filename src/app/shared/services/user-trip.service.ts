@@ -3,10 +3,11 @@ import { EventEmitter, Injectable } from '@angular/core'
 import mapboxgl from 'mapbox-gl'
 
 import OJP_Legacy from '../../config/ojp-legacy';
+import * as OJP_Next from 'ojp-sdk-next';
 import * as OJP_Types from 'ojp-shared-types';
 
 import { APP_CONFIG } from '../../config/app-config';
-import { APP_STAGE, DEBUG_LEVEL, DEFAULT_APP_STAGE, TRIP_REQUEST_DEFAULT_NUMBER_OF_RESULTS } from '../../config/constants';
+import { APP_STAGE, DEBUG_LEVEL, DEFAULT_APP_STAGE, REQUESTOR_REF, TRIP_REQUEST_DEFAULT_NUMBER_OF_RESULTS } from '../../config/constants';
 import { MapService } from './map.service';
 import { MapTrip } from '../types/map-geometry-types';
 import { TripData, TripLegData } from '../types/trip';
@@ -923,23 +924,27 @@ export class UserTripService {
       return;
     }
 
-    const novaRequestStageConfig = this.getStageConfig('NOVA-INT');
+    const trips = tripRequestResponse.trips;
+    const fareResults = await this.fetchFaresForTrips(language, trips);
+    this.updateFares(fareResults);
+  }
 
-    if (novaRequestStageConfig.authToken?.startsWith('PLACEHOLDER')) {
-      console.error('fetchFares: OJP Service AuthKey not configured');
-      console.log(novaRequestStageConfig);
-      return;
-    }
+  public async fetchFaresForTrips(language: OJP_Legacy.Language, trips: OJP_Legacy.Trip[]) {
 
-    const novaRequest = new OJP_Legacy.NovaRequest(novaRequestStageConfig);
-    const novaResponse = await novaRequest.fetchResponseForTrips(tripRequestResponse.trips);
+    const fareHttpConfig = this.getStageConfig('NOVA-INT');
+    const ojpSDK_Next = new OJP_Next.SDK(REQUESTOR_REF, fareHttpConfig, language, OJP_Legacy.XML_BuilderConfigOJPv1);
 
-    if (novaResponse.message === 'NovaFares.DONE') {
-      this.updateFares(novaResponse.fareResults);
-    } else {
-      console.error('NOVA ERROR');
-      console.log(novaRequest.requestInfo);
-    }
+    const tripsV2: OJP_Next.Trip[] = [];
+    trips.forEach(tripLegacy => {
+      const tripV2_XML = tripLegacy.asXML(OJP_Legacy.XML_ConfigOJPv2);
+      const tripV2 = OJP_Next.Trip.initWithTripXML(tripV2_XML);
+      tripsV2.push(tripV2);
+    });
+
+    const fareRequest = OJP_Next.FareRequest.initWithOJPv2Trips(tripsV2);
+
+    const fareResults = await ojpSDK_Next.fetchFareResults(fareRequest);
+    return fareResults;
   }
 
   public hasPublicTransport(): boolean {
