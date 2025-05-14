@@ -114,7 +114,14 @@ export class StationBoardSearchComponent implements OnInit {
     if (userStage) {
       const newAppStage = this.computeAppStageFromString(userStage);
       if (newAppStage) {
-        this.userTripService.updateAppStage(newAppStage)
+        setTimeout(() => {
+          // HACK 
+          // without the setTimeout , the parent src/app/station-board/station-board.component.html template 
+          // gives following errors core.mjs:9157 ERROR RuntimeError: NG0100: ExpressionChangedAfterItHasBeenCheckedError: 
+          // Expression has changed after it was checked. Previous value: 'PROD'. Current value: 'INT'. 
+          // Find more at https://angular.io/errors/NG0100
+          this.userTripService.updateAppStage(newAppStage);
+        });
       }
     }
 
@@ -310,11 +317,26 @@ export class StationBoardSearchComponent implements OnInit {
   }
 
   private updateLinkedURLs(queryParams: URLSearchParams) {
-    this.mapURLs.prodv1 = 'https://opentdatach.github.io/ojp-demo-app/board?' + queryParams.toString();
-    this.mapURLs.betav1 = 'https://tools.odpch.ch/beta-ojp-demo/board?' + queryParams.toString();
-    this.mapURLs.betav2 = 'https://tools.odpch.ch/ojp-demo-v2/board?' + queryParams.toString();
-    
     const isOJPv2 = OJP_Legacy.OJP_VERSION === '2.0';
+
+    const prodQueryParams = new URLSearchParams(queryParams);
+    if (isOJPv2) {
+      this.userTripService.updateStageLinkedURL(prodQueryParams, isOJPv2);
+    }
+    this.mapURLs.prodv1 = 'https://opentdatach.github.io/ojp-demo-app/board?' + prodQueryParams.toString();
+
+    const betaV1_QueryParams = new URLSearchParams(queryParams);
+    if (isOJPv2) {
+      this.userTripService.updateStageLinkedURL(betaV1_QueryParams, isOJPv2);
+    }
+    this.mapURLs.betav1 = 'https://tools.odpch.ch/beta-ojp-demo/board?' + betaV1_QueryParams.toString();
+
+    const betaV2_QueryParams = new URLSearchParams(queryParams);
+    if (!isOJPv2) {
+      this.userTripService.updateStageLinkedURL(betaV2_QueryParams, isOJPv2);
+    }
+    this.mapURLs.betav2 = 'https://tools.odpch.ch/ojp-demo-v2/board?' + betaV2_QueryParams.toString();
+    
     this.mapURLs.beta = isOJPv2 ? this.mapURLs.betav1 : this.mapURLs.betav2;
     this.userTripService.betaURLText = isOJPv2 ? 'BETA-v1' : 'BETA-v2';
   }
@@ -471,8 +493,9 @@ export class StationBoardSearchComponent implements OnInit {
   }
 
   onChangeStageAPI(ev: any) {
-    const newAppStage = ev.value as APP_STAGE
-    this.userTripService.updateAppStage(newAppStage)
+    const newAppStage = ev.value as APP_STAGE;
+    this.userTripService.updateAppStage(newAppStage);
+    this.updateURLs();
   }
 
   public loadCustomXMLPopover() {

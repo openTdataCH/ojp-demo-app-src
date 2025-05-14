@@ -68,11 +68,9 @@
         
         <div class="mb-3 d-flex" *ngIf="!this.isEmbed">
           <div>
-            <sbb-radio-group class="sbb-radio-group-horizontal">
+            <sbb-radio-group class="sbb-radio-group-horizontal" [(ngModel)]="this.userTripService.currentAppStage">
               <sbb-radio-button *ngFor="let appStageOption of this.appStageOptions" 
-                [value]="appStageOption"
-                [checked]="this.userTripService.currentAppStage == appStageOption"
-                (change)="onChangeStageAPI($event)">
+                [value]="appStageOption" (change)="onChangeStageAPI($event)">
                 {{ appStageOption }}
               </sbb-radio-button>
             </sbb-radio-group>
