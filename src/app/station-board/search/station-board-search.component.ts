@@ -114,7 +114,14 @@ export class StationBoardSearchComponent implements OnInit {
     if (userStage) {
       const newAppStage = this.computeAppStageFromString(userStage);
       if (newAppStage) {
-        this.userTripService.updateAppStage(newAppStage)
+        setTimeout(() => {
+          // HACK 
+          // without the setTimeout , the parent src/app/station-board/station-board.component.html template 
+          // gives following errors core.mjs:9157 ERROR RuntimeError: NG0100: ExpressionChangedAfterItHasBeenCheckedError: 
+          // Expression has changed after it was checked. Previous value: 'PROD'. Current value: 'INT'. 
+          // Find more at https://angular.io/errors/NG0100
+          this.userTripService.updateAppStage(newAppStage);
+        });
       }
     }
 

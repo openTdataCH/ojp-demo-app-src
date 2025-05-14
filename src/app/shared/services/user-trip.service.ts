@@ -95,9 +95,19 @@ export class UserTripService {
   }
 
   public initDefaults(language: OJP_Legacy.Language) {
-    let appStageS = this.queryParams.get('stage')
+    const appStageS = this.queryParams.get('stage') ?? null;
     if (appStageS) {
-      this.currentAppStage = this.computeAppStageFromString(appStageS)
+      const userAppStage = this.computeAppStageFromString(appStageS);
+      if (userAppStage) {
+        setTimeout(() => {
+          // HACK 
+          // without the setTimeout , the parent src/app/journey/journey-search/journey-search.component.html template 
+          // gives following errors core.mjs:9157 ERROR RuntimeError: NG0100: ExpressionChangedAfterItHasBeenCheckedError: 
+          // Expression has changed after it was checked. Previous value: 'PROD'. Current value: 'INT'. 
+          // Find more at https://angular.io/errors/NG0100
+          this.currentAppStage = userAppStage;
+        });
+      }
     }
 
     const defaultLocationsPlaceRef = {
