@@ -39,8 +39,8 @@
   </div>
   <div>Price:
     <ul class="trip-fares">
-      <li *ngFor="let tripFareResult of tripData?.trip?.tripFareResults; index as idx">
-        Legs {{ tripFareResult.fromTripLegIdRef }}-{{ tripFareResult.toTripLegIdRef }} : {{ tripFareResult.fareProduct.price }} CHF ({{ tripFareResult.fareProduct.fareProductName }}, {{ tripFareResult.fareProduct.travelClass }} class)
+      <li *ngFor="let tripFareResult of tripData?.fareResult?.tripFareResult; index as idx">
+        Legs {{ tripFareResult.fromTripLegIdRef }}-{{ tripFareResult.toTripLegIdRef }} : {{ tripFareResult.fareProduct[0].price }} CHF ({{ tripFareResult.fareProduct[0].fareProductName }}, {{ tripFareResult.fareProduct[0].travelClass }} class)
       </li>
     </ul>
   </div>

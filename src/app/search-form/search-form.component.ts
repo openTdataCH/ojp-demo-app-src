@@ -356,7 +356,7 @@ export class SearchFormComponent implements OnInit {
           // it could be that the trips order changed, zoom again to the first one
           const firstTrip = trips[0];
 
-          this.userTripService.fetchFares();
+          this.userTripService.fetchFares(this.languageService.language);
         } else {
           this.userTripService.selectActiveTrip(null);
         }
@@ -439,7 +439,7 @@ export class SearchFormComponent implements OnInit {
       const firstTrip = trips[0];
 
       if (isDoneParsing) {
-        this.userTripService.fetchFares();
+        this.userTripService.fetchFares(this.languageService.language);
       }
     }
   }
