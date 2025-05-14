@@ -56,22 +56,22 @@ export class JourneyResultsComponent implements OnInit {
 
     this.userTripService.tripFaresUpdated.subscribe(fareResults => {
       this.model.tripsData.forEach(tripData => {
-        tripData.trip.tripFareResults = [];
+        tripData.fareResult = null;
       });
 
       fareResults.forEach(fareResult => {
         const foundTripData = this.model.tripsData.find(tripData => {
-          return tripData.trip.id === fareResult.tripId
+          return tripData.trip.id === fareResult.resultId
         }) ?? null;
 
         if (foundTripData === null) {
-          console.error('ERROR - cant find fare for trip ' + fareResult.tripId);
+          console.error('ERROR - cant find fare for trip ' + fareResult.resultId);
           console.log(this.model.tripsData);
           console.log(fareResult);
           return;
         }
 
-        foundTripData.trip.tripFareResults = fareResult.tripFareResults;
+        foundTripData.fareResult = fareResult;
       });
     })
   }
@@ -163,7 +163,7 @@ export class JourneyResultsComponent implements OnInit {
       if (trips.length > 0) {
         const firstTrip = trips[0];
 
-        this.userTripService.fetchFares();
+        this.userTripService.fetchFares(this.languageService.language);
       } else {
         this.userTripService.selectActiveTrip(null);
       }

@@ -580,58 +580,11 @@ export class ResultTripLegComponent implements OnInit {
     const timedLeg = leg as OJP_Legacy.TripTimedLeg;
     for (const [key, attrData] of Object.entries(timedLeg.service.serviceAttributes)) {
       const icon: string = (() => {
-        // TODO - catch
-        // Error retrieving icon fpl:sa-ba! Http failure response for https://icons.app.sbb.ch/fpl/sa-ba.svg: 403 OK
-        // see mock - /Users/vasile/Work/sbb/ojp-opendata/projects/ojp/openTdataCH--ojp-demo-app-src/_mocks/v2/tr/tr-zh-be-attribute-issue.xml
-
-//         ✅ Option 1: Reusable Component (app-image-with-fallback)
-// Create a small Angular component that handles the fallback logic internally.
-
-// image-with-fallback.component.ts
-// ts
-// Copy
-// Edit
-// import { Component, Input } from '@angular/core';
-
-// @Component({
-//   selector: 'app-image-with-fallback',
-//   template: `
-//     <img [src]="currentSrc" (error)="onError()" [alt]="alt" [ngStyle]="style" />
-//   `,
-// })
-// export class ImageWithFallbackComponent {
-//   @Input() src!: string;
-//   @Input() fallback: string = 'assets/default.png';
-//   @Input() alt: string = '';
-//   @Input() style: any;
-
-//   currentSrc!: string;
-
-//   ngOnInit() {
-//     this.currentSrc = this.src;
-//   }
-
-//   onError() {
-//     this.currentSrc = this.fallback;
-//   }
-// }
-// Usage:
-// html
-// Copy
-// Edit
-// <app-image-with-fallback
-//   *ngFor="let item of items"
-//   [src]="item.iconUrl"
-//   [fallback]="'assets/fallback-icon.png'"
-//   [alt]="item.name"
-// />
-
-// avoid infinite loop
-// onError() {
-//   if (this.currentSrc !== this.fallback) {
-//     this.currentSrc = this.fallback;
-//   }
-// }
+        const defaultIcon = 'kom:circle-question-mark-medium';
+        
+        if (key === 'A__BA') {
+          return defaultIcon;
+        }
 
         if (key.startsWith('A_')) {
           const code = key.replace(/A_*/, '');
@@ -639,7 +592,6 @@ export class ResultTripLegComponent implements OnInit {
           return standardIcon;
         }
 
-        const defaultIcon = 'kom:circle-question-mark-medium';
         return defaultIcon;
       })();
 

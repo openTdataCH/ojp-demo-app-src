@@ -28,8 +28,9 @@
     "tslib": "^2.3.0",
     "zone.js": "~0.11.4",
 
-    "ojp-sdk-v1": "0.18.4",
-    "ojp-sdk-next": "0.20.10",
+    "ojp-sdk-v1": "0.18.5",
+    "ojp-sdk-next": "0.20.13",
+    "ojp-shared-types": "0.0.2",
 
     "cross-fetch": "3.1.5",
     "sax": "1.3.0",

@@ -1,5 +1,4 @@
 import { Component, OnInit } from '@angular/core';
-import OJP_Legacy from './config/ojp-legacy';
 import { AppService } from './shared/services/app.service';
 
 @Component({
