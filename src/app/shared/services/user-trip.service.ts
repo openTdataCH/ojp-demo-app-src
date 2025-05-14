@@ -539,48 +539,23 @@ export class UserTripService {
   }
 
   private updateLinkedURLs(queryParams: URLSearchParams) {
-    this.prodURL = 'https://opentdatach.github.io/ojp-demo-app/search?' + queryParams.toString();
-
     const isOJPv2 = OJP_Legacy.OJP_VERSION === '2.0';
+
+    const prodQueryParams = new URLSearchParams(queryParams);
+    if (isOJPv2) {
+      this.updateStageLinkedURL(prodQueryParams, isOJPv2);
+    }
+    this.prodURL = 'https://opentdatach.github.io/ojp-demo-app/search?' + prodQueryParams.toString();
 
     const betaV1_QueryParams = new URLSearchParams(queryParams);
     if (isOJPv2) {
-      const newStage: APP_STAGE | null = (() => {
-        if (this.currentAppStage === 'V2-INT') {
-          return 'INT';
-        }
-        if (this.currentAppStage === 'V2-TEST') {
-          return 'TEST';
-        }
-
-        return null;
-      })();
-      
-      if (newStage === null) {
-        betaV1_QueryParams.delete('stage');
-      } else {
-        betaV1_QueryParams.set('stage', newStage);
-      }
+      this.updateStageLinkedURL(betaV1_QueryParams, isOJPv2);
     }
     this.betaV1URL = 'https://tools.odpch.ch/beta-ojp-demo/search?' + betaV1_QueryParams.toString();
 
     const betaV2_QueryParams = new URLSearchParams(queryParams);
     if (!isOJPv2) {
-      const newStage: APP_STAGE | null = (() => {
-        if (this.currentAppStage === 'INT') {
-          return 'V2-INT';
-        }
-        if (this.currentAppStage === 'TEST') {
-          return 'V2-TEST';
-        }
-
-        return null;
-      })();
-      if (newStage === null) {
-        betaV2_QueryParams.delete('stage');
-      } else {
-        betaV2_QueryParams.set('stage', newStage);
-      }
+      this.updateStageLinkedURL(betaV2_QueryParams, isOJPv2);
     }
     this.betaV2URL = 'https://tools.odpch.ch/ojp-demo-v2/search?' + betaV2_QueryParams.toString();
 
