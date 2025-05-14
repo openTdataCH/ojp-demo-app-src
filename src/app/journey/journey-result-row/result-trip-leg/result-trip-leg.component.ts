@@ -580,6 +580,11 @@ export class ResultTripLegComponent implements OnInit {
     const timedLeg = leg as OJP_Legacy.TripTimedLeg;
     for (const [key, attrData] of Object.entries(timedLeg.service.serviceAttributes)) {
       const icon: string = (() => {
+        const defaultIcon = 'kom:circle-question-mark-medium';
+        
+        if (key === 'A__BA') {
+          return defaultIcon;
+        }
 
         if (key.startsWith('A_')) {
           const code = key.replace(/A_*/, '');
@@ -587,7 +592,6 @@ export class ResultTripLegComponent implements OnInit {
           return standardIcon;
         }
 
-        const defaultIcon = 'kom:circle-question-mark-medium';
         return defaultIcon;
       })();
 
