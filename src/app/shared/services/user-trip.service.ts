@@ -621,6 +621,38 @@ export class UserTripService {
     this.sbbURL = 'https://www.sbb.ch/en?' + sbbURLQueryParams.toString();
   }
 
+  public updateStageLinkedURL(queryParams: URLSearchParams, isOJPv2: boolean) {
+    const newStage: APP_STAGE | null = (() => {
+      if (isOJPv2) {
+        // target beta is OJPv1
+        if (this.currentAppStage === 'V2-INT') {
+          return 'INT';
+        }
+        if (this.currentAppStage === 'V2-TEST') {
+          return 'TEST';
+        }
+      } else {
+        // target beta is OJPv2
+        if (this.currentAppStage === 'INT') {
+          return 'V2-INT';
+        }
+        if (this.currentAppStage === 'TEST') {
+          return 'V2-TEST';
+        }
+      }
+      
+      return null;
+    })();
+
+    if (newStage === null) {
+      queryParams.delete('stage');
+    } else {
+      queryParams.set('stage', newStage);
+    }
+
+    return queryParams;
+  }
+
   private computeInitialDate(): Date {
     const defaultDate = new Date()
 
