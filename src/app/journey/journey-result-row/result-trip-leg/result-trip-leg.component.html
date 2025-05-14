@@ -101,6 +101,8 @@
                 sbbTooltip="{{ this.legInfoDataModel.fromLocationData.occupancy.firstClassText }}"
               ></sbb-icon>
             </div>
+          </ng-container>
+          <ng-container *ngIf="this.legInfoDataModel.fromLocationData.occupancy.secondClassIcon">
             <div>2.</div>
             <div class="occupancy">
               <sbb-icon 
@@ -166,6 +168,8 @@
                 sbbTooltip="{{ this.legInfoDataModel.toLocationData.occupancy.firstClassText }}"
               ></sbb-icon>
             </div>
+          </ng-container>
+          <ng-container *ngIf="this.legInfoDataModel.toLocationData.occupancy.secondClassIcon">
             <div>2.</div>
             <div class="occupancy">
               <sbb-icon 
@@ -357,6 +361,8 @@
                       sbbTooltip="{{ locationData.occupancy.firstClassText }}"
                     ></sbb-icon>
                   </div>
+                </ng-container>
+                <ng-container *ngIf="locationData.occupancy.secondClassIcon">
                   <div>2.</div>
                   <div class="occupancy">
                     <sbb-icon 
