@@ -478,8 +478,9 @@ export class StationBoardSearchComponent implements OnInit {
   }
 
   onChangeStageAPI(ev: any) {
-    const newAppStage = ev.value as APP_STAGE
-    this.userTripService.updateAppStage(newAppStage)
+    const newAppStage = ev.value as APP_STAGE;
+    this.userTripService.updateAppStage(newAppStage);
+    this.updateURLs();
   }
 
   public loadCustomXMLPopover() {
