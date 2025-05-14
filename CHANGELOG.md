@@ -4,6 +4,10 @@ OJP-Demo URL: https://opentdatach.github.io/ojp-demo-app/
 
 ----
 
+14.May 2025
+- Updates OJP-Fare - [PR #229](https://github.com/openTdataCH/ojp-demo-app-src/pull/229)
+  - migrate to use OJP Fare APIs from [ojp-sdk-next](https://www.npmjs.com/package/ojp-sdk-next) package
+
 09.May 2025
 - Display Occupancy Level - [Occupancy in OJP 2.0 #223](https://github.com/openTdataCH/ojp-demo-app-src/issues/223), [PR #253](https://github.com/openTdataCH/ojp-demo-app-src/pull/225)
 - Display Situation InfoLink - [TR / Siri Situations - Display labels / hyperlinks #224](https://github.com/openTdataCH/ojp-demo-app-src/issues/224), [https://github.com/openTdataCH/ojp-demo-app-src/pull/226](https://github.com/openTdataCH/ojp-demo-app-src/pull/226)
