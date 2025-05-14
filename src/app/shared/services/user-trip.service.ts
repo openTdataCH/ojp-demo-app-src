@@ -3,6 +3,7 @@ import { EventEmitter, Injectable } from '@angular/core'
 import mapboxgl from 'mapbox-gl'
 
 import OJP_Legacy from '../../config/ojp-legacy';
+import * as OJP_Types from 'ojp-shared-types';
 
 import { APP_CONFIG } from '../../config/app-config';
 import { APP_STAGE, DEBUG_LEVEL, DEFAULT_APP_STAGE, TRIP_REQUEST_DEFAULT_NUMBER_OF_RESULTS } from '../../config/constants';
@@ -51,7 +52,7 @@ export class UserTripService {
   public geoLocationsUpdated = new EventEmitter<void>();
   public tripsDataUpdated = new EventEmitter<TripData[]>();
   
-  public tripFaresUpdated = new EventEmitter<OJP_Legacy.FareResult[]>();
+  public tripFaresUpdated = new EventEmitter<OJP_Types.FareResultSchema[]>();
   
   public activeTripSelected = new EventEmitter<MapTrip | null>();
   public tripRequestFinished = new EventEmitter<OJP_Legacy.RequestInfo>();
@@ -441,7 +442,7 @@ export class UserTripService {
     this.activeTripSelected.emit(mapTrip);
   }
 
-  private updateFares(fareResults: OJP_Legacy.FareResult[]) {
+  private updateFares(fareResults: OJP_Types.FareResultSchema[]) {
     this.tripFaresUpdated.emit(fareResults);
   }
 
