@@ -911,7 +911,7 @@ export class UserTripService {
     return newLeg;
   }
 
-  public async fetchFares() {
+  public async fetchFares(language: OJP_Legacy.Language) {
     if (this.journeyTripRequests.length === 0) {
       return;
     }

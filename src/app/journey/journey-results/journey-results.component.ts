@@ -163,7 +163,7 @@ export class JourneyResultsComponent implements OnInit {
       if (trips.length > 0) {
         const firstTrip = trips[0];
 
-        this.userTripService.fetchFares();
+        this.userTripService.fetchFares(this.languageService.language);
       } else {
         this.userTripService.selectActiveTrip(null);
       }
