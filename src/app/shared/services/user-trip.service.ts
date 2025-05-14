@@ -10,7 +10,7 @@ import { MapService } from './map.service';
 import { MapTrip } from '../types/map-geometry-types';
 import { TripData, TripLegData } from '../types/trip';
 
-type LocationUpdateSource = 'SearchForm' | 'MapDragend' | 'MapPopupClick'
+type LocationUpdateSource = 'SearchForm' | 'MapDragend' | 'MapPopupClick';
 
 @Injectable( {providedIn: 'root'} )
 export class UserTripService {
