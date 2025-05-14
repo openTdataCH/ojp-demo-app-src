@@ -56,7 +56,7 @@ export class JourneyResultsComponent implements OnInit {
 
     this.userTripService.tripFaresUpdated.subscribe(fareResults => {
       this.model.tripsData.forEach(tripData => {
-        tripData.trip.tripFareResults = [];
+        tripData.fareResult = null;
       });
 
       fareResults.forEach(fareResult => {
@@ -71,7 +71,7 @@ export class JourneyResultsComponent implements OnInit {
           return;
         }
 
-        foundTripData.trip.tripFareResults = fareResult.tripFareResults;
+        foundTripData.fareResult = fareResult;
       });
     })
   }
