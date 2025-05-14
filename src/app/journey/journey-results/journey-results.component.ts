@@ -61,11 +61,11 @@ export class JourneyResultsComponent implements OnInit {
 
       fareResults.forEach(fareResult => {
         const foundTripData = this.model.tripsData.find(tripData => {
-          return tripData.trip.id === fareResult.tripId
+          return tripData.trip.id === fareResult.resultId
         }) ?? null;
 
         if (foundTripData === null) {
-          console.error('ERROR - cant find fare for trip ' + fareResult.tripId);
+          console.error('ERROR - cant find fare for trip ' + fareResult.resultId);
           console.log(this.model.tripsData);
           console.log(fareResult);
           return;
