@@ -4,6 +4,9 @@ OJP-Demo URL: https://opentdatach.github.io/ojp-demo-app/
 
 ----
 
+15.May 2025
+- TRR XML debug popover - [PR #233](https://github.com/openTdataCH/ojp-demo-app-src/pull/233)
+
 14.May 2025
 - Updates OJP-Fare - [PR #229](https://github.com/openTdataCH/ojp-demo-app-src/pull/229)
   - migrate to use OJP Fare APIs from [ojp-sdk-next](https://www.npmjs.com/package/ojp-sdk-next) package
