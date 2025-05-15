@@ -1,9 +1,10 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { Router } from '@angular/router';
 
+import mapboxgl from 'mapbox-gl';
+
 import { SbbDialog } from "@sbb-esta/angular/dialog";
 
-import mapboxgl from 'mapbox-gl'
 import OJP_Legacy from '../../../config/ojp-legacy';
 
 import { DEBUG_LEVEL } from '../../../config/constants';
