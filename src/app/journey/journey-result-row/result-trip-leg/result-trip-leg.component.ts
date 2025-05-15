@@ -6,6 +6,7 @@ import mapboxgl from 'mapbox-gl';
 import { SbbDialog } from "@sbb-esta/angular/dialog";
 
 import OJP_Legacy from '../../../config/ojp-legacy';
+import * as OJP_Next from 'ojp-sdk-next';
 
 import { DEBUG_LEVEL } from '../../../config/constants';
 import { MapLegLineTypeColor } from '../../../config/map-colors';
@@ -22,6 +23,7 @@ import { TripInfoResultPopoverComponent } from './trip-info-result-popover/trip-
 import { TripLegData } from '../../../shared/types/trip';
 import { DomSanitizer } from '@angular/platform-browser';
 import { SituationContent } from '../../../shared/types/situations';
+import { DebugXmlPopoverComponent } from '../../../search-form/debug-xml-popover/debug-xml-popover.component';
 
 type LegTemplate = 'walk' | 'timed' | 'taxi';
 
@@ -671,6 +673,33 @@ export class ResultTripLegComponent implements OnInit {
     dialogRef.afterOpened().subscribe(() => {
       const popover = dialogRef.componentInstance as TripInfoResultPopoverComponent;
       popover.fetchJourneyRef(journeyRef, dayRef);
+    });
+  }
+
+  public loadTRR_Popover() {
+    const requestInfo = this.trrRequestInfo ?? null;
+    if (requestInfo === null) {
+      return;
+    }
+
+    const legacyRequestInfo: OJP_Legacy.RequestInfo = {
+      requestDateTime: requestInfo.requestDateTime,
+      requestXML: requestInfo.requestXML,
+      responseDateTime: requestInfo.responseDateTime,
+      responseXML: requestInfo.responseXML,
+      parseDateTime: requestInfo.parseDateTime,
+      error: null,
+    };
+
+    const dialogRef = this.popover.open(DebugXmlPopoverComponent, {
+      position: { top: '20px' },
+      width: '50vw',
+      height: '90vh',
+    });
+
+    dialogRef.afterOpened().subscribe(() => {
+      const popover = dialogRef.componentInstance as DebugXmlPopoverComponent
+      popover.updateRequestData(legacyRequestInfo);
     });
   }
 }
