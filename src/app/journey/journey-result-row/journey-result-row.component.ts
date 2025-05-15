@@ -39,10 +39,12 @@ export class JourneyResultRowComponent implements OnInit {
   public tripHeaderStats: TripHeaderStats;
 
   public mapTrip: MapTrip | null;
+  public trrRequestInfo: OJP_Next.RequestInfo | null;
 
   constructor(private userTripService: UserTripService, private mapService: MapService, private languageService: LanguageService) {
     this.tripHeaderStats = <TripHeaderStats>{}
     this.mapTrip = null;
+    this.trrRequestInfo = null;
   }
 
   ngOnInit() {
@@ -169,6 +171,8 @@ export class JourneyResultRowComponent implements OnInit {
       debugger;
       return;
     }
+
+    this.trrRequestInfo = trrRequest.requestInfo;
 
     // TRR response is similar with TR response
     const trRequest = OJP_Legacy.TripRequest.initWithResponseMock(trrRequest.requestInfo.responseXML);

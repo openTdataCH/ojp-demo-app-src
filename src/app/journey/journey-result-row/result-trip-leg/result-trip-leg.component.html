@@ -35,7 +35,12 @@
         </ng-container>
       </ng-container>
       <ng-container *ngIf="this.enableTRR">
-        <div class="badge leg-pill pill-hover bg-primary" (click)="this.reloadTripLeg()">Refresh</div>
+        <div class="d-flex gap-1 align-items-center">
+          <div class="badge leg-pill pill-hover bg-primary" (click)="this.reloadTripLeg()">Refresh</div>
+          <ng-container *ngIf="this.trrRequestInfo?.responseXML">
+            <div class="badge leg-pill pill-hover bg-info text-dark" (click)="this.loadTRR_Popover()">XML</div>
+          </ng-container>
+        </div>
       </ng-container>
     </div>
   </div>
