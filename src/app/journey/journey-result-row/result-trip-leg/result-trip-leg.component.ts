@@ -664,6 +664,9 @@ export class ResultTripLegComponent implements OnInit {
 
     const dialogRef = this.popover.open(TripInfoResultPopoverComponent, {
       position: { top: '20px' },
+      width: '50vw',
+      height: '90vh',
+      maxWidth: '700px',
     });
     dialogRef.afterOpened().subscribe(() => {
       const popover = dialogRef.componentInstance as TripInfoResultPopoverComponent;
