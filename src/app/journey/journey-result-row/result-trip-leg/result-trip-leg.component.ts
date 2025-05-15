@@ -89,7 +89,7 @@ export class ResultTripLegComponent implements OnInit {
 
   public enableTRR: boolean;
 
-  constructor(private mapService: MapService, private router: Router, private tripInfoResultPopover: SbbDialog, private userTripService: UserTripService, private sanitizer: DomSanitizer) {
+  constructor(private mapService: MapService, private router: Router, private popover: SbbDialog, private userTripService: UserTripService, private sanitizer: DomSanitizer) {
     this.legInfoDataModel = <LegInfoDataModel>{}
     this.isEmbed = this.router.url.indexOf('/embed/') !== -1;
     
@@ -662,7 +662,7 @@ export class ResultTripLegComponent implements OnInit {
       return;
     }
 
-    const dialogRef = this.tripInfoResultPopover.open(TripInfoResultPopoverComponent, {
+    const dialogRef = this.popover.open(TripInfoResultPopoverComponent, {
       position: { top: '20px' },
     });
     dialogRef.afterOpened().subscribe(() => {
