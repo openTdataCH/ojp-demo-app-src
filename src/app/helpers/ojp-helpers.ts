@@ -414,6 +414,65 @@ export class OJPHelpers {
     return defaultText;
   }
 
+  public static convertOJP_LegacyService2NewVersion(oldService: OJP_Legacy.JourneyService): OJP_Types.DatedJourneySchema {
+    const newService: OJP_Types.DatedJourneySchema = {
+      conventionalModeOfOperation: undefined,
+      operatingDayRef: oldService.operatingDayRef,
+      journeyRef: oldService.journeyRef,
+      publicCode: undefined,
+      lineRef: oldService.lineRef ?? 'n/a lineRef',
+      directionRef: oldService.directionRef ?? undefined,
+      mode: {
+        ptMode: oldService.ptMode.ptMode as OJP_Types.VehicleModesOfTransportEnum,
+        name: {
+          text: oldService.ptMode.name ?? 'n/a mode.name',
+        },
+        shortName: {
+          text: oldService.ptMode.shortName ?? 'n/a mode.shortName',
+        },
+      },
+      publishedServiceName: {
+        text: oldService.serviceLineNumber ?? 'n/a publishedServiceName',
+      },
+      attribute: [],
+    };
+
+    if (oldService.productCategory) {
+      newService.productCategory = {
+        name: {
+          text: oldService.productCategory.name,
+        },
+        shortName: {
+          text: oldService.productCategory.shortName,
+        },
+        productCategoryRef: oldService.productCategory?.productCategoryRef,
+      }
+    }
+
+    if (oldService.journeyNumber) {
+      newService.trainNumber = oldService.journeyNumber;
+    }
+
+    if (oldService.operatorRef) {
+      newService.operatorRef = oldService.operatorRef;
+    }
+
+    if (oldService.destinationStopPlace) {
+      newService.destinationStopPointRef = oldService.destinationStopPlace.stopPlaceRef;
+      if (oldService.destinationStopPlace.stopPlaceName) {
+        newService.destinationText = {
+          text: oldService.destinationStopPlace.stopPlaceName,
+        };
+      }
+    }
+
+    newService.unplanned = oldService.isUnplanned ?? undefined;
+    newService.cancelled = oldService.hasCancellation ?? undefined;
+    newService.deviation = oldService.hasDeviation ?? undefined;
+
+    return newService;
+  }
+
   public static convertOJP_LegacyStopPoint2StopPointCall(oldStopPoint: OJP_Legacy.StopPoint): StopPointCall {
     const stopCall: StopPointCall = {
       type: oldStopPoint.stopPointType,
