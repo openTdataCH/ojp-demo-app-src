@@ -107,7 +107,7 @@ export class TripInfoSearchComponent implements OnInit {
 
     if (this.useMocks) {
       if (this.useMocks && document.location.hostname === 'localhost') {
-        this.fetchStopEventFromMocks();
+        this.fetchTripInfoRequestFromMocks();
         return;
       }
     }
@@ -184,7 +184,7 @@ export class TripInfoSearchComponent implements OnInit {
     this.parseTripInfo(request.requestInfo, response.tripInfoResult);
   }
 
-  private async fetchStopEventFromMocks() {
+  private async fetchTripInfoRequestFromMocks() {
     const mockURL = '/path/to/mock.xml';
 
     const mockText = await (await fetch(mockURL)).text();
