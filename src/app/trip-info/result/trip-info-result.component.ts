@@ -7,9 +7,10 @@ import { OJPHelpers } from '../../helpers/ojp-helpers';
 import { LegStopPointData } from '../../shared/components/service-stops.component';
 import { UserTripService } from '../../shared/services/user-trip.service';
 import { DEFAULT_APP_STAGE } from 'src/app/config/constants';
+import { TripInfoResult } from '../../shared/models/trip-info-result';
 
 interface PageModel {
-  tripInfoResult: OJP_Legacy.TripInfoResult | null
+  tripInfoResult: TripInfoResult | null
   journeyRef: string
   operatingDayRef: string
   serviceFromText: string
@@ -50,7 +51,7 @@ export class TripInfoResultComponent implements OnInit, AfterViewInit {
 
   }
 
-  private updatePageModel(tripInfoResult: OJP_Legacy.TripInfoResult | null) {
+  private updatePageModel(tripInfoResult: TripInfoResult | null) {
     this.model.tripInfoResult = tripInfoResult;
 
     if (tripInfoResult === null) {
@@ -62,22 +63,22 @@ export class TripInfoResultComponent implements OnInit, AfterViewInit {
       return;
     }
 
-    if (tripInfoResult.stopPoints.length < 2) {
+    if (tripInfoResult.calls.length < 2) {
       return;
     }
 
     this.model.journeyRef = service.journeyRef;
     this.model.operatingDayRef = service.operatingDayRef ?? 'n/a (serviceDay)';
 
-    const fromStop = tripInfoResult.stopPoints[0];
-    this.model.serviceFromText = fromStop.location.computeLocationName() ?? 'n/a (from)';
+    const fromStop = tripInfoResult.calls[0];
+    this.model.serviceFromText = fromStop.stopPointName;
 
-    const toStop = tripInfoResult.stopPoints[tripInfoResult.stopPoints.length - 1];
-    this.model.serviceToText = toStop.location.computeLocationName() ?? 'n/a (from)';
+    const toStop = tripInfoResult.calls[tripInfoResult.calls.length - 1];
+    this.model.serviceToText = toStop.stopPointName;
 
-    this.model.serviceLineText = service.serviceLineNumber ?? 'n/a (serviceLineNumber)';
-    this.model.serviceTripId = service.journeyNumber ?? 'n/a (journeyNumber)';
-    this.model.serviceOperator = service.operatorRef;
+    this.model.serviceLineText = service.publishedServiceName.text ?? 'n/a (serviceLineNumber)';
+    this.model.serviceTripId = service.trainNumber ?? 'n/a (journeyNumber)';
+    this.model.serviceOperator = service.operatorRef ?? 'n/a (operatorRef)';
 
     const legIconFilename = OJPHelpers.computeIconFilenameForService(service);
     this.model.serviceIconPath = 'assets/pictograms/' + legIconFilename + '.png';
@@ -85,15 +86,14 @@ export class TripInfoResultComponent implements OnInit, AfterViewInit {
     this.model.stopPointsData = (() => {
       const stopPointsData: LegStopPointData[] = [];
 
-      tripInfoResult.stopPoints.forEach(stopPoint => {
+      tripInfoResult.calls.forEach(stopPoint => {
         const stopPointData = <LegStopPointData>{
-          locationText: stopPoint.location.computeLocationName() ?? 'n/a',
+          locationText: stopPoint.stopPointName,
         };
 
         OJPHelpers.updateLocationDataWithTime(stopPointData, stopPoint);
-
-        stopPointData.platformAssistanceIconPath = OJPHelpers.computePlatformAssistanceIconPath(stopPoint);
-        stopPointData.platformAssistanceTooltip = OJPHelpers.computePlatformAssistanceTooltip(stopPoint);
+        stopPointData.platformAssistanceIconPath = OJPHelpers.computePlatformAssistanceIconPath(stopPoint.vehicleAccessType);
+        stopPointData.platformAssistanceTooltip = OJPHelpers.computePlatformAssistanceTooltip(stopPoint.vehicleAccessType);
 
         stopPointsData.push(stopPointData);
       });
@@ -121,20 +121,13 @@ export class TripInfoResultComponent implements OnInit, AfterViewInit {
     // sort the ids, first location is the departure
     locationIDXs.sort((a, b) => a - b);
 
-    const stopPoints = this.model.tripInfoResult.stopPoints;
-
-    const fromLocation = stopPoints[locationIDXs[0]].location;
-    const toLocation = stopPoints[locationIDXs[1]].location;
+    const stopPoints = this.model.tripInfoResult.calls;
+    const fromStopPoint = stopPoints[locationIDXs[0]];
+    const toStopPoint = stopPoints[locationIDXs[1]];
     
     const queryParams = new URLSearchParams();
-    const fromRef = fromLocation.stopPlace?.stopPlaceRef ?? null;
-    const toRef = toLocation.stopPlace?.stopPlaceRef ?? null;
-    if (fromRef === null || toRef === null) {
-      return;
-    }
-
-    queryParams.set('from', fromRef);
-    queryParams.set('to', toRef);
+    queryParams.set('from', fromStopPoint.stopPointRef);
+    queryParams.set('to', toStopPoint.stopPointRef);
 
     if (this.userTripService.currentAppStage !== DEFAULT_APP_STAGE) {
       queryParams.set('stage', this.userTripService.currentAppStage);
@@ -149,7 +142,11 @@ export class TripInfoResultComponent implements OnInit, AfterViewInit {
     queryParams.set('do_search', 'yes');
 
     this.model.journeyExampleURL = './search?' + queryParams.toString();
-    this.model.journeyExampleCaption = fromLocation.computeLocationName() + ' -> ' + toLocation.computeLocationName();
+    
+    const fromStopPointName = fromStopPoint.stopPointName;
+    const toStopPointName = toStopPoint.stopPointName;
+    this.model.journeyExampleCaption = fromStopPointName + ' -> ' + toStopPointName;
+    
     this.updateURLs();
 
     // otherwise we get ExpressionChangedAfterItHasBeenCheckedError

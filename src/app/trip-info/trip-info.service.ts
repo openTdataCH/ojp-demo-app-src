@@ -1,10 +1,10 @@
 import { EventEmitter, Injectable } from "@angular/core";
 
-import OJP_Legacy from '../config/ojp-legacy';
 import { LegStopPointData } from "../shared/components/service-stops.component";
+import { TripInfoResult } from "../shared/models/trip-info-result";
 
 @Injectable( {providedIn: 'root'} )
 export class TripInfoService {
-    public tripInfoResultUpdated = new EventEmitter<OJP_Legacy.TripInfoResult | null>()
+    public tripInfoResultUpdated = new EventEmitter<TripInfoResult | null>()
     public locationSelected = new EventEmitter<LegStopPointData>()
 }
