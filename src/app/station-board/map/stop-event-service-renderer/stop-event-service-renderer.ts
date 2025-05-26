@@ -60,7 +60,7 @@ export class StopEventServiceRenderer {
         const nextStopPositions = convertStopPointsToGeoPosition(stopEvent.nextStopPoints);
         const currentStopPositions = convertStopPointsToGeoPosition([stopEvent.stopPoint]);
 
-        this.drawStopPositions(prevStopPositions, nextStopPositions, currentStopPositions[0] ?? null);
+        this.drawStopPositions(prevStopPositions, nextStopPositions, currentStopPositions[0] ?? null, []);
     }
 
     public drawTripInfoResult(tripResult: TripInfoResult) {
@@ -75,11 +75,24 @@ export class StopEventServiceRenderer {
             return geoPositions;
         })();
 
-        this.drawStopPositions([], nextStopPositions, null);
+        const detailedRouteCoords: OJP_Next.GeoPosition[] = (() => {
+            if (tripResult.trackSectionsGeoPositions.length === 0) {
+                return [];
+            }
+
+            if (tripResult.trackSectionsGeoPositions.length > 1) {
+                console.error('WARNING - MultLineString not yet implemented, using first');
+            }
+
+            return tripResult.trackSectionsGeoPositions[0];
+        })();
+
+        this.drawStopPositions([], nextStopPositions, null, detailedRouteCoords);
     }
     
-    private drawStopPositions(prevStopPositions: OJP_Next.GeoPosition[], nextStopPositions: OJP_Next.GeoPosition[], currentGeoPosition: OJP_Next.GeoPosition | null) {
+    private drawStopPositions(prevStopPositions: OJP_Next.GeoPosition[], nextStopPositions: OJP_Next.GeoPosition[], currentGeoPosition: OJP_Next.GeoPosition | null, detailedRouteCoords: OJP_Next.GeoPosition[]) {
         this.geojsonFeatures = [];
+        const hasDetailedRoute = detailedRouteCoords.length > 0;
 
         const lineFeaturePoints: Record<LinePointType, GeoJSON.Position[]> = {
             prev: [],
@@ -90,6 +103,12 @@ export class StopEventServiceRenderer {
             next: [],
         };
 
+        if (hasDetailedRoute) {
+            detailedRouteCoords.forEach(geoPosition => {
+                lineFeaturePoints.next.push(geoPosition.asLngLat());
+            });
+        }
+
         const linePointTypes: LinePointType[] = ['prev', 'next'];
         linePointTypes.forEach(linePointType => {
             const is_previous = linePointType === 'prev';
@@ -98,6 +117,10 @@ export class StopEventServiceRenderer {
             stopPositions.forEach((stopPosition, idx) => {
                 const stopCoordinates = stopPosition.asLngLat();
                 
+                if (!hasDetailedRoute) {
+                    lineFeaturePoints[linePointType].push(stopCoordinates);
+                }
+
                 const isFirst = idx === 0;
                 const isLast = idx === stopPositions.length - 1;
 
