@@ -682,15 +682,6 @@ export class ResultTripLegComponent implements OnInit {
       return;
     }
 
-    const legacyRequestInfo: OJP_Legacy.RequestInfo = {
-      requestDateTime: requestInfo.requestDateTime,
-      requestXML: requestInfo.requestXML,
-      responseDateTime: requestInfo.responseDateTime,
-      responseXML: requestInfo.responseXML,
-      parseDateTime: requestInfo.parseDateTime,
-      error: null,
-    };
-
     const dialogRef = this.popover.open(DebugXmlPopoverComponent, {
       position: { top: '20px' },
       width: '50vw',
@@ -699,7 +690,7 @@ export class ResultTripLegComponent implements OnInit {
 
     dialogRef.afterOpened().subscribe(() => {
       const popover = dialogRef.componentInstance as DebugXmlPopoverComponent
-      popover.updateRequestData(legacyRequestInfo);
+      popover.updateRequestData(requestInfo);
     });
   }
 }
