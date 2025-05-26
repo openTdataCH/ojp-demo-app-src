@@ -413,4 +413,60 @@ export class OJPHelpers {
 
     return defaultText;
   }
+
+  public static convertOJP_LegacyStopPoint2StopPointCall(oldStopPoint: OJP_Legacy.StopPoint): StopPointCall {
+    const stopCall: StopPointCall = {
+      type: oldStopPoint.stopPointType,
+      place: null,
+      stopPointRef: oldStopPoint.location.stopPlace?.stopPlaceRef ?? 'n/a stopPointRef',
+      stopPointName: oldStopPoint.location.stopPlace?.stopPlaceName ?? 'n/a stopPointName',
+      platform: {
+        timetable: oldStopPoint.plannedPlatform,
+        realtime: oldStopPoint.actualPlatform,
+      },
+      // this is later updated, see below
+      arrival: {
+        timetable: null,
+        realtime: null,
+        timetableF: '',
+        realtimeF: '',
+      },
+      // this is later updated, see below
+      departure: {
+        timetable: null,
+        realtime: null,
+        timetableF: '',
+        realtimeF: '',
+      },
+      vehicleAccessType: OJPHelpers.computePlatformAssistance(oldStopPoint.vehicleAccessType),
+      mapFareClassOccupancy: oldStopPoint.mapFareClassOccupancy,
+      isNotServicedStop: oldStopPoint.isNotServicedStop,
+    };
+    
+    stopEventTypes.forEach(stopEventType => {
+      const isArrival = stopEventType === 'arrival';
+
+      const sourceStopEvent = isArrival ? oldStopPoint.arrivalData : oldStopPoint.departureData;
+      
+      const timetableDate = sourceStopEvent?.timetableTime ?? null;
+      const timetableDateF = timetableDate ? OJP_Legacy.DateHelpers.formatTimeHHMM(timetableDate) : '';
+      
+      const realtimeDate = sourceStopEvent?.estimatedTime ?? null;
+      const realtimeDateF = realtimeDate ? OJP_Legacy.DateHelpers.formatTimeHHMM(realtimeDate) : '';
+
+      if (isArrival) {
+        stopCall.arrival.timetable = timetableDate;
+        stopCall.arrival.timetableF = timetableDateF;
+        stopCall.arrival.realtime = realtimeDate;
+        stopCall.arrival.realtimeF = realtimeDateF;
+      } else {
+        stopCall.departure.timetable = timetableDate;
+        stopCall.departure.timetableF = timetableDateF;
+        stopCall.departure.realtime = realtimeDate;
+        stopCall.departure.realtimeF = realtimeDateF;
+      }
+    });
+
+    return stopCall;
+  }
 }
