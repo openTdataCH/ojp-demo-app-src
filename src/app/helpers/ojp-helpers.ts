@@ -9,6 +9,7 @@ import { StopEventType, StopPointCall, VehicleAccessType } from '../shared/types
 
 type PublicTransportPictogram = 'picto-bus' | 'picto-railway' | 'picto-tram' | 'picto-rack-railway' | 'picto-funicular' | 'picto-cablecar' | 'picto-gondola' | 'picto-chairlift' | 'picto-boat' | 'car-sharing' | 'picto-bus-fallback' | 'autozug';
 
+const stopEventTypes: StopEventType[] = ['arrival', 'departure'];
 export class OJPHelpers {
   public static computeIconFilenameForService(service: OJP_Types.DatedJourneySchema): PublicTransportPictogram {
     if (service.mode.ptMode === 'bus') {
@@ -65,8 +66,9 @@ export class OJPHelpers {
 
     if (leg.legType === 'TimedLeg') {
       const timdLeg = leg as OJP_Legacy.TripTimedLeg;
-      const service = OJPHelpers.computeIconFilenameForService(timdLeg.service);
-      return service;
+      const service = OJPHelpers.convertOJP_LegacyService2NewVersion(timdLeg.service);
+      const serviceIcon = OJPHelpers.computeIconFilenameForService(service);
+      return serviceIcon;
     }
 
     if (leg.legType === 'ContinuousLeg') {
@@ -97,21 +99,17 @@ export class OJPHelpers {
     return 'picto-bus-fallback';
   }
 
-  public static updateLocationDataWithTime(stopPointData: LegStopPointData, stopPoint: OJP_Legacy.StopPoint, isLastStop: boolean = false) {
-    const depArrTypes: OJP_Legacy.TripRequestBoardingType[] = ['Arr', 'Dep'];
+  public static updateLocationDataWithTime(stopPointData: LegStopPointData, stopPoint: StopPointCall) {
+    const depArrTypes: StopEventType[] = ['arrival', 'departure'];
 
     depArrTypes.forEach(depArrType => {
-      const isArr = depArrType === 'Arr';
-      const depArrTime = isArr ? stopPoint.arrivalData : stopPoint.departureData;
-      if (depArrTime === null) {
-        return;
-      }
+      const isArr = depArrType === 'arrival';
+      const depArrTime = isArr ? stopPoint.arrival : stopPoint.departure;
 
-      const depArrTimeS = OJP_Legacy.DateHelpers.formatTimeHHMM(depArrTime.timetableTime);
       if (isArr) {
-        stopPointData.arrText = depArrTimeS;
+        stopPointData.arrText = stopPoint.arrival.timetableF;
       } else {
-        stopPointData.depText = depArrTimeS;
+        stopPointData.depText = stopPoint.departure.timetableF;
       }
 
       const delayText = OJPHelpers.computeStopPointDelayText(depArrType, stopPoint);
@@ -124,38 +122,35 @@ export class OJPHelpers {
       }
     });
 
-    stopPointData.platformText = stopPoint.plannedPlatform;
-    stopPointData.actualPlatformText = stopPoint.actualPlatform;
+    stopPointData.platformText = stopPoint.platform.timetable;
+    stopPointData.actualPlatformText = stopPoint.platform.realtime;
 
     // Dont propagate changes if the platform didnt change
     if (stopPointData.actualPlatformText !== null && (stopPointData.platformText === stopPointData.actualPlatformText)) {
       stopPointData.actualPlatformText = null;
     }
 
-    stopPointData.geoPosition = stopPoint.location.geoPosition;
+    stopPointData.geoPosition = stopPoint.place?.geoPosition ?? null;
 
     stopPointData.isNotServicedStop = stopPoint.isNotServicedStop === true;
 
     stopPointData.occupancy = {
-      firstClassIcon: OJPHelpers.computeOccupancyLevelIcon(stopPoint, 'firstClass'),
-      firstClassText: OJPHelpers.computeOccupancyLevelText(stopPoint, 'firstClass'),
-      secondClassIcon: OJPHelpers.computeOccupancyLevelIcon(stopPoint, 'secondClass'),
-      secondClassText: OJPHelpers.computeOccupancyLevelText(stopPoint, 'secondClass'),
+      firstClassIcon: OJPHelpers.computeOccupancyLevelIcon(stopPoint.mapFareClassOccupancy, 'firstClass'),
+      firstClassText: OJPHelpers.computeOccupancyLevelText(stopPoint.mapFareClassOccupancy, 'firstClass'),
+      secondClassIcon: OJPHelpers.computeOccupancyLevelIcon(stopPoint.mapFareClassOccupancy, 'secondClass'),
+      secondClassText: OJPHelpers.computeOccupancyLevelText(stopPoint.mapFareClassOccupancy, 'secondClass'),
     };
   }
 
-  private static computeStopPointDelayText(depArrType: OJP_Legacy.TripRequestBoardingType, stopPoint: OJP_Legacy.StopPoint): string | null {
-    const isArr = depArrType === 'Arr';
-    const depArrTime = isArr ? stopPoint.arrivalData : stopPoint.departureData;
-    if (depArrTime === null) {
-      return null;
-    }
+  private static computeStopPointDelayText(depArrType: StopEventType, stopPoint: StopPointCall): string | null {
+    const isArr = depArrType === 'arrival';
+    const depArrTime = isArr ? stopPoint.arrival : stopPoint.departure;
 
-    if (depArrTime.estimatedTime === null) {
+    if ((depArrTime.timetable === null) || (depArrTime.realtime === null)) {
       return null;
     }
       
-    const dateDiffSeconds = (depArrTime.estimatedTime.getTime() - depArrTime.timetableTime.getTime()) / 1000;
+    const dateDiffSeconds = (depArrTime.realtime.getTime() - depArrTime.timetable.getTime()) / 1000;
     if (Math.abs(dateDiffSeconds) < 0.1) {
       return null;
     }      
@@ -182,7 +177,7 @@ export class OJPHelpers {
       delayTextParts.push("\"");
     } else {
       // On PROD show just minutes
-      const delayMinutes = depArrTime.delayMinutes;
+      const delayMinutes = Math.floor(dateDiffSeconds / 60);
       if (delayMinutes === 0) {
         return null;
       }
