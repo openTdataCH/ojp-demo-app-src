@@ -251,14 +251,6 @@ export class StationBoardResultComponent implements OnInit, AfterViewInit {
   }
 
   public loadTripInfoResultPopover(journeyRef: string) {
-    const searchDate = this.stationBoardService.searchDate;
-    const dayRef = OJP_Legacy.DateHelpers.formatDate(searchDate).substring(0, 10);
-
-    if (journeyRef === null) {
-      console.error('loadTripInfoResultPopover: cant fetch empty journeyRef');
-      return;
-    }
-
     const dialogRef = this.tripInfoResultPopover.open(TripInfoResultPopoverComponent, {
       position: { top: '20px' },
       // width: '50vw',
@@ -266,7 +258,7 @@ export class StationBoardResultComponent implements OnInit, AfterViewInit {
     });
     dialogRef.afterOpened().subscribe(() => {
       const popover = dialogRef.componentInstance as TripInfoResultPopoverComponent;
-      popover.fetchJourneyRef(journeyRef, dayRef);
+      popover.fetchJourneyRef(journeyRef, this.stationBoardService.searchDate);
     });
   }
 }

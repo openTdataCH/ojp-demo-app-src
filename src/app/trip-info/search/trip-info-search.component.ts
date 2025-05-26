@@ -98,7 +98,11 @@ export class TripInfoSearchComponent implements OnInit {
       this.model.journeyRef = journeyRef;
 
       const dayRef = this.queryParams.get('day');
-      this.fetchTripInfo(dayRef);
+      if (dayRef) {
+        this.model.journeyDateTime = new Date(dayRef);
+      }
+      
+      this.fetchTripInfo();
     }
 
     if (this.useMocks) {
