@@ -154,12 +154,12 @@ export class StopEventServiceRenderer {
                 return;
             }
 
-            const lineFeature = <GeoJSON.Feature>{
+            const lineFeature: GeoJSON.Feature<GeoJSON.LineString> = {
                 type: 'Feature',
                 properties: {
                     'line-type': segmentType,
                 },
-                geometry: <GeoJSON.LineString>{
+                geometry: {
                     type: 'LineString',
                     coordinates: points
                 }
