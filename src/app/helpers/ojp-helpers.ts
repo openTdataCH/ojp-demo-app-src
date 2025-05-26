@@ -8,51 +8,48 @@ import { DomSanitizer } from '@angular/platform-browser';
 type PublicTransportPictogram = 'picto-bus' | 'picto-railway' | 'picto-tram' | 'picto-rack-railway' | 'picto-funicular' | 'picto-cablecar' | 'picto-gondola' | 'picto-chairlift' | 'picto-boat' | 'car-sharing' | 'picto-bus-fallback' | 'autozug';
 
 export class OJPHelpers {
-  public static computeIconFilenameForService(service: OJP_Legacy.JourneyService): string {
-    return OJPHelpers.computePublicTransportPictogram(service.ptMode);
-  }
-
-  private static computePublicTransportPictogram(ptMode: OJP_Legacy.PublicTransportMode): PublicTransportPictogram {
-    if (ptMode.ptMode === 'bus') {
+  public static computeIconFilenameForService(service: OJP_Types.DatedJourneySchema): PublicTransportPictogram {
+    if (service.mode.ptMode === 'bus') {
       return 'picto-bus';
     }
 
-    if (ptMode.shortName === 'ATZ') {
+    if (service.mode.shortName?.text === 'ATZ') {
       return 'autozug';
     }
 
-    if (ptMode.isRail()) {
+    if (service.mode.ptMode === 'rail') {
       return 'picto-railway';
     }
 
-    if (ptMode.ptMode === 'tram') {
+    if (service.mode.ptMode === 'tram') {
       return 'picto-tram';
     }
 
     // ojp:PtMode === funicular
-    if (ptMode.shortName === 'CC') {
+    if (service.mode.shortName?.text === 'CC') {
       return 'picto-rack-railway';
     }
     
     // ojp:PtMode === telecabin
-    if (ptMode.shortName === 'FUN') {
+    if (service.mode.shortName?.text === 'FUN') {
       return 'picto-funicular';
     }
-    if (ptMode.shortName === 'PB') {
+    if (service.mode.shortName?.text === 'PB') {
       return 'picto-cablecar';
     }
-    if (ptMode.shortName === 'GB') {
+    if (service.mode.shortName?.text === 'GB') {
       return 'picto-gondola';
     }
-    if (ptMode.shortName === 'SL') {
+    if (service.mode.shortName?.text === 'SL') {
       return 'picto-chairlift';
     }
 
-    if (ptMode.ptMode === 'water') {
+    if (service.mode.ptMode === 'water') {
       return 'picto-boat';
     }
 
-    if (ptMode.isDemandMode) {
+    const isDemandMode = (service.mode.busSubmode === 'demandAndResponseBus' || service.mode.busSubmode === 'unknown');
+    if (isDemandMode) {
       return 'car-sharing';
     }
 
@@ -306,29 +303,29 @@ export class OJPHelpers {
     return nameParts.join(' ');
   }
 
-  public static computePlatformAssistanceIconPath(stopPoint: OJP_Legacy.StopPoint): string | null {
+  public static computePlatformAssistanceIconPath(vehicleAccessType: VehicleAccessType | null): string | null {
     const filename: string | null = (() => {
-      if (stopPoint.vehicleAccessType === 'PLATFORM_ACCESS_WITHOUT_ASSISTANCE') {
+      if (vehicleAccessType === 'PLATFORM_ACCESS_WITHOUT_ASSISTANCE') {
         return 'platform_independent';
       }
 
-      if (stopPoint.vehicleAccessType === 'PLATFORM_ACCESS_WITH_ASSISTANCE') {
+      if (vehicleAccessType === 'PLATFORM_ACCESS_WITH_ASSISTANCE') {
         return 'platform_help_driver';
       }
 
-      if (stopPoint.vehicleAccessType === 'PLATFORM_ACCESS_WITH_ASSISTANCE_WHEN_NOTIFIED') {
+      if (vehicleAccessType === 'PLATFORM_ACCESS_WITH_ASSISTANCE_WHEN_NOTIFIED') {
         return 'platform_advance_notice';
       }
 
-      if (stopPoint.vehicleAccessType === 'PLATFORM_NOT_WHEELCHAIR_ACCESSIBLE') {
+      if (vehicleAccessType === 'PLATFORM_NOT_WHEELCHAIR_ACCESSIBLE') {
         return 'platform_not_possible';
       }
 
-      if (stopPoint.vehicleAccessType === 'NO_DATA') {
+      if (vehicleAccessType === 'NO_DATA') {
         return 'platform_no_information';
       }
 
-      if (stopPoint.vehicleAccessType === 'ALTERNATIVE_TRANSPORT') {
+      if (vehicleAccessType === 'ALTERNATIVE_TRANSPORT') {
         return 'platform_alternative_transport';
       }
 
@@ -343,25 +340,25 @@ export class OJPHelpers {
     return iconPath;
   }
 
-  public static computePlatformAssistanceTooltip(stopPoint: OJP_Legacy.StopPoint): string {
+  public static computePlatformAssistanceTooltip(vehicleAccessType: VehicleAccessType | null): string {
     const message: string = (() => {
-      if (stopPoint.vehicleAccessType === 'PLATFORM_ACCESS_WITHOUT_ASSISTANCE') {
+      if (vehicleAccessType === 'PLATFORM_ACCESS_WITHOUT_ASSISTANCE') {
         return 'Step-free access; level entry/exit.';
       }
 
-      if (stopPoint.vehicleAccessType === 'PLATFORM_ACCESS_WITH_ASSISTANCE') {
+      if (vehicleAccessType === 'PLATFORM_ACCESS_WITH_ASSISTANCE') {
         return 'Step-free access; entry/exit through staff assistance, no prior registration necessary.';
       }
 
-      if (stopPoint.vehicleAccessType === 'PLATFORM_ACCESS_WITH_ASSISTANCE_WHEN_NOTIFIED') {
+      if (vehicleAccessType === 'PLATFORM_ACCESS_WITH_ASSISTANCE_WHEN_NOTIFIED') {
         return 'Step-free access; entry/exit through staff assistance, advance registration required.';
       }
 
-      if (stopPoint.vehicleAccessType === 'PLATFORM_NOT_WHEELCHAIR_ACCESSIBLE') {
+      if (vehicleAccessType === 'PLATFORM_NOT_WHEELCHAIR_ACCESSIBLE') {
         return 'Not usable for wheelchairs.';
       }
 
-      if (stopPoint.vehicleAccessType === 'ALTERNATIVE_TRANSPORT') {
+      if (vehicleAccessType === 'ALTERNATIVE_TRANSPORT') {
         return 'By shuttle from/to the accessible stop, register in advance.';
       }
 
@@ -371,8 +368,12 @@ export class OJPHelpers {
     return message;
   }
 
-  private static computeOccupancyLevelIcon(stopPoint: OJP_Legacy.StopPoint, fareClassType: OJP_Legacy.FareClassType): string | null {
-    const occupancyLevel = stopPoint.mapFareClassOccupancy[fareClassType] ?? null;
+  private static computeOccupancyLevelIcon(mapFareClassOccupancy: OJP_Legacy.MapFareClassOccupancy | null, fareClassType: OJP_Legacy.FareClassType): string | null {
+    if (mapFareClassOccupancy === null) {
+      return null;
+    }
+
+    const occupancyLevel = mapFareClassOccupancy[fareClassType] ?? null;
     if (occupancyLevel === null) {
       return null;
     }
@@ -393,10 +394,14 @@ export class OJPHelpers {
     return null;
   }
 
-  private static computeOccupancyLevelText(stopPoint: OJP_Legacy.StopPoint, fareClassType: OJP_Legacy.FareClassType): string {
+  private static computeOccupancyLevelText(mapFareClassOccupancy: OJP_Legacy.MapFareClassOccupancy | null, fareClassType: OJP_Legacy.FareClassType): string {
     const defaultText = 'No forecast available';
 
-    const occupancyLevel = stopPoint.mapFareClassOccupancy[fareClassType] ?? null;
+    if (mapFareClassOccupancy === null) {
+      return defaultText;
+    }
+
+    const occupancyLevel = mapFareClassOccupancy[fareClassType] ?? null;
     if (occupancyLevel === null) {
       return defaultText;
     }
@@ -412,6 +417,42 @@ export class OJPHelpers {
     }
 
     return defaultText;
+  }
+
+  public static computePlatformAssistance(platformText: string | null): VehicleAccessType | null {
+    if (platformText === null) {
+      return null;
+    }
+
+    if (platformText === 'PLATFORM_ACCESS_WITH_ASSISTANCE') {
+      return 'PLATFORM_ACCESS_WITH_ASSISTANCE';
+    }
+
+    if (platformText === 'PLATFORM_ACCESS_WITH_ASSISTANCE_WHEN_NOTIFIED') {
+      return 'PLATFORM_ACCESS_WITH_ASSISTANCE_WHEN_NOTIFIED';
+    }
+
+    if (platformText === 'PLATFORM_NOT_WHEELCHAIR_ACCESSIBLE') {
+      return 'PLATFORM_NOT_WHEELCHAIR_ACCESSIBLE';
+    }
+
+    if (platformText === 'PLATFORM_ACCESS_WITHOUT_ASSISTANCE') {
+      return 'PLATFORM_ACCESS_WITHOUT_ASSISTANCE';
+    }
+
+    if (platformText === 'NO_DATA') {
+      return 'NO_DATA';
+    }
+
+    if (platformText === 'ALTERNATIVE_TRANSPORT') {
+      return 'ALTERNATIVE_TRANSPORT';
+    }
+
+    if (DEBUG_LEVEL === 'DEBUG') {
+      console.log('StopPoint.computePlatformAssistance - cant compute platform from text:--' + platformText + '--');
+    }
+
+    return null;
   }
 
   public static convertOJP_LegacyService2NewVersion(oldService: OJP_Legacy.JourneyService): OJP_Types.DatedJourneySchema {
