@@ -667,8 +667,6 @@ export class ResultTripLegComponent implements OnInit {
 
   public loadTripInfoResultPopover() {
     const journeyRef = this.legInfoDataModel.serviceJourneyRef;
-    const dayRef = OJP_Legacy.DateHelpers.formatDate(this.userTripService.departureDate).substring(0, 10);
-
     if (journeyRef === null) {
       console.error('loadTripInfoResultPopover: cant fetch empty journeyRef');
       return;
@@ -682,7 +680,7 @@ export class ResultTripLegComponent implements OnInit {
     });
     dialogRef.afterOpened().subscribe(() => {
       const popover = dialogRef.componentInstance as TripInfoResultPopoverComponent;
-      popover.fetchJourneyRef(journeyRef, dayRef);
+      popover.fetchJourneyRef(journeyRef, this.userTripService.departureDate);
     });
   }
 
