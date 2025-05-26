@@ -147,8 +147,9 @@ export class StopEventServiceRenderer {
             pointFeatures['next'].push(feature);
         }
 
-        linePointTypes.forEach(linePointType => {
-            const points = lineFeaturePoints[linePointType];
+        
+        linePointTypes.forEach(segmentType => {
+            const points = lineFeaturePoints[segmentType];
             if (points.length < 2) {
                 return;
             }
@@ -156,7 +157,7 @@ export class StopEventServiceRenderer {
             const lineFeature = <GeoJSON.Feature>{
                 type: 'Feature',
                 properties: {
-                    'line-type':linePointType,
+                    'line-type': segmentType,
                 },
                 geometry: <GeoJSON.LineString>{
                     type: 'LineString',
@@ -165,8 +166,8 @@ export class StopEventServiceRenderer {
             }
             this.geojsonFeatures.push(lineFeature);
 
-            this.geojsonFeatures = this.geojsonFeatures.concat(pointFeatures[linePointType]);
-        })
+            this.geojsonFeatures = this.geojsonFeatures.concat(pointFeatures[segmentType]);
+        });
 
         const geojson = <GeoJSON.FeatureCollection>{
             type: 'FeatureCollection',
