@@ -34,7 +34,7 @@ export class TripInfoSearchComponent implements OnInit {
 
   public model: PagelModel
 
-  public currentRequestInfo: OJP_Legacy.RequestInfo | null;
+  public currentRequestInfo: OJP_Next.RequestInfo | null;
 
   public headerText: string = 'Search Trip Info'
 
