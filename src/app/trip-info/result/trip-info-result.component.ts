@@ -6,7 +6,7 @@ import { TripInfoService } from '../trip-info.service';
 import { OJPHelpers } from '../../helpers/ojp-helpers';
 import { LegStopPointData } from '../../shared/components/service-stops.component';
 import { UserTripService } from '../../shared/services/user-trip.service';
-import { DEFAULT_APP_STAGE } from 'src/app/config/constants';
+import { DEFAULT_APP_STAGE } from '../../config/constants';
 import { TripInfoResult } from '../../shared/models/trip-info-result';
 
 interface PageModel {
