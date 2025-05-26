@@ -42,6 +42,18 @@ export class StopEventServiceRenderer {
 
     public drawStopEvent(stopEvent: OJP_Legacy.StopEvent) {
         this.drawStopPoints(stopEvent.prevStopPoints, stopEvent.nextStopPoints, stopEvent.stopPoint);
+        const convertStopPointsToGeoPosition = (stopPoints: OJP_Legacy.StopPoint[]) => {
+            const geoPositions: OJP_Next.GeoPosition[] = [];
+            
+            stopPoints.forEach(el => {
+                const geoPosition = el.location.geoPosition ?? null;
+                if (geoPosition) {
+                    geoPositions.push(new OJP_Next.GeoPosition(geoPosition.longitude, geoPosition.latitude));
+                }
+            });
+
+            return geoPositions;
+        };
     }
 
     public drawServiceStopPoints(stopPoints: OJP_Legacy.StopPoint[]) {
