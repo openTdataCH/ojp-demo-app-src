@@ -650,7 +650,12 @@ export class ResultTripLegComponent implements OnInit {
 
   public zoomToIntermediaryPoint(idx: number) {
     const location = new OJP_Legacy.Location();
-    location.geoPosition = this.legInfoDataModel.intermediaryLocationsData[idx].geoPosition;
+    const newGeoPosition = this.legInfoDataModel.intermediaryLocationsData[idx].geoPosition;
+    if (newGeoPosition) {
+      location.geoPosition = new OJP_Legacy.GeoPosition(newGeoPosition.longitude, newGeoPosition.latitude);
+    } else {
+      location.geoPosition = null;
+    }
 
     this.mapService.tryToCenterAndZoomToLocation(location);
   }
