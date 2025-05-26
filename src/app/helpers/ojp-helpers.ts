@@ -1,9 +1,11 @@
 import OJP_Legacy from '../config/ojp-legacy';
+import * as OJP_Types from 'ojp-shared-types';
 
 import { LegStopPointData } from '../shared/components/service-stops.component';
 import { DEBUG_LEVEL } from '../config/constants';
 import { SituationContent } from '../shared/types/situations';
 import { DomSanitizer } from '@angular/platform-browser';
+import { StopEventType, StopPointCall, VehicleAccessType } from '../shared/types/_all';
 
 type PublicTransportPictogram = 'picto-bus' | 'picto-railway' | 'picto-tram' | 'picto-rack-railway' | 'picto-funicular' | 'picto-cablecar' | 'picto-gondola' | 'picto-chairlift' | 'picto-boat' | 'car-sharing' | 'picto-bus-fallback' | 'autozug';
 
