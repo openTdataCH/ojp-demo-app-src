@@ -31,11 +31,11 @@ export class StopEventServiceRenderer {
         };
         map.addSource(this.sourceID, source);
 
-        const serviceTrackLineLayer = serviceTrackLineLayerJSON as mapboxgl.LineLayer;
+        const serviceTrackLineLayer = serviceTrackLineLayerJSON as mapboxgl.LineLayerSpecification;
         serviceTrackLineLayer.source = this.sourceID;
         map.addLayer(serviceTrackLineLayer);
 
-        const serviceTrackStopLayer = serviceTrackStopLayerJSON as mapboxgl.CircleLayer;
+        const serviceTrackStopLayer = serviceTrackStopLayerJSON as mapboxgl.CircleLayerSpecification;
         serviceTrackStopLayer.source = this.sourceID;
         map.addLayer(serviceTrackStopLayer);
     }
