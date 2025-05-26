@@ -135,11 +135,11 @@ export class MapHelpers {
     
     const layerID = sourceID + '-bbox';
     if (!map.getLayer(layerID)) {
-      const layer = <mapboxgl.LineLayer>{
+      const layer = <mapboxgl.LineLayerSpecification>{
         id: layerID,
         type: 'line',
         source: sourceID,
-        paint: <mapboxgl.LinePaint>{
+        paint: <mapboxgl.LineLayerSpecification['paint']>{
           'line-color': '#630000',
           'line-width': 2,
         },
@@ -185,11 +185,11 @@ export class MapHelpers {
     
     const layerID = sourceID + '-coords';
     if (!map.getLayer(layerID)) {
-      const layer = <mapboxgl.CircleLayer>{
+      const layer = <mapboxgl.CircleLayerSpecification>{
         id: layerID,
         type: 'circle',
         source: sourceID,
-        paint: <mapboxgl.CirclePaint>{
+        paint: <mapboxgl.CircleLayerSpecification['paint']>{
           'circle-color': '#630000',
           'circle-radius': 4
         },
