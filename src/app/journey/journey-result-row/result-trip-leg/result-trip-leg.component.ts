@@ -12,7 +12,6 @@ import * as OJP_Next from 'ojp-sdk-next';
 import { DEBUG_LEVEL } from '../../../config/constants';
 import { MapLegLineTypeColor } from '../../../config/map-colors';
 import { OJPHelpers } from '../../../helpers/ojp-helpers';
-import { OJPMapHelpers } from '../../../helpers/ojp-map-helpers';
 
 import { MapService } from '../../../shared/services/map.service';
 import { UserTripService } from '../../../shared/services/user-trip.service';
