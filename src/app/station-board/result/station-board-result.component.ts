@@ -1,4 +1,5 @@
 import { AfterViewInit, Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import { DomSanitizer } from '@angular/platform-browser';
 import { SbbDialog } from '@sbb-esta/angular/dialog';
 
 import OJP_Legacy from '../../config/ojp-legacy';
@@ -8,7 +9,6 @@ import { OJPHelpers } from '../../helpers/ojp-helpers';
 
 import { TripInfoResultPopoverComponent } from '../../journey/journey-result-row/result-trip-leg/trip-info-result-popover/trip-info-result-popover.component';
 import { SituationContent } from '../../shared/types/situations';
-import { DomSanitizer } from '@angular/platform-browser';
 
 interface StationBoardTime {
   stopTime: string

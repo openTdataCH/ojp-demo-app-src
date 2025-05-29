@@ -1,4 +1,5 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { DomSanitizer } from '@angular/platform-browser';
 import { Router } from '@angular/router';
 
 import mapboxgl from 'mapbox-gl';
@@ -21,7 +22,6 @@ import { TripLegGeoController } from '../../../shared/controllers/trip-geo-contr
 
 import { TripInfoResultPopoverComponent } from './trip-info-result-popover/trip-info-result-popover.component';
 import { TripLegData } from '../../../shared/types/trip';
-import { DomSanitizer } from '@angular/platform-browser';
 import { SituationContent } from '../../../shared/types/situations';
 import { DebugXmlPopoverComponent } from '../../../search-form/debug-xml-popover/debug-xml-popover.component';
 
