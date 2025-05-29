@@ -76,7 +76,8 @@ export class TripInfoResultComponent implements OnInit, AfterViewInit {
     const toStop = tripInfoResult.calls[tripInfoResult.calls.length - 1];
     this.model.serviceToText = toStop.stopPointName;
 
-    this.model.serviceLineText = service.publishedServiceName.text ?? 'n/a (serviceLineNumber)';
+    this.model.serviceLineText = service.publishedServiceName.text;
+
     this.model.serviceTripId = service.trainNumber ?? 'n/a (journeyNumber)';
     this.model.serviceOperator = service.operatorRef ?? 'n/a (operatorRef)';
 
