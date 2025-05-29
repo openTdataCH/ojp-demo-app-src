@@ -9,6 +9,7 @@ import { OJPHelpers } from '../../helpers/ojp-helpers';
 
 import { TripInfoResultPopoverComponent } from '../../journey/journey-result-row/result-trip-leg/trip-info-result-popover/trip-info-result-popover.component';
 import { SituationContent } from '../../shared/types/situations';
+import { JourneyService } from '../../shared/models/journey-service';
 
 interface StationBoardTime {
   stopTime: string
@@ -223,11 +224,13 @@ export class StationBoardResultComponent implements OnInit, AfterViewInit {
     const hasDeviation = stopEvent.journeyService.hasDeviation === true;
     const isUnplanned = stopEvent.journeyService.isUnplanned === true;
 
+    const service = JourneyService.initWithOJP_LegacyJourneyService(stopEvent.journeyService);
+
     const model = <StationBoardModel>{
         stopEvent: stopEvent,
         serviceLineNumber: serviceLineNumber,
         servicePtMode: servicePtMode,
-        serviceInfo: OJPHelpers.formatServiceName(stopEvent.journeyService),
+        serviceInfo: service.formatServiceName(),
         journeyRef: stopEvent.journeyService.journeyRef,
         
         tripNumber: stopEvent.journeyService.journeyNumber, 

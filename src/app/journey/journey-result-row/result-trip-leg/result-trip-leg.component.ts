@@ -24,6 +24,7 @@ import { TripInfoResultPopoverComponent } from './trip-info-result-popover/trip-
 import { TripLegData } from '../../../shared/types/trip';
 import { SituationContent } from '../../../shared/types/situations';
 import { DebugXmlPopoverComponent } from '../../../search-form/debug-xml-popover/debug-xml-popover.component';
+import { JourneyService } from '../../../shared/models/journey-service';
 
 type LegTemplate = 'walk' | 'timed' | 'taxi';
 
@@ -280,7 +281,8 @@ export class ResultTripLegComponent implements OnInit {
 
     if (legType === 'TimedLeg') {
       const leg = this.legData.leg as OJP_Legacy.TripTimedLeg;
-      return OJPMapHelpers.computeTimedLegColor(leg);
+      const service = JourneyService.initWithOJP_LegacyJourneyService(leg.service);
+      return service.computeLegColor();
     }
 
     return defaultColor;
@@ -571,9 +573,8 @@ export class ResultTripLegComponent implements OnInit {
   }
 
   private formatServiceName(timedLeg: OJP_Legacy.TripTimedLeg): string {
-    const service = timedLeg.service;
-
-    const serviceName = OJPHelpers.formatServiceName(service);
+    const service = JourneyService.initWithOJP_LegacyJourneyService(timedLeg.service);
+    const serviceName = service.formatServiceName();
 
     return serviceName;
   }

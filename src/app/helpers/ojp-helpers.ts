@@ -6,12 +6,13 @@ import { DEBUG_LEVEL } from '../config/constants';
 import { SituationContent } from '../shared/types/situations';
 import { DomSanitizer } from '@angular/platform-browser';
 import { StopEventType, StopPointCall, VehicleAccessType } from '../shared/types/_all';
+import { JourneyService } from '../shared/models/journey-service';
 
 type PublicTransportPictogram = 'picto-bus' | 'picto-railway' | 'picto-tram' | 'picto-rack-railway' | 'picto-funicular' | 'picto-cablecar' | 'picto-gondola' | 'picto-chairlift' | 'picto-boat' | 'car-sharing' | 'picto-bus-fallback' | 'autozug';
 
 const stopEventTypes: StopEventType[] = ['arrival', 'departure'];
 export class OJPHelpers {
-  public static computeIconFilenameForService(service: OJP_Types.DatedJourneySchema): PublicTransportPictogram {
+  public static computeIconFilenameForService(service: JourneyService): PublicTransportPictogram {
     if (service.mode.ptMode === 'bus') {
       return 'picto-bus';
     }
@@ -66,7 +67,7 @@ export class OJPHelpers {
 
     if (leg.legType === 'TimedLeg') {
       const timdLeg = leg as OJP_Legacy.TripTimedLeg;
-      const service = OJPHelpers.convertOJP_LegacyService2NewVersion(timdLeg.service);
+      const service = JourneyService.initWithOJP_LegacyJourneyService(timdLeg.service);
       const serviceIcon = OJPHelpers.computeIconFilenameForService(service);
       return serviceIcon;
     }

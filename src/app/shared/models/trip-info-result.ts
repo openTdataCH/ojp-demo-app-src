@@ -4,21 +4,22 @@ import OJP_Legacy from '../../config/ojp-legacy';
 
 import { StopEventType, StopPointCall, StopPointCallType } from '../types/_all';
 import { OJPHelpers } from '../../helpers/ojp-helpers';
+import { JourneyService } from './journey-service';
 
 const stopEventTypes: StopEventType[] = ['arrival', 'departure'];
 
 export class TripInfoResult {
   public calls: StopPointCall[];
-  public service: OJP_Types.DatedJourneySchema;
+  public service: JourneyService;
   public trackSectionsGeoPositions: OJP_Next.GeoPosition[][];
 
-  private constructor(calls: StopPointCall[], service: OJP_Types.DatedJourneySchema) {
+  private constructor(calls: StopPointCall[], service: JourneyService) {
     this.calls = calls;
     this.service = service;
     this.trackSectionsGeoPositions = [];
   }
 
-  public static initWithTripInfoDeliverySchema(tripInfoDeliverySchema: OJP_Types.TripInfoDeliverySchema | null): TripInfoResult | null {
+  public static initWithTripInfoDeliverySchema(tripInfoDeliverySchema: OJP_Types.TripInfoDeliverySchema | OJP_Types.OJPv1_TripInfoDeliverySchema | null): TripInfoResult | null {
     if (tripInfoDeliverySchema === null) {
       return null;
     }
@@ -133,7 +134,27 @@ export class TripInfoResult {
       calls.push(stopCall);
     });
 
-    const tripInfoResult = new TripInfoResult(calls, firstTripInfoResultSchema.service);
+    const journeyService: JourneyService | null = (() => {
+      if (OJP_Legacy.OJP_VERSION === '1.0') {
+        const oldTripInfoResultSchema = firstTripInfoResultSchema as OJP_Types.OJPv1_TripInfoResultStructureSchema;
+        const service = JourneyService.initWithLegacyTripInfoResultSchema(oldTripInfoResultSchema);
+        return service;
+      }
+
+      const serviceSchema = (firstTripInfoResultSchema as OJP_Types.TripInfoResultStructureSchema).service ?? null;
+      if (serviceSchema) {
+        const service = JourneyService.initWithDatedJourneySchema(serviceSchema);
+        return service;
+      }
+
+      return null;
+    })();
+
+    if (journeyService === null) {
+      return null;
+    }
+
+    const tripInfoResult = new TripInfoResult(calls, journeyService);
 
     tripInfoResult.trackSectionsGeoPositions = [];
     const trackSections = firstTripInfoResultSchema.journeyTrack?.trackSection ?? [];
