@@ -1,6 +1,5 @@
 import OJP_Legacy from '../../config/ojp-legacy';
 
-import { OJPMapHelpers } from '../../helpers/ojp-map-helpers';
 import { JourneyService } from '../models/journey-service';
 import { TripLegDrawType, TripLegLineType, TripLegPropertiesEnum } from '../types/map-geometry-types';
 
@@ -143,22 +142,6 @@ export class TripLegGeoController {
     }
 
     return defaultValue;
-  }
-
-  private static serviceHasPrecisePolyline(service: OJP_Legacy.JourneyService): boolean {
-    if (service.ptMode.isDemandMode) {
-      return true;
-    }
-
-    const ignorePtModes: string[] = [
-      'bus',
-      'tram'
-    ];
-    if (ignorePtModes.indexOf(service.ptMode.ptMode) !== -1) {
-      return false;
-    }
-
-    return true;
   }
 
   private computeBeelineFeature(): GeoJSON.Feature | null {
