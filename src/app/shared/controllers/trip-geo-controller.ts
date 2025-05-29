@@ -1,6 +1,7 @@
 import OJP_Legacy from '../../config/ojp-legacy';
 
 import { OJPMapHelpers } from '../../helpers/ojp-map-helpers';
+import { JourneyService } from '../models/journey-service';
 import { TripLegDrawType, TripLegLineType, TripLegPropertiesEnum } from '../types/map-geometry-types';
 
 interface LinePointData {
@@ -135,7 +136,8 @@ export class TripLegGeoController {
     if (leg.legType === 'TimedLeg') {
       const timedLeg = leg as OJP_Legacy.TripTimedLeg;
 
-      const usedDetailedLine = TripLegGeoController.serviceHasPrecisePolyline(timedLeg.service);
+      const service = JourneyService.initWithOJP_LegacyJourneyService(timedLeg.service);
+      const usedDetailedLine = service.hasPrecisePolyline();
 
       return !usedDetailedLine;
     }
@@ -248,7 +250,8 @@ export class TripLegGeoController {
     
     if (this.leg.legType === 'TimedLeg') {
       const timedLeg = this.leg as OJP_Legacy.TripTimedLeg;
-      return OJPMapHelpers.computeTimedLegColor(timedLeg);
+      const service = JourneyService.initWithOJP_LegacyJourneyService(timedLeg.service);
+      return service.computeLegColor();
     }
 
     return defaultType;
@@ -402,7 +405,8 @@ export class TripLegGeoController {
   private computeTimedLegGeoJSONFeatures(timedLeg: OJP_Legacy.TripTimedLeg): GeoJSON.Feature[] {
     let features: GeoJSON.Feature[] = [];
 
-    const lineType: TripLegLineType = OJPMapHelpers.computeTimedLegColor(timedLeg);
+    const service = JourneyService.initWithOJP_LegacyJourneyService(timedLeg.service);
+    const lineType: TripLegLineType = service.computeLegColor();
 
     const useDetailedTrack = !this.useBeeLine;
     if (useDetailedTrack) {
