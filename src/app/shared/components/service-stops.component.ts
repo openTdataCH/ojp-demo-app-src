@@ -57,6 +57,9 @@ export class ServiceStopsComponent implements OnInit, AfterViewInit {
   }
 
   private emitSelectedEndpoints() {
+    if (this.stopPointsData.length < 2) {
+      return;
+    }
     this.onExampleTripLocationsUpdated.emit(this.selectedEndpointsIDx);
   } 
 
