@@ -57,7 +57,7 @@ export class TripInfoResultPopoverComponent {
 
   private createOJP_SDK_Instance(): OJP_Next.SDK {
     const stageConfig = this.userTripService.getStageConfig();    
-    const sdk = new OJP_Next.SDK(REQUESTOR_REF, stageConfig, this.languageService.language);
+    const sdk = new OJP_Next.SDK(REQUESTOR_REF, stageConfig, this.languageService.language, OJP_Legacy.XML_BuilderConfig);
     return sdk;
   }
 }
