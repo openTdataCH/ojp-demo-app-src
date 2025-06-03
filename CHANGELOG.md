@@ -5,7 +5,7 @@ OJP-Demo URL: https://opentdatach.github.io/ojp-demo-app/
 ----
 
 4.June 2025
-- TripInfoRequest - use new SDK - [PR #242](https://github.com/openTdataCH/ojp-demo-app-src/pull/242)
+- TripInfoRequest - use new SDK - [PR #243](https://github.com/openTdataCH/ojp-demo-app-src/pull/243)
   - use `ojp-sdk-next` for TripInfoRequest
   - extracts `JourneyService`, `TripInfoResult`, `StopPointCall` logic from SDK
   - adds detailed route for TripInfoRequest map polyline
