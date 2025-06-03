@@ -1,10 +1,13 @@
 import { Component } from '@angular/core';
 
 import OJP_Legacy from '../../../../config/ojp-legacy';
+import * as OJP_Next from 'ojp-sdk-next';
 
 import { UserTripService } from '../../../../shared/services/user-trip.service';
 import { TripInfoService } from '../../../../trip-info/trip-info.service';
 import { LanguageService } from '../../../../shared/services/language.service'
+import { REQUESTOR_REF } from '../../../../config/constants';
+import { TripInfoResult } from '../../../../shared/models/trip-info-result';
 
 interface PageModel {
   title: string,
@@ -27,23 +30,34 @@ export class TripInfoResultPopoverComponent {
     this.model.isFetching = false;
   }
 
-  public async fetchJourneyRef(journeyRef: string, dayRef: string) {
+  public async fetchJourneyRef(journeyRef: string, journeyDateTime: Date) {
     this.model.title = 'JourneyRef: ' + journeyRef;
 
-    const stageConfig = this.userTripService.getStageConfig();
-    const request = OJP_Legacy.TripInfoRequest.initWithJourneyRef(stageConfig, this.languageService.language, journeyRef, dayRef);
+    const request = OJP_Next.TripInfoRequest.initWithJourneyRef(journeyRef, journeyDateTime);
+    request.enableTrackProjection();
+
+    const ojpSDK_Next = this.createOJP_SDK_Instance();
 
     this.model.isFetching = true;
-    const response = await request.fetchResponse();
+    const response = await ojpSDK_Next.fetchTripInfoRequestResponse(request);
     this.model.isFetching = false;
 
-    if (response.tripInfoResult === null) {
+    if (response.ok) {
+      const tripInfoResult = TripInfoResult.initWithTripInfoDeliverySchema(response.value);
+      this.tripInfoService.tripInfoResultUpdated.emit(tripInfoResult);
+    } else {
       console.error('fetchJourneyRef - error');
       console.log(journeyRef);
+      console.log(response);
       this.model.errorMessage = 'ERROR while fetching the TripInfoRequest, check console for more details.';
-      return;
-    }
 
-    this.tripInfoService.tripInfoResultUpdated.emit(response.tripInfoResult);
+      this.tripInfoService.tripInfoResultUpdated.emit(null);
+    }
+  }
+
+  private createOJP_SDK_Instance(): OJP_Next.SDK {
+    const stageConfig = this.userTripService.getStageConfig();    
+    const sdk = new OJP_Next.SDK(REQUESTOR_REF, stageConfig, this.languageService.language, OJP_Legacy.XML_BuilderConfig);
+    return sdk;
   }
 }

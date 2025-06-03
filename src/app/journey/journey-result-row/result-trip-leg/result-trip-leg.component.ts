@@ -1,4 +1,5 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { DomSanitizer } from '@angular/platform-browser';
 import { Router } from '@angular/router';
 
 import mapboxgl from 'mapbox-gl';
@@ -11,7 +12,6 @@ import * as OJP_Next from 'ojp-sdk-next';
 import { DEBUG_LEVEL } from '../../../config/constants';
 import { MapLegLineTypeColor } from '../../../config/map-colors';
 import { OJPHelpers } from '../../../helpers/ojp-helpers';
-import { OJPMapHelpers } from '../../../helpers/ojp-map-helpers';
 
 import { MapService } from '../../../shared/services/map.service';
 import { UserTripService } from '../../../shared/services/user-trip.service';
@@ -21,9 +21,9 @@ import { TripLegGeoController } from '../../../shared/controllers/trip-geo-contr
 
 import { TripInfoResultPopoverComponent } from './trip-info-result-popover/trip-info-result-popover.component';
 import { TripLegData } from '../../../shared/types/trip';
-import { DomSanitizer } from '@angular/platform-browser';
 import { SituationContent } from '../../../shared/types/situations';
 import { DebugXmlPopoverComponent } from '../../../search-form/debug-xml-popover/debug-xml-popover.component';
+import { JourneyService } from '../../../shared/models/journey-service';
 
 type LegTemplate = 'walk' | 'timed' | 'taxi';
 
@@ -280,7 +280,8 @@ export class ResultTripLegComponent implements OnInit {
 
     if (legType === 'TimedLeg') {
       const leg = this.legData.leg as OJP_Legacy.TripTimedLeg;
-      return OJPMapHelpers.computeTimedLegColor(leg);
+      const service = JourneyService.initWithOJP_LegacyJourneyService(leg.service);
+      return service.computeLegColor();
     }
 
     return defaultColor;
@@ -418,7 +419,8 @@ export class ResultTripLegComponent implements OnInit {
           locationText: stopPoint.location.computeLocationName() ?? 'n/a',
         };
 
-        OJPHelpers.updateLocationDataWithTime(stopPointData, stopPoint);
+        const stopPointCall = OJPHelpers.convertOJP_LegacyStopPoint2StopPointCall(stopPoint);
+        OJPHelpers.updateLocationDataWithTime(stopPointData, stopPointCall);
 
         stopPointsData.push(stopPointData);
       });
@@ -450,11 +452,13 @@ export class ResultTripLegComponent implements OnInit {
     if (leg.legType === 'TimedLeg') {
       const timedLeg = leg as OJP_Legacy.TripTimedLeg;
       
-      this.legInfoDataModel.fromLocationData.platformAssistanceIconPath = OJPHelpers.computePlatformAssistanceIconPath(timedLeg.fromStopPoint);
-      this.legInfoDataModel.fromLocationData.platformAssistanceTooltip = OJPHelpers.computePlatformAssistanceTooltip(timedLeg.fromStopPoint);
+      const fromLocationVehicleAccessType = OJPHelpers.computePlatformAssistance(timedLeg.fromStopPoint.vehicleAccessType);
+      this.legInfoDataModel.fromLocationData.platformAssistanceIconPath = OJPHelpers.computePlatformAssistanceIconPath(fromLocationVehicleAccessType);
+      this.legInfoDataModel.fromLocationData.platformAssistanceTooltip = OJPHelpers.computePlatformAssistanceTooltip(fromLocationVehicleAccessType);
 
-      this.legInfoDataModel.toLocationData.platformAssistanceIconPath = OJPHelpers.computePlatformAssistanceIconPath(timedLeg.toStopPoint);
-      this.legInfoDataModel.toLocationData.platformAssistanceTooltip = OJPHelpers.computePlatformAssistanceTooltip(timedLeg.toStopPoint);
+      const toLocationVehicleAccessType = OJPHelpers.computePlatformAssistance(timedLeg.toStopPoint.vehicleAccessType);
+      this.legInfoDataModel.toLocationData.platformAssistanceIconPath = OJPHelpers.computePlatformAssistanceIconPath(toLocationVehicleAccessType);
+      this.legInfoDataModel.toLocationData.platformAssistanceTooltip = OJPHelpers.computePlatformAssistanceTooltip(toLocationVehicleAccessType);
 
       timedLeg.intermediateStopPoints.forEach((stopPoint, idx) => {
         const locationData = this.legInfoDataModel.intermediaryLocationsData[idx] ?? null;
@@ -462,8 +466,9 @@ export class ResultTripLegComponent implements OnInit {
           return;
         }
 
-        locationData.platformAssistanceIconPath = OJPHelpers.computePlatformAssistanceIconPath(stopPoint);
-        locationData.platformAssistanceTooltip = OJPHelpers.computePlatformAssistanceTooltip(stopPoint);
+        const locationVehicleAccessType = OJPHelpers.computePlatformAssistance(stopPoint.vehicleAccessType);
+        locationData.platformAssistanceIconPath = OJPHelpers.computePlatformAssistanceIconPath(locationVehicleAccessType);
+        locationData.platformAssistanceTooltip = OJPHelpers.computePlatformAssistanceTooltip(locationVehicleAccessType);
       });
     }
 
@@ -567,9 +572,8 @@ export class ResultTripLegComponent implements OnInit {
   }
 
   private formatServiceName(timedLeg: OJP_Legacy.TripTimedLeg): string {
-    const service = timedLeg.service;
-
-    const serviceName = OJPHelpers.formatServiceName(service);
+    const service = JourneyService.initWithOJP_LegacyJourneyService(timedLeg.service);
+    const serviceName = service.formatServiceName();
 
     return serviceName;
   }
@@ -631,7 +635,8 @@ export class ResultTripLegComponent implements OnInit {
       const timedLeg = leg as OJP_Legacy.TripTimedLeg
       const stopPoint = isFrom ? timedLeg.fromStopPoint : timedLeg.toStopPoint;
 
-      OJPHelpers.updateLocationDataWithTime(stopPointData, stopPoint);
+      const stopPointCall = OJPHelpers.convertOJP_LegacyStopPoint2StopPointCall(stopPoint);
+      OJPHelpers.updateLocationDataWithTime(stopPointData, stopPointCall);
     }
 
     return stopPointData
@@ -650,15 +655,18 @@ export class ResultTripLegComponent implements OnInit {
 
   public zoomToIntermediaryPoint(idx: number) {
     const location = new OJP_Legacy.Location();
-    location.geoPosition = this.legInfoDataModel.intermediaryLocationsData[idx].geoPosition;
+    const newGeoPosition = this.legInfoDataModel.intermediaryLocationsData[idx].geoPosition;
+    if (newGeoPosition) {
+      location.geoPosition = new OJP_Legacy.GeoPosition(newGeoPosition.longitude, newGeoPosition.latitude);
+    } else {
+      location.geoPosition = null;
+    }
 
     this.mapService.tryToCenterAndZoomToLocation(location);
   }
 
   public loadTripInfoResultPopover() {
     const journeyRef = this.legInfoDataModel.serviceJourneyRef;
-    const dayRef = OJP_Legacy.DateHelpers.formatDate(this.userTripService.departureDate).substring(0, 10);
-
     if (journeyRef === null) {
       console.error('loadTripInfoResultPopover: cant fetch empty journeyRef');
       return;
@@ -672,7 +680,7 @@ export class ResultTripLegComponent implements OnInit {
     });
     dialogRef.afterOpened().subscribe(() => {
       const popover = dialogRef.componentInstance as TripInfoResultPopoverComponent;
-      popover.fetchJourneyRef(journeyRef, dayRef);
+      popover.fetchJourneyRef(journeyRef, this.userTripService.departureDate);
     });
   }
 
@@ -682,15 +690,6 @@ export class ResultTripLegComponent implements OnInit {
       return;
     }
 
-    const legacyRequestInfo: OJP_Legacy.RequestInfo = {
-      requestDateTime: requestInfo.requestDateTime,
-      requestXML: requestInfo.requestXML,
-      responseDateTime: requestInfo.responseDateTime,
-      responseXML: requestInfo.responseXML,
-      parseDateTime: requestInfo.parseDateTime,
-      error: null,
-    };
-
     const dialogRef = this.popover.open(DebugXmlPopoverComponent, {
       position: { top: '20px' },
       width: '50vw',
@@ -699,7 +698,7 @@ export class ResultTripLegComponent implements OnInit {
 
     dialogRef.afterOpened().subscribe(() => {
       const popover = dialogRef.componentInstance as DebugXmlPopoverComponent
-      popover.updateRequestData(legacyRequestInfo);
+      popover.updateRequestData(requestInfo);
     });
   }
 }

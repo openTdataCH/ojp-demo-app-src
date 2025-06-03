@@ -1,4 +1,5 @@
 import { AfterViewInit, Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import { DomSanitizer } from '@angular/platform-browser';
 import { SbbDialog } from '@sbb-esta/angular/dialog';
 
 import OJP_Legacy from '../../config/ojp-legacy';
@@ -8,7 +9,7 @@ import { OJPHelpers } from '../../helpers/ojp-helpers';
 
 import { TripInfoResultPopoverComponent } from '../../journey/journey-result-row/result-trip-leg/trip-info-result-popover/trip-info-result-popover.component';
 import { SituationContent } from '../../shared/types/situations';
-import { DomSanitizer } from '@angular/platform-browser';
+import { JourneyService } from '../../shared/models/journey-service';
 
 interface StationBoardTime {
   stopTime: string
@@ -223,11 +224,13 @@ export class StationBoardResultComponent implements OnInit, AfterViewInit {
     const hasDeviation = stopEvent.journeyService.hasDeviation === true;
     const isUnplanned = stopEvent.journeyService.isUnplanned === true;
 
+    const service = JourneyService.initWithOJP_LegacyJourneyService(stopEvent.journeyService);
+
     const model = <StationBoardModel>{
         stopEvent: stopEvent,
         serviceLineNumber: serviceLineNumber,
         servicePtMode: servicePtMode,
-        serviceInfo: OJPHelpers.formatServiceName(stopEvent.journeyService),
+        serviceInfo: service.formatServiceName(),
         journeyRef: stopEvent.journeyService.journeyRef,
         
         tripNumber: stopEvent.journeyService.journeyNumber, 
@@ -251,14 +254,6 @@ export class StationBoardResultComponent implements OnInit, AfterViewInit {
   }
 
   public loadTripInfoResultPopover(journeyRef: string) {
-    const searchDate = this.stationBoardService.searchDate;
-    const dayRef = OJP_Legacy.DateHelpers.formatDate(searchDate).substring(0, 10);
-
-    if (journeyRef === null) {
-      console.error('loadTripInfoResultPopover: cant fetch empty journeyRef');
-      return;
-    }
-
     const dialogRef = this.tripInfoResultPopover.open(TripInfoResultPopoverComponent, {
       position: { top: '20px' },
       // width: '50vw',
@@ -266,7 +261,7 @@ export class StationBoardResultComponent implements OnInit, AfterViewInit {
     });
     dialogRef.afterOpened().subscribe(() => {
       const popover = dialogRef.componentInstance as TripInfoResultPopoverComponent;
-      popover.fetchJourneyRef(journeyRef, dayRef);
+      popover.fetchJourneyRef(journeyRef, this.stationBoardService.searchDate);
     });
   }
 }

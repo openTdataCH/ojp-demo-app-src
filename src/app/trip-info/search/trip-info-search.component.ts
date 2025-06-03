@@ -5,14 +5,16 @@ import { SbbDialog } from '@sbb-esta/angular/dialog';
 import { SbbNotificationToast } from '@sbb-esta/angular/notification-toast';
 
 import OJP_Legacy from '../../config/ojp-legacy';
+import * as OJP_Next from 'ojp-sdk-next';
 
-import { APP_STAGE, APP_STAGEs } from '../../config/constants'
+import { APP_STAGE, APP_STAGEs, REQUESTOR_REF } from '../../config/constants'
 
-import { UserTripService } from 'src/app/shared/services/user-trip.service';
+import { UserTripService } from '../../shared/services/user-trip.service';
 import { TripInfoService } from '../trip-info.service';
 import { DebugXmlPopoverComponent } from '../../search-form/debug-xml-popover/debug-xml-popover.component';
 import { CustomTripInfoXMLPopoverComponent } from './custom-trip-info-xml-popover/custom-trip-info-xml-popover.component';
-import { LanguageService } from 'src/app/shared/services/language.service';
+import { LanguageService } from '../../shared/services/language.service';
+import { TripInfoResult } from '../../shared/models/trip-info-result';
 
 interface PagelModel {
   journeyRef: string
@@ -34,7 +36,7 @@ export class TripInfoSearchComponent implements OnInit {
 
   public model: PagelModel
 
-  public currentRequestInfo: OJP_Legacy.RequestInfo | null;
+  public currentRequestInfo: OJP_Next.RequestInfo | null;
 
   public headerText: string = 'Search Trip Info'
 
@@ -98,12 +100,16 @@ export class TripInfoSearchComponent implements OnInit {
       this.model.journeyRef = journeyRef;
 
       const dayRef = this.queryParams.get('day');
-      this.fetchTripInfo(dayRef);
+      if (dayRef) {
+        this.model.journeyDateTime = new Date(dayRef);
+      }
+      
+      this.fetchTripInfo();
     }
 
     if (this.useMocks) {
       if (this.useMocks && document.location.hostname === 'localhost') {
-        this.fetchStopEventFromMocks();
+        this.fetchTripInfoRequestFromMocks();
         return;
       }
     }
@@ -153,41 +159,38 @@ export class TripInfoSearchComponent implements OnInit {
     this.model.permalinkURLAddress = urlAddress;
   }
 
-  private async fetchTripInfo(dayRef: string | null = null) {
+  private async fetchTripInfo() {
     const stageConfig = this.userTripService.getStageConfig();
 
-    if (dayRef === null) {
-      dayRef = OJP_Legacy.DateHelpers.formatDate(this.model.journeyDateTime).substring(0, 10);
-    }
-    const request = OJP_Legacy.TripInfoRequest.initWithJourneyRef(stageConfig, this.languageService.language, this.model.journeyRef, dayRef);
-    this.model.isSearching = true;
-    const response = await request.fetchResponse();
+    const request = OJP_Next.TripInfoRequest.initWithJourneyRef(this.model.journeyRef, this.model.journeyDateTime);
+    request.enableTrackProjection();
 
+    const ojpSDK_Next = this.createOJP_SDK_Instance();
+
+    this.model.isSearching = true;
+    const response = await ojpSDK_Next.fetchTripInfoRequestResponse(request);
     this.model.isSearching = false;
 
-    // for debug XML dialog
-    request.updateRequestXML();
-
-    if (response.tripInfoResult === null) {
-      this.notificationToast.open('Invalid TripInfoRequest result', {
+    if (response.ok) {
+      const tripInfoResult = TripInfoResult.initWithTripInfoDeliverySchema(response.value);
+      this.parseTripInfo(request.requestInfo, tripInfoResult);
+    } else {
+      this.notificationToast.open('Invalid TripInfoRequest result: ' + response.error.message, {
         type: 'error',
         verticalPosition: 'top',
       });
 
       console.log(this.model.journeyRef);
+      console.log(response);
     }
-
-    this.parseTripInfo(request.requestInfo, response.tripInfoResult);
   }
 
-  private async fetchStopEventFromMocks() {
+  private async fetchTripInfoRequestFromMocks() {
     const mockURL = '/path/to/mock.xml';
 
     const mockText = await (await fetch(mockURL)).text();
-    const request = OJP_Legacy.TripInfoRequest.initWithMock(mockText);
-    request.fetchResponse().then(response => {
-      this.parseTripInfo(request.requestInfo, response.tripInfoResult);
-    });
+
+    await this.handleCustomResponse(mockText);
   }
 
   public showRequestXmlPopover() {
@@ -204,7 +207,7 @@ export class TripInfoSearchComponent implements OnInit {
     });
   }
 
-  private parseTripInfo(requestInfo: OJP_Legacy.RequestInfo, tripInfoResult: OJP_Legacy.TripInfoResult | null): void {
+  private parseTripInfo(requestInfo: OJP_Next.RequestInfo, tripInfoResult: TripInfoResult | null): void {
     this.currentRequestInfo = requestInfo;
     this.tripInfoService.tripInfoResultUpdated.emit(tripInfoResult);
   }
@@ -225,12 +228,12 @@ export class TripInfoSearchComponent implements OnInit {
 
       popover.customRequestXMLs = this.currentRequestInfo?.requestXML ?? 'n/a';
 
-      popover.customRequestSaved.subscribe(request => {
+      popover.customRequestSaved.subscribe(async requestInfo => {
         dialogRef.close()
-        this.currentRequestInfo = request.requestInfo;
+        this.currentRequestInfo = requestInfo;
 
-        if (request.requestInfo.requestXML) {
-          this.handleCustomResponse(request.requestInfo.requestXML);
+        if (requestInfo.requestXML) {
+          await this.handleCustomResponse(requestInfo.requestXML);
         }
       })
 
@@ -241,17 +244,28 @@ export class TripInfoSearchComponent implements OnInit {
     });
   }
 
-  private handleCustomResponse(responseXML: string) {
-    if (this.currentRequestInfo === null) {
-      return;
+  private async handleCustomResponse(responseXML: string) {
+    const request = OJP_Next.TripInfoRequest.initWithResponseMock(responseXML);
+    request.enableTrackProjection();
+
+    const ojpSDK_Next = this.createOJP_SDK_Instance();
+    const response = await ojpSDK_Next.fetchTripInfoRequestResponse(request);
+    if (response.ok) {
+      const tripInfoResult = TripInfoResult.initWithTripInfoDeliverySchema(response.value);
+      this.parseTripInfo(request.requestInfo, tripInfoResult);
+    } else {
+      this.notificationToast.open('Invalid TripInfoRequest result: ' + response.error.message, {
+        type: 'error',
+        verticalPosition: 'top',
+      });
+      console.log(this.model);
+      console.log(response);
     }
+  }
 
-    this.currentRequestInfo.responseDateTime = new Date();
-    this.currentRequestInfo.responseXML = responseXML;
-
-    const request = OJP_Legacy.TripInfoRequest.initWithMock(responseXML);
-    request.fetchResponse().then(response => {
-      this.parseTripInfo(request.requestInfo, response.tripInfoResult);
-    });
+  private createOJP_SDK_Instance(): OJP_Next.SDK {
+    const stageConfig = this.userTripService.getStageConfig();    
+    const sdk = new OJP_Next.SDK(REQUESTOR_REF, stageConfig, this.languageService.language, OJP_Legacy.XML_BuilderConfig);
+    return sdk;
   }
 }
