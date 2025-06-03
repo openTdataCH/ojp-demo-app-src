@@ -44,7 +44,8 @@ export class TripInfoResult {
     }
 
     const mapPlaces: Record<string, OJP_Next.Place> = {};
-    tripInfoDeliverySchema.tripInfoResponseContext?.places.place.forEach(placeSchema => {
+    const places = tripInfoDeliverySchema.tripInfoResponseContext?.places?.place ?? [];
+    places.forEach(placeSchema => {
       const place = OJP_Next.Place.initWithXMLSchema(placeSchema);
 
       const stopPlaceRef = place.stopPlace?.stopPlaceRef ?? null;
