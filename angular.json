@@ -90,7 +90,13 @@
               "vendorChunk": true,
               "extractLicenses": false,
               "sourceMap": true,
-              "namedChunks": true
+              "namedChunks": true,
+              "fileReplacements": [
+                {
+                  "replace": "src/app/config/app-config.ts",
+                  "with": "src/app/config/app-config.local.ts"
+                }
+              ]
             }
           },
           "defaultConfiguration": "production"

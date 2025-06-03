@@ -2,9 +2,11 @@ import * as GeoJSON from 'geojson'
 import mapboxgl from "mapbox-gl";
 
 import OJP_Legacy from '../../../config/ojp-legacy';
+import * as OJP_Next from 'ojp-sdk-next';
 
 import serviceTrackLineLayerJSON from './map-layers-def/service-track-line.json'
 import serviceTrackStopLayerJSON from './map-layers-def/service-track-stop.json'
+import { TripInfoResult } from '../../../shared/models/trip-info-result';
 
 type LinePointType = 'prev' | 'next'
 
@@ -31,25 +33,66 @@ export class StopEventServiceRenderer {
         };
         map.addSource(this.sourceID, source);
 
-        const serviceTrackLineLayer = serviceTrackLineLayerJSON as mapboxgl.LineLayer;
+        const serviceTrackLineLayer = serviceTrackLineLayerJSON as mapboxgl.LineLayerSpecification;
         serviceTrackLineLayer.source = this.sourceID;
         map.addLayer(serviceTrackLineLayer);
 
-        const serviceTrackStopLayer = serviceTrackStopLayerJSON as mapboxgl.CircleLayer;
+        const serviceTrackStopLayer = serviceTrackStopLayerJSON as mapboxgl.CircleLayerSpecification;
         serviceTrackStopLayer.source = this.sourceID;
         map.addLayer(serviceTrackStopLayer);
     }
 
     public drawStopEvent(stopEvent: OJP_Legacy.StopEvent) {
-        this.drawStopPoints(stopEvent.prevStopPoints, stopEvent.nextStopPoints, stopEvent.stopPoint);
+        const convertStopPointsToGeoPosition = (stopPoints: OJP_Legacy.StopPoint[]) => {
+            const geoPositions: OJP_Next.GeoPosition[] = [];
+            
+            stopPoints.forEach(el => {
+                const geoPosition = el.location.geoPosition ?? null;
+                if (geoPosition) {
+                    geoPositions.push(new OJP_Next.GeoPosition(geoPosition.longitude, geoPosition.latitude));
+                }
+            });
+
+            return geoPositions;
+        };
+
+        const prevStopPositions = convertStopPointsToGeoPosition(stopEvent.prevStopPoints);
+        const nextStopPositions = convertStopPointsToGeoPosition(stopEvent.nextStopPoints);
+        const currentStopPositions = convertStopPointsToGeoPosition([stopEvent.stopPoint]);
+
+        this.drawStopPositions(prevStopPositions, nextStopPositions, currentStopPositions[0] ?? null, []);
     }
 
-    public drawServiceStopPoints(stopPoints: OJP_Legacy.StopPoint[]) {
-        this.drawStopPoints([], stopPoints, stopPoints[0]);
+    public drawTripInfoResult(tripResult: TripInfoResult) {
+        const nextStopPositions = (() => {
+            const geoPositions: OJP_Next.GeoPosition[] = [];
+            tripResult.calls.forEach(el => {
+                if (el.place) {
+                    geoPositions.push(el.place.geoPosition);
+                }
+            });
+
+            return geoPositions;
+        })();
+
+        const detailedRouteCoords: OJP_Next.GeoPosition[] = (() => {
+            if (tripResult.trackSectionsGeoPositions.length === 0) {
+                return [];
+            }
+
+            if (tripResult.trackSectionsGeoPositions.length > 1) {
+                console.error('WARNING - MultLineString not yet implemented, using first');
+            }
+
+            return tripResult.trackSectionsGeoPositions[0];
+        })();
+
+        this.drawStopPositions([], nextStopPositions, null, detailedRouteCoords);
     }
     
-    private drawStopPoints(prevStopPoints: OJP_Legacy.StopPoint[], nextStopPoints: OJP_Legacy.StopPoint[], currentStopPoint: OJP_Legacy.StopPoint | null) {
+    private drawStopPositions(prevStopPositions: OJP_Next.GeoPosition[], nextStopPositions: OJP_Next.GeoPosition[], currentGeoPosition: OJP_Next.GeoPosition | null, detailedRouteCoords: OJP_Next.GeoPosition[]) {
         this.geojsonFeatures = [];
+        const hasDetailedRoute = detailedRouteCoords.length > 0;
 
         const lineFeaturePoints: Record<LinePointType, GeoJSON.Position[]> = {
             prev: [],
@@ -60,73 +103,94 @@ export class StopEventServiceRenderer {
             next: [],
         };
 
+        if (hasDetailedRoute) {
+            detailedRouteCoords.forEach(geoPosition => {
+                lineFeaturePoints.next.push(geoPosition.asLngLat());
+            });
+        }
+
         const linePointTypes: LinePointType[] = ['prev', 'next'];
         linePointTypes.forEach(linePointType => {
             const is_previous = linePointType === 'prev';
-            let stopPointsRef = is_previous ? prevStopPoints : nextStopPoints;
+            const stopPositions = is_previous ? prevStopPositions : nextStopPositions;
 
-            stopPointsRef.forEach((stopPoint, idx) => {
-                const geoPosition = stopPoint.location.geoPosition;
-                if (geoPosition === null) {
-                    return;
+            stopPositions.forEach((stopPosition, idx) => {
+                const stopCoordinates = stopPosition.asLngLat();
+                
+                if (!hasDetailedRoute) {
+                    lineFeaturePoints[linePointType].push(stopCoordinates);
                 }
-
-                lineFeaturePoints[linePointType].push(geoPosition.asPosition())
 
                 const isFirst = idx === 0;
-                const isLast = idx === stopPointsRef.length - 1;
+                const isLast = idx === stopPositions.length - 1;
 
-                const feature = stopPoint.location.asGeoJSONFeature();
-                if (feature && feature.properties) {
-                    feature.properties['point-type'] = linePointType;
-                    
-                    if (is_previous) {
-                        feature.properties['point-size'] = isFirst ? 'large' : 'normal';
-                    } else {
-                        feature.properties['point-size'] = isLast ? 'large' : 'normal';
-                    }
-
-                    pointFeatures[linePointType].push(feature);
+                const featureProperties: GeoJSON.GeoJsonProperties = {
+                    'point-type': linePointType,
+                };
+                if (is_previous) {
+                    featureProperties['point-size'] = isFirst ? 'large' : 'normal';
+                } else {
+                    featureProperties['point-size'] = isLast ? 'large' : 'normal';
                 }
-            })
+
+                const feature: GeoJSON.Feature<GeoJSON.Point> = {
+                    type: 'Feature',
+                    properties: featureProperties,
+                    geometry: {
+                        type: 'Point',
+                        coordinates: stopCoordinates,
+                    }
+                };
+
+                pointFeatures[linePointType].push(feature);
+            });
         });
 
         // Insert current station
-        if (currentStopPoint) {
-            const geoPosition = currentStopPoint.location.geoPosition;
-            if (geoPosition) {
-                lineFeaturePoints.prev.push(geoPosition.asPosition());
-                lineFeaturePoints.next.unshift(geoPosition.asPosition());
-                
-                const feature = currentStopPoint.location.asGeoJSONFeature();
-                if (feature && feature.properties) {
-                    feature.properties['point-type'] = 'next';
-                    feature.properties['point-size'] = 'large';
-                    pointFeatures['next'].push(feature);
-                }
+        if (currentGeoPosition) {
+            const stopCoordinates = currentGeoPosition.asLngLat();
+            
+            if (!hasDetailedRoute) {
+                lineFeaturePoints.prev.push(stopCoordinates);
+                lineFeaturePoints.next.unshift(stopCoordinates);
             }
+
+            const feature: GeoJSON.Feature<GeoJSON.Point> = {
+                type: 'Feature',
+                properties: {
+                    'point-type': 'next',
+                    'point-size': 'large',
+                },
+                geometry: {
+                    type: 'Point',
+                    coordinates: stopCoordinates,
+                }
+            };
+
+            pointFeatures['next'].push(feature);
         }
 
-        linePointTypes.forEach(linePointType => {
-            const points = lineFeaturePoints[linePointType];
+        
+        linePointTypes.forEach(segmentType => {
+            const points = lineFeaturePoints[segmentType];
             if (points.length < 2) {
                 return;
             }
 
-            const lineFeature = <GeoJSON.Feature>{
+            const lineFeature: GeoJSON.Feature<GeoJSON.LineString> = {
                 type: 'Feature',
                 properties: {
-                    'line-type':linePointType,
+                    'line-type': segmentType,
                 },
-                geometry: <GeoJSON.LineString>{
+                geometry: {
                     type: 'LineString',
                     coordinates: points
                 }
             }
             this.geojsonFeatures.push(lineFeature);
 
-            this.geojsonFeatures = this.geojsonFeatures.concat(pointFeatures[linePointType]);
-        })
+            this.geojsonFeatures = this.geojsonFeatures.concat(pointFeatures[segmentType]);
+        });
 
         const geojson = <GeoJSON.FeatureCollection>{
             type: 'FeatureCollection',
