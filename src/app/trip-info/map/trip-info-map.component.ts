@@ -50,7 +50,7 @@ export class TripInfoMapComponent implements OnInit {
         if (tripInfoResult === null) {
           this.journeyServiceRenderer?.resetStopEventLayers();
         } else {
-          this.journeyServiceRenderer?.drawServiceStopPoints(tripInfoResult.stopPoints);
+          this.journeyServiceRenderer?.drawTripInfoResult(tripInfoResult);
           this.zoomToJourneyService();
         }
       });
