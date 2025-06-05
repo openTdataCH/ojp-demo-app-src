@@ -166,7 +166,14 @@ export class JourneyResultRowComponent implements OnInit {
     const stage = this.userTripService.getStageConfig();
 
     const ojpSDK_Next = new OJP_Next.SDK(REQUESTOR_REF, stage, this.languageService.language);
-    await ojpSDK_Next.fetchTRR_Trips(trrRequest);
+    const trrResponse = await ojpSDK_Next.fetchTripRefineRequestResponse(trrRequest);
+    if (!trrResponse.ok) {
+      console.error('ERROR - fetchTripRefineRequestResponse');
+      console.log(trrRequest);
+      console.log(trrResponse);
+      debugger;
+      return;
+    }
 
     if (trrRequest.requestInfo.responseXML === null) {
       console.error('no responseXML');

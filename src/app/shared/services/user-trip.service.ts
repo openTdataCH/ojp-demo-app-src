@@ -952,8 +952,7 @@ export class UserTripService {
     this.updateFares(fareResults);
   }
 
-  public async fetchFaresForTrips(language: OJP_Legacy.Language, trips: OJP_Legacy.Trip[]) {
-
+  public async fetchFaresForTrips(language: OJP_Legacy.Language, trips: OJP_Legacy.Trip[]): Promise<OJP_Types.FareResultSchema[]> {
     const fareHttpConfig = this.getStageConfig('NOVA-INT');
     const ojpSDK_Next = new OJP_Next.SDK(REQUESTOR_REF, fareHttpConfig, language, OJP_Legacy.XML_BuilderConfigOJPv1);
 
@@ -965,9 +964,16 @@ export class UserTripService {
     });
 
     const fareRequest = OJP_Next.FareRequest.initWithOJPv2Trips(tripsV2);
+    const response = await ojpSDK_Next.fetchFareRequestResponse(fareRequest);
 
-    const fareResults = await ojpSDK_Next.fetchFareResults(fareRequest);
-    return fareResults;
+    if (!response.ok) {
+      console.log('ERROR: fetchFareRequestResponse');
+      console.log(response);
+      
+      return [];
+    }
+
+    return response.value.fareResult;
   }
 
   public hasPublicTransport(): boolean {
