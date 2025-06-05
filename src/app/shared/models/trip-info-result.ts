@@ -5,6 +5,7 @@ import OJP_Legacy from '../../config/ojp-legacy';
 import { StopEventType, StopPointCall, StopPointCallType } from '../types/_all';
 import { OJPHelpers } from '../../helpers/ojp-helpers';
 import { JourneyService } from './journey-service';
+import { OJP_VERSION } from '../../config/constants';
 
 const stopEventTypes: StopEventType[] = ['arrival', 'departure'];
 
@@ -136,7 +137,9 @@ export class TripInfoResult {
     });
 
     const journeyService: JourneyService | null = (() => {
-      if (OJP_Legacy.OJP_VERSION === '1.0') {
+      const isOJPv2 = OJP_VERSION === '2.0';
+
+      if (!isOJPv2) {
         const oldTripInfoResultSchema = firstTripInfoResultSchema as OJP_Types.OJPv1_TripInfoResultStructureSchema;
         const service = JourneyService.initWithLegacyTripInfoResultSchema(oldTripInfoResultSchema);
         return service;

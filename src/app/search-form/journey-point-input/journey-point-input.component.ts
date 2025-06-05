@@ -11,6 +11,7 @@ import { LanguageService } from '../../shared/services/language.service'
 import { UserTripService } from '../../shared/services/user-trip.service';
 
 import { SbbErrorStateMatcher } from '@sbb-esta/angular/core';
+import { OJP_VERSION, REQUESTOR_REF } from '../../config/constants';
 
 type MapLocations = Record<OJP_Legacy.LocationType, OJP_Legacy.Location[]>
 type OptionLocationType = [OJP_Legacy.LocationType, string]
@@ -121,9 +122,11 @@ export class JourneyPointInputComponent implements OnInit, OnChanges {
   }
 
   private async fetchJourneyPoints(searchTerm: string) {
-    let stageConfig = this.userTripService.getStageConfig()
+    const stageConfig = this.userTripService.getStageConfig();
+    const isOJPv2 = OJP_VERSION === '2.0';
+    const xmlConfig = isOJPv2 ? OJP_Legacy.XML_ConfigOJPv2 : OJP_Legacy.XML_BuilderConfigOJPv1;
 
-    const request = OJP_Legacy.LocationInformationRequest.initWithLocationName(stageConfig, this.languageService.language, searchTerm, []);
+    const request = OJP_Legacy.LocationInformationRequest.initWithLocationName(stageConfig, this.languageService.language, xmlConfig, REQUESTOR_REF, searchTerm, []);
     request.enableExtensions = this.userTripService.currentAppStage !== 'OJP-SI';
     
     const response = await request.fetchResponse();

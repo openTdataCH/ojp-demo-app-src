@@ -6,18 +6,17 @@ import OJP_Legacy from '../../config/ojp-legacy';
 
 import { UserTripService } from '../../shared/services/user-trip.service';
 import { FormatHelpers } from '../../helpers/format-helpers';
-import { TRIP_REQUEST_DEFAULT_NUMBER_OF_RESULTS } from '../../config/constants';
+import { OJP_VERSION, TRIP_REQUEST_DEFAULT_NUMBER_OF_RESULTS } from '../../config/constants';
 
 interface TripTransportModeData {
   modeType: OJP_Legacy.TripModeType,
   transportModes: OJP_Legacy.IndividualTransportMode[],
 };
 
-const walkTransportMode: OJP_Legacy.IndividualTransportMode = OJP_Legacy.OJP_VERSION === '1.0' ? 'walk' : 'foot'; 
-const carTransportMode: OJP_Legacy.IndividualTransportMode = OJP_Legacy.OJP_VERSION === '1.0' ? 'self-drive-car' : 'car';
+const isOJPv2 = OJP_VERSION === '2.0';
 
-const isOJPv2 = OJP_Legacy.OJP_VERSION === '2.0';
-const walkMode: OJP_Legacy.IndividualTransportMode = isOJPv2 ? 'foot' : 'walk';
+const walkTransportMode: OJP_Legacy.IndividualTransportMode = isOJPv2 ? 'foot' : 'walk'; 
+const carTransportMode: OJP_Legacy.IndividualTransportMode = isOJPv2 ? 'car' : 'self-drive-car';
 
 const appTripTransportModeData: TripTransportModeData[] = [
   {
@@ -48,7 +47,7 @@ const appTripTransportModeData: TripTransportModeData[] = [
   {
     modeType: 'mode_at_end',
     transportModes: [
-      walkMode,
+      walkTransportMode,
       'bicycle_rental',
       'escooter_rental',
       'car_sharing',
@@ -59,7 +58,7 @@ const appTripTransportModeData: TripTransportModeData[] = [
   {
     modeType: 'mode_at_start_end',
     transportModes: [
-      walkMode,
+      walkTransportMode,
       'bicycle_rental',
       'escooter_rental'
     ]
@@ -136,7 +135,7 @@ export class TripModeTypeComponent implements OnInit {
     this.mapPublicTransportModesFilter.water = false;
     this.mapPublicTransportModesFilter.tram = false;
 
-    this.isV1 = OJP_Legacy.OJP_VERSION === '1.0';
+    this.isV1 = OJP_VERSION === '1.0';
 
     this.useRealTimeDataTypes = ['full', 'explanatory', 'none'];
     this.selectedUseRealTimeDataType = this.userTripService.useRealTimeDataType;

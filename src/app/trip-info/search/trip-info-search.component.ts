@@ -7,7 +7,7 @@ import { SbbNotificationToast } from '@sbb-esta/angular/notification-toast';
 import OJP_Legacy from '../../config/ojp-legacy';
 import * as OJP_Next from 'ojp-sdk-next';
 
-import { APP_STAGE, APP_STAGEs, REQUESTOR_REF } from '../../config/constants'
+import { APP_STAGE, APP_STAGEs, OJP_VERSION, REQUESTOR_REF } from '../../config/constants'
 
 import { UserTripService } from '../../shared/services/user-trip.service';
 import { TripInfoService } from '../trip-info.service';
@@ -264,8 +264,11 @@ export class TripInfoSearchComponent implements OnInit {
   }
 
   private createOJP_SDK_Instance(): OJP_Next.SDK {
+    const isOJPv2 = OJP_VERSION === '2.0';
+    const xmlConfig = isOJPv2 ? OJP_Legacy.XML_ConfigOJPv2 : OJP_Legacy.XML_BuilderConfigOJPv1;
+
     const stageConfig = this.userTripService.getStageConfig();    
-    const sdk = new OJP_Next.SDK(REQUESTOR_REF, stageConfig, this.languageService.language, OJP_Legacy.XML_BuilderConfig);
+    const sdk = new OJP_Next.SDK(REQUESTOR_REF, stageConfig, this.languageService.language, xmlConfig);
     return sdk;
   }
 }

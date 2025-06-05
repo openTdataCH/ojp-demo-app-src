@@ -3,7 +3,7 @@ import mapboxgl from "mapbox-gl";
 
 import OJP_Legacy from '../../config/ojp-legacy';
 
-import { AppMapLayerOptions, DEBUG_LEVEL, MAP_APP_MAP_LAYERS } from '../../config/constants'
+import { AppMapLayerOptions, DEBUG_LEVEL, MAP_APP_MAP_LAYERS, OJP_VERSION, REQUESTOR_REF } from '../../config/constants'
 import { UserTripService } from "../../shared/services/user-trip.service";
 import { MapHelpers } from "../helpers/map.helpers";
 import { MAP_LAYERS_DEFINITIONS } from "./map-layers-def";
@@ -115,9 +115,15 @@ export class AppMapLayer {
             return;
         }
 
+        const isOJPv2 = OJP_VERSION === '2.0';
+        const xmlConfig = isOJPv2 ? OJP_Legacy.XML_ConfigOJPv2 : OJP_Legacy.XML_BuilderConfigOJPv1;
+
         const request = OJP_Legacy.LocationInformationRequest.initWithBBOXAndType(
             this.userTripService.getStageConfig(),
             this.language,
+            xmlConfig,
+            REQUESTOR_REF,
+
             mapBounds.getWest(),
             mapBounds.getNorth(),
             mapBounds.getEast(),

@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 
 import OJP_Legacy from '../../config/ojp-legacy';
-import { DEBUG_LEVEL } from '../../config/constants';
+import { DEBUG_LEVEL, OJP_VERSION } from '../../config/constants';
 
 type PageModel = {
   sdkVersion: string,
@@ -20,14 +20,15 @@ export class WebFooterComponent implements OnInit {
 
   constructor() {
     const isTopograhicPlaceMapLayerEnabled = DEBUG_LEVEL === 'DEBUG';
+    const isOJPv2 = OJP_VERSION === '2.0';
 
     let changelogURL = 'https://github.com/openTdataCH/ojp-demo-app-src/blob/feature/ojp-v1-beta/CHANGELOG.md';
-    if (OJP_Legacy.OJP_VERSION === '2.0') {
+    if (isOJPv2) {
       changelogURL = 'https://github.com/openTdataCH/ojp-demo-app-src/blob/feature/ojp-v2-beta/CHANGELOG.md';
     }
 
     let githubURL = 'https://github.com/openTdataCH/ojp-js/blob/feature/ojp-v1/CHANGELOG.md';
-    if (OJP_Legacy.OJP_VERSION === '2.0') {
+    if (isOJPv2) {
       githubURL = 'https://github.com/openTdataCH/ojp-js/blob/feature/ojp-v2/CHANGELOG.md';
     }
 

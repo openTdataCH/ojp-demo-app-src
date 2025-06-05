@@ -1,6 +1,8 @@
 import { Injectable } from '@angular/core';
 import { Title } from '@angular/platform-browser';
+
 import OJP_Legacy from '../../config/ojp-legacy';
+import { OJP_VERSION } from '../../config/constants';
 
 @Injectable({
   providedIn: 'root',
@@ -16,7 +18,7 @@ export class AppService {
       ];
 
       titleParts.push('BETA');
-      titleParts.push('OJP ' + OJP_Legacy.OJP_VERSION);
+      titleParts.push('OJP ' + OJP_VERSION);
 
       const titleS = titleParts.join(' - ');
 
@@ -35,7 +37,7 @@ export class AppService {
         return 'ojpv1-prod';
       }
 
-      if (OJP_Legacy.OJP_VERSION === '2.0') {
+      if (OJP_VERSION === '2.0') {
         return 'ojpv2-beta'
       } else {
         return 'ojpv1-beta';

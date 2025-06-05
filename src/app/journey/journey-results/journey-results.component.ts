@@ -5,6 +5,7 @@ import OJP_Legacy from '../../config/ojp-legacy';
 import { MapService } from '../../shared/services/map.service'
 import { LanguageService } from '../../shared/services/language.service';
 import { TripData } from '../../shared/types/trip';
+import { OJP_VERSION, REQUESTOR_REF } from '../../config/constants';
 
 type NumberOfResultsType = 'NumberOfResults' | 'NumberOfResultsBefore' | 'NumberOfResultsAfter';
 
@@ -127,9 +128,15 @@ export class JourneyResultsComponent implements OnInit {
     }
 
     const stageConfig = this.userTripService.getStageConfig();
+    const isOJPv2 = OJP_VERSION === '2.0';
+    const xmlConfig = isOJPv2 ? OJP_Legacy.XML_ConfigOJPv2 : OJP_Legacy.XML_BuilderConfigOJPv1;
+    
     const request = OJP_Legacy.TripRequest.initWithTripLocationsAndDate(
       stageConfig,
       this.languageService.language,
+      xmlConfig,
+      REQUESTOR_REF,
+      
       this.userTripService.fromTripLocation,
       this.userTripService.toTripLocation,
       depArrDate,

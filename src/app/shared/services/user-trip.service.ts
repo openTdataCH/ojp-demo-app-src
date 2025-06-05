@@ -7,7 +7,7 @@ import * as OJP_Next from 'ojp-sdk-next';
 import * as OJP_Types from 'ojp-shared-types';
 
 import { APP_CONFIG } from '../../config/app-config';
-import { APP_STAGE, DEBUG_LEVEL, DEFAULT_APP_STAGE, REQUESTOR_REF, TRIP_REQUEST_DEFAULT_NUMBER_OF_RESULTS } from '../../config/constants';
+import { APP_STAGE, DEBUG_LEVEL, DEFAULT_APP_STAGE, OJP_VERSION, REQUESTOR_REF, TRIP_REQUEST_DEFAULT_NUMBER_OF_RESULTS } from '../../config/constants';
 import { MapService } from './map.service';
 import { MapTrip } from '../types/map-geometry-types';
 import { TripData, TripLegData } from '../types/trip';
@@ -95,6 +95,9 @@ export class UserTripService {
   }
 
   public initDefaults(language: OJP_Legacy.Language) {
+    const isOJPv2 = OJP_VERSION === '2.0';
+    const xmlConfig = isOJPv2 ? OJP_Legacy.XML_ConfigOJPv2 : OJP_Legacy.XML_BuilderConfigOJPv1;
+
     const appStageS = this.queryParams.get('stage') ?? null;
     if (appStageS) {
       const userAppStage = this.computeAppStageFromString(appStageS);
@@ -163,10 +166,10 @@ export class UserTripService {
         });
         promises.push(coordsPromise);
       } else {
-        let locationInformationRequest = OJP_Legacy.LocationInformationRequest.initWithStopPlaceRef(stageConfig, language, stopPlaceRef);
+        let locationInformationRequest = OJP_Legacy.LocationInformationRequest.initWithStopPlaceRef(stageConfig, language, xmlConfig, REQUESTOR_REF, stopPlaceRef);
         // Check if is location name instead of stopId / sloid
         if (typeof stopPlaceRef === 'string' && /^[A-Z]/.test(stopPlaceRef)) {
-          locationInformationRequest = OJP_Legacy.LocationInformationRequest.initWithLocationName(stageConfig, language, stopPlaceRef, []);
+          locationInformationRequest = OJP_Legacy.LocationInformationRequest.initWithLocationName(stageConfig, language, xmlConfig, REQUESTOR_REF, stopPlaceRef, []);
         }
         locationInformationRequest.enableExtensions = this.currentAppStage !== 'OJP-SI';
 
@@ -189,7 +192,7 @@ export class UserTripService {
           bbox.extend(viaLocationFromCoords.geoPosition);
         }
       } else {
-        const stopPlaceLIR = OJP_Legacy.LocationInformationRequest.initWithStopPlaceRef(stageConfig, language, viaKey);
+        const stopPlaceLIR = OJP_Legacy.LocationInformationRequest.initWithStopPlaceRef(stageConfig, language, xmlConfig, REQUESTOR_REF, viaKey);
         stopPlaceLIR.enableExtensions = this.currentAppStage !== 'OJP-SI';
         const stopPlacePromise = stopPlaceLIR.fetchLocations();
         promises.push(stopPlacePromise);
@@ -312,7 +315,10 @@ export class UserTripService {
       const stageConfig = this.getStageConfig();
 
       const ojpRequest: OJP_Legacy.LocationInformationRequest = (() => {
-        const request = OJP_Legacy.LocationInformationRequest.initWithBBOXAndType(stageConfig, language,
+        const isOJPv2 = OJP_VERSION === '2.0';
+        const xmlConfig = isOJPv2 ? OJP_Legacy.XML_ConfigOJPv2 : OJP_Legacy.XML_BuilderConfigOJPv1;
+
+        const request = OJP_Legacy.LocationInformationRequest.initWithBBOXAndType(stageConfig, language, xmlConfig, REQUESTOR_REF,
           bbox.southWest.longitude,
           bbox.northEast.latitude,
           bbox.northEast.longitude,
@@ -539,7 +545,7 @@ export class UserTripService {
   }
 
   private updateLinkedURLs(queryParams: URLSearchParams) {
-    const isOJPv2 = OJP_Legacy.OJP_VERSION === '2.0';
+    const isOJPv2 = OJP_VERSION === '2.0';
 
     const prodQueryParams = new URLSearchParams(queryParams);
     if (isOJPv2) {
