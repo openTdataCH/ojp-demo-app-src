@@ -3,6 +3,7 @@ import { Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChange
 import { FormControl, FormGroupDirective, NgForm, Validators } from '@angular/forms';
 
 import { SbbAutocompleteSelectedEvent } from '@sbb-esta/angular/autocomplete';
+import { SbbErrorStateMatcher } from '@sbb-esta/angular/core';
 
 import OJP_Legacy from '../../config/ojp-legacy';
 
@@ -10,7 +11,6 @@ import { MapService } from '../../shared/services/map.service';
 import { LanguageService } from '../../shared/services/language.service'
 import { UserTripService } from '../../shared/services/user-trip.service';
 
-import { SbbErrorStateMatcher } from '@sbb-esta/angular/core';
 import { OJP_VERSION, REQUESTOR_REF } from '../../config/constants';
 
 type MapLocations = Record<OJP_Legacy.LocationType, OJP_Legacy.Location[]>
