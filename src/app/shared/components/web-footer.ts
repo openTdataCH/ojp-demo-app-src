@@ -1,10 +1,11 @@
 import { Component, OnInit } from '@angular/core';
 
 import OJP_Legacy from '../../config/ojp-legacy';
+import * as OJP_Next from 'ojp-sdk-next';
 import { DEBUG_LEVEL, OJP_VERSION } from '../../config/constants';
 
 type PageModel = {
-  sdkVersion: string,
+  sdkVersionText: string,
   lastUpdate: string,
   isTopograhicPlaceMapLayerEnabled: boolean,
   changelogURL: string,
@@ -33,7 +34,7 @@ export class WebFooterComponent implements OnInit {
     }
 
     this.model = {
-      sdkVersion: OJP_Legacy.SDK_VERSION + ', OJP API ' + OJP_Legacy.OJP_VERSION,
+      sdkVersionText: 'ojp-sdk-legacy: ' + OJP_Legacy.SDK_VERSION + ' - ojp-sdk-next: ' + OJP_Next.SDK_VERSION + ' - OJP API ' + OJP_VERSION,
       lastUpdate: '4.June 2025',
       isTopograhicPlaceMapLayerEnabled: isTopograhicPlaceMapLayerEnabled,
       changelogURL: changelogURL,
