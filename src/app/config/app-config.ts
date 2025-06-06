@@ -1,7 +1,4 @@
 import { AppConfig } from '../shared/types/app-config';
-import OJP_Legacy from './ojp-legacy';
-
-export const OJP_VERSION: OJP_Legacy.OJP_VERSION_Type = '2.0';
 
 export const APP_CONFIG: AppConfig = {
   stages: {
