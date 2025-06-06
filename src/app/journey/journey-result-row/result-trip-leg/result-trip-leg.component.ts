@@ -9,7 +9,8 @@ import { SbbDialog } from "@sbb-esta/angular/dialog";
 import OJP_Legacy from '../../../config/ojp-legacy';
 import * as OJP_Next from 'ojp-sdk-next';
 
-import { DEBUG_LEVEL } from '../../../config/constants';
+import { DEBUG_LEVEL, OJP_VERSION } from '../../../config/constants';
+
 import { MapLegLineTypeColor } from '../../../config/map-colors';
 import { OJPHelpers } from '../../../helpers/ojp-helpers';
 
@@ -94,8 +95,8 @@ export class ResultTripLegComponent implements OnInit {
   constructor(private mapService: MapService, private router: Router, private popover: SbbDialog, private userTripService: UserTripService, private sanitizer: DomSanitizer) {
     this.legInfoDataModel = <LegInfoDataModel>{}
     this.isEmbed = this.router.url.indexOf('/embed/') !== -1;
-    
-    const isOJPv2 = OJP_Legacy.OJP_VERSION === '2.0';
+
+    const isOJPv2 = OJP_VERSION === '2.0';
     this.enableTRR = isOJPv2;
   }
 

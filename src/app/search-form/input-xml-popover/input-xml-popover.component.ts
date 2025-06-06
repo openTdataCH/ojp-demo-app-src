@@ -3,6 +3,8 @@ import { UserTripService } from 'src/app/shared/services/user-trip.service';
 
 import OJP_Legacy from '../../config/ojp-legacy';
 
+import { REQUESTOR_REF, OJP_VERSION } from '../../config/constants';
+
 @Component({
   selector: 'input-xml-popover',
   templateUrl: './input-xml-popover.component.html',
@@ -24,10 +26,12 @@ export class InputXmlPopoverComponent {
   }
 
   public parseCustomRequestXML() {
-    this.isRunningTripRequest = true
+    this.isRunningTripRequest = true;
 
-    const stageConfig = this.userTripService.getStageConfig();
-    const request = OJP_Legacy.TripRequest.initWithRequestMock(this.inputTripRequestXML, stageConfig);
+    const isOJPv2 = OJP_VERSION === '2.0';
+    const xmlConfig = isOJPv2 ? OJP_Legacy.XML_ConfigOJPv2 : OJP_Legacy.XML_BuilderConfigOJPv1;
+    
+    const request = OJP_Legacy.TripRequest.initWithRequestMock(this.inputTripRequestXML, xmlConfig, REQUESTOR_REF);
     request.fetchResponse().then(response => {
       if (response.message === 'ERROR') {
         console.error('ERROR fetching OJP response');

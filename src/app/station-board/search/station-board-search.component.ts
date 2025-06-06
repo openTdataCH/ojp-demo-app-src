@@ -5,8 +5,10 @@ import { SbbExpansionPanel } from '@sbb-esta/angular/accordion';
 import { SbbDialog } from '@sbb-esta/angular/dialog';
 import { SbbNotificationToast } from '@sbb-esta/angular/notification-toast';
 
-import * as GeoJSON from 'geojson'
+import * as GeoJSON from 'geojson';
 import OJP_Legacy from '../../config/ojp-legacy';
+
+import { APP_STAGE, APP_STAGEs, DEBUG_LEVEL, DEFAULT_APP_STAGE, REQUESTOR_REF, OJP_VERSION } from '../../config/constants';
 
 import { OJPHelpers } from '../../helpers/ojp-helpers';
 
@@ -19,8 +21,6 @@ import { StationBoardInputComponent } from '../input/station-board-input.compone
 import { DebugXmlPopoverComponent } from '../../search-form/debug-xml-popover/debug-xml-popover.component';
 import { CustomStopEventXMLPopoverComponent } from './custom-stop-event-xml-popover/custom-stop-event-xml-popover.component';
 import { EmbedStationBoardPopoverComponent } from './embed-station-board-popover/embed-station-board-popover.component';
-
-import { APP_STAGE, APP_STAGEs, DEBUG_LEVEL, DEFAULT_APP_STAGE } from '../../config/constants'
 
 type URLType = 'prodv1' | 'betav1' | 'betav2' | 'beta';
 
@@ -105,7 +105,7 @@ export class StationBoardSearchComponent implements OnInit {
     this.headerText = this.stationBoardType;
     this.showURLS = DEBUG_LEVEL === 'DEBUG';
 
-    this.isV1 = OJP_Legacy.OJP_VERSION === '1.0';
+    this.isV1 = OJP_VERSION === '1.0';
     this.useRealTimeDataTypes = ['full', 'explanatory', 'none'];
   }
 
@@ -317,7 +317,7 @@ export class StationBoardSearchComponent implements OnInit {
   }
 
   private updateLinkedURLs(queryParams: URLSearchParams) {
-    const isOJPv2 = OJP_Legacy.OJP_VERSION === '2.0';
+    const isOJPv2 = OJP_VERSION === '2.0';
 
     const prodQueryParams = new URLSearchParams(queryParams);
     if (isOJPv2) {
@@ -359,7 +359,10 @@ export class StationBoardSearchComponent implements OnInit {
   }
 
   private initFromMockXML(mockText: string) {
-    const request = OJP_Legacy.StopEventRequest.initWithMock(mockText);
+    const isOJPv2 = OJP_VERSION === '2.0';
+    const xmlConfig = isOJPv2 ? OJP_Legacy.XML_ConfigOJPv2 : OJP_Legacy.XML_BuilderConfigOJPv1;
+
+    const request = OJP_Legacy.StopEventRequest.initWithMock(mockText, xmlConfig, REQUESTOR_REF);
     request.fetchResponse().then(response => {
       if (response.stopEvents.length > 0) {
         const stopEvent = response.stopEvents[0];
@@ -374,10 +377,13 @@ export class StationBoardSearchComponent implements OnInit {
   }
 
   private computeStopEventRequest(stopPlaceRef: string): OJP_Legacy.StopEventRequest {
+    const isOJPv2 = OJP_VERSION === '2.0';
+    const xmlConfig = isOJPv2 ? OJP_Legacy.XML_ConfigOJPv2 : OJP_Legacy.XML_BuilderConfigOJPv1;
+
     const stopEventType: OJP_Legacy.StopEventType = this.stationBoardType === 'Arrivals' ? 'arrival' : 'departure'
     const stopEventDate = this.computeStopBoardDate();
     const appStageConfig = this.userTripService.getStageConfig();
-    const stopEventRequest = OJP_Legacy.StopEventRequest.initWithStopPlaceRef(appStageConfig, this.languageService.language, stopPlaceRef, stopEventType, stopEventDate);
+    const stopEventRequest = OJP_Legacy.StopEventRequest.initWithStopPlaceRef(appStageConfig, this.languageService.language, xmlConfig, REQUESTOR_REF, stopPlaceRef, stopEventType, stopEventDate);
     stopEventRequest.useRealTimeDataType = this.userTripService.useRealTimeDataType;
     
     // for debug XML dialog
@@ -402,8 +408,11 @@ export class StationBoardSearchComponent implements OnInit {
   }
 
   private async lookupStopPlaceRef(stopPlaceRef: string) {
+    const isOJPv2 = OJP_VERSION === '2.0';
+    const xmlConfig = isOJPv2 ? OJP_Legacy.XML_ConfigOJPv2 : OJP_Legacy.XML_BuilderConfigOJPv1;
+
     const stageConfig = this.userTripService.getStageConfig();
-    const locationInformationRequest = OJP_Legacy.LocationInformationRequest.initWithStopPlaceRef(stageConfig, this.languageService.language, stopPlaceRef);
+    const locationInformationRequest = OJP_Legacy.LocationInformationRequest.initWithStopPlaceRef(stageConfig, this.languageService.language, xmlConfig, REQUESTOR_REF, stopPlaceRef);
     locationInformationRequest.enableExtensions = this.userTripService.currentAppStage !== 'OJP-SI';
 
     const response = await locationInformationRequest.fetchResponse();
@@ -535,7 +544,10 @@ export class StationBoardSearchComponent implements OnInit {
     this.currentRequestInfo.responseDateTime = new Date();
     this.currentRequestInfo.responseXML = responseXML;
 
-    const request = OJP_Legacy.StopEventRequest.initWithMock(responseXML);
+    const isOJPv2 = OJP_VERSION === '2.0';
+    const xmlConfig = isOJPv2 ? OJP_Legacy.XML_ConfigOJPv2 : OJP_Legacy.XML_BuilderConfigOJPv1;
+
+    const request = OJP_Legacy.StopEventRequest.initWithMock(responseXML, xmlConfig, REQUESTOR_REF);
     request.fetchResponse().then(response => {
       const stopEvents = response.stopEvents;
 

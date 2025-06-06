@@ -14,12 +14,37 @@ export const DEBUG_LEVEL: DEBUG_LEVEL_Type = (() => {
   return 'DEBUG';
 })();
 
+export const OJP_VERSION: OJP_Legacy.OJP_VERSION_Type = (() => {
+  const queryParams = new URLSearchParams(document.location.search);
+  const userVersion = queryParams.get('v');
+  if (userVersion === '1') {
+    return '1.0';
+  }
+  if (userVersion === '2') {
+    return '2.0';
+  }
+
+  const host = document.location.hostname;
+  if (host === 'opentdatach.github.io') {
+    return '1.0';
+  }
+
+  const path = document.location.pathname;
+  if (path.startsWith('/ojp-demo-v2')) {
+    return '2.0';
+  }
+  if (path.startsWith('/beta-ojp-demo')) {
+    return '1.0';
+  }
+
+  return '2.0' as OJP_Legacy.OJP_VERSION_Type;
+})();
+
 export type APP_STAGE = 'PROD' | 'INT' | 'TEST' | 'LA Beta' 
   | 'V2-PROD' | 'V2-INT' | 'V2-TEST'
   | 'GR TEST'| 'PROD-LB' | 'OJP-SI' | 'NOVA-INT';
 
-const isOJPv2 = OJP_Legacy.OJP_VERSION === '2.0';
-
+const isOJPv2 = ((OJP_VERSION as any) as OJP_Legacy.OJP_VERSION_Type) === '2.0';
 export const DEFAULT_APP_STAGE: APP_STAGE = isOJPv2 ? 'V2-PROD' : 'PROD';
 
 export const APP_STAGEs: APP_STAGE[] = (() => {
@@ -37,7 +62,7 @@ export const APP_STAGEs: APP_STAGE[] = (() => {
   return stages;
 })();
 
-export const REQUESTOR_REF = 'OJP_DemoApp_Beta_OJP' + OJP_Legacy.OJP_VERSION;
+export const REQUESTOR_REF = 'OJP_DemoApp_Beta_OJP' + OJP_VERSION;
 
 export interface AppMapLayerOptions {
   LIR_Restriction_Type: OJP_Legacy.RestrictionType

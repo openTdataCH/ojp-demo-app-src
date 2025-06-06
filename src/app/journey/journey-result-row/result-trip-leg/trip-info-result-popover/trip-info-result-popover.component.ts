@@ -3,10 +3,11 @@ import { Component } from '@angular/core';
 import OJP_Legacy from '../../../../config/ojp-legacy';
 import * as OJP_Next from 'ojp-sdk-next';
 
+import { REQUESTOR_REF, OJP_VERSION } from '../../../../config/constants';
+
 import { UserTripService } from '../../../../shared/services/user-trip.service';
 import { TripInfoService } from '../../../../trip-info/trip-info.service';
 import { LanguageService } from '../../../../shared/services/language.service'
-import { REQUESTOR_REF } from '../../../../config/constants';
 import { TripInfoResult } from '../../../../shared/models/trip-info-result';
 
 interface PageModel {
@@ -56,8 +57,11 @@ export class TripInfoResultPopoverComponent {
   }
 
   private createOJP_SDK_Instance(): OJP_Next.SDK {
-    const stageConfig = this.userTripService.getStageConfig();    
-    const sdk = new OJP_Next.SDK(REQUESTOR_REF, stageConfig, this.languageService.language, OJP_Legacy.XML_BuilderConfig);
+    const stageConfig = this.userTripService.getStageConfig();
+    const isOJPv2 = OJP_VERSION === '2.0';
+    const xmlConfig = isOJPv2 ? OJP_Legacy.XML_ConfigOJPv2 : OJP_Legacy.XML_BuilderConfigOJPv1;
+
+    const sdk = new OJP_Next.SDK(REQUESTOR_REF, stageConfig, this.languageService.language, xmlConfig);
     return sdk;
   }
 }

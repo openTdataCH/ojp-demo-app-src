@@ -4,7 +4,8 @@ import { SbbExpansionPanel } from '@sbb-esta/angular/accordion';
 import OJP_Legacy from '../../config/ojp-legacy';
 import * as OJP_Next from 'ojp-sdk-next';
 
-import { DEBUG_LEVEL, REQUESTOR_REF } from '../../config/constants';
+import { DEBUG_LEVEL, REQUESTOR_REF, OJP_VERSION } from '../../config/constants';
+
 import { UserTripService } from '../../shared/services/user-trip.service';
 import { MapService } from '../../shared/services/map.service';
 import { LanguageService } from '../../shared/services/language.service';
@@ -149,7 +150,10 @@ export class JourneyResultRowComponent implements OnInit {
       return;
     }
 
-    const tripXML = this.tripData.trip.asXML();
+    const isOJPv2 = OJP_VERSION === '2.0';
+    const xmlConfig = isOJPv2 ? OJP_Legacy.XML_ConfigOJPv2 : OJP_Legacy.XML_BuilderConfigOJPv1;
+
+    const tripXML = this.tripData.trip.asXML(xmlConfig);
     // console.log(tripXML);
 
     // TODO - when migrating this code to next version we dont need to serialize/deserialize the obj anymore
@@ -163,7 +167,14 @@ export class JourneyResultRowComponent implements OnInit {
     const stage = this.userTripService.getStageConfig();
 
     const ojpSDK_Next = new OJP_Next.SDK(REQUESTOR_REF, stage, this.languageService.language);
-    await ojpSDK_Next.fetchTRR_Trips(trrRequest);
+    const trrResponse = await ojpSDK_Next.fetchTripRefineRequestResponse(trrRequest);
+    if (!trrResponse.ok) {
+      console.error('ERROR - fetchTripRefineRequestResponse');
+      console.log(trrRequest);
+      console.log(trrResponse);
+      debugger;
+      return;
+    }
 
     if (trrRequest.requestInfo.responseXML === null) {
       console.error('no responseXML');
@@ -175,7 +186,8 @@ export class JourneyResultRowComponent implements OnInit {
     this.trrRequestInfo = trrRequest.requestInfo;
 
     // TRR response is similar with TR response
-    const trRequest = OJP_Legacy.TripRequest.initWithResponseMock(trrRequest.requestInfo.responseXML);
+    const trRequest = OJP_Legacy.TripRequest.initWithResponseMock(trrRequest.requestInfo.responseXML, xmlConfig, REQUESTOR_REF);
+    
     const trResponse = await trRequest.fetchResponse();
 
     if (trResponse.trips.length !== 1) {

@@ -5,6 +5,7 @@ import { debounceTime, distinctUntilChanged } from 'rxjs/operators'
 import { SbbAutocompleteSelectedEvent, SbbAutocompleteTrigger } from '@sbb-esta/angular/autocomplete';
 
 import OJP_Legacy from '../../config/ojp-legacy';
+import { REQUESTOR_REF, OJP_VERSION } from '../../config/constants';
 
 import { UserTripService } from '../../shared/services/user-trip.service';
 import { LanguageService } from '../../shared/services/language.service';
@@ -96,10 +97,12 @@ export class StationBoardInputComponent implements OnInit {
 
   private async fetchLookupLocations(searchTerm: string) {
     this.isBusySearching = true;
+    const isOJPv2 = OJP_VERSION === '2.0';
+    const xmlConfig = isOJPv2 ? OJP_Legacy.XML_ConfigOJPv2 : OJP_Legacy.XML_BuilderConfigOJPv1;
 
     const restrictionType: OJP_Legacy.RestrictionType = 'stop';
     const stageConfig = this.userTripService.getStageConfig();
-    const locationInformationRequest = OJP_Legacy.LocationInformationRequest.initWithLocationName(stageConfig, this.languageService.language, searchTerm, [restrictionType]);
+    const locationInformationRequest = OJP_Legacy.LocationInformationRequest.initWithLocationName(stageConfig, this.languageService.language, xmlConfig, REQUESTOR_REF, searchTerm, [restrictionType]);
     locationInformationRequest.enableExtensions = this.userTripService.currentAppStage !== 'OJP-SI';
 
     const response = await locationInformationRequest.fetchResponse();
@@ -208,12 +211,18 @@ export class StationBoardInputComponent implements OnInit {
     const bbox_E = position.coords.longitude + bbox_width / 2;
     const bbox_N = position.coords.latitude + bbox_height / 2;
     const bbox_S = position.coords.latitude - bbox_height / 2;
+
+    const isOJPv2 = OJP_VERSION === '2.0';
+    const xmlConfig = isOJPv2 ? OJP_Legacy.XML_ConfigOJPv2 : OJP_Legacy.XML_BuilderConfigOJPv1;
     
     const stageConfig = this.userTripService.getStageConfig();
 
     const request = OJP_Legacy.LocationInformationRequest.initWithBBOXAndType(
       stageConfig,
       this.languageService.language,
+      xmlConfig,
+      REQUESTOR_REF,
+
       bbox_W, bbox_N, bbox_E, bbox_S,
       ['stop'],
       300,

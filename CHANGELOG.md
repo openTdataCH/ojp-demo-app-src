@@ -4,6 +4,11 @@ OJP-Demo URL: https://opentdatach.github.io/ojp-demo-app/
 
 ----
 
+6.June 2025
+- TripInfoRequest - use new SDK - [PR #245](https://github.com/openTdataCH/ojp-demo-app-src/pull/245)
+  - adds logic to compute `OJP_VERSION`: `1.0` or `2.0`, based on user params, path and host. Default is `2.0`
+  - use [ojp-sdk-legacy](https://www.npmjs.com/package/ojp-sdk-legacy) for OJP SDK and propagate the `OJP_VERSION`, `REQUESTOR_REF` when using it
+
 4.June 2025
 - TripInfoRequest - use new SDK - [PR #243](https://github.com/openTdataCH/ojp-demo-app-src/pull/243)
   - use `ojp-sdk-next` for TripInfoRequest

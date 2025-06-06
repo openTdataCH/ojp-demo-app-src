@@ -2,6 +2,9 @@ import { Component, OnInit } from '@angular/core';
 import { UserTripService } from 'src/app/shared/services/user-trip.service';
 
 import OJP_Legacy from '../../config/ojp-legacy';
+
+import { REQUESTOR_REF, OJP_VERSION } from '../../config/constants';
+
 import { MapService } from '../../shared/services/map.service'
 import { LanguageService } from '../../shared/services/language.service';
 import { TripData } from '../../shared/types/trip';
@@ -127,9 +130,15 @@ export class JourneyResultsComponent implements OnInit {
     }
 
     const stageConfig = this.userTripService.getStageConfig();
+    const isOJPv2 = OJP_VERSION === '2.0';
+    const xmlConfig = isOJPv2 ? OJP_Legacy.XML_ConfigOJPv2 : OJP_Legacy.XML_BuilderConfigOJPv1;
+    
     const request = OJP_Legacy.TripRequest.initWithTripLocationsAndDate(
       stageConfig,
       this.languageService.language,
+      xmlConfig,
+      REQUESTOR_REF,
+      
       this.userTripService.fromTripLocation,
       this.userTripService.toTripLocation,
       depArrDate,

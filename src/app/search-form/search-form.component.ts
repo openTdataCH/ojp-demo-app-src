@@ -1,4 +1,5 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
+import { Router } from '@angular/router';
 import { FormControl } from '@angular/forms';
 import { debounceTime } from 'rxjs';
 
@@ -8,6 +9,9 @@ import { SbbNotificationToast } from '@sbb-esta/angular/notification-toast';
 import { SbbRadioChange } from '@sbb-esta/angular/radio-button';
 
 import OJP_Legacy from '../config/ojp-legacy';
+import * as OJP_Next from 'ojp-sdk-next';
+
+import { APP_STAGE, APP_STAGEs, DEBUG_LEVEL, REQUESTOR_REF, OJP_VERSION } from '../config/constants';
 
 import { DateHelpers } from '../helpers/date-helpers';
 
@@ -19,8 +23,7 @@ import { InputXmlPopoverComponent } from './input-xml-popover/input-xml-popover.
 import { EmbedSearchPopoverComponent } from './embed-search-popover/embed-search-popover.component';
 import { DebugXmlPopoverComponent } from './debug-xml-popover/debug-xml-popover.component';
 
-import { APP_STAGE, APP_STAGEs, DEBUG_LEVEL } from '../config/constants';
-import { Router } from '@angular/router';
+
 import { OJPHelpers } from '../helpers/ojp-helpers';
 
 @Component({
@@ -228,7 +231,10 @@ export class SearchFormComponent implements OnInit {
   }
 
   private async initFromMockXML(mockText: string) {
-    const request = OJP_Legacy.TripRequest.initWithResponseMock(mockText);
+    const isOJPv2 = OJP_VERSION === '2.0';
+    const xmlConfig = isOJPv2 ? OJP_Legacy.XML_ConfigOJPv2 : OJP_Legacy.XML_BuilderConfigOJPv1;
+
+    const request = OJP_Legacy.TripRequest.initWithResponseMock(mockText, xmlConfig, REQUESTOR_REF);
     request.fetchResponseWithCallback((response) => {
       if (response.message === 'TripRequest.TripsNo') {
         if (DEBUG_LEVEL === 'DEBUG') {
@@ -302,8 +308,8 @@ export class SearchFormComponent implements OnInit {
     return false
   }
 
-  public handleTapOnSearch() {
-    this.userTripService.updateDepartureDateTime(this.computeFormDepartureDate())
+  public async handleTapOnSearch() {
+    this.userTripService.updateDepartureDateTime(this.computeFormDepartureDate());
 
     const tripRequest = this.computeTripRequest();
     if (tripRequest === null) {
@@ -409,7 +415,10 @@ export class SearchFormComponent implements OnInit {
       const handleCustomXMLResponse = (tripsResponseXML: string) => {
         this.lastCustomTripRequestXML = popover.inputTripRequestXML;
 
-        const request = OJP_Legacy.TripRequest.initWithResponseMock(tripsResponseXML);
+        const isOJPv2 = OJP_VERSION === '2.0';
+        const xmlConfig = isOJPv2 ? OJP_Legacy.XML_ConfigOJPv2 : OJP_Legacy.XML_BuilderConfigOJPv1;
+
+        const request = OJP_Legacy.TripRequest.initWithResponseMock(tripsResponseXML, xmlConfig, REQUESTOR_REF);
         request.fetchResponse().then((response) => {
           popover.inputTripRequestResponseXML = tripsResponseXML;
           dialogRef.close();
@@ -496,6 +505,9 @@ export class SearchFormComponent implements OnInit {
   }
 
   private computeTripRequest() {
+    const isOJPv2 = OJP_VERSION === '2.0';
+    const xmlConfig = isOJPv2 ? OJP_Legacy.XML_ConfigOJPv2 : OJP_Legacy.XML_BuilderConfigOJPv1;
+
     const stageConfig = this.userTripService.getStageConfig();
     const includeLegProjection = true;
     const viaTripLocations = this.userTripService.isViaEnabled ? this.userTripService.viaTripLocations : [];
@@ -503,6 +515,9 @@ export class SearchFormComponent implements OnInit {
     const tripRequest = OJP_Legacy.TripRequest.initWithTripLocationsAndDate(
       stageConfig, 
       this.languageService.language,
+      xmlConfig,
+      REQUESTOR_REF,
+
       this.userTripService.fromTripLocation,
       this.userTripService.toTripLocation,
       this.userTripService.departureDate,

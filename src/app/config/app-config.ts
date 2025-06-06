@@ -1,4 +1,4 @@
-import { AppConfig } from '../shared/types/app-config'
+import { AppConfig } from '../shared/types/app-config';
 
 export const APP_CONFIG: AppConfig = {
   stages: {
