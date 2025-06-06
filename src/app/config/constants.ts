@@ -15,6 +15,28 @@ export const DEBUG_LEVEL: DEBUG_LEVEL_Type = (() => {
 })();
 
 export const OJP_VERSION: OJP_Legacy.OJP_VERSION_Type = (() => {
+  const queryParams = new URLSearchParams(document.location.search);
+  const userVersion = queryParams.get('v');
+  if (userVersion === '1') {
+    return '1.0';
+  }
+  if (userVersion === '2') {
+    return '2.0';
+  }
+
+  const host = document.location.hostname;
+  if (host === 'opentdatach.github.io') {
+    return '1.0';
+  }
+
+  const path = document.location.pathname;
+  if (path.startsWith('/ojp-demo-v2')) {
+    return '2.0';
+  }
+  if (path.startsWith('/beta-ojp-demo')) {
+    return '1.0';
+  }
+
   return '2.0' as OJP_Legacy.OJP_VERSION_Type;
 })();
 
