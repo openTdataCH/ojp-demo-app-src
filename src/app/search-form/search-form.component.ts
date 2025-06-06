@@ -9,9 +9,9 @@ import { SbbNotificationToast } from '@sbb-esta/angular/notification-toast';
 import { SbbRadioChange } from '@sbb-esta/angular/radio-button';
 
 import OJP_Legacy from '../config/ojp-legacy';
+import * as OJP_Next from 'ojp-sdk-next';
 
-import { APP_STAGE, APP_STAGEs, DEBUG_LEVEL, REQUESTOR_REF } from '../config/constants';
-import { OJP_VERSION } from '../config/app-config';
+import { APP_STAGE, APP_STAGEs, DEBUG_LEVEL, REQUESTOR_REF, OJP_VERSION } from '../config/constants';
 
 import { DateHelpers } from '../helpers/date-helpers';
 

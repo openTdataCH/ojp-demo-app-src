@@ -3,8 +3,7 @@ import mapboxgl from "mapbox-gl";
 
 import OJP_Legacy from '../../config/ojp-legacy';
 
-import { AppMapLayerOptions, DEBUG_LEVEL, MAP_APP_MAP_LAYERS, REQUESTOR_REF } from '../../config/constants'
-import { OJP_VERSION } from '../../config/app-config';
+import { AppMapLayerOptions, DEBUG_LEVEL, MAP_APP_MAP_LAYERS, REQUESTOR_REF, OJP_VERSION } from '../../config/constants'
 
 import { UserTripService } from "../../shared/services/user-trip.service";
 import { MapHelpers } from "../helpers/map.helpers";

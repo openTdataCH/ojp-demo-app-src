@@ -5,9 +5,10 @@ import { SbbExpansionPanel } from '@sbb-esta/angular/accordion';
 import { SbbDialog } from '@sbb-esta/angular/dialog';
 import { SbbNotificationToast } from '@sbb-esta/angular/notification-toast';
 
-import * as GeoJSON from 'geojson'
+import * as GeoJSON from 'geojson';
 import OJP_Legacy from '../../config/ojp-legacy';
-import { OJP_VERSION } from '../../config/app-config';
+
+import { APP_STAGE, APP_STAGEs, DEBUG_LEVEL, DEFAULT_APP_STAGE, REQUESTOR_REF, OJP_VERSION } from '../../config/constants';
 
 import { OJPHelpers } from '../../helpers/ojp-helpers';
 
@@ -20,8 +21,6 @@ import { StationBoardInputComponent } from '../input/station-board-input.compone
 import { DebugXmlPopoverComponent } from '../../search-form/debug-xml-popover/debug-xml-popover.component';
 import { CustomStopEventXMLPopoverComponent } from './custom-stop-event-xml-popover/custom-stop-event-xml-popover.component';
 import { EmbedStationBoardPopoverComponent } from './embed-station-board-popover/embed-station-board-popover.component';
-
-import { APP_STAGE, APP_STAGEs, DEBUG_LEVEL, DEFAULT_APP_STAGE, REQUESTOR_REF } from '../../config/constants'
 
 type URLType = 'prodv1' | 'betav1' | 'betav2' | 'beta';
 

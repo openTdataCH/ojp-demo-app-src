@@ -5,8 +5,7 @@ import { debounceTime, distinctUntilChanged } from 'rxjs/operators'
 import { SbbAutocompleteSelectedEvent, SbbAutocompleteTrigger } from '@sbb-esta/angular/autocomplete';
 
 import OJP_Legacy from '../../config/ojp-legacy';
-import { REQUESTOR_REF } from '../../config/constants';
-import { OJP_VERSION } from '../../config/app-config';
+import { REQUESTOR_REF, OJP_VERSION } from '../../config/constants';
 
 import { UserTripService } from '../../shared/services/user-trip.service';
 import { LanguageService } from '../../shared/services/language.service';

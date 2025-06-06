@@ -7,8 +7,7 @@ import OJP_Legacy from '../../config/ojp-legacy';
 import { UserTripService } from '../../shared/services/user-trip.service';
 import { FormatHelpers } from '../../helpers/format-helpers';
 
-import { TRIP_REQUEST_DEFAULT_NUMBER_OF_RESULTS } from '../../config/constants';
-import { OJP_VERSION } from '../../config/app-config';
+import { TRIP_REQUEST_DEFAULT_NUMBER_OF_RESULTS, OJP_VERSION } from '../../config/constants';
 
 interface TripTransportModeData {
   modeType: OJP_Legacy.TripModeType,

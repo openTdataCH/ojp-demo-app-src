@@ -2,8 +2,8 @@ import { Component, EventEmitter, Output } from '@angular/core';
 import { UserTripService } from 'src/app/shared/services/user-trip.service';
 
 import OJP_Legacy from '../../../config/ojp-legacy';
-import { OJP_VERSION } from '../../../config/app-config';
-import { REQUESTOR_REF } from '../../../config/constants';
+
+import { REQUESTOR_REF, OJP_VERSION } from '../../../config/constants';
 
 @Component({
   selector: 'custom-stop-event-popover',
