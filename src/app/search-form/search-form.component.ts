@@ -1,4 +1,5 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
+import { Router } from '@angular/router';
 import { FormControl } from '@angular/forms';
 import { debounceTime } from 'rxjs';
 
@@ -22,7 +23,7 @@ import { InputXmlPopoverComponent } from './input-xml-popover/input-xml-popover.
 import { EmbedSearchPopoverComponent } from './embed-search-popover/embed-search-popover.component';
 import { DebugXmlPopoverComponent } from './debug-xml-popover/debug-xml-popover.component';
 
-import { Router } from '@angular/router';
+
 import { OJPHelpers } from '../helpers/ojp-helpers';
 
 @Component({
