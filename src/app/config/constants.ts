@@ -1,4 +1,3 @@
-import { OJP_VERSION } from './app-config';
 import OJP_Legacy from './ojp-legacy';
 
 type DEBUG_LEVEL_Type = 'DEBUG' | 'PROD'
@@ -13,6 +12,10 @@ export const DEBUG_LEVEL: DEBUG_LEVEL_Type = (() => {
   }
 
   return 'DEBUG';
+})();
+
+export const OJP_VERSION: OJP_Legacy.OJP_VERSION_Type = (() => {
+  return '2.0' as OJP_Legacy.OJP_VERSION_Type;
 })();
 
 export type APP_STAGE = 'PROD' | 'INT' | 'TEST' | 'LA Beta' 
