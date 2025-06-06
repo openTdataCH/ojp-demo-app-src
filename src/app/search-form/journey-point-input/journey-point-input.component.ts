@@ -7,11 +7,12 @@ import { SbbErrorStateMatcher } from '@sbb-esta/angular/core';
 
 import OJP_Legacy from '../../config/ojp-legacy';
 
+import { REQUESTOR_REF } from '../../config/constants';
+import { OJP_VERSION } from '../../config/app-config';
+
 import { MapService } from '../../shared/services/map.service';
 import { LanguageService } from '../../shared/services/language.service'
 import { UserTripService } from '../../shared/services/user-trip.service';
-
-import { OJP_VERSION, REQUESTOR_REF } from '../../config/constants';
 
 type MapLocations = Record<OJP_Legacy.LocationType, OJP_Legacy.Location[]>
 type OptionLocationType = [OJP_Legacy.LocationType, string]

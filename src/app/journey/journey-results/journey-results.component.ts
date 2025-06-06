@@ -2,10 +2,13 @@ import { Component, OnInit } from '@angular/core';
 import { UserTripService } from 'src/app/shared/services/user-trip.service';
 
 import OJP_Legacy from '../../config/ojp-legacy';
+
+import { REQUESTOR_REF } from '../../config/constants';
+import { OJP_VERSION } from '../../config/app-config';
+
 import { MapService } from '../../shared/services/map.service'
 import { LanguageService } from '../../shared/services/language.service';
 import { TripData } from '../../shared/types/trip';
-import { OJP_VERSION, REQUESTOR_REF } from '../../config/constants';
 
 type NumberOfResultsType = 'NumberOfResults' | 'NumberOfResultsBefore' | 'NumberOfResultsAfter';
 

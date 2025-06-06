@@ -1,8 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Title } from '@angular/platform-browser';
 
-import OJP_Legacy from '../../config/ojp-legacy';
-import { OJP_VERSION } from '../../config/constants';
+import { OJP_VERSION } from '../../config/app-config';
 
 @Injectable({
   providedIn: 'root',

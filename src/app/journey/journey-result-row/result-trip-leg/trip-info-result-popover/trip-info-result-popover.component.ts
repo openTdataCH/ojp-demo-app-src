@@ -3,10 +3,12 @@ import { Component } from '@angular/core';
 import OJP_Legacy from '../../../../config/ojp-legacy';
 import * as OJP_Next from 'ojp-sdk-next';
 
+import { REQUESTOR_REF } from '../../../../config/constants';
+import { OJP_VERSION } from '../../../../config/app-config';
+
 import { UserTripService } from '../../../../shared/services/user-trip.service';
 import { TripInfoService } from '../../../../trip-info/trip-info.service';
 import { LanguageService } from '../../../../shared/services/language.service'
-import { OJP_VERSION, REQUESTOR_REF } from '../../../../config/constants';
 import { TripInfoResult } from '../../../../shared/models/trip-info-result';
 
 interface PageModel {

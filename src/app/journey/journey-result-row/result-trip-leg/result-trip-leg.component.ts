@@ -9,7 +9,9 @@ import { SbbDialog } from "@sbb-esta/angular/dialog";
 import OJP_Legacy from '../../../config/ojp-legacy';
 import * as OJP_Next from 'ojp-sdk-next';
 
-import { DEBUG_LEVEL, OJP_VERSION } from '../../../config/constants';
+import { OJP_VERSION } from '../../../config/app-config';
+import { DEBUG_LEVEL } from '../../../config/constants';
+
 import { MapLegLineTypeColor } from '../../../config/map-colors';
 import { OJPHelpers } from '../../../helpers/ojp-helpers';
 

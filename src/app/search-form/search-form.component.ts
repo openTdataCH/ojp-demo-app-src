@@ -9,6 +9,9 @@ import { SbbRadioChange } from '@sbb-esta/angular/radio-button';
 
 import OJP_Legacy from '../config/ojp-legacy';
 
+import { APP_STAGE, APP_STAGEs, DEBUG_LEVEL, REQUESTOR_REF } from '../config/constants';
+import { OJP_VERSION } from '../config/app-config';
+
 import { DateHelpers } from '../helpers/date-helpers';
 
 import { UserTripService } from '../shared/services/user-trip.service'
@@ -19,7 +22,6 @@ import { InputXmlPopoverComponent } from './input-xml-popover/input-xml-popover.
 import { EmbedSearchPopoverComponent } from './embed-search-popover/embed-search-popover.component';
 import { DebugXmlPopoverComponent } from './debug-xml-popover/debug-xml-popover.component';
 
-import { APP_STAGE, APP_STAGEs, DEBUG_LEVEL, OJP_VERSION, REQUESTOR_REF } from '../config/constants';
 import { Router } from '@angular/router';
 import { OJPHelpers } from '../helpers/ojp-helpers';
 

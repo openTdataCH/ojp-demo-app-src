@@ -4,7 +4,9 @@ import { SbbExpansionPanel } from '@sbb-esta/angular/accordion';
 import OJP_Legacy from '../../config/ojp-legacy';
 import * as OJP_Next from 'ojp-sdk-next';
 
-import { DEBUG_LEVEL, OJP_VERSION, REQUESTOR_REF } from '../../config/constants';
+import { DEBUG_LEVEL, REQUESTOR_REF } from '../../config/constants';
+import { OJP_VERSION } from '../../config/app-config';
+
 import { UserTripService } from '../../shared/services/user-trip.service';
 import { MapService } from '../../shared/services/map.service';
 import { LanguageService } from '../../shared/services/language.service';

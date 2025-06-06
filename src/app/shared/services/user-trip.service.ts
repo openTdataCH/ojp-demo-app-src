@@ -7,7 +7,9 @@ import * as OJP_Next from 'ojp-sdk-next';
 import * as OJP_Types from 'ojp-shared-types';
 
 import { APP_CONFIG } from '../../config/app-config';
-import { APP_STAGE, DEBUG_LEVEL, DEFAULT_APP_STAGE, OJP_VERSION, REQUESTOR_REF, TRIP_REQUEST_DEFAULT_NUMBER_OF_RESULTS } from '../../config/constants';
+import { APP_STAGE, DEBUG_LEVEL, DEFAULT_APP_STAGE, REQUESTOR_REF, TRIP_REQUEST_DEFAULT_NUMBER_OF_RESULTS } from '../../config/constants';
+import { OJP_VERSION } from '../../config/app-config';
+
 import { MapService } from './map.service';
 import { MapTrip } from '../types/map-geometry-types';
 import { TripData, TripLegData } from '../types/trip';

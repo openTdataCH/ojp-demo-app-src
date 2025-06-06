@@ -5,10 +5,11 @@ import { debounceTime, distinctUntilChanged } from 'rxjs/operators'
 import { SbbAutocompleteSelectedEvent, SbbAutocompleteTrigger } from '@sbb-esta/angular/autocomplete';
 
 import OJP_Legacy from '../../config/ojp-legacy';
+import { REQUESTOR_REF } from '../../config/constants';
+import { OJP_VERSION } from '../../config/app-config';
 
 import { UserTripService } from '../../shared/services/user-trip.service';
 import { LanguageService } from '../../shared/services/language.service';
-import { OJP_VERSION, REQUESTOR_REF } from '../../config/constants';
 
 interface StopLookup {
   stopPlaceRef: string
