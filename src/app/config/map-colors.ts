@@ -24,4 +24,3 @@ export const MapLegLineTypeColor: Record<TripLegLineType, string> = {
   Transfer: '#088F8F',
   Water: '#005AB3',
 }
-export const MapTripLegLineTypes: TripLegLineType[] = ['LongDistanceRail', 'SBahn', 'Bus', 'PostAuto', 'OnDemand', 'Aerial', 'Walk', 'Guidance', 'Transfer', 'Self-Drive Car', 'Shared Mobility', 'Water']

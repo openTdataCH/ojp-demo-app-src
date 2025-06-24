@@ -2,7 +2,7 @@ import * as mapboxgl from "mapbox-gl";
 
 import OJP_Legacy from '../config/ojp-legacy';
 
-import { MapLegTypeColor, MapLegTypes, MapLegLineTypeColor, MapTripLegLineTypes } from '../config/map-colors';
+import { MapLegTypeColor, MapLegTypes, MapLegLineTypeColor } from '../config/map-colors';
 
 import { TripLegDrawType, TripLegLineType, TripLegPropertiesEnum } from '../shared/types/map-geometry-types';
 
@@ -27,8 +27,9 @@ export class MapboxLayerHelpers {
   }
 
   public static ColorCaseByLegLineType(): mapboxgl.ExpressionSpecification {
-    const caseExpression: mapboxgl.ExpressionSpecification = ["case"]
+    const caseExpression: mapboxgl.ExpressionSpecification = ["case"];
 
+    const MapTripLegLineTypes = Object.keys(MapLegLineTypeColor) as TripLegLineType[];
     MapTripLegLineTypes.forEach(lineType => {
       const caseOptionCondition = ["==", ["get", TripLegPropertiesEnum.LineType], lineType]
       caseExpression.push(caseOptionCondition)
