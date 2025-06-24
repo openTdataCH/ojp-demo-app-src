@@ -84,7 +84,7 @@ export class TripInfoResultComponent implements OnInit, AfterViewInit {
     this.model.serviceTripId = serviceSchema.trainNumber ?? 'n/a (journeyNumber)';
     this.model.serviceOperator = serviceSchema.operatorRef ?? 'n/a (operatorRef)';
 
-    const legIconFilename = OJPHelpers.computeIconFilenameForService(service);
+    const legIconFilename = OJPHelpers.computeIconFilenameForService(serviceSchema);
     this.model.serviceIconPath = 'assets/pictograms/' + legIconFilename + '.png';
 
     this.model.stopPointsData = (() => {
