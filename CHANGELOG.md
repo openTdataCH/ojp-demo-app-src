@@ -13,6 +13,9 @@ OJP-Demo URL: https://opentdatach.github.io/ojp-demo-app/
 - Links to train formation view - [PR #250](https://github.com/openTdataCH/ojp-demo-app-src/pull/250)
   - adds logic in JourneyService - [Link TrainFormation from GUI #247](https://github.com/openTdataCH/ojp-demo-app-src/issues/247)
   - displays link in TR, TIR views
+- Adds TR request params WalkSpeed - [PR #251](https://github.com/openTdataCH/ojp-demo-app-src/pull/251)
+  - adds TR request `WalkSpeed` param in advanced settings panel, with predefined values
+  - adds `advanced` query string parameter, for `true`, `yes` values it will expand the advanced search settings pane
 
 6.June 2025
 - Unify OJP versions - [PR #245](https://github.com/openTdataCH/ojp-demo-app-src/pull/245)
