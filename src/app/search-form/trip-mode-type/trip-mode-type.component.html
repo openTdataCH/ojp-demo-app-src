@@ -37,15 +37,15 @@
         (click)="toggleAdditionalRestrictions()"
         data-bs-toggle="collapse" 
         aria-expanded="false">
-          <sbb-icon *ngIf="!this.isAdditionalRestrictionsEnabled" svgIcon="kom:filter-small"></sbb-icon>
-          <sbb-icon *ngIf="this.isAdditionalRestrictionsEnabled" svgIcon="kom:filter-x-small"></sbb-icon>
+          <sbb-icon *ngIf="!this.userTripService.isAdditionalRestrictionsEnabled" svgIcon="kom:filter-small"></sbb-icon>
+          <sbb-icon *ngIf="this.userTripService.isAdditionalRestrictionsEnabled" svgIcon="kom:filter-x-small"></sbb-icon>
       </button>
     </div>
   </div>
 
   <div 
       class="mobility-settings-left-v2 endpoint-settings-wrapper collapse" 
-      [ngClass]="{ 'show': this.isAdditionalRestrictionsEnabled }" 
+      [ngClass]="{ 'show': this.userTripService.isAdditionalRestrictionsEnabled }" 
       id="{{ this.settingsCollapseID }}"
     >
     <div class="endpoint-settings">
@@ -142,6 +142,21 @@
         <sbb-checkbox [(ngModel)]="this.mapPublicTransportModesFilter.tram" (change)="updateAdditionalRestrictions()">tram</sbb-checkbox>
         <sbb-checkbox [(ngModel)]="this.mapPublicTransportModesFilter.water" (change)="updateAdditionalRestrictions()">boat</sbb-checkbox>
       </div>
+
+      <ng-container *ngIf="!this.isV1;">
+        <div class="mb-2">
+          <div class="mb-1">Deviation from average walking speed in percent. (100% == average)</div>
+          <div class="d-flex gap-2 align-items-center">
+            <sbb-radio-group class="sbb-radio-group-horizontal" [(ngModel)]="this.walkSpeedDeviation" (change)="updateAdditionalRestrictions()">
+              <ng-container *ngFor="let walkSpeedDeviationValue of this.walkSpeedDeviationValues">
+                <sbb-radio-button [value]="walkSpeedDeviationValue">
+                  {{ walkSpeedDeviationValue }} %
+                </sbb-radio-button>
+              </ng-container>
+            </sbb-radio-group>
+          </div>
+        </div>
+      </ng-container>
     </div>
   </div>
 </div>

@@ -16,9 +16,10 @@ OJP-Demo URL: https://opentdatach.github.io/ojp-demo-app/
 |via| `47.044250,8.308174;47.163056,8.687139` | List of [Latitude,Longitude](https://developers.google.com/maps/documentation/javascript/reference/coordinates) coordinates separated by semi-colon `;`. |
 | mode_types | `monomodal` | Mono-, multi- modal journey type switcher. List of mode types: `monomodal`, `mode_at_start`, `mode_at_end`, `mode_at_start_end`.  Multiple values (journeys with via points) are separated by semi-colon `;`. Number of the values is equal with number of via parameters + 1 |
 | transport_modes | `public_transport` | The MOT used, list of possible values": `public_transport`, `walking` `cycle`, `car_self_driving`, `bicycle_rental`, `escooter_rental`, `car_sharing`. All values, except `public_transport` will set `ItModesToCover` filter in the [OJPTripRequest](https://opentransportdata.swiss/de/cookbook/ojptriprequest/) calls. Multiple values (joruneys with via points) are separated by semi-colon `;`. Number of the values is equal with number of via parameters + 1 |
-|trip_datetime| Trip datetime in `yyyy-MM-dd HH:mm` format | `2022-08-01 10:00` |
-|stage| `prod` or `test` | To specify the OJP API backend. |
-|do_search| `false` or `true` | If `true` the search will be performed after the endpoints information is init-ed. Default is `false`. |
+| trip_datetime | Trip datetime in `yyyy-MM-dd HH:mm` format | `2022-08-01 10:00` |
+| stage | `prod` or `test` | To specify the OJP API backend. |
+| do_search | `false` or `true` | If `true` the search will be performed after the endpoints information is init-ed. Default is `false`. |
+| advanced | `yes`, `no` | For `true`, `yes` values it will expand the advanced search settings panel |
 
 ## Examples
 

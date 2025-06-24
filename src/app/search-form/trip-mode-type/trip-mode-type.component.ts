@@ -77,7 +77,6 @@ export class TripModeTypeComponent implements OnInit {
   public tripTransportModes: OJP_Legacy.IndividualTransportMode[];
   private prevTransportMode: OJP_Legacy.IndividualTransportMode;
 
-  public isAdditionalRestrictionsEnabled: boolean;
   public settingsCollapseID: string;
 
   public filterMinDurationControl = new FormControl('');
@@ -96,6 +95,8 @@ export class TripModeTypeComponent implements OnInit {
   public numberOfResults: number;
   public numberOfResultsBefore: number;
   public numberOfResultsAfter: number;
+  public walkSpeedDeviation: number;
+  public walkSpeedDeviationValues: number[];
 
   public mapPublicTransportModesFilter: Record<OJP_Legacy.ModeOfTransportType, boolean>;
 
@@ -110,7 +111,6 @@ export class TripModeTypeComponent implements OnInit {
     this.tripTransportModes = JSON.parse(JSON.stringify(this.tripTransportModeData[0].transportModes));
     this.prevTransportMode = 'public_transport';
 
-    this.isAdditionalRestrictionsEnabled = false;
     this.settingsCollapseID = 'mode_custom_mode_settings_NOT_READY_YET';
     
     this.filterMinDurationControl.setValue('2', { emitEvent: false });
@@ -129,6 +129,8 @@ export class TripModeTypeComponent implements OnInit {
     this.numberOfResults = TRIP_REQUEST_DEFAULT_NUMBER_OF_RESULTS;
     this.numberOfResultsBefore = 1;
     this.numberOfResultsAfter = 4;
+    this.walkSpeedDeviation = 100;
+    this.walkSpeedDeviationValues = [50, 75, 100, 150, 200, 400];
 
     this.mapPublicTransportModesFilter = <Record<OJP_Legacy.ModeOfTransportType, boolean>>{};
     this.mapPublicTransportModesFilter.rail = false;
@@ -156,7 +158,7 @@ export class TripModeTypeComponent implements OnInit {
       const isMonomodal = this.userTripService.tripModeType === 'monomodal';
 
       if (!isMonomodal) {
-        this.isAdditionalRestrictionsEnabled = true;
+        this.userTripService.isAdditionalRestrictionsEnabled = true;
         this.updateAdditionalRestrictions();
       }
 
@@ -167,7 +169,7 @@ export class TripModeTypeComponent implements OnInit {
       }
 
       if (this.userTripService.publicTransportModesFilter.length > 0) {
-        this.isAdditionalRestrictionsEnabled = true;
+        this.userTripService.isAdditionalRestrictionsEnabled = true;
 
         this.userTripService.publicTransportModesFilter.forEach(userPublicTransportMode => {
           if (userPublicTransportMode === 'bus') {
@@ -215,8 +217,9 @@ export class TripModeTypeComponent implements OnInit {
     let numberOfResultsAfter: number | null = null;
     
     this.userTripService.publicTransportModesFilter = [];
+    this.userTripService.walkSpeedDeviation = null;
 
-    if (this.isAdditionalRestrictionsEnabled) {
+    if (this.userTripService.isAdditionalRestrictionsEnabled) {
       if (this.isFilterMinDurationEnabled) {
         minDuration = FormatHelpers.parseNumber(this.filterMinDurationControl.value);
       }
@@ -249,6 +252,8 @@ export class TripModeTypeComponent implements OnInit {
           this.userTripService.publicTransportModesFilter.push(modeFilter);
         }
       });
+
+      this.userTripService.walkSpeedDeviation = this.walkSpeedDeviation;
     }
 
     this.userTripService.updateTripLocationRestrictions(minDuration, maxDuration, minDistance, maxDistance);
@@ -272,8 +277,8 @@ export class TripModeTypeComponent implements OnInit {
     }
     
     if (tripModeType !== 'monomodal') {
-      if (!this.isAdditionalRestrictionsEnabled) {
-        this.isAdditionalRestrictionsEnabled = true;
+      if (!this.userTripService.isAdditionalRestrictionsEnabled) {
+        this.userTripService.isAdditionalRestrictionsEnabled = true;
       }
 
       this.updateAdditionalRestrictions();
@@ -345,7 +350,7 @@ export class TripModeTypeComponent implements OnInit {
   }
 
   public toggleAdditionalRestrictions() {
-    this.isAdditionalRestrictionsEnabled = !this.isAdditionalRestrictionsEnabled;
+    this.userTripService.isAdditionalRestrictionsEnabled = !this.userTripService.isAdditionalRestrictionsEnabled;
 
     this.updateAdditionalRestrictions();
   }
