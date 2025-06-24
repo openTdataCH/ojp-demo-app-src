@@ -77,7 +77,6 @@ export class TripModeTypeComponent implements OnInit {
   public tripTransportModes: OJP_Legacy.IndividualTransportMode[];
   private prevTransportMode: OJP_Legacy.IndividualTransportMode;
 
-  public isAdditionalRestrictionsEnabled: boolean;
   public settingsCollapseID: string;
 
   public filterMinDurationControl = new FormControl('');
@@ -112,7 +111,6 @@ export class TripModeTypeComponent implements OnInit {
     this.tripTransportModes = JSON.parse(JSON.stringify(this.tripTransportModeData[0].transportModes));
     this.prevTransportMode = 'public_transport';
 
-    this.isAdditionalRestrictionsEnabled = false;
     this.settingsCollapseID = 'mode_custom_mode_settings_NOT_READY_YET';
     
     this.filterMinDurationControl.setValue('2', { emitEvent: false });
@@ -160,7 +158,7 @@ export class TripModeTypeComponent implements OnInit {
       const isMonomodal = this.userTripService.tripModeType === 'monomodal';
 
       if (!isMonomodal) {
-        this.isAdditionalRestrictionsEnabled = true;
+        this.userTripService.isAdditionalRestrictionsEnabled = true;
         this.updateAdditionalRestrictions();
       }
 
@@ -171,7 +169,7 @@ export class TripModeTypeComponent implements OnInit {
       }
 
       if (this.userTripService.publicTransportModesFilter.length > 0) {
-        this.isAdditionalRestrictionsEnabled = true;
+        this.userTripService.isAdditionalRestrictionsEnabled = true;
 
         this.userTripService.publicTransportModesFilter.forEach(userPublicTransportMode => {
           if (userPublicTransportMode === 'bus') {
@@ -221,7 +219,7 @@ export class TripModeTypeComponent implements OnInit {
     this.userTripService.publicTransportModesFilter = [];
     this.userTripService.walkSpeedDeviation = null;
 
-    if (this.isAdditionalRestrictionsEnabled) {
+    if (this.userTripService.isAdditionalRestrictionsEnabled) {
       if (this.isFilterMinDurationEnabled) {
         minDuration = FormatHelpers.parseNumber(this.filterMinDurationControl.value);
       }
@@ -279,8 +277,8 @@ export class TripModeTypeComponent implements OnInit {
     }
     
     if (tripModeType !== 'monomodal') {
-      if (!this.isAdditionalRestrictionsEnabled) {
-        this.isAdditionalRestrictionsEnabled = true;
+      if (!this.userTripService.isAdditionalRestrictionsEnabled) {
+        this.userTripService.isAdditionalRestrictionsEnabled = true;
       }
 
       this.updateAdditionalRestrictions();
@@ -352,7 +350,7 @@ export class TripModeTypeComponent implements OnInit {
   }
 
   public toggleAdditionalRestrictions() {
-    this.isAdditionalRestrictionsEnabled = !this.isAdditionalRestrictionsEnabled;
+    this.userTripService.isAdditionalRestrictionsEnabled = !this.userTripService.isAdditionalRestrictionsEnabled;
 
     this.updateAdditionalRestrictions();
   }
