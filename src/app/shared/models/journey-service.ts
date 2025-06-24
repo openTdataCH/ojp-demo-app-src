@@ -180,8 +180,17 @@ export class JourneyService implements OJP_Types.DatedJourneySchema  {
 
     const isRail = this.mode.ptMode === 'rail';
 
-    if (!isRail) {
-      nameParts.push(this.mode.shortName?.text ?? this.mode.ptMode);
+    const modeShortName = this.mode.shortName?.text ?? null;
+    if (modeShortName === null) {
+      const modeName = this.mode.name?.text ?? null;
+      if (modeName !== null) {
+        nameParts.push(modeName);
+      }
+    } else {
+      // Avoid EV EV1 or S S1
+      if (!publishedServiceName.startsWith(modeShortName)) {
+        nameParts.push(modeShortName);
+      }
     }
 
     nameParts.push(this.publishedServiceName.text);
