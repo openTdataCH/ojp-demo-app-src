@@ -96,6 +96,8 @@ export class TripModeTypeComponent implements OnInit {
   public numberOfResults: number;
   public numberOfResultsBefore: number;
   public numberOfResultsAfter: number;
+  public walkSpeedDeviation: number;
+  public walkSpeedDeviationValues: number[];
 
   public mapPublicTransportModesFilter: Record<OJP_Legacy.ModeOfTransportType, boolean>;
 
@@ -129,6 +131,8 @@ export class TripModeTypeComponent implements OnInit {
     this.numberOfResults = TRIP_REQUEST_DEFAULT_NUMBER_OF_RESULTS;
     this.numberOfResultsBefore = 1;
     this.numberOfResultsAfter = 4;
+    this.walkSpeedDeviation = 100;
+    this.walkSpeedDeviationValues = [50, 75, 100, 150, 200, 400];
 
     this.mapPublicTransportModesFilter = <Record<OJP_Legacy.ModeOfTransportType, boolean>>{};
     this.mapPublicTransportModesFilter.rail = false;
@@ -215,6 +219,7 @@ export class TripModeTypeComponent implements OnInit {
     let numberOfResultsAfter: number | null = null;
     
     this.userTripService.publicTransportModesFilter = [];
+    this.userTripService.walkSpeedDeviation = null;
 
     if (this.isAdditionalRestrictionsEnabled) {
       if (this.isFilterMinDurationEnabled) {
@@ -249,6 +254,8 @@ export class TripModeTypeComponent implements OnInit {
           this.userTripService.publicTransportModesFilter.push(modeFilter);
         }
       });
+
+      this.userTripService.walkSpeedDeviation = this.walkSpeedDeviation;
     }
 
     this.userTripService.updateTripLocationRestrictions(minDuration, maxDuration, minDistance, maxDistance);
