@@ -249,6 +249,25 @@ export class JourneyService implements OJP_Types.DatedJourneySchema  {
       return 'OnDemand';
     }
 
+    const isFunicular = (() => {
+      // cog-wheel
+      const isCC = this.mode.shortName?.text === 'CC';
+      if (isCC) {
+        return true;
+      }
+
+      // all aerialway, funiculars
+      const isTelecabinMode = this.mode.ptMode === 'telecabin';
+      if (isTelecabinMode) {
+        return true;
+      }
+
+      return false;
+    })();
+    if (isFunicular) {
+      return 'Funicular';
+    }
+
     return 'Bus';
   }
 }
