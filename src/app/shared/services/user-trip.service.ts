@@ -23,6 +23,8 @@ export class UserTripService {
   public toTripLocation: OJP_Legacy.TripLocationPoint | null
   public viaTripLocations: OJP_Legacy.TripLocationPoint[]
   public isViaEnabled: boolean;
+
+  public isAdditionalRestrictionsEnabled: boolean;
   
   public numberOfResults: number | null
   public numberOfResultsBefore: number | null
@@ -77,6 +79,7 @@ export class UserTripService {
     this.walkSpeedDeviation = null;
     
     this.isViaEnabled = false;
+    this.isAdditionalRestrictionsEnabled = false;
 
     this.currentBoardingType = 'Dep'
 
