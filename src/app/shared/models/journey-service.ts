@@ -178,13 +178,9 @@ export class JourneyService implements OJP_Types.DatedJourneySchema  {
   public formatServiceName(): string {
     const nameParts: string[] = [];
 
-    const isRail = this.mode.ptMode === 'rail';
-
-    if (!isRail) {
-      nameParts.push(this.mode.shortName?.text ?? this.mode.ptMode);
-    }
-
-    nameParts.push(this.publishedServiceName.text);
+    const serviceLineName = this.formatServiceLineName();
+    nameParts.push(serviceLineName);
+    nameParts.push(' - ');
     nameParts.push(this.trainNumber ?? '');
 
     nameParts.push('(' + (this.operatorRef ?? 'n/a operatorRef') + ')');
@@ -192,10 +188,42 @@ export class JourneyService implements OJP_Types.DatedJourneySchema  {
     return nameParts.join(' ');
   }
 
-  private isDemandMode(): boolean {
-    const isDemandMode = (this.mode.busSubmode === 'demandAndResponseBus' || this.mode.busSubmode === 'unknown')
+  public formatServiceLineName(): string {
+    const nameParts: string[] = [];
 
-    return isDemandMode;
+    // HACK adds '' suffix so we can have always strings
+    const publishedServiceName = this.publishedServiceName.text + '';
+
+    const modeShortName = this.mode.shortName?.text ?? null;
+    if (modeShortName === null) {
+      const modeName = this.mode.name?.text ?? null;
+      if (modeName !== null) {
+        nameParts.push(modeName);
+      }
+    } else {
+      // Avoid EV EV1 or S S1
+      if (!publishedServiceName.startsWith(modeShortName)) {
+        nameParts.push(modeShortName);
+      }
+    }
+
+    nameParts.push(this.publishedServiceName.text);
+
+    return nameParts.join(' ');
+  }
+
+  private isDemandMode(): boolean {
+    const isBusDemandMode = this.mode.busSubmode === 'demandAndResponseBus' || this.mode.busSubmode === 'unknown';
+    if (isBusDemandMode) {
+      return true;
+    }
+
+    const isEV = this.mode.shortName?.text === 'EV';
+    if (isEV) {
+      return true;
+    }
+
+    return false;
   }
  
   public hasPrecisePolyline(): boolean {
@@ -214,7 +242,7 @@ export class JourneyService implements OJP_Types.DatedJourneySchema  {
     return true;
   }
 
-  public computeLegColor(): TripLegLineType {
+  public computeLegColorType(): TripLegLineType {
     const isPostAuto = this.operatorRef === '801';
     if (isPostAuto) {
       return 'PostAuto';
@@ -227,6 +255,25 @@ export class JourneyService implements OJP_Types.DatedJourneySchema  {
 
     if (this.isDemandMode()) {
       return 'OnDemand';
+    }
+
+    const isFunicular = (() => {
+      // cog-wheel
+      const isCC = this.mode.shortName?.text === 'CC';
+      if (isCC) {
+        return true;
+      }
+
+      // all aerialway, funiculars
+      const isTelecabinMode = this.mode.ptMode === 'telecabin';
+      if (isTelecabinMode) {
+        return true;
+      }
+
+      return false;
+    })();
+    if (isFunicular) {
+      return 'Funicular';
     }
 
     return 'Bus';

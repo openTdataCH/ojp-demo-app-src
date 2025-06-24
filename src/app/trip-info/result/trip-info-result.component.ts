@@ -8,6 +8,7 @@ import { LegStopPointData } from '../../shared/components/service-stops.componen
 import { UserTripService } from '../../shared/services/user-trip.service';
 import { DEFAULT_APP_STAGE } from '../../config/constants';
 import { TripInfoResult } from '../../shared/models/trip-info-result';
+import { JourneyService } from '../../shared/models/journey-service';
 
 interface PageModel {
   tripInfoResult: TripInfoResult | null
@@ -58,8 +59,8 @@ export class TripInfoResultComponent implements OnInit, AfterViewInit {
       return;
     }
 
-    const service = tripInfoResult.service ?? null;
-    if (service === null) {
+    const serviceSchema = tripInfoResult.service ?? null;
+    if (serviceSchema === null) {
       return;
     }
 
@@ -67,8 +68,10 @@ export class TripInfoResultComponent implements OnInit, AfterViewInit {
       return;
     }
 
-    this.model.journeyRef = service.journeyRef;
-    this.model.operatingDayRef = service.operatingDayRef ?? 'n/a (serviceDay)';
+    const service = JourneyService.initWithDatedJourneySchema(serviceSchema);
+
+    this.model.journeyRef = serviceSchema.journeyRef;
+    this.model.operatingDayRef = serviceSchema.operatingDayRef ?? 'n/a (serviceDay)';
 
     const fromStop = tripInfoResult.calls[0];
     this.model.serviceFromText = fromStop.stopPointName;
@@ -76,12 +79,12 @@ export class TripInfoResultComponent implements OnInit, AfterViewInit {
     const toStop = tripInfoResult.calls[tripInfoResult.calls.length - 1];
     this.model.serviceToText = toStop.stopPointName;
 
-    this.model.serviceLineText = service.publishedServiceName.text;
+    this.model.serviceLineText = service.formatServiceLineName();
 
-    this.model.serviceTripId = service.trainNumber ?? 'n/a (journeyNumber)';
-    this.model.serviceOperator = service.operatorRef ?? 'n/a (operatorRef)';
+    this.model.serviceTripId = serviceSchema.trainNumber ?? 'n/a (journeyNumber)';
+    this.model.serviceOperator = serviceSchema.operatorRef ?? 'n/a (operatorRef)';
 
-    const legIconFilename = OJPHelpers.computeIconFilenameForService(service);
+    const legIconFilename = OJPHelpers.computeIconFilenameForService(serviceSchema);
     this.model.serviceIconPath = 'assets/pictograms/' + legIconFilename + '.png';
 
     this.model.stopPointsData = (() => {
@@ -134,10 +137,10 @@ export class TripInfoResultComponent implements OnInit, AfterViewInit {
       queryParams.set('stage', this.userTripService.currentAppStage);
     }
 
-    const nowDateF = OJP_Legacy.DateHelpers.formatDate(new Date());
-    const nowDayF = nowDateF.substring(0, 10);
-    if (this.model.operatingDayRef !== nowDayF) {
-      queryParams.set('day', this.model.operatingDayRef);
+    const timetableDate = fromStopPoint.departure.timetable;
+    if (timetableDate) {
+      const dateTimeS = OJP_Legacy.DateHelpers.formatDate(timetableDate);
+      queryParams.append('trip_datetime', dateTimeS.substring(0, 16));
     }
 
     queryParams.set('do_search', 'yes');

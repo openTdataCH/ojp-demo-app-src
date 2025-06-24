@@ -234,7 +234,7 @@ export class TripLegGeoController {
     if (this.leg.legType === 'TimedLeg') {
       const timedLeg = this.leg as OJP_Legacy.TripTimedLeg;
       const service = JourneyService.initWithOJP_LegacyJourneyService(timedLeg.service);
-      return service.computeLegColor();
+      return service.computeLegColorType();
     }
 
     return defaultType;
@@ -389,7 +389,7 @@ export class TripLegGeoController {
     let features: GeoJSON.Feature[] = [];
 
     const service = JourneyService.initWithOJP_LegacyJourneyService(timedLeg.service);
-    const lineType: TripLegLineType = service.computeLegColor();
+    const lineType: TripLegLineType = service.computeLegColorType();
 
     const useDetailedTrack = !this.useBeeLine;
     if (useDetailedTrack) {

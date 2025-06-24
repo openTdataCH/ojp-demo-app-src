@@ -13,7 +13,6 @@ type TripTimedLegLineType =
   | 'Bus'
   | 'PostAuto'
   | 'OnDemand'
-  | 'Aerial'
   | 'Funicular';
 type TripContinousLegLineType =
   | 'Walk'
