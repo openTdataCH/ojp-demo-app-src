@@ -68,9 +68,10 @@ export class TripInfoResultComponent implements OnInit, AfterViewInit {
       return;
     }
 
-    this.model.journeyRef = service.journeyRef;
-    this.model.operatingDayRef = service.operatingDayRef ?? 'n/a (serviceDay)';
     const service = JourneyService.initWithDatedJourneySchema(serviceSchema);
+
+    this.model.journeyRef = serviceSchema.journeyRef;
+    this.model.operatingDayRef = serviceSchema.operatingDayRef ?? 'n/a (serviceDay)';
 
     const fromStop = tripInfoResult.calls[0];
     this.model.serviceFromText = fromStop.stopPointName;
@@ -80,8 +81,8 @@ export class TripInfoResultComponent implements OnInit, AfterViewInit {
 
     this.model.serviceLineText = service.formatServiceLineName();
 
-    this.model.serviceTripId = service.trainNumber ?? 'n/a (journeyNumber)';
-    this.model.serviceOperator = service.operatorRef ?? 'n/a (operatorRef)';
+    this.model.serviceTripId = serviceSchema.trainNumber ?? 'n/a (journeyNumber)';
+    this.model.serviceOperator = serviceSchema.operatorRef ?? 'n/a (operatorRef)';
 
     const legIconFilename = OJPHelpers.computeIconFilenameForService(service);
     this.model.serviceIconPath = 'assets/pictograms/' + legIconFilename + '.png';
