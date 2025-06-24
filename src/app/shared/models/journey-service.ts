@@ -278,4 +278,83 @@ export class JourneyService implements OJP_Types.DatedJourneySchema  {
 
     return 'Bus';
   }
+
+  public computeFormationServiceURL(): string | null {
+    const trainNumber = this.trainNumber ?? null;
+    if (trainNumber === null) {
+      return null;
+    }
+
+    let serviceOperator = this.operatorRef ?? null;
+    if (serviceOperator === null) {
+      return null;
+    }
+    serviceOperator = ('' + serviceOperator).replace('ojp:', '');
+
+    const mapOperatorRefEVU: Record<string, string> = {
+      'ch:1:sboid:100015': 'BLS',
+      '33': 'BLS',
+      
+      'ch:1:sboid:100001': 'SBB',
+      '11': 'SBB',
+      
+      'ch:1:sboid:100301': 'MBC',
+      '344': 'MBC',
+      'ch:1:sboid:100012': 'MBC',
+      '29': 'MBC',
+      'ch:1:sboid:1100071': 'MBC',
+      '7256': 'MBC',
+      'ch:1:sboid:100566': 'MBC',
+      '764': 'MBC',
+
+      'ch:1:sboid:100049': 'OeBB',
+      '68': 'OeBB',
+
+      'ch:1:sboid:100053': 'RhB',
+      '72': 'RhB',
+      'ch:1:sboid:1100063': 'RhB',
+      '7250': 'RhB',
+
+      'ch:1:sboid:100061': 'SOB',
+      '82': 'SOB',
+      'ch:1:sboid:100018': 'SOB',
+      '36': 'SOB',
+      'ch:1:sboid:1100023': 'SOB',
+      '7232': 'SOB',
+
+      'ch:1:sboid:100046': 'THURBO',
+      '65': 'THURBO',
+
+      'ch:1:sboid:100034': 'TPF',
+      '53': 'TPF',
+      'ch:1:sboid:100945': 'TPF',
+      '3004': 'TPF',
+      'ch:1:sboid:101810': 'TPF',
+      '7223': 'TPF',
+
+      'ch:1:sboid:101265': 'TRN',
+      '15301': 'TRN',
+      'ch:1:sboid:1100067': 'TRN',
+      '7255': 'TRN',
+      'ch:1:sboid:101264': 'TRN',
+      '15300': 'TRN',
+
+      'ch:1:sboid:101240': 'VDBB',
+      '9014': 'VDBB',
+
+      'ch:1:sboid:100064': 'ZB',
+      '86': 'ZB',
+      'ch:1:sboid:1100025': 'ZB',
+      '7234': 'ZB',
+    };
+    
+    const operatorEVU = mapOperatorRefEVU[serviceOperator] ?? null;
+    if (operatorEVU === null) {
+      return null;
+    }
+
+    const url = 'https://opentdatach.github.io/train-formation-view/?number=' + trainNumber + '&operator=' + operatorEVU;
+
+    return url;
+  }
 }

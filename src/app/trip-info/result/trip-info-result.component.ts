@@ -25,6 +25,7 @@ interface PageModel {
   journeyExampleURL: string,
   journeyExampleCaption: string,
   permalinkURL: string,
+  trainFormationURL: string | null,
 }
 
 @Component({
@@ -104,6 +105,8 @@ export class TripInfoResultComponent implements OnInit, AfterViewInit {
 
       return stopPointsData;
     })();
+
+    this.model.trainFormationURL = service.computeFormationServiceURL();
   }
 
   public onLocationSelected(locationData: LegStopPointData) {

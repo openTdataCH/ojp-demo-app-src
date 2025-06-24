@@ -10,6 +10,9 @@ OJP-Demo URL: https://opentdatach.github.io/ojp-demo-app/
   - unify formatting of the service name / color, use `JourneyService` model
   - unify `Funicular` / `Aerial` colors - [Harmonize map line / leg colors #248](https://github.com/openTdataCH/ojp-demo-app-src/issues/248)
   - fix TR url `trip_datetime` param propagation
+- Links to train formation view - [PR #250](https://github.com/openTdataCH/ojp-demo-app-src/pull/250)
+  - adds logic in JourneyService - [Link TrainFormation from GUI #247](https://github.com/openTdataCH/ojp-demo-app-src/issues/247)
+  - displays link in TR, TIR views
 
 6.June 2025
 - Unify OJP versions - [PR #245](https://github.com/openTdataCH/ojp-demo-app-src/pull/245)
