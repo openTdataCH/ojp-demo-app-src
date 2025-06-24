@@ -291,6 +291,8 @@ export class UserTripService {
       
       this.defaultsInited.emit();
     });
+
+    this.isAdditionalRestrictionsEnabled = ['yes', 'true', '1'].includes(this.queryParams.get('advanced') ?? 'n/a');
   }
 
   public refetchEndpointsByName(language: OJP_Legacy.Language) {
@@ -533,6 +535,10 @@ export class UserTripService {
     if (this.currentAppStage !== DEFAULT_APP_STAGE) {
       const stageS = this.currentAppStage.toLowerCase();
       queryParams.append('stage', stageS)
+    }
+
+    if (this.isAdditionalRestrictionsEnabled) {
+      queryParams.append('advanced', 'yes');
     }
 
     this.permalinkRelativeURL = document.location.pathname.replace('/embed', '') + '?' + queryParams.toString();
