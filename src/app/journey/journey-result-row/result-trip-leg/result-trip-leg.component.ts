@@ -486,15 +486,6 @@ export class ResultTripLegComponent implements OnInit {
       return timedLeg.service.destinationStopPlace?.stopPlaceName ?? 'n/a';
     })();
 
-    this.legInfoDataModel.serviceInfo = (() => {
-      if (leg.legType !== 'TimedLeg') {
-        return null;
-      }
-
-      const timedLeg = leg as OJP_Legacy.TripTimedLeg;
-      return this.formatServiceName(timedLeg);
-    })();
-
     this.legInfoDataModel.serviceIntermediaryStopsText = (() => {
       if (leg.legType !== 'TimedLeg') {
         return null;
@@ -514,15 +505,18 @@ export class ResultTripLegComponent implements OnInit {
       return intermediaryStopsNo + ' stops';
     })();
 
-    this.legInfoDataModel.serviceInfo = (() => {
+    const timedLegService: JourneyService | null = (() => {
       if (leg.legType !== 'TimedLeg') {
         return null;
       }
 
       const timedLeg = leg as OJP_Legacy.TripTimedLeg;
-      return this.formatServiceName(timedLeg);
+      const service = JourneyService.initWithOJP_LegacyJourneyService(timedLeg.service);
+
+      return service;
     })();
 
+    this.legInfoDataModel.serviceInfo = timedLegService?.formatServiceName() ?? null;
     this.legInfoDataModel.serviceJourneyRef = (() => {
       if (leg.legType !== 'TimedLeg') {
         return null;
@@ -572,13 +566,6 @@ export class ResultTripLegComponent implements OnInit {
 
       return timedLeg.service.isUnplanned === true;
     })();
-  }
-
-  private formatServiceName(timedLeg: OJP_Legacy.TripTimedLeg): string {
-    const service = JourneyService.initWithOJP_LegacyJourneyService(timedLeg.service);
-    const serviceName = service.formatServiceName();
-
-    return serviceName;
   }
 
   private computeServiceAttributeModel(leg: OJP_Legacy.TripLeg): ServiceAttributeRenderModel[] {
