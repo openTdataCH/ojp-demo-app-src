@@ -137,10 +137,10 @@ export class TripInfoResultComponent implements OnInit, AfterViewInit {
       queryParams.set('stage', this.userTripService.currentAppStage);
     }
 
-    const nowDateF = OJP_Legacy.DateHelpers.formatDate(new Date());
-    const nowDayF = nowDateF.substring(0, 10);
-    if (this.model.operatingDayRef !== nowDayF) {
-      queryParams.set('day', this.model.operatingDayRef);
+    const timetableDate = fromStopPoint.departure.timetable;
+    if (timetableDate) {
+      const dateTimeS = OJP_Legacy.DateHelpers.formatDate(timetableDate);
+      queryParams.append('trip_datetime', dateTimeS.substring(0, 16));
     }
 
     queryParams.set('do_search', 'yes');
