@@ -178,7 +178,21 @@ export class JourneyService implements OJP_Types.DatedJourneySchema  {
   public formatServiceName(): string {
     const nameParts: string[] = [];
 
-    const isRail = this.mode.ptMode === 'rail';
+    const serviceLineName = this.formatServiceLineName();
+    nameParts.push(serviceLineName);
+    nameParts.push(' - ');
+    nameParts.push(this.trainNumber ?? '');
+
+    nameParts.push('(' + (this.operatorRef ?? 'n/a operatorRef') + ')');
+
+    return nameParts.join(' ');
+  }
+
+  public formatServiceLineName(): string {
+    const nameParts: string[] = [];
+
+    // HACK adds '' suffix so we can have always strings
+    const publishedServiceName = this.publishedServiceName.text + '';
 
     const modeShortName = this.mode.shortName?.text ?? null;
     if (modeShortName === null) {
@@ -194,9 +208,6 @@ export class JourneyService implements OJP_Types.DatedJourneySchema  {
     }
 
     nameParts.push(this.publishedServiceName.text);
-    nameParts.push(this.trainNumber ?? '');
-
-    nameParts.push('(' + (this.operatorRef ?? 'n/a operatorRef') + ')');
 
     return nameParts.join(' ');
   }
