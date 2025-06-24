@@ -4,6 +4,13 @@ OJP-Demo URL: https://opentdatach.github.io/ojp-demo-app/
 
 ----
 
+24.June 2025
+- Improves service display - [PR #249](https://github.com/openTdataCH/ojp-demo-app-src/pull/249)
+  - adds better check for formatting service line name, catch cases when shortName doesnt need to be concatenated (i.e. 'IC IC1') - [EV is strangly named #178](https://github.com/openTdataCH/ojp-demo-app-src/issues/178)
+  - unify formatting of the service name / color, use `JourneyService` model
+  - unify `Funicular` / `Aerial` colors - [Harmonize map line / leg colors #248](https://github.com/openTdataCH/ojp-demo-app-src/issues/248)
+  - fix TR url `trip_datetime` param propagation
+
 6.June 2025
 - Unify OJP versions - [PR #245](https://github.com/openTdataCH/ojp-demo-app-src/pull/245)
   - adds logic to compute `OJP_VERSION`: `1.0` or `2.0`, based on user params, path and host. Default is `2.0`
