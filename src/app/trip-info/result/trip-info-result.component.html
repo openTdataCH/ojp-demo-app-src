@@ -5,6 +5,11 @@
       <div class="service-line-number">{{ this.model.serviceLineText }}</div>
       <div class="service-trip-id">{{ this.model.serviceTripId }}</div>
       <div class="service-operator">({{ this.model.serviceOperator }})</div>
+      <ng-container *ngIf="this.model.trainFormationURL">
+        <div>
+          - <a [href]="this.model.trainFormationURL" target="_blank">Train Formation</a>
+        </div>
+      </ng-container>
     </div>
     <h2 class="mt-3">{{ this.model.serviceFromText }} → {{ this.model.serviceToText }}</h2>
     <div>Day: {{ this.model.operatingDayRef }}</div>

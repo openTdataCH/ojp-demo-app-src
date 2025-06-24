@@ -64,6 +64,7 @@ interface LegInfoDataModel {
   serviceJourneyRef: string | null
   debugServicePtMode: boolean
   servicePtMode: OJP_Legacy.PublicTransportMode | null
+  serviceFormationURL: string | null
 
   isCancelled: boolean
   hasDeviation: boolean
@@ -517,6 +518,8 @@ export class ResultTripLegComponent implements OnInit {
     })();
 
     this.legInfoDataModel.serviceInfo = timedLegService?.formatServiceName() ?? null;
+    this.legInfoDataModel.serviceFormationURL = timedLegService?.computeFormationServiceURL() ?? null;
+
     this.legInfoDataModel.serviceJourneyRef = (() => {
       if (leg.legType !== 'TimedLeg') {
         return null;
