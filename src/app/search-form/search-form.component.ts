@@ -9,7 +9,6 @@ import { SbbNotificationToast } from '@sbb-esta/angular/notification-toast';
 import { SbbRadioChange } from '@sbb-esta/angular/radio-button';
 
 import OJP_Legacy from '../config/ojp-legacy';
-import * as OJP_Next from 'ojp-sdk-next';
 
 import { APP_STAGE, APP_STAGEs, DEBUG_LEVEL, REQUESTOR_REF, OJP_VERSION } from '../config/constants';
 
@@ -535,6 +534,10 @@ export class SearchFormComponent implements OnInit {
     if (tripRequest !== null) {
       tripRequest.enableExtensions = this.userTripService.currentAppStage !== 'OJP-SI';
       tripRequest.useRealTimeDataType = this.userTripService.useRealTimeDataType;
+
+      if (isOJPv2) {
+        tripRequest.walkSpeedDeviation = this.userTripService.walkSpeedDeviation;
+      }
     }
 
     return tripRequest;
