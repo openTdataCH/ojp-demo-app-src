@@ -282,7 +282,9 @@ export class ResultTripLegComponent implements OnInit {
     if (legType === 'TimedLeg') {
       const leg = this.legData.leg as OJP_Legacy.TripTimedLeg;
       const service = JourneyService.initWithOJP_LegacyJourneyService(leg.service);
-      return service.computeLegColor();
+      const serviceColorType = service.computeLegColorType();
+      const serviceColor = MapLegLineTypeColor[serviceColorType];
+      return serviceColor;
     }
 
     return defaultColor;

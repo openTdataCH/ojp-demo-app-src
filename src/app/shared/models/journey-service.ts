@@ -234,7 +234,7 @@ export class JourneyService implements OJP_Types.DatedJourneySchema  {
     return true;
   }
 
-  public computeLegColor(): TripLegLineType {
+  public computeLegColorType(): TripLegLineType {
     const isPostAuto = this.operatorRef === '801';
     if (isPostAuto) {
       return 'PostAuto';
