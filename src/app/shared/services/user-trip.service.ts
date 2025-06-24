@@ -22,13 +22,14 @@ export class UserTripService {
   public fromTripLocation: OJP_Legacy.TripLocationPoint | null
   public toTripLocation: OJP_Legacy.TripLocationPoint | null
   public viaTripLocations: OJP_Legacy.TripLocationPoint[]
-  public isViaEnabled: boolean
+  public isViaEnabled: boolean;
   
   public numberOfResults: number | null
   public numberOfResultsBefore: number | null
   public numberOfResultsAfter: number | null
   public publicTransportModesFilter: OJP_Legacy.ModeOfTransportType[];
   public useRealTimeDataType: OJP_Legacy.UseRealtimeDataEnumeration;
+  public walkSpeedDeviation: number | null;
 
   public currentBoardingType: OJP_Legacy.TripRequestBoardingType
 
@@ -73,6 +74,7 @@ export class UserTripService {
     this.numberOfResultsAfter = null;
     this.publicTransportModesFilter = [];
     this.useRealTimeDataType = 'explanatory';
+    this.walkSpeedDeviation = null;
     
     this.isViaEnabled = false;
 
