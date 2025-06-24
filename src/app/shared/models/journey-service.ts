@@ -213,9 +213,17 @@ export class JourneyService implements OJP_Types.DatedJourneySchema  {
   }
 
   private isDemandMode(): boolean {
-    const isDemandMode = (this.mode.busSubmode === 'demandAndResponseBus' || this.mode.busSubmode === 'unknown')
+    const isBusDemandMode = this.mode.busSubmode === 'demandAndResponseBus' || this.mode.busSubmode === 'unknown';
+    if (isBusDemandMode) {
+      return true;
+    }
 
-    return isDemandMode;
+    const isEV = this.mode.shortName?.text === 'EV';
+    if (isEV) {
+      return true;
+    }
+
+    return false;
   }
  
   public hasPrecisePolyline(): boolean {
