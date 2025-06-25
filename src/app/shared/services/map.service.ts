@@ -162,6 +162,14 @@ export class MapService {
     const debugControl = new MapDebugControl(map);
     map.addControl(debugControl, 'top-left');
 
+    // HACK - the map type select is added via innerHTML property so we cant use Angular (change) hook
+    //      => use good ol' document.getElementById instead
+    const select = document.getElementById('mapTypeSelect') as HTMLSelectElement;
+    if (select) {
+      select.addEventListener('change', () => {
+      });
+    }
+
     const mapLayersLegendControl = new MapLayersLegendControl(map, debugXmlPopover, userTripService, languageService);
     map.addControl(mapLayersLegendControl, 'top-right');
   }
