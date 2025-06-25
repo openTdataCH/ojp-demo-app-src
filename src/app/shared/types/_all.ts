@@ -29,3 +29,13 @@ export interface StopPointCall {
   mapFareClassOccupancy: OJP_Legacy.MapFareClassOccupancy | null,
   isNotServicedStop: boolean | null,
 };
+
+export interface RasterLayerType {
+  id: string,
+  caption: string,
+  tileURLs: string[],
+  minZoom: number,
+  maxZoom: number,
+  rasterOpacity: number,
+  beforeLayerId?: string
+};
