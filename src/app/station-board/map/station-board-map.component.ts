@@ -67,6 +67,7 @@ export class StationBoardMapComponent implements OnInit {
 
     this.addMapListeners(map);
 
+    this.mapService.addRasterLayers(map);
 
     this.stopEventServiceRenderer = new StopEventServiceRenderer(map);
   }

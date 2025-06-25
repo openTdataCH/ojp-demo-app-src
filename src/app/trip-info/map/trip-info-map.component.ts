@@ -113,6 +113,7 @@ export class TripInfoMapComponent implements OnInit {
 
     this.addMapListeners(map);
 
+    this.mapService.addRasterLayers(map);
 
     this.journeyServiceRenderer = new JourneyServiceRenderer(map);
   }
