@@ -103,8 +103,8 @@ export class TripRenderController {
     ]
 
     mapLayers.forEach(mapLayerJSON => {
-      const mapLayerDef = mapLayerJSON as mapboxgl.Layer
-      mapLayerDef.source = this.mapSourceId
+      const mapLayerDef = mapLayerJSON as mapboxgl.Layer;
+      mapLayerDef.source = this.mapSourceId;
       this.map.addLayer(mapLayerDef as mapboxgl.LayerSpecification);
     });
   }
