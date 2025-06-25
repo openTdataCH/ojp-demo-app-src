@@ -173,6 +173,8 @@ export class MapComponent implements OnInit, AfterViewInit {
       });
     });
 
+    this.mapService.addRasterLayers(map);
+
     this.tripRenderController = new TripRenderController(map);
   }
 

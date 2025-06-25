@@ -4,6 +4,11 @@ OJP-Demo URL: https://opentdatach.github.io/ojp-demo-app/
 
 ----
 
+25.June 2025
+- Display additional background maps - [PR #252](https://github.com/openTdataCH/ojp-demo-app-src/pull/252)
+  - adds Swisstopo (Landeskarte, Luftbild), OSM background maps
+  - enables the select in TR, SER, TIR views
+
 24.June 2025
 - Improves service display - [PR #249](https://github.com/openTdataCH/ojp-demo-app-src/pull/249)
   - adds better check for formatting service line name, catch cases when shortName doesnt need to be concatenated (i.e. 'IC IC1') - [EV is strangly named #178](https://github.com/openTdataCH/ojp-demo-app-src/issues/178)

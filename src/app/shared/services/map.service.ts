@@ -11,6 +11,7 @@ import { MapDebugControl } from '../../map/controls/map-debug-control'
 import { MapLayersLegendControl } from '../../map/controls/map-layers-legend-control';
 import { LanguageService } from './language.service';
 import { TripGeoController } from '../controllers/trip-geo-controller';
+import { MAP_RASTER_LAYERS } from '../../config/constants';
 
 export interface IMapBoundsData {
   bounds: mapboxgl.LngLatBounds
@@ -161,7 +162,57 @@ export class MapService {
     const debugControl = new MapDebugControl(map);
     map.addControl(debugControl, 'top-left');
 
+    // HACK - the map type select is added via innerHTML property so we cant use Angular (change) hook
+    //      => use good ol' document.getElementById instead
+    const select = document.getElementById('mapTypeSelect') as HTMLSelectElement;
+    if (select) {
+      select.addEventListener('change', () => {
+        this.mapTypeChanged(map, select.value);
+      });
+    }
+
     const mapLayersLegendControl = new MapLayersLegendControl(map, debugXmlPopover, userTripService, languageService);
     map.addControl(mapLayersLegendControl, 'top-right');
+  }
+
+  public addRasterLayers(map: mapboxgl.Map) {
+    MAP_RASTER_LAYERS.forEach(rasterLayerDef => {
+      const mapSource: mapboxgl.RasterSourceSpecification = {
+        type: 'raster',
+        tiles: rasterLayerDef.tileURLs,
+        tileSize: 256,
+        minzoom: rasterLayerDef.minZoom,
+        maxzoom: rasterLayerDef.maxZoom,
+      };
+      map.addSource(rasterLayerDef.id, mapSource);
+
+      const layer: mapboxgl.RasterLayerSpecification = {
+        id: rasterLayerDef.id,
+        source: rasterLayerDef.id,
+        type: 'raster',
+        paint: {
+          "raster-opacity": rasterLayerDef.rasterOpacity,
+        },
+        layout: {
+          visibility: 'none',
+        },
+      };
+      map.addLayer(layer, rasterLayerDef.beforeLayerId);
+    });
+  }
+
+  private mapTypeChanged(map: mapboxgl.Map, mapTypeS: string) {
+    MAP_RASTER_LAYERS.forEach(rasterLayerDef => {
+      const isVisible = (() => {
+        if (mapTypeS === 'default') {
+          return false;
+        }
+
+        return rasterLayerDef.id === mapTypeS;
+      })();
+
+      const visibilityProperty = isVisible ? 'visible' : 'none';
+      map.setLayoutProperty(rasterLayerDef.id, 'visibility', visibilityProperty);
+    });
   }
 }

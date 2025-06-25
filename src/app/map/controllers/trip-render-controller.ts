@@ -4,7 +4,7 @@ import { MapboxLayerHelpers } from '../../helpers/mapbox-layer-helpers';
 import { MapLegTypeColor } from '../../config/map-colors';
 
 import { TripLegGeoController } from '../../shared/controllers/trip-geo-controller';
-import { MapTrip, MapTripLeg } from '../../shared/types/map-geometry-types';
+import { MapTripLeg } from '../../shared/types/map-geometry-types';
 
 import tripLegBeelineLayerJSON from './map-layers-def/ojp-trip-leg-beeline.json'
 import tripTimedLegEndpointCircleLayerJSON from './map-layers-def/ojp-trip-timed-leg-endpoint-circle.json'
@@ -103,8 +103,8 @@ export class TripRenderController {
     ]
 
     mapLayers.forEach(mapLayerJSON => {
-      const mapLayerDef = mapLayerJSON as mapboxgl.Layer
-      mapLayerDef.source = this.mapSourceId
+      const mapLayerDef = mapLayerJSON as mapboxgl.Layer;
+      mapLayerDef.source = this.mapSourceId;
       this.map.addLayer(mapLayerDef as mapboxgl.LayerSpecification);
     });
   }

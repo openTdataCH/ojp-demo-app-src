@@ -63,31 +63,13 @@ export class StationBoardMapComponent implements OnInit {
   }
 
   private onMapLoad(map: mapboxgl.Map) {
-    this.addMapControls(map);
+    this.mapService.addControls(map, this.debugXmlPopover, this.userTripService, this.languageService);
 
     this.addMapListeners(map);
 
+    this.mapService.addRasterLayers(map);
+
     this.stopEventServiceRenderer = new StopEventServiceRenderer(map);
-  }
-
-  private addMapControls(map: mapboxgl.Map) {
-    const navigationControl = new mapboxgl.NavigationControl({
-      showCompass: false,
-      visualizePitch: false
-    });
-    map.addControl(navigationControl, 'bottom-right');
-
-    const scaleControl = new mapboxgl.ScaleControl({
-      maxWidth: 200,
-      unit: 'metric'
-    });
-    map.addControl(scaleControl);
-
-    const debugControl = new MapDebugControl(map);
-    map.addControl(debugControl, 'top-left');
-
-    const mapLayersLegendControl = new MapLayersLegendControl(map, this.debugXmlPopover, this.userTripService, this.languageService);
-    map.addControl(mapLayersLegendControl, 'top-right');
   }
 
   private updateMapForEntry(stopEvent: OJP_Legacy.StopEvent | null) {

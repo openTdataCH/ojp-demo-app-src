@@ -1,10 +1,21 @@
 <div class="d-none">
   <div id="map-debug-control">
-    <div>
-      <span class="fw-bold">Center</span>: <span id="map_debug_center">n/a</span>
+    <div class="d-flex gap-2 align-items-center">
+      <div class="fw-bold">Map:</div>
+      <select class="form-select form-select-sm" id="mapTypeSelect">
+        <option value="default">Default</option>
+        <ng-container *ngFor="let rasterLayerDef of this.model.rasterLayers">
+          <option value="{{ rasterLayerDef.id }}">{{ rasterLayerDef.caption }}</option>
+        </ng-container>
+      </select>
     </div>
-    <div>
-      <span class="fw-bold">Zoom</span>: <span id="map_debug_zoom">n/a</span>
+    <div class="d-flex gap-1">
+      <div class="fw-bold">Zoom:</div>
+      <div id="map_debug_zoom">n/a</div>
+    </div>
+    <div class="d-flex gap-1">
+      <div class="fw-bold">Center:</div>
+      <div id="map_debug_center">n/a</div>
     </div>
   </div>
   
