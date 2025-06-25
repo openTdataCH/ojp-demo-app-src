@@ -167,6 +167,7 @@ export class MapService {
     const select = document.getElementById('mapTypeSelect') as HTMLSelectElement;
     if (select) {
       select.addEventListener('change', () => {
+        this.mapTypeChanged(map, select.value);
       });
     }
 
@@ -197,6 +198,21 @@ export class MapService {
         },
       };
       map.addLayer(layer, rasterLayerDef.beforeLayerId);
+    });
+  }
+
+  private mapTypeChanged(map: mapboxgl.Map, mapTypeS: string) {
+    MAP_RASTER_LAYERS.forEach(rasterLayerDef => {
+      const isVisible = (() => {
+        if (mapTypeS === 'default') {
+          return false;
+        }
+
+        return rasterLayerDef.id === mapTypeS;
+      })();
+
+      const visibilityProperty = isVisible ? 'visible' : 'none';
+      map.setLayoutProperty(rasterLayerDef.id, 'visibility', visibilityProperty);
     });
   }
 }
