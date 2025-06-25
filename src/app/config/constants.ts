@@ -1,3 +1,4 @@
+import { RasterLayerType } from '../shared/types/_all';
 import OJP_Legacy from './ojp-legacy';
 
 type DEBUG_LEVEL_Type = 'DEBUG' | 'PROD'
@@ -195,5 +196,41 @@ export const MAP_APP_MAP_LAYERS: Record<string, AppMapLayerOptions> = {
     click_layer_ids: 'SAME_AS_LAYER_IDS',
   },
 }
+
+export const MAP_RASTER_LAYERS: RasterLayerType[] = [
+  {
+    id: 'raster-swisstopo-imagery',
+    caption: 'Aerial',
+    tileURLs: [
+      'https://wmts.geo.admin.ch/1.0.0/ch.swisstopo.swissimage/default/current/3857/{z}/{x}/{y}.jpeg',
+    ],
+    minZoom: 0,
+    maxZoom: 19,
+    rasterOpacity: 1.0,
+    beforeLayerId: 'road-label',
+  },
+  {
+    id: 'raster-swisstopo-pixelkarte',
+    caption: 'Swisstopo',
+    tileURLs: [
+      'https://wmts.geo.admin.ch/1.0.0/ch.swisstopo.pixelkarte-farbe/default/current/3857/{z}/{x}/{y}.jpeg',
+    ],
+    rasterOpacity: 0.5,
+    minZoom: 0,
+    maxZoom: 19,
+  },
+  {
+    id: 'raster-osm',
+    caption: 'OSM',
+    tileURLs: [
+      'https://a.tile.openstreetmap.org/{z}/{x}/{y}.png',
+      'https://b.tile.openstreetmap.org/{z}/{x}/{y}.png',
+      'https://c.tile.openstreetmap.org/{z}/{x}/{y}.png',
+    ],
+    rasterOpacity: 0.9,
+    minZoom: 0,
+    maxZoom: 19,
+  },
+];
 
 export const TRIP_REQUEST_DEFAULT_NUMBER_OF_RESULTS = 5;
