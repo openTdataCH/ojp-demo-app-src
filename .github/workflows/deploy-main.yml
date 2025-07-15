@@ -1,0 +1,36 @@
+name: Build & Deploy to repoA
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 18
+          cache: npm
+      - run: npm ci
+
+      # - name: Inject secrets
+      #   run: |
+      #     sed -i "s|REPLACE_DURING_DEPLOYMENT_API|${{ secrets.API_KEY }}|g" \
+      #       src/environments/environment.prod.ts
+
+      - name: Build
+        run: npm run build -- --configuration production
+
+      - name: Deploy to repoA gh-pages
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          publish_dir: dist/ojp-demo-app
+          external_repository: openTdataCH/ojp-demo-app-TEST
+          publish_branch: gh-pages
+          personal_token: ${{ secrets.OJP_DEMO_APP_DEPLOY_TOKEN }}
+          commit_message: "deploy: ${{ github.sha }}"
