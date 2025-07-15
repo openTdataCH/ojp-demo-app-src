@@ -52,25 +52,6 @@ ng serve
 ```
 - navigate to [http://localhost:4200](http://localhost:4200/) in the browser
 
-## Deploy to production
-
-[Github Pages](https://pages.github.com/) is used to publish and host the OJP Demo app.
-
-- run `ng deploy` to deploy the app. 
-- the CLI will bundle the app files and assets in production mode and upload them to `gh-pages` branch of https://github.com/openTdataCH/ojp-demo-app 
-- read/write access is needed to push to repo
-- if you need to deploy to another repo, change `..architect.deploy` config in [./angular.json](./angular.json#L133-L140) for a different repo.
-```
-  "deploy": {
-    "builder": "angular-cli-ghpages:deploy",
-    "options": {
-      "repo": "git@github.com:openTdataCH/ojp-demo-app.git",
-      "baseHref": "https://openTdataCH.github.io/ojp-demo-app/",
-      "name": "OJP Demo App"
-    }
-  }
-```
-
 ## License
 
 The project is released under a [MIT license](./LICENSE.txt).
