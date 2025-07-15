@@ -26,6 +26,25 @@ jobs:
         run: |
           sed -i "s|OJP_DEMO_APP_PROD_KEY|${{ secrets.OJP_DEMO_APP_PROD_KEY }}|g" \
             src/app/config/app-config.ts
+          sed -i "s|OJP_DEMO_APP_INT_KEY|${{ secrets.OJP_DEMO_APP_INT_KEY }}|g" \
+            src/app/config/app-config.ts
+          sed -i "s|OJP_DEMO_APP_TEST_KEY|${{ secrets.OJP_DEMO_APP_TEST_KEY }}|g" \
+            src/app/config/app-config.ts
+
+          sed -i "s|OJP_DEMO_APP_V2_PROD_KEY|${{ secrets.OJP_DEMO_APP_V2_PROD_KEY }}|g" \
+            src/app/config/app-config.ts
+          sed -i "s|OJP_DEMO_APP_V2_INT_KEY|${{ secrets.OJP_DEMO_APP_V2_INT_KEY }}|g" \
+            src/app/config/app-config.ts
+          sed -i "s|OJP_DEMO_APP_V2_TEST_KEY|${{ secrets.OJP_DEMO_APP_V2_TEST_KEY }}|g" \
+            src/app/config/app-config.ts
+
+          sed -i "s|OJP_DEMO_APP_PROD_LB_KEY|${{ secrets.OJP_DEMO_APP_PROD_LB_KEY }}|g" \
+            src/app/config/app-config.ts
+          sed -i "s|OJP_DEMO_APP_LA_Beta_KEY|${{ secrets.OJP_DEMO_APP_LA_Beta_KEY }}|g" \
+            src/app/config/app-config.ts
+
+          sed -i "s|OJP_DEMO_APP_NOVA_INT_KEY|${{ secrets.OJP_DEMO_APP_NOVA_INT_KEY }}|g" \
+            src/app/config/app-config.ts
 
       - name: Build
         run: npm run build -- --configuration production
