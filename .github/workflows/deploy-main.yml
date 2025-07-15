@@ -2,11 +2,11 @@
 name: Build & Deploy to opentdatach.github.io/ojp-demo-app
 
 on:
-  # needed for manual runs
   workflow_dispatch:
   push:
     branches:
       - main
+      # for testing, add the working branch if needed
       - feature/updates-github-deploy
 
 jobs:
