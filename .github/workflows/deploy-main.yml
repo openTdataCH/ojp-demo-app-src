@@ -1,7 +1,7 @@
 name: Deploy Test
 
 on:
-  workflow_dispatch:
+  # workflow_dispatch:
   push:
     branches:
       - deploy-test
