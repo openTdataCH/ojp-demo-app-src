@@ -5,7 +5,8 @@ on:
   push:
     branches:
       - deploy-test
-      # - feature/updates-github-deploy
+      # works just with the branch?
+      - feature/updates-github-deploy
 
 jobs:
   say-hi:
