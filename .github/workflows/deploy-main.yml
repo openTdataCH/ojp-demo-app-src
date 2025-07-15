@@ -22,10 +22,10 @@ jobs:
           cache: npm
       - run: npm ci
 
-      # - name: Inject secrets
-      #   run: |
-      #     sed -i "s|REPLACE_DURING_DEPLOYMENT_API|${{ secrets.API_KEY }}|g" \
-      #       src/environments/environment.prod.ts
+      - name: Inject secrets
+        run: |
+          sed -i "s|OJP_DEMO_APP_PROD_KEY|${{ secrets.OJP_DEMO_APP_PROD_KEY }}|g" \
+            src/app/config/app-config.ts
 
       - name: Build
         run: npm run build -- --configuration production
