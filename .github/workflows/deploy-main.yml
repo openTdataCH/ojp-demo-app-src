@@ -5,7 +5,7 @@ on:
   workflow_dispatch:
   push:
     branches:
-      - deploy-test
+      - main
       - feature/updates-github-deploy
 
 jobs:
