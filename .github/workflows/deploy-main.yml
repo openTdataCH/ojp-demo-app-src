@@ -49,6 +49,9 @@ jobs:
       - name: Build
         run: npm run build -- --configuration production --base-href=/ojp-demo-app-TEST/
 
+      - name: Copy index.html to 404.html for Angular routing
+        run: cp dist/ojp-demo-app/index.html dist/ojp-demo-app/404.html
+
       - name: Deploy to repoA gh-pages
         uses: peaceiris/actions-gh-pages@v3
         with:
