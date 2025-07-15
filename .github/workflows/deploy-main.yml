@@ -47,7 +47,7 @@ jobs:
             src/app/config/app-config.ts
 
       - name: Build
-        run: npm run build -- --configuration production
+        run: npm run build -- --configuration production --base-href=/ojp-demo-app-TEST/
 
       - name: Deploy to repoA gh-pages
         uses: peaceiris/actions-gh-pages@v3
