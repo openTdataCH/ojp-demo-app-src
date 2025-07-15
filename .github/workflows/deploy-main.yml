@@ -1,4 +1,5 @@
-name: Build & Deploy to repoA
+# Deploy to https://opentdatach.github.io/ojp-demo-app
+name: Build & Deploy to opentdatach.github.io/ojp-demo-app
 
 on:
   # needed for manual runs
