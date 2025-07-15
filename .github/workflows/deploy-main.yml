@@ -5,6 +5,7 @@ on:
   push:
     branches:
       - deploy-test
+      - feature/updates-github-deploy
 
 jobs:
   say-hi:
