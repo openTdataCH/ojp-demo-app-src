@@ -16,7 +16,10 @@ export class AppService {
         'OJP Demo',
       ];
 
-      titleParts.push('BETA');
+      if (DEBUG_LEVEL === 'DEBUG') {
+        titleParts.push('BETA');
+      }
+      
       titleParts.push('OJP ' + OJP_VERSION);
 
       const titleS = titleParts.join(' - ');
