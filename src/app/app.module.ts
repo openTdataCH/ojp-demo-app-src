@@ -42,6 +42,8 @@ import { TripModeTypeComponent } from './search-form/trip-mode-type/trip-mode-ty
 
 import { ServiceStopsComponent } from './shared/components/service-stops.component';
 
+import { ReportIssueComponent } from './shared/components/report-issue.component';
+
 import { EmbedSearchComponent } from './embed/embed-search.component';
 import { EmbedStationBoardComponent } from './embed/embed-station-board.component';
 import { WebFooterComponent } from './shared/components/web-footer';
@@ -82,6 +84,8 @@ import { StopClickPropagationDirective } from './shared/components/stop-click-pr
     EmbedStationBoardPopoverComponent,
 
     ServiceStopsComponent,
+
+    ReportIssueComponent,
     
     WebFooterComponent,
     WebHeaderComponent,
