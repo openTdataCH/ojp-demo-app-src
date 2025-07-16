@@ -98,11 +98,11 @@ export class TripRenderController {
       tripContinousLegWalkingLineLayer.paint["line-color"] = MapLegTypeColor['ContinuousLeg'];
     }
 
-    const mapLayers = [
-      tripLegBeelineLayer,
-      tripLegTrackWithoutWalkLayer,
-      tripContinousLegWalkingLineLayer,
-      tripTimedLegEndpointCircleLayer,
+    const mapLayers = [                   // layers order matters:
+      tripLegBeelineLayer,                //    - line (beelines)
+      tripLegTrackWithoutWalkLayer,       //    - line
+      tripContinousLegWalkingLineLayer,   //    - line (beelines)
+      tripTimedLegEndpointCircleLayer,    //    - circle (endpoints, intermediary points)
     ];
 
     mapLayers.forEach(mapLayerJSON => {
