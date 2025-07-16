@@ -161,9 +161,14 @@
 <div class="row mb-2" *ngIf="!this.isEmbed">
   <div class="col">
     <div class="d-flex gap-1 flex-row-reverse">
-      <div class="xml-info" (click)="showRequestXMLPopover()" *ngIf="this.currentRequestInfo !== null">
-        <span class="layer-xml-info badge bg-info text-dark">XML</span>
-      </div>
+      <ng-container *ngIf="this.currentRequestInfo !== null">
+        <div class="xml-info" (click)="reportIssueXMLPopover()" >
+          <span class="layer-xml-info badge bg-warning text-dark">Report Issue</span>
+        </div>
+        <div class="xml-info" (click)="showRequestXMLPopover()">
+          <span class="layer-xml-info badge bg-info text-dark">XML</span>
+        </div>
+      </ng-container>
       <div *ngIf="this.requestDurationF !== null">
         <span class="badge bg-success">{{ this.requestDurationF }}</span>
       </div>

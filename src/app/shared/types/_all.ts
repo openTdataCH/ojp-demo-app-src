@@ -39,3 +39,11 @@ export interface RasterLayerType {
   rasterOpacity: number,
   beforeLayerId?: string
 };
+
+export interface CreateIssueBody {
+  title: string
+  description: string
+  requestXML: string
+  responseXML: string
+  projectKey: string
+}
