@@ -33,13 +33,20 @@ type ServiceAttributeRenderModel = {
   caption: string
 }
 
+interface GuidanceRow {
+  turnDescription: string
+  advice: string
+  lengthF: string
+  durationF: string
+  streetName: string
+  geojsonFeature: GeoJSON.Feature<GeoJSON.LineString> | null
+}
 interface LegInfoDataModel {
   legColor: string,
   legIconPath: string,
   leadingText: string,
   
-  hasGuidance: boolean,
-  guidanceTextLines: string[]
+  guidanceRows: GuidanceRow[],
   bookingArrangements: OJP_Legacy.BookingArrangement[]
   
   isWalking: boolean,
@@ -322,48 +329,61 @@ export class ResultTripLegComponent implements OnInit {
 
     const leg = this.legData.leg;
 
-    this.legInfoDataModel.legColor = this.computeLegColor()
-    this.legInfoDataModel.leadingText = this.computeLegLeadingText()
+    this.legInfoDataModel.legColor = this.computeLegColor();
+    this.legInfoDataModel.leadingText = this.computeLegLeadingText();
 
-    const isTransfer = leg.legType === 'TransferLeg'
-    this.legInfoDataModel.guidanceTextLines = []
+    this.legInfoDataModel.guidanceRows = (() => {
+      const rows: GuidanceRow[] = [];
 
-    if (isTransfer) {
-      const transferLeg = leg as OJP_Legacy.TripContinuousLeg;
-      const guidanceSections = transferLeg.pathGuidance?.sections ?? []
+      const isContinous = (leg.legType === 'ContinuousLeg') || (leg.legType === 'TransferLeg');
+      if (!isContinous) {
+        return rows;
+      }
+
+      const guidanceSections = (leg as OJP_Legacy.TripContinuousLeg).pathGuidance?.sections ?? [];
       guidanceSections.forEach(section => {
         if (section.guidanceAdvice === null) {
-          return
+          return;
         }
 
-        const lineTextParts = [
-          section.guidanceAdvice ?? '',
-          '(',
-          section.turnAction ?? '',
-          ') - ',
-          section.trackSection?.roadName ?? '',
-        ]
+        const durationF = (() => {
+          const duration = OJP_Legacy.Duration.initFromDurationText(section.trackSection?.duration ?? null);
+          if (duration === null) {
+            return '';
+          }
 
-        const guidanceLength = section.trackSection?.length ?? 0
-        if (guidanceLength > 0) {
-          lineTextParts.push(' (')
-          lineTextParts.push('' + guidanceLength)
-          lineTextParts.push('m)')
-        }
+          const durationF_s1 = duration.formatDuration();
+          if (durationF_s1 === '0min') {
+            return '';
+          }
 
-        const lineText = lineTextParts.join('')
-        this.legInfoDataModel.guidanceTextLines.push(lineText)
-      })
-    }
+          return durationF_s1;
+        })();
+
+        const geojsonFeature = section.trackSection?.linkProjection?.asGeoJSONFeature() ?? null;
+
+        const row: GuidanceRow = {
+          turnDescription: section.turnAction ?? '',
+          advice: section.guidanceAdvice ?? '',
+          lengthF: OJPHelpers.formatDistance(section.trackSection?.length ?? 0),
+          durationF: durationF,
+          streetName: section.trackSection?.roadName ?? '',
+          geojsonFeature: geojsonFeature,
+        };
+        rows.push(row);
+      });
+
+      return rows;
+    })();
 
     let isWalking = leg.legType === 'TransferLeg'
     const isContinous = leg.legType === 'ContinuousLeg';
     if (isContinous) {
       const continousLeg = leg as OJP_Legacy.TripContinuousLeg;
-      isWalking = continousLeg.isWalking()
+      isWalking = continousLeg.isWalking();
 
       if (isWalking) {
-        this.legInfoDataModel.distanceText = continousLeg.formatDistance()
+        this.legInfoDataModel.distanceText = OJPHelpers.formatDistance(continousLeg.legDistance);
       }
     }
     this.legInfoDataModel.isWalking = isWalking;
@@ -399,8 +419,6 @@ export class ResultTripLegComponent implements OnInit {
     })();
 
     this.legInfoDataModel.durationText = leg.legDuration?.formatDuration() ?? ''
-
-    this.legInfoDataModel.hasGuidance = this.legInfoDataModel.guidanceTextLines.length > 0
 
     const legIconFilename = OJPHelpers.computeIconFilenameForLeg(leg);
     this.legInfoDataModel.legIconPath = 'assets/pictograms/' + legIconFilename + '.png'
@@ -642,8 +660,12 @@ export class ResultTripLegComponent implements OnInit {
 
     const isFrom = endpointType === 'From';
     const location = isFrom ? this.legData.leg.fromLocation : this.legData.leg.toLocation;
-
-    this.mapService.tryToCenterAndZoomToLocation(location);
+    if (location.geoPosition) {
+      this.mapService.tryToCenterAndZoomToLocation(location);
+    } else {
+      console.log('ERROR zoomToEndpoint - no location coords');
+      console.log(location);
+    }
   }
 
   public zoomToIntermediaryPoint(idx: number) {
@@ -651,11 +673,60 @@ export class ResultTripLegComponent implements OnInit {
     const newGeoPosition = this.legInfoDataModel.intermediaryLocationsData[idx].geoPosition;
     if (newGeoPosition) {
       location.geoPosition = new OJP_Legacy.GeoPosition(newGeoPosition.longitude, newGeoPosition.latitude);
+      this.mapService.tryToCenterAndZoomToLocation(location);
     } else {
-      location.geoPosition = null;
+      console.log('ERROR zoomToIntermediaryPoint - no location coords');
+      console.log(location);
     }
+  }
 
-    this.mapService.tryToCenterAndZoomToLocation(location);
+  public zoomToGuidanceSection(idx: number) {
+    const row = this.legInfoDataModel.guidanceRows[idx];
+
+    const feature = row.geojsonFeature;
+    if (feature === null) {
+      // 1st and last points dont have LegProjection
+      // - try to get from the fromLocation / toLocation instead
+      // - TODO - even better, save/use the endpoints for the trackSection? 
+      //        - because the leg fromLocation / toLocation are not the same as the section
+      const legLocation = (() => {
+        const isFirst = idx === 0;
+        if (isFirst) {
+          return this.legData?.leg.fromLocation ?? null;
+        }
+
+        const isLast = idx === (this.legInfoDataModel.guidanceRows.length - 1);
+        if (isLast) {
+          return this.legData?.leg.toLocation ?? null;
+        }
+
+        return null;
+      })();
+
+      if (legLocation) {
+        this.mapService.tryToCenterAndZoomToLocation(legLocation, 18);
+      }
+    } else {
+      const bbox = feature.bbox ?? null;
+      if (bbox) {
+        const bounds = new mapboxgl.LngLatBounds(bbox as [number, number, number, number]);
+
+        const dx = bounds.getSouthWest().distanceTo(bounds.getSouthEast());
+        const dy = bounds.getNorthWest().distanceTo(bounds.getSouthWest());
+        const rectangleDist = Math.max(dx, dy);
+        // map zooms out too much for small rectangles, zoom to center instead
+        if (rectangleDist < 20) {
+          const centerLngLat = bounds.getCenter();
+          const centerLocation = OJP_Legacy.Location.initWithLngLat(centerLngLat.lng, centerLngLat.lat);
+          this.mapService.tryToCenterAndZoomToLocation(centerLocation, 18);
+        } else {
+          const mapData = {
+            bounds: bounds,
+          }
+          this.mapService.newMapBoundsRequested.emit(mapData);
+        }
+      }
+    }
   }
 
   public loadTripInfoResultPopover() {

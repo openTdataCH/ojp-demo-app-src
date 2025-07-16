@@ -4,11 +4,11 @@ import { MapboxLayerHelpers } from '../../helpers/mapbox-layer-helpers';
 import { MapLegTypeColor } from '../../config/map-colors';
 
 import { TripLegGeoController } from '../../shared/controllers/trip-geo-controller';
-import { MapTripLeg } from '../../shared/types/map-geometry-types';
+import { MapTripLeg, TripLegLineType } from '../../shared/types/map-geometry-types';
 
 import tripLegBeelineLayerJSON from './map-layers-def/ojp-trip-leg-beeline.json'
 import tripTimedLegEndpointCircleLayerJSON from './map-layers-def/ojp-trip-timed-leg-endpoint-circle.json'
-import tripTimedLegTrackLayerJSON from './map-layers-def/ojp-trip-timed-leg-track.json'
+import tripLegTrackWithoutWalkLayerJSON from './map-layers-def/ojp-trip-timed-leg-track.json'
 import tripContinousLegWalkingLineLayerJSON from './map-layers-def/ojp-trip-walking-leg-line.json'
 
 export class TripRenderController {
@@ -83,41 +83,33 @@ export class TripRenderController {
       tripTimedLegEndpointCircleLayer.paint["circle-stroke-width"] = caseCircleStrokeWidth;
     }
 
-    const tripTimedLegTrackLayerLayer = tripTimedLegTrackLayerJSON as mapboxgl.LineLayerSpecification;
-    tripTimedLegTrackLayerLayer.filter = MapboxLayerHelpers.FilterTimedLegTracks();
-    if (tripTimedLegTrackLayerLayer.paint) {
-      tripTimedLegTrackLayerLayer.paint["line-color"] = caseTimedLegColors;
+    // Layer 'line' for all line types - EXCEPT Walk / Guidance
+    const tripLegTrackWithoutWalkLayer = tripLegTrackWithoutWalkLayerJSON as mapboxgl.LineLayerSpecification;
+    const excludeLineTypes: TripLegLineType[] = ['Guidance', 'Walk'];
+    tripLegTrackWithoutWalkLayer.filter = MapboxLayerHelpers.FilterLegTracks(excludeLineTypes);
+    if (tripLegTrackWithoutWalkLayer.paint) {
+      tripLegTrackWithoutWalkLayer.paint["line-color"] = MapboxLayerHelpers.ColorCaseByLegLineType();
     }
 
+    // Layer 'line' for Walk / Guidance
     const tripContinousLegWalkingLineLayer = tripContinousLegWalkingLineLayerJSON as mapboxgl.LineLayerSpecification;
     tripContinousLegWalkingLineLayer.filter = MapboxLayerHelpers.FilterWalkingLegs();
     if (tripContinousLegWalkingLineLayer.paint) {
       tripContinousLegWalkingLineLayer.paint["line-color"] = MapLegTypeColor['ContinuousLeg'];
     }
 
-    const mapLayers = [
-      tripLegBeelineLayer,
-      tripTimedLegTrackLayerLayer,
-      tripContinousLegWalkingLineLayer,
-      tripTimedLegEndpointCircleLayer
-    ]
+    const mapLayers = [                   // layers order matters:
+      tripLegBeelineLayer,                //    - line (beelines)
+      tripLegTrackWithoutWalkLayer,       //    - line
+      tripContinousLegWalkingLineLayer,   //    - line (beelines)
+      tripTimedLegEndpointCircleLayer,    //    - circle (endpoints, intermediary points)
+    ];
 
     mapLayers.forEach(mapLayerJSON => {
       const mapLayerDef = mapLayerJSON as mapboxgl.Layer;
       mapLayerDef.source = this.mapSourceId;
       this.map.addLayer(mapLayerDef as mapboxgl.LayerSpecification);
     });
-  }
-
-  private removeAllFeatures() {
-    // Prevent firing again the 'idle' event when setting empty features
-    //    on a already empty source
-    const hasNoFeatures = this.features.length === 0;
-    if (hasNoFeatures) {
-      return;
-    }
-
-    this.setSourceFeatures([]);
   }
 
   private setSourceFeatures(features: GeoJSON.Feature[]) {

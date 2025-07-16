@@ -12,6 +12,7 @@ import { LanguageService } from '../../shared/services/language.service';
 import { MapTrip, MapTripLeg } from '../../shared/types/map-geometry-types';
 import { TripLegGeoController } from '../../shared/controllers/trip-geo-controller';
 import { TripData } from '../../shared/types/trip';
+import { OJPHelpers } from '../../helpers/ojp-helpers';
 
 interface TripHeaderStats {
   title: string,
@@ -118,11 +119,11 @@ export class JourneyResultRowComponent implements OnInit {
 
     this.tripHeaderStats.tripDistanceS = (() => {
       if (DEBUG_LEVEL !== 'DEBUG') {
-        return OJP_Legacy.DateHelpers.formatDistance(trip.stats.distanceMeters);
+        return OJPHelpers.formatDistance(trip.stats.distanceMeters);
       }
 
       const sourceF = trip.stats.distanceSource === 'trip' ? 'Δ' : 'Σ';
-      const distanceF = OJP_Legacy.DateHelpers.formatDistance(trip.stats.distanceMeters);
+      const distanceF = OJPHelpers.formatDistance(trip.stats.distanceMeters);
 
       return distanceF + ' ' + sourceF;
     })();

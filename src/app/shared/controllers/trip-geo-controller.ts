@@ -1,5 +1,6 @@
 import * as GeoJSON from 'geojson';
 
+import { OJPHelpers } from '../../helpers/ojp-helpers';
 import OJP_Legacy from '../../config/ojp-legacy';
 
 import { JourneyService } from '../models/journey-service';
@@ -286,13 +287,22 @@ export class TripLegGeoController {
     return features;
   }
 
+  // TODO - this should be in be in the SDK (add to ojp-sdk-next)
+  private positionAsFeature(position: GeoJSON.Position): GeoJSON.Feature<GeoJSON.Point> {
+    const feature: GeoJSON.Feature<GeoJSON.Point> = {
+      type: 'Feature',
+      properties: {},
+      geometry: {
+        type: 'Point',
+        coordinates: position,
+      }
+    };
+
+    return feature;
+  }
+
   private computeLinePointsData(): LinePointData[] {
     const linePointsData: LinePointData[] = [];
-
-    // Don't show endpoints for TransferLeg
-    if (this.leg.legType === 'TransferLeg') {
-      return linePointsData;
-    }
 
     const locations = [this.leg.fromLocation, this.leg.toLocation];
     locations.forEach(location => {
@@ -300,12 +310,6 @@ export class TripLegGeoController {
       if (locationFeature?.properties) {
         const isFrom = location === this.leg.fromLocation;
         const stopPointType: OJP_Legacy.StopPointType = isFrom ? 'From' : 'To';
-
-        // Extend the endpoints to the LegTrack if available
-        const pointGeoPosition = isFrom ? this.leg.legTrack?.fromGeoPosition() : this.leg.legTrack?.toGeoPosition();
-        if (pointGeoPosition) {
-          locationFeature.geometry.coordinates = pointGeoPosition.asPosition();
-        }
 
         linePointsData.push({
           type: stopPointType,
@@ -331,6 +335,32 @@ export class TripLegGeoController {
       });
     }
 
+    // Continous / TransferLeg - add gudance endpoints as intermediate points
+    const isContinous = ((this.leg.legType === 'TransferLeg') || (this.leg.legType === 'ContinuousLeg'));
+    if (isContinous) {
+      const continuousLeg = this.leg as OJP_Legacy.TripContinuousLeg;
+      const guidanceSections = continuousLeg.pathGuidance?.sections ?? [];
+      guidanceSections.forEach((pathGuidanceSection, idx) => {
+        const lineCoordinates = pathGuidanceSection.trackSection?.linkProjection?.coordinates ?? [];
+        if (lineCoordinates.length === 0) {
+          return;
+        }
+
+        const feature = this.positionAsFeature(lineCoordinates[0].asPosition());
+        linePointsData.push({
+          type: 'Intermediate',
+          feature: feature,
+        });
+
+        const lastCoord = lineCoordinates[lineCoordinates.length - 1].asPosition();
+        const lastFeature = this.positionAsFeature(lastCoord);
+        linePointsData.push({
+          type: 'Intermediate',
+          feature: lastFeature,
+        });
+      });
+    }
+
     return linePointsData;
   }
 
@@ -351,6 +381,8 @@ export class TripLegGeoController {
   private computeContinousLegGeoJSONFeatures(continuousLeg: OJP_Legacy.TripContinuousLeg): GeoJSON.Feature[] {
     const features: GeoJSON.Feature[] = [];
 
+    const isCar = OJPHelpers.isCar(continuousLeg);
+
     continuousLeg.pathGuidance?.sections.forEach((pathGuidanceSection, guidanceIDx) => {
       const feature = pathGuidanceSection.trackSection?.linkProjection?.asGeoJSONFeature();
       if (!feature?.properties) {
@@ -360,7 +392,7 @@ export class TripLegGeoController {
       const drawType: TripLegDrawType = 'LegLine';
       feature.properties[TripLegPropertiesEnum.DrawType] = drawType;
 
-      const lineType: TripLegLineType = 'Guidance';
+      const lineType: TripLegLineType = isCar ? 'Self-Drive Car' : 'Guidance';
       feature.properties[TripLegPropertiesEnum.LineType] = lineType;
 
       feature.properties['PathGuidanceSection.idx'] = guidanceIDx;
@@ -376,8 +408,8 @@ export class TripLegGeoController {
     continuousLeg.legTrack?.trackSections.forEach(trackSection => {
       const feature = trackSection.linkProjection?.asGeoJSONFeature()
       if (feature?.properties) {
-        const drawType: TripLegDrawType = 'LegLine'
-        feature.properties[TripLegPropertiesEnum.DrawType] = drawType
+        const drawType: TripLegDrawType = 'LegLine';
+        feature.properties[TripLegPropertiesEnum.DrawType] = drawType;
 
         feature.properties[TripLegPropertiesEnum.LineType] = this.computeLegLineType();
 

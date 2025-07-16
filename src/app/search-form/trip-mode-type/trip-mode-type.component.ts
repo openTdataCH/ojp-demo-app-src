@@ -162,8 +162,8 @@ export class TripModeTypeComponent implements OnInit {
         this.updateAdditionalRestrictions();
       }
 
-      const isAuto = this.userTripService.tripTransportMode === carTransportMode;
-      if (isMonomodal && isAuto) {
+      const isCar = this.userTripService.tripTransportMode === carTransportMode;
+      if (isMonomodal && isCar) {
         this.numberOfResults = 0;
         this.userTripService.numberOfResults = 0;
       }

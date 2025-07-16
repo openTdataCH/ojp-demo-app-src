@@ -29,22 +29,6 @@ export class MapService {
   public newMapBoundsRequested = new EventEmitter<IMapBoundsData>();
   public newMapCenterAndZoomRequested = new EventEmitter<IMapLocationZoomData>();
 
-  public tryToCenterAndZoomToLocation(location: OJP_Legacy.Location | null, zoomValue: number = 16.0) {
-    if (location === null) {
-      return
-    }
-
-    const locationLngLat = location.geoPosition?.asLngLat() ?? null
-    if (locationLngLat === null) {
-      return
-    }
-
-    this.newMapCenterAndZoomRequested.emit({
-      lnglat: locationLngLat,
-      zoom: zoomValue
-    })
-  }
-
   public initialMapCenter: mapboxgl.LngLat | null
   public initialMapZoom: number | null
 
@@ -76,6 +60,22 @@ export class MapService {
     }
 
     return map;
+  }
+
+  public tryToCenterAndZoomToLocation(location: OJP_Legacy.Location | null, zoomValue: number = 16.0) {
+    if (location === null) {
+      return;
+    }
+
+    const locationLngLat = location.geoPosition?.asLngLat() ?? null
+    if (locationLngLat === null) {
+      return;
+    }
+
+    this.newMapCenterAndZoomRequested.emit({
+      lnglat: locationLngLat,
+      zoom: zoomValue,
+    });
   }
 
   public zoomToTrip(trip: OJP_Legacy.Trip) {

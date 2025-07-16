@@ -1,4 +1,5 @@
 import OJP_Legacy from '../config/ojp-legacy';
+import * as OJP_Next from 'ojp-sdk-next';
 
 import { LegStopPointData } from '../shared/components/service-stops.component';
 import { DEBUG_LEVEL } from '../config/constants';
@@ -99,6 +100,11 @@ export class OJPHelpers {
     return 'picto-bus-fallback';
   }
 
+  public static isCar(leg: OJP_Legacy.TripContinuousLeg) {
+    const isCar = leg.legTransportMode === 'self-drive-car';
+    return isCar;
+  }
+
   public static updateLocationDataWithTime(stopPointData: LegStopPointData, stopPoint: StopPointCall) {
     const depArrTypes: StopEventType[] = ['arrival', 'departure'];
 
@@ -140,6 +146,8 @@ export class OJPHelpers {
       secondClassIcon: OJPHelpers.computeOccupancyLevelIcon(stopPoint.mapFareClassOccupancy, 'secondClass'),
       secondClassText: OJPHelpers.computeOccupancyLevelText(stopPoint.mapFareClassOccupancy, 'secondClass'),
     };
+
+    stopPointData.geoPosition = stopPointData.geoPosition;
   }
 
   private static computeStopPointDelayText(depArrType: StopEventType, stopPoint: StopPointCall): string | null {
@@ -461,6 +469,11 @@ export class OJPHelpers {
       mapFareClassOccupancy: oldStopPoint.mapFareClassOccupancy,
       isNotServicedStop: oldStopPoint.isNotServicedStop,
     };
+
+    const geoPosition = oldStopPoint.location.geoPosition;
+    if (geoPosition) {
+      stopCall.place = OJP_Next.Place.initWithCoords(geoPosition.longitude, geoPosition.latitude);
+    }
     
     stopEventTypes.forEach(stopEventType => {
       const isArrival = stopEventType === 'arrival';
@@ -521,5 +534,14 @@ export class OJPHelpers {
     const tripHash = hashParts.join('_');
 
     return tripHash;
+  }
+
+  public static formatDistance(distanceMeters: number): string {
+    if (distanceMeters > 1000) {
+      const distanceKmS = (distanceMeters / 1000).toFixed(1) + 'km';
+      return distanceKmS;
+    }
+
+    return distanceMeters + 'm'
   }
 }
