@@ -8,7 +8,7 @@ import { MapTripLeg, TripLegLineType } from '../../shared/types/map-geometry-typ
 
 import tripLegBeelineLayerJSON from './map-layers-def/ojp-trip-leg-beeline.json'
 import tripTimedLegEndpointCircleLayerJSON from './map-layers-def/ojp-trip-timed-leg-endpoint-circle.json'
-import tripTimedLegTrackLayerJSON from './map-layers-def/ojp-trip-timed-leg-track.json'
+import tripLegTrackWithoutWalkLayerJSON from './map-layers-def/ojp-trip-timed-leg-track.json'
 import tripContinousLegWalkingLineLayerJSON from './map-layers-def/ojp-trip-walking-leg-line.json'
 
 export class TripRenderController {
@@ -83,16 +83,15 @@ export class TripRenderController {
       tripTimedLegEndpointCircleLayer.paint["circle-stroke-width"] = caseCircleStrokeWidth;
     }
 
-    // this actually applies to all LegProjection lines (not only TimedLeg)
-    const tripTimedLegTrackLayerLayer = tripTimedLegTrackLayerJSON as mapboxgl.LineLayerSpecification;
-    // Guidance, Walk are added separately - tripContinousLegWalkingLineLayer
+    // Layer 'line' for all line types - EXCEPT Walk / Guidance
+    const tripLegTrackWithoutWalkLayer = tripLegTrackWithoutWalkLayerJSON as mapboxgl.LineLayerSpecification;
     const excludeLineTypes: TripLegLineType[] = ['Guidance', 'Walk'];
-    tripTimedLegTrackLayerLayer.filter = MapboxLayerHelpers.FilterLegTracks(excludeLineTypes);
-    if (tripTimedLegTrackLayerLayer.paint) {
-      const caseTimedLegColorsWithoutWalk = MapboxLayerHelpers.ColorCaseByLegLineType();
-      tripTimedLegTrackLayerLayer.paint["line-color"] = caseTimedLegColorsWithoutWalk;
+    tripLegTrackWithoutWalkLayer.filter = MapboxLayerHelpers.FilterLegTracks(excludeLineTypes);
+    if (tripLegTrackWithoutWalkLayer.paint) {
+      tripLegTrackWithoutWalkLayer.paint["line-color"] = MapboxLayerHelpers.ColorCaseByLegLineType();
     }
 
+    // Layer 'line' for Walk / Guidance
     const tripContinousLegWalkingLineLayer = tripContinousLegWalkingLineLayerJSON as mapboxgl.LineLayerSpecification;
     tripContinousLegWalkingLineLayer.filter = MapboxLayerHelpers.FilterWalkingLegs();
     if (tripContinousLegWalkingLineLayer.paint) {
@@ -101,17 +100,16 @@ export class TripRenderController {
 
     const mapLayers = [
       tripLegBeelineLayer,
-      tripTimedLegTrackLayerLayer,
+      tripLegTrackWithoutWalkLayer,
       tripContinousLegWalkingLineLayer,
-      tripTimedLegEndpointCircleLayer
-    ]
+      tripTimedLegEndpointCircleLayer,
+    ];
 
     mapLayers.forEach(mapLayerJSON => {
       const mapLayerDef = mapLayerJSON as mapboxgl.Layer;
       mapLayerDef.source = this.mapSourceId;
       this.map.addLayer(mapLayerDef as mapboxgl.LayerSpecification);
     });
-
   }
 
   private setSourceFeatures(features: GeoJSON.Feature[]) {
