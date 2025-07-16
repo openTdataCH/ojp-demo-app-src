@@ -5,6 +5,9 @@ OJP-Demo URL: https://opentdatach.github.io/ojp-demo-app/
 ----
 
 16.July 2025
+- Improve situations - [PR #260](https://github.com/openTdataCH/ojp-demo-app-src/pull/260)
+  - display situations on click
+  - always open the situations links in new tab / window
 - Improve Guidance - [Updates Guidance / Walk turn-by-turn #255](https://github.com/openTdataCH/ojp-demo-app-src/issues/255) - [PR #259](https://github.com/openTdataCH/ojp-demo-app-src/pull/259)
   - differentiate map line layers
     - all except walk / guidance - line by LegType color

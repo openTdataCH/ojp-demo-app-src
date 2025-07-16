@@ -246,6 +246,9 @@ export class OJPHelpers {
         descriptions: el.descriptions,
         // details might contain HTML, sanitize content
         safeDetails: el.details.map(detailS => {
+          // HACK: always open in a new tab/window
+          detailS = detailS.replace('<a href', '<a target="_blank" href');
+
           const textarea = document.createElement('textarea');
           textarea.innerHTML = detailS;
           const safeDetail = sanitizer.bypassSecurityTrustHtml(textarea.value);
