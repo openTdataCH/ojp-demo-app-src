@@ -19,10 +19,11 @@ import { UserTripService } from '../shared/services/user-trip.service'
 import { LanguageService } from '../shared/services/language.service';
 
 import { MapService } from '../shared/services/map.service';
+
 import { InputXmlPopoverComponent } from './input-xml-popover/input-xml-popover.component';
 import { EmbedSearchPopoverComponent } from './embed-search-popover/embed-search-popover.component';
 import { DebugXmlPopoverComponent } from './debug-xml-popover/debug-xml-popover.component';
-
+import { ReportIssueComponent } from '../shared/components/report-issue.component';
 
 import { OJPHelpers } from '../helpers/ojp-helpers';
 
@@ -526,6 +527,40 @@ export class SearchFormComponent implements OnInit {
         const popover = dialogRef.componentInstance as DebugXmlPopoverComponent;
         popover.isTripRequest = true;
         popover.updateRequestData(this.currentRequestInfo);
+      }
+    });
+  }
+
+  public reportIssueXMLPopover() {
+    const dialogWidth = this.isSmallScreen ? '90vw' : '50vw';
+
+    const dialogRef = this.popover.open(ReportIssueComponent, {
+      position: { top: '20px' },
+      width: dialogWidth,
+    });
+    dialogRef.afterOpened().subscribe(() => {
+      const popover = dialogRef.componentInstance as ReportIssueComponent;
+      if (this.currentRequestInfo) {
+        const popover = dialogRef.componentInstance as ReportIssueComponent;
+        popover.requestInfo = this.currentRequestInfo;
+
+        const isOJPv2 = OJP_VERSION === '2.0';
+        const issueTitle: string = (() => {
+          if (!isOJPv2) {
+            return '[OJP v1.0][TR issue] ';
+          }
+
+          return '[TR issue] ';
+        })();
+
+        this.userTripService.updateURLs();
+        const requestURL = isOJPv2 ? this.userTripService.betaV2URL : this.userTripService.betaV1URL;
+        if (requestURL === null) {
+          return;
+        }
+
+        popover.setInputValue('issueTitle', issueTitle);
+        popover.updateMetadataRows(requestURL);
       }
     });
   }
