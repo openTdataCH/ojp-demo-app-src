@@ -390,8 +390,8 @@ export class TripLegGeoController {
     continuousLeg.legTrack?.trackSections.forEach(trackSection => {
       const feature = trackSection.linkProjection?.asGeoJSONFeature()
       if (feature?.properties) {
-        const drawType: TripLegDrawType = 'LegLine'
-        feature.properties[TripLegPropertiesEnum.DrawType] = drawType
+        const drawType: TripLegDrawType = 'LegLine';
+        feature.properties[TripLegPropertiesEnum.DrawType] = drawType;
 
         feature.properties[TripLegPropertiesEnum.LineType] = this.computeLegLineType();
 
