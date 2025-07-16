@@ -235,7 +235,7 @@
               </thead>
               <tbody>
                 <ng-container *ngFor="let row of this.legInfoDataModel.guidanceRows; index as idx">
-                  <tr class="location-hover leg-intermediate" stopClickPropagation>
+                  <tr (click)="this.zoomToGuidanceSection(idx)" class="location-hover leg-intermediate" stopClickPropagation>
                     <td class="fit">{{ (idx + 1) }}. {{ row.advice }}</td>
                     <td class="guidance-description">
                       <div>{{ row.turnDescription }}</div>

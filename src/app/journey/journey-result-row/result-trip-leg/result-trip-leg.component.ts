@@ -680,7 +680,55 @@ export class ResultTripLegComponent implements OnInit {
       console.log('ERROR zoomToIntermediaryPoint - no location coords');
       console.log(location);
     }
+  }
 
+  public zoomToGuidanceSection(idx: number) {
+    const row = this.legInfoDataModel.guidanceRows[idx];
+
+    const feature = row.geojsonFeature;
+    if (feature === null) {
+      // 1st and last points dont have LegProjection
+      // - try to get from the fromLocation / toLocation instead
+      // - TODO - even better, save/use the endpoints for the trackSection? 
+      //        - because the leg fromLocation / toLocation are not the same as the section
+      const legLocation = (() => {
+        const isFirst = idx === 0;
+        if (isFirst) {
+          return this.legData?.leg.fromLocation ?? null;
+        }
+
+        const isLast = idx === (this.legInfoDataModel.guidanceRows.length - 1);
+        if (isLast) {
+          return this.legData?.leg.toLocation ?? null;
+        }
+
+        return null;
+      })();
+
+      if (legLocation) {
+        this.mapService.tryToCenterAndZoomToLocation(legLocation, 18);
+      }
+    } else {
+      const bbox = feature.bbox ?? null;
+      if (bbox) {
+        const bounds = new mapboxgl.LngLatBounds(bbox as [number, number, number, number]);
+
+        const dx = bounds.getSouthWest().distanceTo(bounds.getSouthEast());
+        const dy = bounds.getNorthWest().distanceTo(bounds.getSouthWest());
+        const rectangleDist = Math.max(dx, dy);
+        // map zooms out too much for small rectangles, zoom to center instead
+        if (rectangleDist < 20) {
+          const centerLngLat = bounds.getCenter();
+          const centerLocation = OJP_Legacy.Location.initWithLngLat(centerLngLat.lng, centerLngLat.lat);
+          this.mapService.tryToCenterAndZoomToLocation(centerLocation, 18);
+        } else {
+          const mapData = {
+            bounds: bounds,
+          }
+          this.mapService.newMapBoundsRequested.emit(mapData);
+        }
+      }
+    }
   }
 
   public loadTripInfoResultPopover() {
