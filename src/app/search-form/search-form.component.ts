@@ -64,9 +64,7 @@ export class SearchFormComponent implements OnInit {
 
   constructor(
     private notificationToast: SbbNotificationToast,
-    private tripXmlPopover: SbbDialog,
-    private embedHTMLPopover: SbbDialog,
-    private debugXMLPopover: SbbDialog,
+    private popover: SbbDialog,
     private router: Router,
     private languageService: LanguageService,
     public userTripService: UserTripService,
@@ -426,7 +424,7 @@ export class SearchFormComponent implements OnInit {
   }
 
   public loadInputTripXMLPopover() {
-    const dialogRef = this.tripXmlPopover.open(InputXmlPopoverComponent, {
+    const dialogRef = this.popover.open(InputXmlPopoverComponent, {
       position: { top: '20px' },
       width: '50vw',
     });
@@ -487,7 +485,7 @@ export class SearchFormComponent implements OnInit {
   }
 
   public loadEmbedHTMLPopover() {
-    const dialogRef = this.embedHTMLPopover.open(EmbedSearchPopoverComponent, {
+    const dialogRef = this.popover.open(EmbedSearchPopoverComponent, {
       position: { top: '20px' },
     });
 
@@ -509,7 +507,7 @@ export class SearchFormComponent implements OnInit {
   }
 
   public showRequestXMLPopover() {
-    const dialogRef = this.debugXMLPopover.open(DebugXmlPopoverComponent, {
+    const dialogRef = this.popover.open(DebugXmlPopoverComponent, {
       position: { top: '20px' },
       width: '50vw',
       height: '90vh',
