@@ -522,4 +522,13 @@ export class OJPHelpers {
 
     return tripHash;
   }
+
+  public static formatDistance(distanceMeters: number): string {
+    if (distanceMeters > 1000) {
+      const distanceKmS = (distanceMeters / 1000).toFixed(1) + 'km';
+      return distanceKmS;
+    }
+
+    return distanceMeters + 'm'
+  }
 }

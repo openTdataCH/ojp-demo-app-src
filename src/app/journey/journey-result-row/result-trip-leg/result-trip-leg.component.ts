@@ -363,7 +363,7 @@ export class ResultTripLegComponent implements OnInit {
       isWalking = continousLeg.isWalking()
 
       if (isWalking) {
-        this.legInfoDataModel.distanceText = continousLeg.formatDistance()
+        this.legInfoDataModel.distanceText = OJPHelpers.formatDistance(continousLeg.legDistance);
       }
     }
     this.legInfoDataModel.isWalking = isWalking;
