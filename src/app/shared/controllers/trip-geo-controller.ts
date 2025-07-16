@@ -286,6 +286,20 @@ export class TripLegGeoController {
     return features;
   }
 
+  // TODO - this should be in be in the SDK (add to ojp-sdk-next)
+  private positionAsFeature(position: GeoJSON.Position): GeoJSON.Feature<GeoJSON.Point> {
+    const feature: GeoJSON.Feature<GeoJSON.Point> = {
+      type: 'Feature',
+      properties: {},
+      geometry: {
+        type: 'Point',
+        coordinates: position,
+      }
+    };
+
+    return feature;
+  }
+
   private computeLinePointsData(): LinePointData[] {
     const linePointsData: LinePointData[] = [];
 
