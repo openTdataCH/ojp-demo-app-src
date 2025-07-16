@@ -383,6 +383,24 @@ export class TripLegGeoController {
 
     const isCar = OJPHelpers.isCar(continuousLeg);
 
+    const lineType: TripLegLineType = (() => {
+      if (continuousLeg.legTransportMode === null) {
+        return 'Guidance';
+      }
+
+      const sharedMobilityModes: OJP_Legacy.IndividualTransportMode[] = ['cycle', 'escooter_rental', 'bicycle_rental', 'charging_station'];
+      if (sharedMobilityModes.includes(continuousLeg.legTransportMode)) {
+        return 'Shared Mobility';
+      }
+
+      const autoModes: OJP_Legacy.IndividualTransportMode[] = ['car', 'car_sharing', 'self-drive-car', 'taxi', 'others-drive-car', 'car-shuttle-train', 'car-ferry'];
+      if (autoModes.includes(continuousLeg.legTransportMode)) {
+        return 'Self-Drive Car';
+      }
+
+      return 'Guidance';
+    })();
+
     continuousLeg.pathGuidance?.sections.forEach((pathGuidanceSection, guidanceIDx) => {
       const feature = pathGuidanceSection.trackSection?.linkProjection?.asGeoJSONFeature();
       if (!feature?.properties) {
@@ -392,7 +410,6 @@ export class TripLegGeoController {
       const drawType: TripLegDrawType = 'LegLine';
       feature.properties[TripLegPropertiesEnum.DrawType] = drawType;
 
-      const lineType: TripLegLineType = isCar ? 'Self-Drive Car' : 'Guidance';
       feature.properties[TripLegPropertiesEnum.LineType] = lineType;
 
       feature.properties['PathGuidanceSection.idx'] = guidanceIDx;
