@@ -173,20 +173,18 @@
         <span class="badge bg-success">{{ this.requestDurationF }}</span>
       </div>
       <ng-container *ngIf="this.userTripService.permalinkRelativeURL !== null">
-        <ng-container *ngIf="this.showURLS">
-          <div>
-            <a href="{{ this.userTripService.sbbURL }}" target="_blank">SBB</a>
-          </div>
-          <div clas="text-center"> | </div>
-          <div>
-            <a href="{{ this.userTripService.betaURL }}" target="_blank">{{ this.userTripService.betaURLText }}</a>
-          </div>
-          <div clas="text-center"> | </div>
-          <div>
-            <a href="{{ this.userTripService.prodURL }}" target="_blank">PROD</a>
-          </div>
-          <div clas="text-center"> | </div>
-        </ng-container>
+        <div>
+          <a href="{{ this.userTripService.sbbURL }}" target="_blank">SBB</a>
+        </div>
+        <div clas="text-center"> | </div>
+        <div>
+          <a href="{{ this.userTripService.betaURL }}" target="_blank">{{ this.userTripService.betaURLText }}</a>
+        </div>
+        <div clas="text-center"> | </div>
+        <div>
+          <a href="{{ this.userTripService.prodURL }}" target="_blank">PROD</a>
+        </div>
+        <div clas="text-center"> | </div>
         <div>
           <a href="{{ this.userTripService.permalinkRelativeURL }}" target="_blank">Permalink</a>
         </div>

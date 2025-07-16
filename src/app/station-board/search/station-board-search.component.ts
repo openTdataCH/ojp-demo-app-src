@@ -54,7 +54,6 @@ export class StationBoardSearchComponent implements OnInit {
 
   private useMocks = false;
   public isEmbed: boolean;
-  public showURLS: boolean;
 
   public isV1: boolean;
   public useRealTimeDataTypes: OJP_Legacy.UseRealtimeDataEnumeration[];
@@ -103,7 +102,6 @@ export class StationBoardSearchComponent implements OnInit {
 
     this.isEmbed = this.router.url.indexOf('/embed/') !== -1;
     this.headerText = this.stationBoardType;
-    this.showURLS = DEBUG_LEVEL === 'DEBUG';
 
     this.isV1 = OJP_VERSION === '1.0';
     this.useRealTimeDataTypes = ['full', 'explanatory', 'none'];
