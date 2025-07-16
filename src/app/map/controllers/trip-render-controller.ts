@@ -4,7 +4,7 @@ import { MapboxLayerHelpers } from '../../helpers/mapbox-layer-helpers';
 import { MapLegTypeColor } from '../../config/map-colors';
 
 import { TripLegGeoController } from '../../shared/controllers/trip-geo-controller';
-import { MapTripLeg } from '../../shared/types/map-geometry-types';
+import { MapTripLeg, TripLegLineType } from '../../shared/types/map-geometry-types';
 
 import tripLegBeelineLayerJSON from './map-layers-def/ojp-trip-leg-beeline.json'
 import tripTimedLegEndpointCircleLayerJSON from './map-layers-def/ojp-trip-timed-leg-endpoint-circle.json'
@@ -83,10 +83,14 @@ export class TripRenderController {
       tripTimedLegEndpointCircleLayer.paint["circle-stroke-width"] = caseCircleStrokeWidth;
     }
 
+    // this actually applies to all LegProjection lines (not only TimedLeg)
     const tripTimedLegTrackLayerLayer = tripTimedLegTrackLayerJSON as mapboxgl.LineLayerSpecification;
-    tripTimedLegTrackLayerLayer.filter = MapboxLayerHelpers.FilterTimedLegTracks();
+    // Guidance, Walk are added separately - tripContinousLegWalkingLineLayer
+    const excludeLineTypes: TripLegLineType[] = ['Guidance', 'Walk'];
+    tripTimedLegTrackLayerLayer.filter = MapboxLayerHelpers.FilterTimedLegTracks(excludeLineTypes);
     if (tripTimedLegTrackLayerLayer.paint) {
-      tripTimedLegTrackLayerLayer.paint["line-color"] = caseTimedLegColors;
+      const caseTimedLegColorsWithoutWalk = MapboxLayerHelpers.ColorCaseByLegLineType();
+      tripTimedLegTrackLayerLayer.paint["line-color"] = caseTimedLegColorsWithoutWalk;
     }
 
     const tripContinousLegWalkingLineLayer = tripContinousLegWalkingLineLayerJSON as mapboxgl.LineLayerSpecification;
