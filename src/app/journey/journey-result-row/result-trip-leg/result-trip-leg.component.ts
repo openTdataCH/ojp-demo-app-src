@@ -33,6 +33,14 @@ type ServiceAttributeRenderModel = {
   caption: string
 }
 
+interface GuidanceRow {
+  turnDescription: string
+  advice: string
+  lengthF: string
+  durationF: string
+  streetName: string
+  geojsonFeature: GeoJSON.Feature<GeoJSON.LineString> | null
+}
 interface LegInfoDataModel {
   legColor: string,
   legIconPath: string,
