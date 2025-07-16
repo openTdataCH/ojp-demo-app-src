@@ -85,21 +85,4 @@ export class MapboxLayerHelpers {
 
     return lineTypesExpression;
   }
-
-  public static ColorCaseByLegType(): mapboxgl.ExpressionSpecification {
-    const caseExpression: mapboxgl.ExpressionSpecification = ["case"]
-
-    MapLegTypes.forEach(legType => {
-      const caseOptionCondition = ["==", ["get", TripLegPropertiesEnum.LegType], legType];
-      caseExpression.push(caseOptionCondition);
-
-      const colorCode = MapLegTypeColor[legType];
-      caseExpression.push(colorCode);
-    });
-
-    // Default is Pink
-    caseExpression.push('#FF1493');
-
-    return caseExpression;
-  }
 }
