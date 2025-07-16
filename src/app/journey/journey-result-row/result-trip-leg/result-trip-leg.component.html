@@ -387,7 +387,7 @@
   </div>
 
   <div class="py-2 collapse" [id]="this.legElementId">
-    <table class="table table-hover table-stops mb-0 align-middle">
+    <table class="table table-hover table-striped table-stops mb-0 align-middle">
       <tbody>
         <ng-container *ngFor="let locationData of this.legInfoDataModel.intermediaryLocationsData; index as idx">
           <tr (click)="this.zoomToIntermediaryPoint(idx)" class="location-hover leg-intermediate" stopClickPropagation>
