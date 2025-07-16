@@ -107,17 +107,7 @@ export class TripRenderController {
       mapLayerDef.source = this.mapSourceId;
       this.map.addLayer(mapLayerDef as mapboxgl.LayerSpecification);
     });
-  }
 
-  private removeAllFeatures() {
-    // Prevent firing again the 'idle' event when setting empty features
-    //    on a already empty source
-    const hasNoFeatures = this.features.length === 0;
-    if (hasNoFeatures) {
-      return;
-    }
-
-    this.setSourceFeatures([]);
   }
 
   private setSourceFeatures(features: GeoJSON.Feature[]) {
