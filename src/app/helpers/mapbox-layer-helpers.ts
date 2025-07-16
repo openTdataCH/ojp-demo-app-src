@@ -89,16 +89,16 @@ export class MapboxLayerHelpers {
     const caseExpression: mapboxgl.ExpressionSpecification = ["case"]
 
     MapLegTypes.forEach(legType => {
-      const caseOptionCondition = ["==", ["get", TripLegPropertiesEnum.LegType], legType]
-      caseExpression.push(caseOptionCondition)
+      const caseOptionCondition = ["==", ["get", TripLegPropertiesEnum.LegType], legType];
+      caseExpression.push(caseOptionCondition);
 
-      const colorCode = MapLegTypeColor[legType]
-      caseExpression.push(colorCode)
+      const colorCode = MapLegTypeColor[legType];
+      caseExpression.push(colorCode);
     });
 
     // Default is Pink
-    caseExpression.push('#FF1493')
+    caseExpression.push('#FF1493');
 
-    return caseExpression
+    return caseExpression;
   }
 }
