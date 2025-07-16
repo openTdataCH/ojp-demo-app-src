@@ -8,8 +8,8 @@ import { TripLegDrawType, TripLegLineType, TripLegPropertiesEnum } from '../shar
 
 export class MapboxLayerHelpers {
   public static FilterBeelines(): mapboxgl.ExpressionSpecification {
-    const drawType: TripLegDrawType = 'Beeline'
-    return this.FilterByDrawType(drawType)
+    const drawType: TripLegDrawType = 'Beeline';
+    return this.FilterByDrawType(drawType);
   }
 
   public static FilterWalkingLegs(): mapboxgl.ExpressionSpecification {
