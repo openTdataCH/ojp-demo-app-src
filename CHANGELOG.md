@@ -4,6 +4,14 @@ OJP-Demo URL: https://opentdatach.github.io/ojp-demo-app/
 
 ----
 
+16.July 2025
+- Continous Deployment via Github Actions - [Update DemoApp URLs #256
+](https://github.com/openTdataCH/ojp-demo-app-src/issues/256), [PR #257](https://github.com/openTdataCH/ojp-demo-app-src/pull/257)
+  - promotes `github.io` URLs to use OJP 2.0 APIs
+  - use Github workflow for PROD GithubPages deployment
+  - store / use secrets in the Github repo
+
+
 25.June 2025
 - Display additional background maps - [PR #252](https://github.com/openTdataCH/ojp-demo-app-src/pull/252)
   - adds Swisstopo (Landeskarte, Luftbild), OSM background maps
