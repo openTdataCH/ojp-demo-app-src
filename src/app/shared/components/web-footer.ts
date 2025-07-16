@@ -11,7 +11,6 @@ type PageModel = {
   lastUpdate: string,
   isTopograhicPlaceMapLayerEnabled: boolean,
   changelogURL: string,
-  githubURL: string,
   rasterLayers: RasterLayerType[],
 }
 
@@ -24,24 +23,14 @@ export class WebFooterComponent implements OnInit {
 
   constructor() {
     const isTopograhicPlaceMapLayerEnabled = DEBUG_LEVEL === 'DEBUG';
-    const isOJPv2 = OJP_VERSION === '2.0';
 
-    let changelogURL = 'https://github.com/openTdataCH/ojp-demo-app-src/blob/feature/ojp-v1-beta/CHANGELOG.md';
-    if (isOJPv2) {
-      changelogURL = 'https://github.com/openTdataCH/ojp-demo-app-src/blob/feature/ojp-v2-beta/CHANGELOG.md';
-    }
-
-    let githubURL = 'https://github.com/openTdataCH/ojp-js/blob/feature/ojp-v1/CHANGELOG.md';
-    if (isOJPv2) {
-      githubURL = 'https://github.com/openTdataCH/ojp-js/blob/feature/ojp-v2/CHANGELOG.md';
-    }
+    const changelogURL = 'https://github.com/openTdataCH/ojp-demo-app-src/blob/main/CHANGELOG.md';
 
     this.model = {
       sdkVersionText: 'ojp-sdk-legacy: ' + OJP_Legacy.SDK_VERSION + ' - ojp-sdk-next: ' + OJP_Next.SDK_VERSION + ' - OJP API ' + OJP_VERSION,
       lastUpdate: '16.July 2025',
       isTopograhicPlaceMapLayerEnabled: isTopograhicPlaceMapLayerEnabled,
       changelogURL: changelogURL,
-      githubURL: githubURL,
       rasterLayers: MAP_RASTER_LAYERS,
     }
     
