@@ -207,15 +207,52 @@
         <div class="location-hover" stopClickPropagation
           (click)="this.zoomToEndpoint('From')">{{ this.legInfoDataModel.fromLocationData.locationText }}</div>
 
-        <sbb-tooltip trigger="hover" svgIcon="kom:arrow-change-horizontal-medium" *ngIf="this.legInfoDataModel.hasGuidance">
-          <ul class="tooltip-list">
-            <li *ngFor="let guidanceText of this.legInfoDataModel.guidanceTextLines">
-              {{ guidanceText }}
-            </li>
-          </ul>
-        </sbb-tooltip>
+        <div class="p-2" *ngIf="this.legInfoDataModel.guidanceRows.length > 0">
+          <div>
+            <button 
+              type="button" 
+              class="btn btn-primary btn-sm btn-collapse collapsed"
+              stopClickPropagation 
+              data-bs-toggle="collapse" 
+              [attr.data-bs-target]="'#' + this.legElementId" aria-expanded="false" 
+              [attr.aria-controls]="this.legElementId"
+            >
+              {{ this.legInfoDataModel.guidanceRows.length }} steps
+              <i class="bi bi-chevron-down"></i><i class="bi bi-chevron-up"></i>
+            </button>
+          </div>
 
-        <div *ngIf="this.legInfoDataModel.hasGuidance == false">
+          <!-- Guidance Steps -->
+          <div class="py-4 collapse" [id]="this.legElementId">
+            <table class="table table-hover table-striped table-stops mb-0 align-middle">
+              <thead>
+                <tr>
+                  <th scope="col">Advice</th>
+                  <th scope="col">Description</th>
+                  <th scope="col">Length</th>
+                  <th scope="col">Duration</th>
+                </tr>
+              </thead>
+              <tbody>
+                <ng-container *ngFor="let row of this.legInfoDataModel.guidanceRows; index as idx">
+                  <tr class="location-hover leg-intermediate" stopClickPropagation>
+                    <td class="fit">{{ (idx + 1) }}. {{ row.advice }}</td>
+                    <td class="guidance-description">
+                      <div>{{ row.turnDescription }}</div>
+                      <ng-container *ngIf="row.streetName !== ''">
+                        <div class="guidance-step-street">{{ row.streetName }}</div>
+                      </ng-container>
+                    </td>
+                    <td class="fit">{{ row.lengthF }}</td>
+                    <td class="fit">{{ row.durationF }}</td>
+                  </tr>
+                </ng-container>
+              </tbody>
+            </table>
+          </div>  
+        </div>
+
+        <div *ngIf="this.legInfoDataModel.guidanceRows.length === 0">
           <div class="border-bottom" style="height: 8px; margin-left: 4px; margin-right: 8px;"></div>
         </div>
         

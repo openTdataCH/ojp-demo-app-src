@@ -48,6 +48,7 @@ interface LegInfoDataModel {
   
   hasGuidance: boolean,
   guidanceTextLines: string[]
+  guidanceRows: GuidanceRow[],
   bookingArrangements: OJP_Legacy.BookingArrangement[]
   
   isWalking: boolean,
@@ -333,36 +334,49 @@ export class ResultTripLegComponent implements OnInit {
     this.legInfoDataModel.legColor = this.computeLegColor();
     this.legInfoDataModel.leadingText = this.computeLegLeadingText();
 
-    const isTransfer = leg.legType === 'TransferLeg'
-    this.legInfoDataModel.guidanceTextLines = []
+    this.legInfoDataModel.guidanceRows = (() => {
+      const rows: GuidanceRow[] = [];
 
-    if (isTransfer) {
-      const transferLeg = leg as OJP_Legacy.TripContinuousLeg;
-      const guidanceSections = transferLeg.pathGuidance?.sections ?? []
+      const isContinous = (leg.legType === 'ContinuousLeg') || (leg.legType === 'TransferLeg');
+      if (!isContinous) {
+        return rows;
+      }
+
+      const guidanceSections = (leg as OJP_Legacy.TripContinuousLeg).pathGuidance?.sections ?? [];
       guidanceSections.forEach(section => {
         if (section.guidanceAdvice === null) {
-          return
+          return;
         }
 
-        const lineTextParts = [
-          section.guidanceAdvice ?? '',
-          '(',
-          section.turnAction ?? '',
-          ') - ',
-          section.trackSection?.roadName ?? '',
-        ]
+        const durationF = (() => {
+          const duration = OJP_Legacy.Duration.initFromDurationText(section.trackSection?.duration ?? null);
+          if (duration === null) {
+            return '';
+          }
 
-        const guidanceLength = section.trackSection?.length ?? 0
-        if (guidanceLength > 0) {
-          lineTextParts.push(' (')
-          lineTextParts.push('' + guidanceLength)
-          lineTextParts.push('m)')
-        }
+          const durationF_s1 = duration.formatDuration();
+          if (durationF_s1 === '0min') {
+            return '';
+          }
 
-        const lineText = lineTextParts.join('')
-        this.legInfoDataModel.guidanceTextLines.push(lineText)
-      })
-    }
+          return durationF_s1;
+        })();
+
+        const geojsonFeature = section.trackSection?.linkProjection?.asGeoJSONFeature() ?? null;
+
+        const row: GuidanceRow = {
+          turnDescription: section.turnAction ?? '',
+          advice: section.guidanceAdvice ?? '',
+          lengthF: OJPHelpers.formatDistance(section.trackSection?.length ?? 0),
+          durationF: durationF,
+          streetName: section.trackSection?.roadName ?? '',
+          geojsonFeature: geojsonFeature,
+        };
+        rows.push(row);
+      });
+
+      return rows;
+    })();
 
     let isWalking = leg.legType === 'TransferLeg'
     const isContinous = leg.legType === 'ContinuousLeg';
@@ -407,8 +421,6 @@ export class ResultTripLegComponent implements OnInit {
     })();
 
     this.legInfoDataModel.durationText = leg.legDuration?.formatDuration() ?? ''
-
-    this.legInfoDataModel.hasGuidance = this.legInfoDataModel.guidanceTextLines.length > 0
 
     const legIconFilename = OJPHelpers.computeIconFilenameForLeg(leg);
     this.legInfoDataModel.legIconPath = 'assets/pictograms/' + legIconFilename + '.png'

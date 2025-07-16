@@ -105,3 +105,14 @@
 .location-hover {
   cursor: pointer;
 }
+
+.guidance-description {
+  max-width: 100px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.guidance-step-street {
+  font-size: 12px;
+}
