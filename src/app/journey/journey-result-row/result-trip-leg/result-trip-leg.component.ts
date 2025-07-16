@@ -322,8 +322,8 @@ export class ResultTripLegComponent implements OnInit {
 
     const leg = this.legData.leg;
 
-    this.legInfoDataModel.legColor = this.computeLegColor()
-    this.legInfoDataModel.leadingText = this.computeLegLeadingText()
+    this.legInfoDataModel.legColor = this.computeLegColor();
+    this.legInfoDataModel.leadingText = this.computeLegLeadingText();
 
     const isTransfer = leg.legType === 'TransferLeg'
     this.legInfoDataModel.guidanceTextLines = []
@@ -360,7 +360,7 @@ export class ResultTripLegComponent implements OnInit {
     const isContinous = leg.legType === 'ContinuousLeg';
     if (isContinous) {
       const continousLeg = leg as OJP_Legacy.TripContinuousLeg;
-      isWalking = continousLeg.isWalking()
+      isWalking = continousLeg.isWalking();
 
       if (isWalking) {
         this.legInfoDataModel.distanceText = OJPHelpers.formatDistance(continousLeg.legDistance);
