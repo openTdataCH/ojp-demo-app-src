@@ -642,8 +642,12 @@ export class ResultTripLegComponent implements OnInit {
 
     const isFrom = endpointType === 'From';
     const location = isFrom ? this.legData.leg.fromLocation : this.legData.leg.toLocation;
-
-    this.mapService.tryToCenterAndZoomToLocation(location);
+    if (location.geoPosition) {
+      this.mapService.tryToCenterAndZoomToLocation(location);
+    } else {
+      console.log('ERROR zoomToEndpoint - no location coords');
+      console.log(location);
+    }
   }
 
   public zoomToIntermediaryPoint(idx: number) {
@@ -651,11 +655,12 @@ export class ResultTripLegComponent implements OnInit {
     const newGeoPosition = this.legInfoDataModel.intermediaryLocationsData[idx].geoPosition;
     if (newGeoPosition) {
       location.geoPosition = new OJP_Legacy.GeoPosition(newGeoPosition.longitude, newGeoPosition.latitude);
+      this.mapService.tryToCenterAndZoomToLocation(location);
     } else {
-      location.geoPosition = null;
+      console.log('ERROR zoomToIntermediaryPoint - no location coords');
+      console.log(location);
     }
 
-    this.mapService.tryToCenterAndZoomToLocation(location);
   }
 
   public loadTripInfoResultPopover() {
