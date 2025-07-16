@@ -5,6 +5,8 @@ OJP-Demo URL: https://opentdatach.github.io/ojp-demo-app/
 ----
 
 16.July 2025
+- Updates stage URLs - [PR #264](https://github.com/openTdataCH/ojp-demo-app-src/pull/264)
+  - always show the stage URLs (also on PROD)
 - Improves shared mobility legs - [PR #263](https://github.com/openTdataCH/ojp-demo-app-src/pull/263)
   - different color for SharedMobility
   - use LegProjection geo only if guidanceGeo is empty
