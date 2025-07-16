@@ -388,6 +388,17 @@ export class SearchFormComponent implements OnInit {
     });
   }
 
+  private logResponseTime(requestInfo: OJP_Legacy.RequestInfo, messagePrefix: string) {
+    if (DEBUG_LEVEL !== 'DEBUG') {
+      return;
+    }
+
+    const requestNetworkDuration = DateHelpers.computeExecutionTime(requestInfo.requestDateTime, requestInfo.responseDateTime);
+    const requestParseDuration = DateHelpers.computeExecutionTime(requestInfo.responseDateTime, requestInfo.parseDateTime);
+    const requestDurationF = (requestNetworkDuration + requestParseDuration).toFixed(2) + ' sec';
+    console.log(messagePrefix + ': ' + requestDurationF);
+  }
+
   private expandSearchPanel() {
     this.searchPanel?.open()
   }
