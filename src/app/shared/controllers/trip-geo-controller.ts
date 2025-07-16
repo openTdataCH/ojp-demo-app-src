@@ -381,6 +381,8 @@ export class TripLegGeoController {
   private computeContinousLegGeoJSONFeatures(continuousLeg: OJP_Legacy.TripContinuousLeg): GeoJSON.Feature[] {
     const features: GeoJSON.Feature[] = [];
 
+    const isCar = OJPHelpers.isCar(continuousLeg);
+
     continuousLeg.pathGuidance?.sections.forEach((pathGuidanceSection, guidanceIDx) => {
       const feature = pathGuidanceSection.trackSection?.linkProjection?.asGeoJSONFeature();
       if (!feature?.properties) {
@@ -390,7 +392,7 @@ export class TripLegGeoController {
       const drawType: TripLegDrawType = 'LegLine';
       feature.properties[TripLegPropertiesEnum.DrawType] = drawType;
 
-      const lineType: TripLegLineType = 'Guidance';
+      const lineType: TripLegLineType = isCar ? 'Self-Drive Car' : 'Guidance';
       feature.properties[TripLegPropertiesEnum.LineType] = lineType;
 
       feature.properties['PathGuidanceSection.idx'] = guidanceIDx;
