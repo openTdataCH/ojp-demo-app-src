@@ -5,6 +5,11 @@ OJP-Demo URL: https://opentdatach.github.io/ojp-demo-app/
 ----
 
 16.July 2025
+- Two-step TripRequest - [TR - 2-steps requests #254](https://github.com/openTdataCH/ojp-demo-app-src/issues/254), [PR #258](https://github.com/openTdataCH/ojp-demo-app-src/pull/258)
+  - do first TR with disabled LinkProjection. Render the trips then do another TR with LinkProjection enabled to render the route
+  - improve beeline to always show in case LinkProjection or PathGuidance is not present
+  - remove hacks that changes the geometry (patchTripLegEndpointCoords)
+
 - Continous Deployment via Github Actions - [Update DemoApp URLs #256
 ](https://github.com/openTdataCH/ojp-demo-app-src/issues/256), [PR #257](https://github.com/openTdataCH/ojp-demo-app-src/pull/257)
   - promotes `github.io` URLs to use OJP 2.0 APIs

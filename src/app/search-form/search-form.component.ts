@@ -310,82 +310,111 @@ export class SearchFormComponent implements OnInit {
   public async handleTapOnSearch() {
     this.userTripService.updateDepartureDateTime(this.computeFormDepartureDate());
 
-    const tripRequest = this.computeTripRequest();
-    if (tripRequest === null) {
+    const includeLegProjectionStep1 = false;
+    const tripRequestStep1 = this.computeTripRequest(includeLegProjectionStep1);
+    if (tripRequestStep1 === null) {
       this.notificationToast.open('Please check from/to input points', {
         type: 'error',
         verticalPosition: 'top',
       });
-      return
+      return;
     }
 
     this.notificationToast.dismiss();
+
     this.isSearching = true;
+    const responseStep1 = await tripRequestStep1.fetchResponse();
+    this.isSearching = false;
 
-    tripRequest.fetchResponseWithCallback((response) => {
-      if (response.message === 'ERROR') {
-        this.notificationToast.open('ParseTripsXMLError', {
-          type: 'error',
-          verticalPosition: 'top',
+
+    this.logResponseTime(tripRequestStep1.requestInfo, 'DEBUG TR - 1st request');
+
+    if (responseStep1.message === 'ERROR') {
+      this.notificationToast.open('ParseTripsXMLError', {
+        type: 'error',
+        verticalPosition: 'top',
+      });
+
+      this.userTripService.journeyTripRequests = [];
+
+      this.requestDurationF = null;
+
+      this.userTripService.updateTrips([]);
+      this.userTripService.selectActiveTrip(null);
+
+      return;
+    }
+
+    const trips = responseStep1.trips;
+    this.userTripService.journeyTripRequests = [tripRequestStep1];
+
+    this.userTripService.tripRequestFinished.emit(tripRequestStep1.requestInfo);
+    this.userTripService.updateTrips(trips);
+
+    const hasTrips = trips.length > 0;
+    if (!hasTrips) {
+      this.notificationToast.open('No trips found', {
+        type: 'info',
+        verticalPosition: 'top',
+      });
+
+      this.userTripService.selectActiveTrip(null);
+      return;
+    }
+
+    this.userTripService.fetchFares(this.languageService.language);
+
+    // build a hash of trips so they can be looked up later, TripId is not consistent
+    const mapTripsRequest1: Record<string, OJP_Legacy.Trip> = {};
+    trips.forEach(trip => {
+      const tripHash = OJPHelpers.computeTripHash(trip);
+      mapTripsRequest1[tripHash] = trip;
+    });
+
+    // step2 - this time with link projection
+
+    const includeLegProjectionStep2 = true;
+    const tripRequestStep2 = this.computeTripRequest(includeLegProjectionStep2);
+    if (tripRequestStep2 === null) {
+      return;
+    }
+
+    // update the legTrack of trips from step1
+    const responseStep2 = await tripRequestStep2.fetchResponse();
+    this.logResponseTime(tripRequestStep2.requestInfo, 'DEBUG TR - 2nd request');
+
+    responseStep2.trips.forEach(trip2 => {
+      const trip2Hash = OJPHelpers.computeTripHash(trip2);
+      const trip1 = mapTripsRequest1[trip2Hash] ?? null;
+      if (trip1) {
+        trip1.legs.forEach((leg, idx) => {
+          if (leg.legType === 'TimedLeg') {
+            const trip2TimedLeg = trip2.legs[idx] as OJP_Legacy.TripTimedLeg;
+            const trip1TimedLeg = leg as OJP_Legacy.TripTimedLeg;
+            trip1TimedLeg.legTrack = trip2TimedLeg.legTrack;
+          }
         });
-
-        this.isSearching = false;
-        this.userTripService.journeyTripRequests = [];
-
-        this.requestDurationF = null;
-
-        this.userTripService.updateTrips([]);
-        this.userTripService.selectActiveTrip(null);
-
-        return;
-      }
-
-      const trips = response.trips;
-      this.userTripService.journeyTripRequests = [tripRequest];
-
-      if (response.message === 'TripRequest.DONE') {
-        this.isSearching = false;
-
-        if (trips.length === 0) {
-          this.notificationToast.open('No trips found', {
-            type: 'info',
-            verticalPosition: 'top',
-          })
-        }
-
-        this.userTripService.tripRequestFinished.emit(tripRequest.requestInfo);
-
-        this.userTripService.updateTrips(trips);
-
-        if (trips.length > 0) {
-          // it could be that the trips order changed, zoom again to the first one
-          const firstTrip = trips[0];
-
-          this.userTripService.fetchFares(this.languageService.language);
-        } else {
-          this.userTripService.selectActiveTrip(null);
-        }
-      } else {
-        if (response.message === 'TripRequest.TripsNo') {
-          if (DEBUG_LEVEL === 'DEBUG') {
-            console.log('DEBUG: TripsNo => ' + response.tripsNo);
-          }
-        }
-
-        if (response.message === 'TripRequest.Trip') {
-          if (DEBUG_LEVEL === 'DEBUG') {
-            console.log('DEBUG: New Trip => ' + response.trips.length + '/' + response.tripsNo);
-          }
-
-          this.userTripService.updateTrips(trips);
-          if (trips.length === 1) {
-            // zoom to first trip
-            const firstTrip = trips[0];
-            this.mapService.zoomToTrip(firstTrip);
-          }
-        }
       }
     });
+
+    // update the requests / response XML only if we have same trips (same number)
+    if (responseStep2.trips.length === responseStep1.trips.length) {
+      this.userTripService.journeyTripRequests = [tripRequestStep2];
+      this.userTripService.tripRequestFinished.emit(tripRequestStep2.requestInfo);
+    }
+
+    this.userTripService.updateTrips(trips);
+  }
+
+  private logResponseTime(requestInfo: OJP_Legacy.RequestInfo, messagePrefix: string) {
+    if (DEBUG_LEVEL !== 'DEBUG') {
+      return;
+    }
+
+    const requestNetworkDuration = DateHelpers.computeExecutionTime(requestInfo.requestDateTime, requestInfo.responseDateTime);
+    const requestParseDuration = DateHelpers.computeExecutionTime(requestInfo.responseDateTime, requestInfo.parseDateTime);
+    const requestDurationF = (requestNetworkDuration + requestParseDuration).toFixed(2) + ' sec';
+    console.log(messagePrefix + ': ' + requestDurationF);
   }
 
   private expandSearchPanel() {
@@ -503,12 +532,11 @@ export class SearchFormComponent implements OnInit {
     });
   }
 
-  private computeTripRequest() {
+  private computeTripRequest(includeLegProjection: boolean = false) {
     const isOJPv2 = OJP_VERSION === '2.0';
     const xmlConfig = isOJPv2 ? OJP_Legacy.XML_ConfigOJPv2 : OJP_Legacy.XML_BuilderConfigOJPv1;
 
     const stageConfig = this.userTripService.getStageConfig();
-    const includeLegProjection = true;
     const viaTripLocations = this.userTripService.isViaEnabled ? this.userTripService.viaTripLocations : [];
 
     const tripRequest = OJP_Legacy.TripRequest.initWithTripLocationsAndDate(
