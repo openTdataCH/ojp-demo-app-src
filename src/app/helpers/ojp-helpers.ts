@@ -488,4 +488,38 @@ export class OJPHelpers {
 
     return stopCall;
   }
+
+  public static computeTripHash(trip: OJP_Legacy.Trip): string {
+    const endpointTypes: OJP_Legacy.JourneyPointType[] = ['From', 'To'];
+
+    const hashParts: string[] = [];
+
+    trip.legs.forEach((leg, idx) => {
+      const legHash = leg.legType + idx;
+      hashParts.push(legHash);
+
+      const durationHash = leg.legDuration?.asOJPFormattedText() ?? 'duration_na';
+      hashParts.push(durationHash);
+
+      if (leg.legType === 'TimedLeg') {
+        const timedLeg = leg as OJP_Legacy.TripTimedLeg;
+        const serviceHash = timedLeg.service.formatServiceName();
+        hashParts.push(serviceHash);
+
+        endpointTypes.forEach(endpointType => {
+          const isFrom = endpointType === 'From';
+
+          const endpointTimeDate = isFrom ? timedLeg.fromStopPoint.departureData?.timetableTime : timedLeg.toStopPoint.arrivalData?.timetableTime;
+          if (endpointTimeDate) {
+            const endpointTimeDateS = OJP_Legacy.DateHelpers.formatTimeHHMM(endpointTimeDate);
+            hashParts.push(endpointTimeDateS);
+          }
+        });
+      }
+    });
+
+    const tripHash = hashParts.join('_');
+
+    return tripHash;
+  }
 }
