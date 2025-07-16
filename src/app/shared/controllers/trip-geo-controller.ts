@@ -405,17 +405,19 @@ export class TripLegGeoController {
       features.push(feature);
     });
 
-    continuousLeg.legTrack?.trackSections.forEach(trackSection => {
-      const feature = trackSection.linkProjection?.asGeoJSONFeature()
-      if (feature?.properties) {
-        const drawType: TripLegDrawType = 'LegLine';
-        feature.properties[TripLegPropertiesEnum.DrawType] = drawType;
+    if (features.length === 0) {
+      continuousLeg.legTrack?.trackSections.forEach(trackSection => {
+        const feature = trackSection.linkProjection?.asGeoJSONFeature()
+        if (feature?.properties) {
+          const drawType: TripLegDrawType = 'LegLine';
+          feature.properties[TripLegPropertiesEnum.DrawType] = drawType;
 
-        feature.properties[TripLegPropertiesEnum.LineType] = this.computeLegLineType();
+          feature.properties[TripLegPropertiesEnum.LineType] = this.computeLegLineType();
 
-        features.push(feature);
-      }
-    });
+          features.push(feature);
+        }
+      });
+    }
 
     if (features.length === 0) {
       const feature = this.computeBeelineFeature();
