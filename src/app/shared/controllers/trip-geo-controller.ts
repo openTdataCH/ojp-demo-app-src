@@ -1,5 +1,6 @@
 import * as GeoJSON from 'geojson';
 
+import { OJPHelpers } from '../../helpers/ojp-helpers';
 import OJP_Legacy from '../../config/ojp-legacy';
 
 import { JourneyService } from '../models/journey-service';
@@ -303,23 +304,12 @@ export class TripLegGeoController {
   private computeLinePointsData(): LinePointData[] {
     const linePointsData: LinePointData[] = [];
 
-    // Don't show endpoints for TransferLeg
-    if (this.leg.legType === 'TransferLeg') {
-      return linePointsData;
-    }
-
     const locations = [this.leg.fromLocation, this.leg.toLocation];
     locations.forEach(location => {
       const locationFeature = location.asGeoJSONFeature();
       if (locationFeature?.properties) {
         const isFrom = location === this.leg.fromLocation;
         const stopPointType: OJP_Legacy.StopPointType = isFrom ? 'From' : 'To';
-
-        // Extend the endpoints to the LegTrack if available
-        const pointGeoPosition = isFrom ? this.leg.legTrack?.fromGeoPosition() : this.leg.legTrack?.toGeoPosition();
-        if (pointGeoPosition) {
-          locationFeature.geometry.coordinates = pointGeoPosition.asPosition();
-        }
 
         linePointsData.push({
           type: stopPointType,
@@ -341,6 +331,32 @@ export class TripLegGeoController {
         linePointsData.push({
           type: 'Intermediate',
           feature: locationFeature
+        });
+      });
+    }
+
+    // Continous / TransferLeg - add gudance endpoints as intermediate points
+    const isContinous = ((this.leg.legType === 'TransferLeg') || (this.leg.legType === 'ContinuousLeg'));
+    if (isContinous) {
+      const continuousLeg = this.leg as OJP_Legacy.TripContinuousLeg;
+      const guidanceSections = continuousLeg.pathGuidance?.sections ?? [];
+      guidanceSections.forEach((pathGuidanceSection, idx) => {
+        const lineCoordinates = pathGuidanceSection.trackSection?.linkProjection?.coordinates ?? [];
+        if (lineCoordinates.length === 0) {
+          return;
+        }
+
+        const feature = this.positionAsFeature(lineCoordinates[0].asPosition());
+        linePointsData.push({
+          type: 'Intermediate',
+          feature: feature,
+        });
+
+        const lastCoord = lineCoordinates[lineCoordinates.length - 1].asPosition();
+        const lastFeature = this.positionAsFeature(lastCoord);
+        linePointsData.push({
+          type: 'Intermediate',
+          feature: lastFeature,
         });
       });
     }
