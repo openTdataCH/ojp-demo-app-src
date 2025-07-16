@@ -58,7 +58,7 @@ export class MapboxLayerHelpers {
     return filterExpression
   }
 
-  public static FilterTimedLegTracks(excludeLineTypes: TripLegLineType[]): mapboxgl.ExpressionSpecification {
+  public static FilterLegTracks(excludeLineTypes: TripLegLineType[]): mapboxgl.ExpressionSpecification {
     const filterExpression: mapboxgl.ExpressionSpecification = [
       "all",
       this.FilterByDrawType('LegLine'),

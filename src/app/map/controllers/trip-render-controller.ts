@@ -87,7 +87,7 @@ export class TripRenderController {
     const tripTimedLegTrackLayerLayer = tripTimedLegTrackLayerJSON as mapboxgl.LineLayerSpecification;
     // Guidance, Walk are added separately - tripContinousLegWalkingLineLayer
     const excludeLineTypes: TripLegLineType[] = ['Guidance', 'Walk'];
-    tripTimedLegTrackLayerLayer.filter = MapboxLayerHelpers.FilterTimedLegTracks(excludeLineTypes);
+    tripTimedLegTrackLayerLayer.filter = MapboxLayerHelpers.FilterLegTracks(excludeLineTypes);
     if (tripTimedLegTrackLayerLayer.paint) {
       const caseTimedLegColorsWithoutWalk = MapboxLayerHelpers.ColorCaseByLegLineType();
       tripTimedLegTrackLayerLayer.paint["line-color"] = caseTimedLegColorsWithoutWalk;
