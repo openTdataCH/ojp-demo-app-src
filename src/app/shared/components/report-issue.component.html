@@ -1,0 +1,59 @@
+<div sbbDialogTitle><strong>Report new issue</strong></div>
+<div sbbDialogContent class="d-flex flex-column h-100">
+  <form [formGroup]="form" (ngSubmit)="onSubmit()" novalidate>
+    <ng-container *ngIf="this.model.issueCreationState !== 'DONE'">
+      <div class="mb-3 d-flex gap-2">
+        <div class="flex-grow-1">
+          <label for="issueReporter" class="form-label">Reporter</label>
+          <input class="form-control" type="text" id="issueReporter"
+            formControlName="issueReporter"
+            [ngClass]="{ 'is-invalid': f['issueReporter'].invalid && f['issueReporter'].touched }"
+          />
+          <div class="invalid-feedback">Reporter is required</div>
+        </div>
+
+        <div>
+          <label for="projectId" class="form-label">Project</label>
+          <select class="form-control" id="projectId" formControlName="projectId">
+            <ng-container *ngFor="let projectData of this.model.projects">
+              <option [ngValue]="projectData.key">
+                {{ projectData.caption }}
+              </option>
+            </ng-container>
+          </select>
+        </div>
+      </div>
+
+      <div class="mb-3">
+        <label for="issueTitle" class="form-label">Issue Title</label>
+        <input class="form-control" type="text" id="issueTitle"
+          formControlName="issueTitle"
+          [ngClass]="{ 'is-invalid': f['issueTitle'].invalid && f['issueTitle'].touched }"
+        />
+        <div class="invalid-feedback">Title is required</div>
+      </div>
+
+      <div class="mb-3">
+        <label for="issueDescription" class="form-label">Issue Description</label>
+        <textarea class="form-control" id="issueDescription" rows="8"
+          formControlName="issueDescription"
+          [ngClass]="{ 'is-invalid': f['issueDescription'].invalid && f['issueDescription'].touched }"
+        ></textarea>
+        <div class="invalid-feedback">Title is required</div>
+      </div>
+    </ng-container>
+
+    <div class="d-flex gap-2 align-items-center">
+      <div>
+          <button class="btn btn-primary btn-sm" type="submit" [disabled]="this.model.issueCreationState !== 'IDLE'">{{ this.model.issueButtonCaption }}</button>
+      </div>
+      <ng-container *ngIf="this.model.issueURL !== null">
+        <a [href]="this.model.issueURL" target="_blank">{{ this.model.issueURL }}</a>
+      </ng-container>
+    </div>
+  </form>
+</div>
+
+<div sbbDialogActions>
+  <button type="button" class="btn btn-secondary" sbbDialogClose>Close</button>
+</div>
