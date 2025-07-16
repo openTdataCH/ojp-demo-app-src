@@ -781,7 +781,6 @@ export class UserTripService {
     });
 
     this.sortTrips(tripsData);
-    this.patchTripLegEndpointCoords(tripsData);
     this.mergeTripLegs(tripsData);
 
     return tripsData;
@@ -823,50 +822,6 @@ export class UserTripService {
     }
   }
 
-  private patchTripLegEndpointCoords(tripsData: TripData[]) {
-    tripsData.forEach(tripData => {
-      tripData.trip.legs.forEach((leg, legIdx) => {
-        if (leg.legType !== 'TimedLeg') {
-          return;
-        }
-  
-        const timedLeg = leg as OJP_Legacy.TripTimedLeg;
-        
-        // Check if we have a START geoPosition
-        // - use it for prev leg END geoPosition
-        const fromGeoPosition = timedLeg.legTrack?.fromGeoPosition() ?? null;
-        if (legIdx > 0 && fromGeoPosition !== null) {
-          const prevLeg = tripData.trip.legs[legIdx - 1];
-          if (prevLeg.toLocation.geoPosition === null) {
-            const prevLegData = tripData.legsData[legIdx - 1];
-            prevLegData.info.comments = 'SDK HACK - patchLegEndpointCoords - use legTrack.fromGeoPosition for prevLeg.toLocation.geoPosition';
-
-            if (DEBUG_LEVEL === 'DEBUG') {
-              console.log(prevLegData.info.comments);
-            }
-            prevLeg.toLocation.geoPosition = fromGeoPosition;
-          }
-        }
-  
-        // Check if we have a END geoPosition
-        // - use it for next leg START geoPosition
-        const toGeoPosition = timedLeg.legTrack?.toGeoPosition() ?? null;
-        if (legIdx < (tripData.trip.legs.length - 1) && toGeoPosition !== null) {
-          const nextLeg = tripData.trip.legs[legIdx + 1];
-          if (nextLeg.fromLocation.geoPosition === null) {
-            const nextLegData = tripData.legsData[legIdx + 1];
-            nextLegData.info.comments = 'SDK HACK - patchLegEndpointCoords - use legTrack.toGeoPosition for nextLeg.fromLocation.geoPosition';
-
-            if (DEBUG_LEVEL === 'DEBUG') {
-              console.log(nextLegData.info.comments);
-            }
-            nextLeg.fromLocation.geoPosition = toGeoPosition;
-          }
-        }
-      });
-    });
-  }
-    
   // Some of the legs can be merged
   // ex1: trains with multiple desitinaion units
   // - check for remainInVehicle https://github.com/openTdataCH/ojp-demo-app-src/issues/125  
