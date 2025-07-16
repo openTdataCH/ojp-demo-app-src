@@ -32,7 +32,6 @@ export class JourneyPointInputComponent implements OnInit, OnChanges {
   private shouldFetchNewData = true
 
   public inputControl = new FormControl('', [Validators.required]);
-  public inputControlMatcher = new ErrorStateMatcher();
 
   public mapLookupLocations: MapLocations
   public optionLocationTypes: OptionLocationType[]
