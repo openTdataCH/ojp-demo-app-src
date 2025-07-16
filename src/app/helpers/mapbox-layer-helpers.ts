@@ -16,8 +16,8 @@ export class MapboxLayerHelpers {
     const filterExpression: mapboxgl.ExpressionSpecification = [
       "all",
       this.FilterByDrawType('LegLine'),
-      this.FilterByLineType('Walk'),
-    ]
+      this.FilterByLineTypes(['Guidance', 'Walk']),
+    ];
 
     return filterExpression
   }
