@@ -1,14 +1,14 @@
 import { Injectable } from '@angular/core';
 import { Title } from '@angular/platform-browser';
 
-import { OJP_VERSION } from '../../config/constants';
+import { DEBUG_LEVEL, OJP_VERSION } from '../../config/constants';
 
 @Injectable({
   providedIn: 'root',
 })
 export class AppService {
   public baseTitle: string;
-  public bgMainClassName: 'ojpv1-prod' | 'ojpv1-beta' | 'ojpv2-beta';
+  public bgMainClassName: 'ojpv2-prod' | 'ojpv1-beta' | 'ojpv2-beta';
 
   constructor(private title: Title) {
     this.baseTitle = (() => {
@@ -16,7 +16,10 @@ export class AppService {
         'OJP Demo',
       ];
 
-      titleParts.push('BETA');
+      if (DEBUG_LEVEL === 'DEBUG') {
+        titleParts.push('BETA');
+      }
+      
       titleParts.push('OJP ' + OJP_VERSION);
 
       const titleS = titleParts.join(' - ');
@@ -29,11 +32,11 @@ export class AppService {
     this.bgMainClassName = (() => {
       const isBrowser = typeof window !== 'undefined' && typeof window.document !== 'undefined';
       if (!isBrowser) {
-        return 'ojpv1-prod';
+        return 'ojpv2-prod';
       }
   
       if (window.location.hostname.includes('github.io')) {
-        return 'ojpv1-prod';
+        return 'ojpv2-prod';
       }
 
       if (OJP_VERSION === '2.0') {

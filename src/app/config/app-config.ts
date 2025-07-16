@@ -5,39 +5,39 @@ export const APP_CONFIG: AppConfig = {
     // OJP 1.0
     'PROD': {
       url: 'https://api.opentransportdata.swiss/ojp2020',
-      authToken: null,
+      authToken: "PLACEHOLDER_REPLACE__PROD",
     },
     'INT': {
       url: 'https://odpch-api.clients.liip.ch/ojp-passiv-int',
-      authToken: null,
+      authToken: "PLACEHOLDER_REPLACE__INT",
     },
     'TEST': {
       url: 'https://odpch-api.clients.liip.ch/ojp-test',
-      authToken: null,
+      authToken: "PLACEHOLDER_REPLACE__TEST",
     },
 
     // OJP 2.0
     'V2-PROD': {
       url: 'https://api.opentransportdata.swiss/ojp20',
-      authToken: null,
+      authToken: "PLACEHOLDER_REPLACE__PROD",
     },
     'V2-INT': {
       url: 'https://odpch-api.clients.liip.ch/ojp20-beta',
-      authToken: null,
+      authToken: "PLACEHOLDER_REPLACE__V2_INT",
     },
     'V2-TEST': {
       url: 'https://odpch-api.clients.liip.ch/ojp20-test',
-      authToken: null,
+      authToken: "PLACEHOLDER_REPLACE__V2_INT",
     },
 
     // POCs
     'PROD-LB': {
       url: 'https://tools.odpch.ch/tmp/cors-proxy?url=https://ojp.lb.prod.ojp.odpch.ch/ojp/ojp',
-      authToken: null,
+      authToken: "PLACEHOLDER_REPLACE__PROD",
     },
     'LA Beta': {
       url: 'https://api.opentransportdata.swiss/ojp-la-aktiv',
-      authToken: null,
+      authToken: "PLACEHOLDER_REPLACE__LA_BETA",
     },
     
     'OJP-SI': {
@@ -52,7 +52,7 @@ export const APP_CONFIG: AppConfig = {
     // OJP Fare
     'NOVA-INT': {
       url: 'https://api.opentransportdata.swiss/ojpfare',
-      authToken: null,
+      authToken: "PLACEHOLDER_REPLACE__FARE_INT",
     },
   }
 }

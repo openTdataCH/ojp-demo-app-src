@@ -1,0 +1,57 @@
+# Deploy to https://opentdatach.github.io/ojp-demo-app
+name: Build & Deploy to opentdatach.github.io/ojp-demo-app
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+      # for testing, add the working branch if needed
+      - feature/updates-github-deploy
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 18
+          cache: npm
+      - run: npm ci
+
+      - name: Inject secrets
+        run: |
+          sed -i "s|PLACEHOLDER_REPLACE__PROD|${{ secrets.OJP_DEMO_APP_PROD_KEY }}|g" \
+            src/app/config/app-config.ts
+          sed -i "s|PLACEHOLDER_REPLACE__INT|${{ secrets.OJP_DEMO_APP_INT_KEY }}|g" \
+            src/app/config/app-config.ts
+          sed -i "s|PLACEHOLDER_REPLACE__TEST|${{ secrets.OJP_DEMO_APP_TEST_KEY }}|g" \
+            src/app/config/app-config.ts
+
+          sed -i "s|PLACEHOLDER_REPLACE__V2_INT|${{ secrets.OJP_DEMO_APP_V2_INT_KEY }}|g" \
+            src/app/config/app-config.ts
+
+          sed -i "s|PLACEHOLDER_REPLACE__LA_BETA|${{ secrets.OJP_DEMO_APP_LA_Beta_KEY }}|g" \
+            src/app/config/app-config.ts
+
+          sed -i "s|PLACEHOLDER_REPLACE__FARE_INT|${{ secrets.OJP_DEMO_APP_NOVA_INT_KEY }}|g" \
+            src/app/config/app-config.ts
+
+      - name: Build
+        run: npm run build -- --configuration production --base-href=/ojp-demo-app-TEST/
+
+      - name: Copy index.html to 404.html for Angular routing
+        run: cp dist/ojp-demo-app/index.html dist/ojp-demo-app/404.html
+
+      - name: Deploy to repoA gh-pages
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          publish_dir: dist/ojp-demo-app
+          external_repository: openTdataCH/ojp-demo-app-TEST
+          publish_branch: gh-pages
+          personal_token: ${{ secrets.OJP_DEMO_APP_DEPLOY_TOKEN }}
+          commit_message: "deploy: ${{ github.sha }}"

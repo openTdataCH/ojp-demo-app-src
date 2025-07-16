@@ -26,8 +26,8 @@ export const OJP_VERSION: OJP_Legacy.OJP_VERSION_Type = (() => {
   }
 
   const host = document.location.hostname;
-  if (host === 'opentdatach.github.io') {
-    return '1.0';
+  if (host.includes('github.io')) {
+    return '2.0';
   }
 
   const path = document.location.pathname;
