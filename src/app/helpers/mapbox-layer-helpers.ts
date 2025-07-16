@@ -75,6 +75,16 @@ export class MapboxLayerHelpers {
     return filterExpression
   }
 
+  private static FilterByLineTypes(lineTypes: TripLegLineType[]): mapboxgl.ExpressionSpecification {
+    const lineTypesExpression: mapboxgl.ExpressionSpecification = [
+      "in",
+      ["get", TripLegPropertiesEnum.LineType],
+      ["literal", lineTypes],
+    ];
+
+    return lineTypesExpression;
+  }
+
   public static ColorCaseByLegType(): mapboxgl.ExpressionSpecification {
     const caseExpression: mapboxgl.ExpressionSpecification = ["case"]
 
