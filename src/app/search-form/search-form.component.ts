@@ -1,6 +1,7 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
 import { FormControl } from '@angular/forms';
+import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
 import { debounceTime } from 'rxjs';
 
 import { SbbDialog } from "@sbb-esta/angular/dialog";
@@ -32,6 +33,8 @@ import { OJPHelpers } from '../helpers/ojp-helpers';
 })
 export class SearchFormComponent implements OnInit {
   @ViewChild(SbbExpansionPanel, { static: true }) searchPanel: SbbExpansionPanel | undefined;
+
+  private isSmallScreen = false;
 
   public fromLocationText: string
   public toLocationText: string
@@ -68,7 +71,8 @@ export class SearchFormComponent implements OnInit {
     private router: Router,
     private languageService: LanguageService,
     public userTripService: UserTripService,
-    private mapService: MapService
+    private mapService: MapService,
+    private breakpointObserver: BreakpointObserver,
   ) {
     const searchDate = this.userTripService.departureDate
     this.searchDate = searchDate
@@ -145,6 +149,11 @@ export class SearchFormComponent implements OnInit {
     });
 
     this.userTripService.initDefaults(this.languageService.language);
+
+    this.breakpointObserver.observe([Breakpoints.Small, Breakpoints.XSmall])
+      .subscribe(result => {
+        this.isSmallScreen = result.matches;
+      });
   }
 
   private updateViaDwellTime() {
