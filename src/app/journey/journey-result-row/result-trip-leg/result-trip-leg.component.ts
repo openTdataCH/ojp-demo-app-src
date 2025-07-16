@@ -46,8 +46,6 @@ interface LegInfoDataModel {
   legIconPath: string,
   leadingText: string,
   
-  hasGuidance: boolean,
-  guidanceTextLines: string[]
   guidanceRows: GuidanceRow[],
   bookingArrangements: OJP_Legacy.BookingArrangement[]
   
