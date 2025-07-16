@@ -19,7 +19,7 @@ export const MapLegLineTypeColor: Record<TripLegLineType, string> = {
   Funicular: '#8B4513',
   Walk: '#009933',
   'Self-Drive Car': '#ff004f',
-  'Shared Mobility': '#32CD32',
+  'Shared Mobility': '#871282',
   Guidance: '#6f0000',
   Transfer: '#088F8F',
   Water: '#005AB3',
