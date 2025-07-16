@@ -5,6 +5,8 @@ OJP-Demo URL: https://opentdatach.github.io/ojp-demo-app/
 ----
 
 16.July 2025
+- TR Report Issue Popover - [PR #261](https://github.com/openTdataCH/ojp-demo-app-src/pull/261)
+  - [Bug Erfassung über Demo-App Web #225](https://github.com/openTdataCH/ojp-sdk/issues/225)
 - Improve situations - [PR #260](https://github.com/openTdataCH/ojp-demo-app-src/pull/260)
   - display situations on click
   - always open the situations links in new tab / window
