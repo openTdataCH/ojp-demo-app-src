@@ -815,7 +815,7 @@ export class UserTripService {
       tripsData.splice(tripIdx, 1);
       tripsData.unshift(monomodalTrip);
 
-      monomodalTrip.info.comments = 'SDK HACK - sortTrips - trips were re-sorted to promote the index-' + tripIdx + ' trip first';
+      monomodalTrip.info.comments = 'APP-HACK - sortTrips - trips were re-sorted to promote the index-' + tripIdx + ' trip first';
 
       if (DEBUG_LEVEL === 'DEBUG') {
         console.log(monomodalTrip.info.comments);
@@ -919,7 +919,7 @@ export class UserTripService {
       });
 
       if (tripData.trip.legs.length > 0 && (tripData.trip.legs.length !== newLegsData.length)) {
-        tripData.info.comments = 'SDK HACK - mergeTripLegs - remainInVehicle usecase, before: ' + tripData.trip.legs.length + ', after: ' + newLegsData.length + ' legs';
+        tripData.info.comments = 'APP-HACK - mergeTripLegs - remainInVehicle usecase, before: ' + tripData.trip.legs.length + ', after: ' + newLegsData.length + ' legs';
 
         if (DEBUG_LEVEL === 'DEBUG') {
           console.log(tripData.info.comments);
