@@ -351,7 +351,9 @@
     <div class="mt-2" *ngIf="this.legInfoDataModel.hasSituations">
       <div class="d-flex gap-2">
         <div *ngFor="let situationData of this.legInfoDataModel.situations">
-          <sbb-tooltip trigger="hover" svgIcon="fpl:info">
+          <!-- trigger on click <sbb-tooltip svgIcon="fpl:info"> -->
+          <!-- trigger="hover" -->
+          <sbb-tooltip svgIcon="fpl:info">
             <p>
               <strong>{{ situationData.summary }}</strong>
             </p>
