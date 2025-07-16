@@ -100,6 +100,11 @@ export class OJPHelpers {
     return 'picto-bus-fallback';
   }
 
+  public static isCar(leg: OJP_Legacy.TripContinuousLeg) {
+    const isCar = leg.legTransportMode === 'self-drive-car';
+    return isCar;
+  }
+
   public static updateLocationDataWithTime(stopPointData: LegStopPointData, stopPoint: StopPointCall) {
     const depArrTypes: StopEventType[] = ['arrival', 'departure'];
 
