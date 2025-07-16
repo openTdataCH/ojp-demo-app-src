@@ -470,15 +470,6 @@ export class SearchFormComponent implements OnInit {
     this.userTripService.journeyTripRequests = [request];
     this.userTripService.updateTrips(trips);
     this.updateSearchForm(trips);
-
-    const hasTrips = trips.length > 0;
-    if (hasTrips) {
-      const firstTrip = trips[0];
-
-      if (isDoneParsing) {
-        this.userTripService.fetchFares(this.languageService.language);
-      }
-    }
   }
 
   private updateSearchForm(trips: OJP_Legacy.Trip[]) {
