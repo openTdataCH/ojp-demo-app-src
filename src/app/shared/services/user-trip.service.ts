@@ -954,6 +954,11 @@ export class UserTripService {
       return;
     }
 
+    // fetch fares only for the public transport
+    if (!( (this.tripModeType === 'monomodal') && (this.tripTransportMode === 'public_transport') )) {
+      return;
+    }
+
     const tripRequestResponse = this.journeyTripRequests[0].response;
     if (tripRequestResponse === null) {
       return;
