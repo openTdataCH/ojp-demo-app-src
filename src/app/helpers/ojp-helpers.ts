@@ -1,4 +1,5 @@
 import OJP_Legacy from '../config/ojp-legacy';
+import * as OJP_Next from 'ojp-sdk-next';
 
 import { LegStopPointData } from '../shared/components/service-stops.component';
 import { DEBUG_LEVEL } from '../config/constants';
@@ -140,6 +141,8 @@ export class OJPHelpers {
       secondClassIcon: OJPHelpers.computeOccupancyLevelIcon(stopPoint.mapFareClassOccupancy, 'secondClass'),
       secondClassText: OJPHelpers.computeOccupancyLevelText(stopPoint.mapFareClassOccupancy, 'secondClass'),
     };
+
+    stopPointData.geoPosition = stopPointData.geoPosition;
   }
 
   private static computeStopPointDelayText(depArrType: StopEventType, stopPoint: StopPointCall): string | null {
@@ -461,6 +464,11 @@ export class OJPHelpers {
       mapFareClassOccupancy: oldStopPoint.mapFareClassOccupancy,
       isNotServicedStop: oldStopPoint.isNotServicedStop,
     };
+
+    const geoPosition = oldStopPoint.location.geoPosition;
+    if (geoPosition) {
+      stopCall.place = OJP_Next.Place.initWithCoords(geoPosition.longitude, geoPosition.latitude);
+    }
     
     stopEventTypes.forEach(stopEventType => {
       const isArrival = stopEventType === 'arrival';
