@@ -313,9 +313,12 @@ export class SearchFormComponent implements OnInit {
   }
 
   public async handleTapOnSearch() {
+    // Do 2 TR only for public transport routes
+    const doTwiceTR = (this.userTripService.tripModeType === 'monomodal') && (this.userTripService.tripTransportMode === 'public_transport');
+
     this.userTripService.updateDepartureDateTime(this.computeFormDepartureDate());
 
-    const includeLegProjectionStep1 = false;
+    const includeLegProjectionStep1 = !doTwiceTR;
     const tripRequestStep1 = this.computeTripRequest(includeLegProjectionStep1);
     if (tripRequestStep1 === null) {
       this.notificationToast.open('Please check from/to input points', {
@@ -330,7 +333,6 @@ export class SearchFormComponent implements OnInit {
     this.isSearching = true;
     const responseStep1 = await tripRequestStep1.fetchResponse();
     this.isSearching = false;
-
 
     this.logResponseTime(tripRequestStep1.requestInfo, 'DEBUG TR - 1st request');
 
@@ -377,6 +379,10 @@ export class SearchFormComponent implements OnInit {
     });
 
     // step2 - this time with link projection
+    //        - only for public transport requests
+    if (!doTwiceTR) {
+      return;
+    }
 
     const includeLegProjectionStep2 = true;
     const tripRequestStep2 = this.computeTripRequest(includeLegProjectionStep2);
@@ -393,10 +399,20 @@ export class SearchFormComponent implements OnInit {
       const trip1 = mapTripsRequest1[trip2Hash] ?? null;
       if (trip1) {
         trip1.legs.forEach((leg, idx) => {
-          if (leg.legType === 'TimedLeg') {
-            const trip2TimedLeg = trip2.legs[idx] as OJP_Legacy.TripTimedLeg;
-            const trip1TimedLeg = leg as OJP_Legacy.TripTimedLeg;
-            trip1TimedLeg.legTrack = trip2TimedLeg.legTrack;
+          if (leg.legTrack) {
+            const leg2 = trip2.legs[idx];
+            if (leg2.legTrack) {
+              leg.legTrack = leg2.legTrack;
+            }
+          }
+
+          const isContinuousLeg = (leg.legType === 'ContinuousLeg') || (leg.legType === 'TransferLeg');
+          if (isContinuousLeg) {
+            const trip1ContinuousLeg = leg as OJP_Legacy.TripContinuousLeg;
+            const trip2ContinuousLeg = trip2.legs[idx] as OJP_Legacy.TripContinuousLeg;
+            if (trip1ContinuousLeg.pathGuidance && trip2ContinuousLeg.pathGuidance) {
+              trip1ContinuousLeg.pathGuidance = trip2ContinuousLeg.pathGuidance;
+            }
           }
         });
       }
