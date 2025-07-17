@@ -70,7 +70,6 @@ export class SearchFormComponent implements OnInit {
     private router: Router,
     private languageService: LanguageService,
     public userTripService: UserTripService,
-    private mapService: MapService,
     private breakpointObserver: BreakpointObserver,
   ) {
     const searchDate = this.userTripService.departureDate
