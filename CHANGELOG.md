@@ -4,6 +4,11 @@ OJP-Demo URL: https://opentdatach.github.io/ojp-demo-app/
 
 ----
 
+17.July 2025
+- Improve 2-TR requests - [PR #265](https://github.com/openTdataCH/ojp-demo-app-src/pull/265)
+  - patch the legTrack for all leg types and for continuous legs also the pathGuidance
+  - do twice TR only for normal, public transport routes
+
 16.July 2025
 - Updates stage URLs - [PR #264](https://github.com/openTdataCH/ojp-demo-app-src/pull/264)
   - always show the stage URLs (also on PROD)
