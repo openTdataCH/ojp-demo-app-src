@@ -293,6 +293,19 @@ export class UserTripService {
     });
 
     this.isAdditionalRestrictionsEnabled = ['yes', 'true', '1'].includes(this.queryParams.get('advanced') ?? 'n/a');
+
+    this.currentBoardingType = (() => {
+      const userTimeTypeS = this.queryParams.get('time_type') ?? null;
+      if (userTimeTypeS === null) {
+        return 'Dep';
+      }
+
+      if (['arrival', 'arr'].includes(userTimeTypeS.toLowerCase())) {
+        return 'Arr';
+      }
+
+      return 'Dep' as OJP_Legacy.TripRequestBoardingType;
+    })();
   }
 
   public refetchEndpointsByName(language: OJP_Legacy.Language) {
