@@ -10,10 +10,10 @@ OJP-Demo URL: https://opentdatach.github.io/ojp-demo-app/
 
 | Param  | Example (decoded) | Description |
 |--|--|--|
-|lang| `de`, `en`, `fr` or `it` | Choose the ISO language in which the OJP repsonse will be deliverd, default is the browser locale. |
-|from| `8503000` for Zürich HB or `47.378173,8.540264` for same location as coordinates.|[DiDok](https://opentransportdata.swiss/de/dataset/didok) id or [Latitude,Longitude](https://developers.google.com/maps/documentation/javascript/reference/coordinates) coordinates. |
-|to|see `from`| |
-|via| `47.044250,8.308174;47.163056,8.687139` | List of [Latitude,Longitude](https://developers.google.com/maps/documentation/javascript/reference/coordinates) coordinates separated by semi-colon `;`. |
+| lang | `de`, `en`, `fr` or `it` | Choose the ISO language in which the OJP repsonse will be deliverd, default is the browser locale. |
+| from | `8503000` for Zürich HB or `47.378173,8.540264` for same location as coordinates.|[DiDok](https://opentransportdata.swiss/de/dataset/didok) id or [Latitude,Longitude](https://developers.google.com/maps/documentation/javascript/reference/coordinates) coordinates. |
+| to | see `from` | |
+| via | `47.044250,8.308174;47.163056,8.687139` | List of [Latitude,Longitude](https://developers.google.com/maps/documentation/javascript/reference/coordinates) coordinates separated by semi-colon `;`. |
 | mode_types | `monomodal` | Mono-, multi- modal journey type switcher. List of mode types: `monomodal`, `mode_at_start`, `mode_at_end`, `mode_at_start_end`.  Multiple values (journeys with via points) are separated by semi-colon `;`. Number of the values is equal with number of via parameters + 1 |
 | transport_modes | `public_transport` | The MOT used, list of possible values": `public_transport`, `walking` `cycle`, `car_self_driving`, `bicycle_rental`, `escooter_rental`, `car_sharing`. All values, except `public_transport` will set `ItModesToCover` filter in the [OJPTripRequest](https://opentransportdata.swiss/de/cookbook/ojptriprequest/) calls. Multiple values (joruneys with via points) are separated by semi-colon `;`. Number of the values is equal with number of via parameters + 1 |
 | trip_datetime | Trip datetime in `yyyy-MM-dd HH:mm` format | `2022-08-01 10:00` |
@@ -35,7 +35,6 @@ OJP-Demo URL: https://opentdatach.github.io/ojp-demo-app/
 | Own Car | [Bern - Zürich](https://tools.odpch.ch/beta-ojp-demo/search?from=8507000&to=8503000&transport_modes=self-drive-car) | [Spiez - Bern](https://tools.odpch.ch/ojp-demo-v2/search?from=8507483&to=8507000&transport_modes=car&do_search=yes) |  |
 | Own Car + ATZ train | N / A | [Spiez - Brig](https://tools.odpch.ch/ojp-demo-v2/search?from=8507483&to=8501609&transport_modes=car&do_search=yes) |  |
 | Own Car + Water Ferry | N / A | [Horgen - Meilen](https://tools.odpch.ch/ojp-demo-v2/search?from=8590653&to=8576083&transport_modes=car&do_search=yes) |  |
-
 
 
 ### Multi-modal
