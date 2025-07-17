@@ -313,9 +313,12 @@ export class SearchFormComponent implements OnInit {
   }
 
   public async handleTapOnSearch() {
+    // Do 2 TR only for public transport routes
+    const doTwiceTR = (this.userTripService.tripModeType === 'monomodal') && (this.userTripService.tripTransportMode === 'public_transport');
+
     this.userTripService.updateDepartureDateTime(this.computeFormDepartureDate());
 
-    const includeLegProjectionStep1 = false;
+    const includeLegProjectionStep1 = !doTwiceTR;
     const tripRequestStep1 = this.computeTripRequest(includeLegProjectionStep1);
     if (tripRequestStep1 === null) {
       this.notificationToast.open('Please check from/to input points', {
@@ -330,7 +333,6 @@ export class SearchFormComponent implements OnInit {
     this.isSearching = true;
     const responseStep1 = await tripRequestStep1.fetchResponse();
     this.isSearching = false;
-
 
     this.logResponseTime(tripRequestStep1.requestInfo, 'DEBUG TR - 1st request');
 
@@ -377,6 +379,10 @@ export class SearchFormComponent implements OnInit {
     });
 
     // step2 - this time with link projection
+    //        - only for public transport requests
+    if (!doTwiceTR) {
+      return;
+    }
 
     const includeLegProjectionStep2 = true;
     const tripRequestStep2 = this.computeTripRequest(includeLegProjectionStep2);
