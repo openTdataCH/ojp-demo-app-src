@@ -393,10 +393,20 @@ export class SearchFormComponent implements OnInit {
       const trip1 = mapTripsRequest1[trip2Hash] ?? null;
       if (trip1) {
         trip1.legs.forEach((leg, idx) => {
-          if (leg.legType === 'TimedLeg') {
-            const trip2TimedLeg = trip2.legs[idx] as OJP_Legacy.TripTimedLeg;
-            const trip1TimedLeg = leg as OJP_Legacy.TripTimedLeg;
-            trip1TimedLeg.legTrack = trip2TimedLeg.legTrack;
+          if (leg.legTrack) {
+            const leg2 = trip2.legs[idx];
+            if (leg2.legTrack) {
+              leg.legTrack = leg2.legTrack;
+            }
+          }
+
+          const isContinuousLeg = (leg.legType === 'ContinuousLeg') || (leg.legType === 'TransferLeg');
+          if (isContinuousLeg) {
+            const trip1ContinuousLeg = leg as OJP_Legacy.TripContinuousLeg;
+            const trip2ContinuousLeg = trip2.legs[idx] as OJP_Legacy.TripContinuousLeg;
+            if (trip1ContinuousLeg.pathGuidance && trip2ContinuousLeg.pathGuidance) {
+              trip1ContinuousLeg.pathGuidance = trip2ContinuousLeg.pathGuidance;
+            }
           }
         });
       }
