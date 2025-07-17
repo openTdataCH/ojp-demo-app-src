@@ -33,7 +33,7 @@ export class UserTripService {
   public useRealTimeDataType: OJP_Legacy.UseRealtimeDataEnumeration;
   public walkSpeedDeviation: number | null;
 
-  public currentBoardingType: OJP_Legacy.TripRequestBoardingType
+  public currentBoardingType: OJP_Legacy.TripRequestBoardingType;
 
   public tripModeType: OJP_Legacy.TripModeType
   public tripTransportMode: OJP_Legacy.IndividualTransportMode;
@@ -81,7 +81,7 @@ export class UserTripService {
     this.isViaEnabled = false;
     this.isAdditionalRestrictionsEnabled = false;
 
-    this.currentBoardingType = 'Dep'
+    this.currentBoardingType = 'Dep';
 
     this.tripModeType = 'monomodal';
     this.tripTransportMode = 'public_transport';
@@ -647,11 +647,11 @@ export class UserTripService {
   }
 
   private computeInitialDate(): Date {
-    const defaultDate = new Date()
+    const defaultDate = new Date();
 
     const tripDateTimeS = this.queryParams.get('trip_datetime') ?? null
     if (tripDateTimeS === null) {
-      return defaultDate
+      return defaultDate;
     }
 
     const tripDateTime = new Date(Date.parse(tripDateTimeS))
