@@ -654,8 +654,20 @@ export class UserTripService {
       return defaultDate;
     }
 
-    const tripDateTime = new Date(Date.parse(tripDateTimeS))
-    return tripDateTime
+    // following types are working
+    // 2025-08-01 10:00
+    // 2025-08-01 10:00:00
+    // 2025-08-01
+    // 2025-09-17T11:15:00
+    // 29.Dec.2025 10:00
+    const dateTS = Date.parse(tripDateTimeS);
+    if (isNaN(dateTS)) {
+      console.error('CANT parse custom date string: ' + tripDateTimeS + ', using current datetime instead');
+      return defaultDate;
+    }
+
+    const tripDateTime = new Date(dateTS);
+    return tripDateTime;
   }
 
   public getStageConfig(forStage: APP_STAGE = this.currentAppStage): OJP_Legacy.ApiConfig {
