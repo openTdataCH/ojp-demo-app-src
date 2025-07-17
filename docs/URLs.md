@@ -17,6 +17,7 @@ OJP-Demo URL: https://opentdatach.github.io/ojp-demo-app/
 | mode_types | `monomodal` | Mono-, multi- modal journey type switcher. List of mode types: `monomodal`, `mode_at_start`, `mode_at_end`, `mode_at_start_end`.  Multiple values (journeys with via points) are separated by semi-colon `;`. Number of the values is equal with number of via parameters + 1 |
 | transport_modes | `public_transport` | The MOT used, list of possible values": `public_transport`, `walking` `cycle`, `car_self_driving`, `bicycle_rental`, `escooter_rental`, `car_sharing`. All values, except `public_transport` will set `ItModesToCover` filter in the [OJPTripRequest](https://opentransportdata.swiss/de/cookbook/ojptriprequest/) calls. Multiple values (joruneys with via points) are separated by semi-colon `;`. Number of the values is equal with number of via parameters + 1 |
 | trip_datetime | `2025-08-01 10:00` | Trip datetime in `yyyy-MM-dd HH:mm` format. Other formats are working as well, i.e.  `2025-08-01`, `2025-09-17T11:15:00`, `29.Dec.2025 10:00` |
+| time_type | `arr` \| `dep` or `arrival` \| `departure` | Departure or arrival time should be used for searching trips. Default is `departure` |
 | stage | `prod` or `test` | Specify the OJP API backend, see [src/app/config/app-config.ts](https://github.com/openTdataCH/ojp-demo-app-src/blob/main/src/app/config/app-config.ts) for possible stages |
 | do_search | `false` or `true` | If `true` the search will be performed after the endpoints information is init-ed. Default is `false` |
 | advanced | `yes`, `no` | For `true`, `yes` values it will expand the advanced search settings panel |
@@ -86,6 +87,7 @@ Examples
 ----
 
 CHANGELOG
+- Jul 2025 - added `time_type` param
 - Aug 2024 - added `lang` param
 - Oct 2022 - updated mono-, multi- modal journey examples
 - Sep 2022 - adds Station Board
