@@ -4,6 +4,12 @@ OJP-Demo URL: https://opentdatach.github.io/ojp-demo-app/
 
 ----
 
+18.July 2025
+- Updates TR Params - Updates Docs - [PR #266](https://github.com/openTdataCH/ojp-demo-app-src/pull/266)
+  - adds `time_type` qs parameter that allow to set the TR urls for departures (default) or arrivals `?time_type=arr`
+  - updates documentation for building locally
+  - clean-up `docs` documents, updates general info
+
 17.July 2025
 - Improve 2-TR requests - [PR #265](https://github.com/openTdataCH/ojp-demo-app-src/pull/265)
   - patch the legTrack for all leg types and for continuous legs also the pathGuidance
