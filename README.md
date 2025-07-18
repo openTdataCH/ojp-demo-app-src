@@ -7,8 +7,10 @@ This is the source-code repository used for developing and deploying [OJP Demo](
 ## Quick Resources
 
 - https://opentdatach.github.io/ojp-demo-app/ - production URL
-- [docs](./docs/README.md) - documentation main page
 - [CHANGELOG](./CHANGELOG.md) - deployment changes
+- [Architecture](./docs/architecture.md)
+- [App Features](./docs/features.md)
+- [Query Params Examples](./docs/URLs.md)
 
 ## Current Development Status
 
