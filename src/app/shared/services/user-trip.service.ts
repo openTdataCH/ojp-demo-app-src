@@ -33,7 +33,7 @@ export class UserTripService {
   public useRealTimeDataType: OJP_Legacy.UseRealtimeDataEnumeration;
   public walkSpeedDeviation: number | null;
 
-  public currentBoardingType: OJP_Legacy.TripRequestBoardingType
+  public currentBoardingType: OJP_Legacy.TripRequestBoardingType;
 
   public tripModeType: OJP_Legacy.TripModeType
   public tripTransportMode: OJP_Legacy.IndividualTransportMode;
@@ -81,7 +81,7 @@ export class UserTripService {
     this.isViaEnabled = false;
     this.isAdditionalRestrictionsEnabled = false;
 
-    this.currentBoardingType = 'Dep'
+    this.currentBoardingType = 'Dep';
 
     this.tripModeType = 'monomodal';
     this.tripTransportMode = 'public_transport';
@@ -293,6 +293,19 @@ export class UserTripService {
     });
 
     this.isAdditionalRestrictionsEnabled = ['yes', 'true', '1'].includes(this.queryParams.get('advanced') ?? 'n/a');
+
+    this.currentBoardingType = (() => {
+      const userTimeTypeS = this.queryParams.get('time_type') ?? null;
+      if (userTimeTypeS === null) {
+        return 'Dep';
+      }
+
+      if (['arrival', 'arr'].includes(userTimeTypeS.toLowerCase())) {
+        return 'Arr';
+      }
+
+      return 'Dep' as OJP_Legacy.TripRequestBoardingType;
+    })();
   }
 
   public refetchEndpointsByName(language: OJP_Legacy.Language) {
@@ -647,15 +660,27 @@ export class UserTripService {
   }
 
   private computeInitialDate(): Date {
-    const defaultDate = new Date()
+    const defaultDate = new Date();
 
     const tripDateTimeS = this.queryParams.get('trip_datetime') ?? null
     if (tripDateTimeS === null) {
-      return defaultDate
+      return defaultDate;
     }
 
-    const tripDateTime = new Date(Date.parse(tripDateTimeS))
-    return tripDateTime
+    // following types are working
+    // 2025-08-01 10:00
+    // 2025-08-01 10:00:00
+    // 2025-08-01
+    // 2025-09-17T11:15:00
+    // 29.Dec.2025 10:00
+    const dateTS = Date.parse(tripDateTimeS);
+    if (isNaN(dateTS)) {
+      console.error('CANT parse custom date string: ' + tripDateTimeS + ', using current datetime instead');
+      return defaultDate;
+    }
+
+    const tripDateTime = new Date(dateTS);
+    return tripDateTime;
   }
 
   public getStageConfig(forStage: APP_STAGE = this.currentAppStage): OJP_Legacy.ApiConfig {

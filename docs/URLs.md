@@ -10,15 +10,16 @@ OJP-Demo URL: https://opentdatach.github.io/ojp-demo-app/
 
 | Param  | Example (decoded) | Description |
 |--|--|--|
-|lang| `de`, `en`, `fr` or `it` | Choose the ISO language in which the OJP repsonse will be deliverd, default is the browser locale. |
-|from| `8503000` for Zürich HB or `47.378173,8.540264` for same location as coordinates.|[DiDok](https://opentransportdata.swiss/de/dataset/didok) id or [Latitude,Longitude](https://developers.google.com/maps/documentation/javascript/reference/coordinates) coordinates. |
-|to|see `from`| |
-|via| `47.044250,8.308174;47.163056,8.687139` | List of [Latitude,Longitude](https://developers.google.com/maps/documentation/javascript/reference/coordinates) coordinates separated by semi-colon `;`. |
+| lang | `de`, `en`, `fr` or `it` | Choose the ISO language in which the OJP repsonse will be deliverd, default is the browser locale. |
+| from | `8503000` for Zürich HB or `47.378173,8.540264` for same location as coordinates.|[DiDok](https://opentransportdata.swiss/de/dataset/didok) id or [Latitude,Longitude](https://developers.google.com/maps/documentation/javascript/reference/coordinates) coordinates. |
+| to | see `from` | |
+| via | `47.044250,8.308174;47.163056,8.687139` | List of [Latitude,Longitude](https://developers.google.com/maps/documentation/javascript/reference/coordinates) coordinates separated by semi-colon `;`. |
 | mode_types | `monomodal` | Mono-, multi- modal journey type switcher. List of mode types: `monomodal`, `mode_at_start`, `mode_at_end`, `mode_at_start_end`.  Multiple values (journeys with via points) are separated by semi-colon `;`. Number of the values is equal with number of via parameters + 1 |
 | transport_modes | `public_transport` | The MOT used, list of possible values": `public_transport`, `walking` `cycle`, `car_self_driving`, `bicycle_rental`, `escooter_rental`, `car_sharing`. All values, except `public_transport` will set `ItModesToCover` filter in the [OJPTripRequest](https://opentransportdata.swiss/de/cookbook/ojptriprequest/) calls. Multiple values (joruneys with via points) are separated by semi-colon `;`. Number of the values is equal with number of via parameters + 1 |
-| trip_datetime | Trip datetime in `yyyy-MM-dd HH:mm` format | `2022-08-01 10:00` |
-| stage | `prod` or `test` | To specify the OJP API backend. |
-| do_search | `false` or `true` | If `true` the search will be performed after the endpoints information is init-ed. Default is `false`. |
+| trip_datetime | `2025-08-01 10:00` | Trip datetime in `yyyy-MM-dd HH:mm` format. Other formats are working as well, i.e.  `2025-08-01`, `2025-09-17T11:15:00`, `29.Dec.2025 10:00` |
+| time_type | `arr` \| `dep` or `arrival` \| `departure` | Departure or arrival time should be used for searching trips. Default is `departure` |
+| stage | `prod` or `test` | Specify the OJP API backend, see [src/app/config/app-config.ts](https://github.com/openTdataCH/ojp-demo-app-src/blob/main/src/app/config/app-config.ts) for possible stages |
+| do_search | `false` or `true` | If `true` the search will be performed after the endpoints information is init-ed. Default is `false` |
 | advanced | `yes`, `no` | For `true`, `yes` values it will expand the advanced search settings panel |
 
 ## Examples
@@ -35,7 +36,6 @@ OJP-Demo URL: https://opentdatach.github.io/ojp-demo-app/
 | Own Car | [Bern - Zürich](https://tools.odpch.ch/beta-ojp-demo/search?from=8507000&to=8503000&transport_modes=self-drive-car) | [Spiez - Bern](https://tools.odpch.ch/ojp-demo-v2/search?from=8507483&to=8507000&transport_modes=car&do_search=yes) |  |
 | Own Car + ATZ train | N / A | [Spiez - Brig](https://tools.odpch.ch/ojp-demo-v2/search?from=8507483&to=8501609&transport_modes=car&do_search=yes) |  |
 | Own Car + Water Ferry | N / A | [Horgen - Meilen](https://tools.odpch.ch/ojp-demo-v2/search?from=8590653&to=8576083&transport_modes=car&do_search=yes) |  |
-
 
 
 ### Multi-modal
@@ -87,6 +87,7 @@ Examples
 ----
 
 CHANGELOG
+- Jul 2025 - added `time_type` param
 - Aug 2024 - added `lang` param
 - Oct 2022 - updated mono-, multi- modal journey examples
 - Sep 2022 - adds Station Board

@@ -7,8 +7,10 @@ This is the source-code repository used for developing and deploying [OJP Demo](
 ## Quick Resources
 
 - https://opentdatach.github.io/ojp-demo-app/ - production URL
-- [docs](./docs/README.md) - documentation main page
 - [CHANGELOG](./CHANGELOG.md) - deployment changes
+- [Architecture](./docs/architecture.md)
+- [App Features](./docs/features.md)
+- [Query Params Examples](./docs/URLs.md)
 
 ## Current Development Status
 
@@ -46,10 +48,31 @@ Installation steps:
 ```
 npm install
 ```
-- serve development server via `ng serve` cli
+
+- copy [src/app/config/app-config.ts](./src/app/config/app-config.ts) to `src/app/config/app-config.local.ts` 
+
+- get an OJP 2.0 (or 1.0) key from https://api-manager.opentransportdata.swiss/
+
+- replace the key placeholder
+```
+# src/app/config/app-config.local.ts
+
+...
+
+// OJP 2.0
+'V2-PROD': {
+    url: 'https://api.opentransportdata.swiss/ojp20',
+    authToken: 'PLACEHOLDER_REPLACE__PROD',
+},
+
+...
+```
+
+- serve local development server
 ```
 ng serve
 ```
+
 - navigate to [http://localhost:4200](http://localhost:4200/) in the browser
 
 ## License

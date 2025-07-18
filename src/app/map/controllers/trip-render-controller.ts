@@ -1,7 +1,7 @@
 import * as GeoJSON from 'geojson';
 
 import { MapboxLayerHelpers } from '../../helpers/mapbox-layer-helpers';
-import { MapLegTypeColor } from '../../config/map-colors';
+import { MapLegLineTypeColor } from '../../config/map-colors';
 
 import { TripLegGeoController } from '../../shared/controllers/trip-geo-controller';
 import { MapTripLeg, TripLegLineType } from '../../shared/types/map-geometry-types';
@@ -95,7 +95,7 @@ export class TripRenderController {
     const tripContinousLegWalkingLineLayer = tripContinousLegWalkingLineLayerJSON as mapboxgl.LineLayerSpecification;
     tripContinousLegWalkingLineLayer.filter = MapboxLayerHelpers.FilterWalkingLegs();
     if (tripContinousLegWalkingLineLayer.paint) {
-      tripContinousLegWalkingLineLayer.paint["line-color"] = MapLegTypeColor['ContinuousLeg'];
+      tripContinousLegWalkingLineLayer.paint["line-color"] = MapLegLineTypeColor['Walk'];
     }
 
     const mapLayers = [                   // layers order matters:
