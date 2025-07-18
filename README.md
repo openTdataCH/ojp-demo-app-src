@@ -49,7 +49,7 @@ Installation steps:
 npm install
 ```
 
-- copy `src/app/config/app-config.ts` to `src/app/config/app-config.local.ts` 
+- copy [src/app/config/app-config.ts](./src/app/config/app-config.ts) to `src/app/config/app-config.local.ts` 
 
 - get an OJP 2.0 (or 1.0) key from https://api-manager.opentransportdata.swiss/
 
