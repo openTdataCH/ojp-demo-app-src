@@ -1,13 +1,4 @@
-import OJP_Legacy from './ojp-legacy';
-
-import { TripLegLineType } from '../shared/types/map-geometry-types'
-
-export const MapLegTypeColor: Record<OJP_Legacy.LegType, string> = {
-  ContinuousLeg: '#009933',
-  TransferLeg: '#0000ff',
-  TimedLeg: '#D04D44',
-}
-export const MapLegTypes: OJP_Legacy.LegType[] = ['ContinuousLeg', 'TimedLeg', 'TransferLeg']
+import { TripLegLineType } from '../shared/types/map-geometry-types';
 
 export const MapLegLineTypeColor: Record<TripLegLineType, string> = {
   Unknown: '#ffafcc',
