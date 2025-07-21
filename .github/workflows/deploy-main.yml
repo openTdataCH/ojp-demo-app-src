@@ -53,8 +53,8 @@ jobs:
       - name: Deploy to target repo gh-pages
         uses: peaceiris/actions-gh-pages@v4
         with:
-          publish_dir: ./dist/ojp-demo-app
           external_repository: openTdataCH/ojp-demo-app
           publish_branch: gh-pages
           personal_token: ${{ secrets.OJP_DEMO_APP_DEPLOY_TOKEN }}
+          publish_dir: ${{ github.workspace }}/dist/ojp-demo-app
           commit_message: "deploy: ${{ github.sha }}"
