@@ -6,8 +6,6 @@ on:
   push:
     branches:
       - main
-      # for testing, add the working branch if needed
-      - feature/updates-github-deploy
 
 jobs:
   build-and-deploy:
@@ -42,7 +40,7 @@ jobs:
             src/app/config/app-config.ts
 
       - name: Build
-        run: npm run build -- --configuration production --base-href=/ojp-demo-app-TEST/
+        run: npm run build -- --configuration production --base-href=/ojp-demo-app/
 
       - name: Copy index.html to 404.html for Angular routing
         run: cp dist/ojp-demo-app/index.html dist/ojp-demo-app/404.html
@@ -51,7 +49,7 @@ jobs:
         uses: peaceiris/actions-gh-pages@v3
         with:
           publish_dir: dist/ojp-demo-app
-          external_repository: openTdataCH/ojp-demo-app-TEST
+          external_repository: openTdataCH/ojp-demo-app
           publish_branch: gh-pages
           personal_token: ${{ secrets.OJP_DEMO_APP_DEPLOY_TOKEN }}
           commit_message: "deploy: ${{ github.sha }}"
