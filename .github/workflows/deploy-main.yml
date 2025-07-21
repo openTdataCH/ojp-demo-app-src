@@ -6,8 +6,6 @@ on:
   push:
     branches:
       - main
-      # for testing, add the working branch if needed
-      - feature/updates-github-deploy
 
 jobs:
   build-and-deploy:
