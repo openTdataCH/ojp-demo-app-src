@@ -4,6 +4,10 @@ OJP-Demo URL: https://opentdatach.github.io/ojp-demo-app/
 
 ----
 
+21.July 2025
+- Updates deploy branch - [PR #267](https://github.com/openTdataCH/ojp-demo-app-src/pull/267)
+  - use `ojp-demo-app` to deploy to https://opentdatach.github.io/ojp-demo-app
+
 18.July 2025
 - Updates TR Params - Updates Docs - [PR #266](https://github.com/openTdataCH/ojp-demo-app-src/pull/266)
   - adds `time_type` qs parameter that allow to set the TR urls for departures (default) or arrivals `?time_type=arr`
