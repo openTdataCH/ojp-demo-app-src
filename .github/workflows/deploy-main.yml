@@ -47,8 +47,8 @@ jobs:
       - name: Copy index.html to 404.html for Angular routing
         run: cp dist/ojp-demo-app/index.html dist/ojp-demo-app/404.html
 
-      - name: Debug build output
-        run: ls -lR dist/
+      - name: Debug distribution
+        run: ls -R ${{ github.workspace }}/dist || echo "dist missing!"
 
       - name: Deploy to target repo gh-pages
         uses: peaceiris/actions-gh-pages@v4
