@@ -42,7 +42,7 @@ jobs:
             src/app/config/app-config.ts
 
       - name: Build
-        run: npm run build -- --configuration production --base-href=/ojp-demo-app-TEST/
+        run: npm run build -- --configuration production --base-href=/ojp-demo-app/
 
       - name: Copy index.html to 404.html for Angular routing
         run: cp dist/ojp-demo-app/index.html dist/ojp-demo-app/404.html
@@ -53,7 +53,7 @@ jobs:
       - name: Deploy to target repo gh-pages
         uses: peaceiris/actions-gh-pages@v4
         with:
-          external_repository: openTdataCH/ojp-demo-app-TEST
+          external_repository: openTdataCH/ojp-demo-app
           publish_branch: gh-pages
           personal_token: ${{ secrets.OJP_DEMO_APP_DEPLOY_TOKEN }}
           publish_dir: ${{ github.workspace }}/dist/ojp-demo-app
