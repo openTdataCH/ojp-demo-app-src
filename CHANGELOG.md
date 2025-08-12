@@ -4,6 +4,13 @@ OJP-Demo URL: https://opentdatach.github.io/ojp-demo-app/
 
 ----
 
+12.August 2025
+- Updates URLs - [PR #283](https://github.com/openTdataCH/ojp-demo-app-src/pull/283)
+  - use otherVersionURL - no more beta v1, v2 concept
+  - https://opentdatach.github.io/ojp-demo-app is now PROD
+  - OJP v1.0 runs as `BETA` - https://tools.odpch.ch/beta-ojp-demo/search
+  - update URLs
+
 11.August 2025
 - Updates deploy branch - [PR #267](https://github.com/openTdataCH/ojp-demo-app-src/pull/267)
   - use `ojp-demo-app` to deploy to https://opentdatach.github.io/ojp-demo-app
