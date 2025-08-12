@@ -8,7 +8,7 @@ import { SbbNotificationToast } from '@sbb-esta/angular/notification-toast';
 import * as GeoJSON from 'geojson';
 import OJP_Legacy from '../../config/ojp-legacy';
 
-import { APP_STAGE, APP_STAGEs, DEBUG_LEVEL, DEFAULT_APP_STAGE, REQUESTOR_REF, OJP_VERSION } from '../../config/constants';
+import { APP_STAGE, APP_STAGEs, DEFAULT_APP_STAGE, REQUESTOR_REF, OJP_VERSION } from '../../config/constants';
 
 import { OJPHelpers } from '../../helpers/ojp-helpers';
 
