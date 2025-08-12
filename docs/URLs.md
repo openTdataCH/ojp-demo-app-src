@@ -28,14 +28,14 @@ OJP-Demo URL: https://opentdatach.github.io/ojp-demo-app/
 
 | Example | OJP 1 | OJP 2 | Comments |
 |-|-|-|-|
-| PublicTransport | [Bern - Zürich](https://tools.odpch.ch/beta-ojp-demo/search?from=8507000&to=8503000&do_search=yes) | [Bern - Zürich](https://tools.odpch.ch/ojp-demo-v2/search?from=8507000&to=8503000&do_search=yes) |  |
-| PublicTransport, Via | [Bern - Luzern - Zürich](https://tools.odpch.ch/beta-ojp-demo/search?from=8507000&to=8503000&via=8505000&do_search=yes) | [Bern - Luzern - Zürich](https://tools.odpch.ch/ojp-demo-v2/search?from=8507000&to=8503000&via=8505000&do_search=yes) |  |
-| PublicTransport, Boat | [Thun - Spiez](https://tools.odpch.ch/beta-ojp-demo/search?from=8507100&to=8507483&public_transport_modes=water) | [Thun - Spiez](https://tools.odpch.ch/ojp-demo-v2/search?from=8507100&to=8507483&public_transport_modes=water) |  |
-| ATZ (car transport) | [Kandersteg - Goppenestein](https://tools.odpch.ch/beta-ojp-demo/search?from=8511171&to=8519655) | [Kandersteg - Goppenestein](https://tools.odpch.ch/ojp-demo-v2/search?from=8511171&to=8519655) |  |
-| Coords - Coords | [Croy-Romainmôtier to Glis](https://tools.odpch.ch/beta-ojp-demo/search?from=46.673066,6.462309&to=46.311076,7.977560) | [Croy to Glis](https://tools.odpch.ch/ojp-demo-v2/search?from=46.695176,6.479795&to=46.311076,7.977560) |  |
-| Own Car | [Bern - Zürich](https://tools.odpch.ch/beta-ojp-demo/search?from=8507000&to=8503000&transport_modes=self-drive-car) | [Spiez - Bern](https://tools.odpch.ch/ojp-demo-v2/search?from=8507483&to=8507000&transport_modes=car&do_search=yes) |  |
-| Own Car + ATZ train | N / A | [Spiez - Brig](https://tools.odpch.ch/ojp-demo-v2/search?from=8507483&to=8501609&transport_modes=car&do_search=yes) |  |
-| Own Car + Water Ferry | N / A | [Horgen - Meilen](https://tools.odpch.ch/ojp-demo-v2/search?from=8590653&to=8576083&transport_modes=car&do_search=yes) |  |
+| PublicTransport | [Bern - Zürich](https://tools.odpch.ch/beta-ojp-demo/search?from=8507000&to=8503000&do_search=yes) | [Bern - Zürich](https://opentdatach.github.io/ojp-demo-app/search?from=8507000&to=8503000&do_search=yes) |  |
+| PublicTransport, Via | [Bern - Luzern - Zürich](https://tools.odpch.ch/beta-ojp-demo/search?from=8507000&to=8503000&via=8505000&do_search=yes) | [Bern - Luzern - Zürich](https://opentdatach.github.io/ojp-demo-app/search?from=8507000&to=8503000&via=8505000&do_search=yes) |  |
+| PublicTransport, Boat | [Thun - Spiez](https://tools.odpch.ch/beta-ojp-demo/search?from=8507100&to=8507483&public_transport_modes=water) | [Thun - Spiez](https://opentdatach.github.io/ojp-demo-app/search?from=8507100&to=8507483&public_transport_modes=water) |  |
+| ATZ (car transport) | [Kandersteg - Goppenestein](https://tools.odpch.ch/beta-ojp-demo/search?from=8511171&to=8519655) | [Kandersteg - Goppenestein](https://opentdatach.github.io/ojp-demo-app/search?from=8511171&to=8519655) |  |
+| Coords - Coords | [Croy-Romainmôtier to Glis](https://tools.odpch.ch/beta-ojp-demo/search?from=46.673066,6.462309&to=46.311076,7.977560) | [Croy to Glis](https://opentdatach.github.io/ojp-demo-app/search?from=46.695176,6.479795&to=46.311076,7.977560) |  |
+| Own Car | [Bern - Zürich](https://tools.odpch.ch/beta-ojp-demo/search?from=8507000&to=8503000&transport_modes=self-drive-car) | [Spiez - Bern](https://opentdatach.github.io/ojp-demo-app/search?from=8507483&to=8507000&transport_modes=car&do_search=yes) |  |
+| Own Car + ATZ train | N / A | [Spiez - Brig](https://opentdatach.github.io/ojp-demo-app/search?from=8507483&to=8501609&transport_modes=car&do_search=yes) |  |
+| Own Car + Water Ferry | N / A | [Horgen - Meilen](https://opentdatach.github.io/ojp-demo-app/search?from=8590653&to=8576083&transport_modes=car&do_search=yes) |  |
 
 
 ### Multi-modal
@@ -55,16 +55,16 @@ How To
 - edit the file if needed
 - copy the `gistId` => `86514397dae2038d7024f2228be476d7`
 - load the XML content in OJP Demo App using `gist=gistId` parameter
-- i.e. https://tools.odpch.ch/ojp-demo-v2/search?gist=86514397dae2038d7024f2228be476d7 for OJP 2.0 GUI
+- i.e. https://opentdatach.github.io/ojp-demo-app/search?gist=86514397dae2038d7024f2228be476d7 for OJP 2.0 GUI
 
 Examples
 
 | URL | Notes |
 |-----|-------|
-| https://tools.odpch.ch/ojp-demo-v2/search?gist=86514397dae2038d7024f2228be476d7 | TR with `Infeasable`, `Unplanned` status |
-| https://tools.odpch.ch/ojp-demo-v2/search?gist=2f9f3554a3f5b7c65ce76f04406319bb | TR with `Deviation` status |
-| https://tools.odpch.ch/ojp-demo-v2/search?gist=1dff55df2c5b3167f59c093261ff4f54 | TR with `Cancelled` status |
-| https://tools.odpch.ch/ojp-demo-v2/search?gist=29843eabbeaaa8e73163b0a22b511513 | TR with `Autoverladezug` |
+| https://opentdatach.github.io/ojp-demo-app/search?gist=86514397dae2038d7024f2228be476d7 | TR with `Infeasable`, `Unplanned` status |
+| https://opentdatach.github.io/ojp-demo-app/search?gist=2f9f3554a3f5b7c65ce76f04406319bb | TR with `Deviation` status |
+| https://opentdatach.github.io/ojp-demo-app/search?gist=1dff55df2c5b3167f59c093261ff4f54 | TR with `Cancelled` status |
+| https://opentdatach.github.io/ojp-demo-app/search?gist=29843eabbeaaa8e73163b0a22b511513 | TR with `Autoverladezug` |
 
 
 # 2. Station Board
