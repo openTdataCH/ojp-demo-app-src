@@ -131,11 +131,7 @@
 
       <ng-container *ngIf="this.searchLocation !== null">
         <div>
-          <a href="{{ this.mapURLs.beta }}" target="_blank">{{ this.userTripService.betaURLText }}</a>
-        </div>
-        <div>|</div>
-        <div>
-          <a href="{{ this.mapURLs.prodv1 }}" target="_blank">PROD</a>
+          <a href="{{ this.otherVersionURL }}" target="_blank">{{ this.userTripService.otherVersionURLText }}</a>
         </div>
         <div>|</div>
       </ng-container>

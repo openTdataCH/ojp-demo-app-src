@@ -144,14 +144,23 @@
   <div class="bg-ojp-primary w-100" style="height: 5px"></div>
   <div class="col">
     <div class="footer">
-      <div>
-        © <a href="https://opentransportdata.swiss/en/" target="_blank">Open-Data-Plattform Mobilität Schweiz</a> 2021 - 2025
-      </div>
+      <div>© <a href="https://opentransportdata.swiss/en/" target="_blank">Open-Data-Plattform Mobilität Schweiz</a> 2021 - 2025</div>
       <div class="d-none d-md-block">
-        Last Update: <a href="{{ this.model.changelogURL }}" target="_blank">{{ this.model.lastUpdate }}</a> - {{ this.model.sdkVersionText }}
+        <div class="d-flex gap-2">
+          <div>Last Update:</div>
+          <a class="text-decoration-underline" href="{{ this.model.mapChangelogURLs.ojpDemoApp }}" target="_blank">{{ this.model.lastUpdate }}</a>
+          
+          <div>- ojp-sdk-legacy:</div>
+          <a class="text-decoration-underline" href="{{ this.model.mapChangelogURLs.ojpSDK_Legacy }}" target="_blank">{{ this.model.mapSDK_Versions.ojpLegacy }}</a>
+
+          <div>- ojp-sdk-next:</div>
+          <a class="text-decoration-underline" href="{{ this.model.mapChangelogURLs.ojpSDK_Next }}" target="_blank">{{ this.model.mapSDK_Versions.ojpNext }}</a>
+
+          <div>- ojp-shared-types:</div>
+          <a class="text-decoration-underline" href="{{ this.model.mapChangelogURLs.ojpSDK_SharedTypes }}" target="_blank">{{ this.model.mapSDK_Versions.ojpSharedTypes }}</a>
+
+          <div>- OJP API: {{ this.model.mapSDK_Versions.ojpAPI }}</div>
       </div>
     </div>
   </div>
 </div>
-
-<div class="row" style="height: 16px"></div>

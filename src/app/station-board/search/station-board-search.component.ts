@@ -8,7 +8,7 @@ import { SbbNotificationToast } from '@sbb-esta/angular/notification-toast';
 import * as GeoJSON from 'geojson';
 import OJP_Legacy from '../../config/ojp-legacy';
 
-import { APP_STAGE, APP_STAGEs, DEBUG_LEVEL, DEFAULT_APP_STAGE, REQUESTOR_REF, OJP_VERSION } from '../../config/constants';
+import { APP_STAGE, APP_STAGEs, DEFAULT_APP_STAGE, REQUESTOR_REF, OJP_VERSION } from '../../config/constants';
 
 import { OJPHelpers } from '../../helpers/ojp-helpers';
 
@@ -46,7 +46,7 @@ export class StationBoardSearchComponent implements OnInit {
   private queryParams: URLSearchParams
 
   public permalinkRelativeURL: string;
-  public mapURLs: Record<URLType, string>;
+  public otherVersionURL: string | null;
 
   public currentRequestInfo: OJP_Legacy.RequestInfo | null;
 
@@ -92,7 +92,7 @@ export class StationBoardSearchComponent implements OnInit {
     this.isSearching = false
 
     this.permalinkRelativeURL = '';
-    this.mapURLs = <Record<URLType, string>>{};
+    this.otherVersionURL = null;
     this.updateURLs();
 
     this.currentRequestInfo = null;
@@ -317,26 +317,17 @@ export class StationBoardSearchComponent implements OnInit {
   private updateLinkedURLs(queryParams: URLSearchParams) {
     const isOJPv2 = OJP_VERSION === '2.0';
 
-    const prodQueryParams = new URLSearchParams(queryParams);
+    const otherVersionQueryParams = new URLSearchParams(queryParams);
+    this.userTripService.updateStageLinkedURL(otherVersionQueryParams, isOJPv2);
     if (isOJPv2) {
-      this.userTripService.updateStageLinkedURL(prodQueryParams, isOJPv2);
+      // v1
+      this.otherVersionURL = 'https://tools.odpch.ch/beta-ojp-demo/board?' + otherVersionQueryParams.toString();
+      this.userTripService.otherVersionURLText = 'BETA (OJP 1.0)';
+    } else {
+      // v2
+      this.otherVersionURL = 'https://opentdatach.github.io/ojp-demo-app/board?' + otherVersionQueryParams.toString();
+      this.userTripService.otherVersionURLText = 'PROD (OJP 2.0)';
     }
-    this.mapURLs.prodv1 = 'https://opentdatach.github.io/ojp-demo-app/board?' + prodQueryParams.toString();
-
-    const betaV1_QueryParams = new URLSearchParams(queryParams);
-    if (isOJPv2) {
-      this.userTripService.updateStageLinkedURL(betaV1_QueryParams, isOJPv2);
-    }
-    this.mapURLs.betav1 = 'https://tools.odpch.ch/beta-ojp-demo/board?' + betaV1_QueryParams.toString();
-
-    const betaV2_QueryParams = new URLSearchParams(queryParams);
-    if (!isOJPv2) {
-      this.userTripService.updateStageLinkedURL(betaV2_QueryParams, isOJPv2);
-    }
-    this.mapURLs.betav2 = 'https://tools.odpch.ch/ojp-demo-v2/board?' + betaV2_QueryParams.toString();
-    
-    this.mapURLs.beta = isOJPv2 ? this.mapURLs.betav1 : this.mapURLs.betav2;
-    this.userTripService.betaURLText = isOJPv2 ? 'BETA-v1' : 'BETA-v2';
   }
 
   private fetchStopEventsForStopRef(stopPlaceRef: string) {

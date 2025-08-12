@@ -43,11 +43,8 @@ export class UserTripService {
   public currentAppStage: APP_STAGE
 
   public permalinkRelativeURL: string | null;
-  public prodURL: string | null;
-  public betaURL: string | null;
-  public betaV1URL: string | null;
-  public betaV2URL: string | null;
-  public betaURLText: string | null;
+  public otherVersionURL: string | null;
+  public otherVersionURLText: string | null;
   public sbbURL: string | null;
   public embedQueryParams = new URLSearchParams();
 
@@ -92,11 +89,8 @@ export class UserTripService {
     this.currentAppStage = DEFAULT_APP_STAGE;
 
     this.permalinkRelativeURL = null;
-    this.prodURL = null;
-    this.betaURL = null;
-    this.betaV1URL = null;
-    this.betaV2URL = null;
-    this.betaURLText = null;
+    this.otherVersionURL = null;
+    this.otherVersionURLText = null;
     this.sbbURL = null;
   }
 
@@ -572,27 +566,17 @@ export class UserTripService {
   private updateLinkedURLs(queryParams: URLSearchParams) {
     const isOJPv2 = OJP_VERSION === '2.0';
 
-    const prodQueryParams = new URLSearchParams(queryParams);
+    const otherVersionQueryParams = new URLSearchParams(queryParams);
+    this.updateStageLinkedURL(otherVersionQueryParams, isOJPv2);
     if (isOJPv2) {
-      this.updateStageLinkedURL(prodQueryParams, isOJPv2);
+      // v1
+      this.otherVersionURL = 'https://tools.odpch.ch/beta-ojp-demo/search?' + otherVersionQueryParams.toString();
+      this.otherVersionURLText = 'BETA (OJP 1.0)';
+    } else {
+      // v2
+      this.otherVersionURL = 'https://opentdatach.github.io/ojp-demo-app/search?' + otherVersionQueryParams.toString();
+      this.otherVersionURLText = 'PROD (OJP 2.0)';
     }
-    this.prodURL = 'https://opentdatach.github.io/ojp-demo-app/search?' + prodQueryParams.toString();
-
-    const betaV1_QueryParams = new URLSearchParams(queryParams);
-    if (isOJPv2) {
-      this.updateStageLinkedURL(betaV1_QueryParams, isOJPv2);
-    }
-    this.betaV1URL = 'https://tools.odpch.ch/beta-ojp-demo/search?' + betaV1_QueryParams.toString();
-
-    const betaV2_QueryParams = new URLSearchParams(queryParams);
-    if (!isOJPv2) {
-      this.updateStageLinkedURL(betaV2_QueryParams, isOJPv2);
-    }
-    this.betaV2URL = 'https://tools.odpch.ch/ojp-demo-v2/search?' + betaV2_QueryParams.toString();
-
-    // Beta v1-v2 corespondent URLs
-    this.betaURL = isOJPv2 ? this.betaV1URL : this.betaV2URL;
-    this.betaURLText = isOJPv2 ? 'BETA-v1' : 'BETA-v2';
 
     const sbbURLStopsData: {[key: string]: string}[] = [];
     const stopKeys = ['from', 'to'];
