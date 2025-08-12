@@ -565,11 +565,7 @@ export class SearchFormComponent implements OnInit {
           return '[TR issue] ';
         })();
 
-        this.userTripService.updateURLs();
-        const requestURL = isOJPv2 ? this.userTripService.betaV2URL : this.userTripService.betaV1URL;
-        if (requestURL === null) {
-          return;
-        }
+        const requestURL = window.location.href;
 
         popover.setInputValue('issueTitle', issueTitle);
         popover.updateMetadataRows(requestURL);
