@@ -2,17 +2,28 @@ import { Component, OnInit } from '@angular/core';
 
 import OJP_Legacy from '../../config/ojp-legacy';
 import * as OJP_Next from 'ojp-sdk-next';
+import * as OJP_SharedTypes from 'ojp-shared-types';
 
 import { DEBUG_LEVEL, MAP_RASTER_LAYERS, OJP_VERSION } from '../../config/constants';
 import { RasterLayerType } from '../types/_all';
 
 type PageModel = {
-  sdkVersionText: string,
   lastUpdate: string,
   isTopograhicPlaceMapLayerEnabled: boolean,
-  changelogURL: string,
   rasterLayers: RasterLayerType[],
-}
+  mapSDK_Versions: {
+    ojpLegacy: string,
+    ojpNext: string,
+    ojpSharedTypes: string,
+    ojpAPI: OJP_Legacy.OJP_VERSION_Type,
+  },
+  mapChangelogURLs: {
+    ojpDemoApp: string,
+    ojpSDK_Legacy: string,
+    ojpSDK_Next: string,
+    ojpSDK_SharedTypes: string,
+  }
+};
 
 @Component({
   selector: 'web-footer',
@@ -24,14 +35,22 @@ export class WebFooterComponent implements OnInit {
   constructor() {
     const isTopograhicPlaceMapLayerEnabled = DEBUG_LEVEL === 'DEBUG';
 
-    const changelogURL = 'https://github.com/openTdataCH/ojp-demo-app-src/blob/main/CHANGELOG.md';
-
     this.model = {
-      sdkVersionText: 'ojp-sdk-legacy: ' + OJP_Legacy.SDK_VERSION + ' - ojp-sdk-next: ' + OJP_Next.SDK_VERSION + ' - OJP API ' + OJP_VERSION,
       lastUpdate: '11.August 2025',
       isTopograhicPlaceMapLayerEnabled: isTopograhicPlaceMapLayerEnabled,
-      changelogURL: changelogURL,
       rasterLayers: MAP_RASTER_LAYERS,
+      mapSDK_Versions: {
+        ojpLegacy: OJP_Legacy.SDK_VERSION,
+        ojpNext: OJP_Next.SDK_VERSION,
+        ojpSharedTypes: OJP_SharedTypes.VERSION,
+        ojpAPI: OJP_VERSION,
+      },
+      mapChangelogURLs: {
+        ojpDemoApp: 'https://github.com/openTdataCH/ojp-demo-app-src/blob/main/CHANGELOG.md',
+        ojpSDK_Legacy: 'https://github.com/openTdataCH/ojp-js/blob/main/CHANGELOG.md',
+        ojpSDK_Next: 'https://github.com/openTdataCH/ojp-js/blob/feature/ojp-sdk-next/CHANGELOG.md',
+        ojpSDK_SharedTypes: 'https://github.com/openTdataCH/ojp-shared-types/blob/main/CHANGELOG.md',
+      },
     }
     
     // Disable all-together (i.e. the feature is not ready yet)
