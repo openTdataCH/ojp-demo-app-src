@@ -363,7 +363,7 @@ export class TripLegGeoController {
     return linePointsData;
   }
 
-  private computeLegGeoJSONFeatures(): GeoJSON.Feature[] {
+  private computeLegLineGeoJSONFeatures(): GeoJSON.Feature[] {
     if (this.leg.legType === 'ContinuousLeg' || this.leg.legType === 'TransferLeg') {
       const continuousLeg = this.leg as OJP_Legacy.TripContinuousLeg;
       return this.computeContinousLegGeoJSONFeatures(continuousLeg);
