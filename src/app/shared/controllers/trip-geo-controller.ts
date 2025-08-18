@@ -1,6 +1,5 @@
 import * as GeoJSON from 'geojson';
 
-import { OJPHelpers } from '../../helpers/ojp-helpers';
 import OJP_Legacy from '../../config/ojp-legacy';
 
 import { JourneyService } from '../models/journey-service';
@@ -86,17 +85,19 @@ export class TripLegGeoController {
   public computeGeoJSONFeatures(): GeoJSON.Feature[] {
     let features: GeoJSON.Feature[] = [];
 
-    if (this.useBeeLine) {
-      const beelineFeature = this.computeBeelineFeature();
-      if (beelineFeature) {
-        features.push(beelineFeature);
-      }
-    }
-    
     const linePointFeatures = this.computeLinePointFeatures();
     features = features.concat(linePointFeatures);
 
-    features = features.concat(this.computeLegGeoJSONFeatures());
+    const legLineFeatures = this.computeLegLineGeoJSONFeatures();
+    if (legLineFeatures.length === 0) {
+      // build a bee-line at least
+      const feature = this.computeBeelineFeature();
+      if (feature) {
+        features.push(feature);
+      }
+    } else {
+      features = features.concat(legLineFeatures);
+    }
 
     features.forEach(feature => {
       if (feature.properties) {
@@ -364,7 +365,7 @@ export class TripLegGeoController {
     return linePointsData;
   }
 
-  private computeLegGeoJSONFeatures(): GeoJSON.Feature[] {
+  private computeLegLineGeoJSONFeatures(): GeoJSON.Feature[] {
     if (this.leg.legType === 'ContinuousLeg' || this.leg.legType === 'TransferLeg') {
       const continuousLeg = this.leg as OJP_Legacy.TripContinuousLeg;
       return this.computeContinousLegGeoJSONFeatures(continuousLeg);
@@ -380,8 +381,6 @@ export class TripLegGeoController {
 
   private computeContinousLegGeoJSONFeatures(continuousLeg: OJP_Legacy.TripContinuousLeg): GeoJSON.Feature[] {
     const features: GeoJSON.Feature[] = [];
-
-    const isCar = OJPHelpers.isCar(continuousLeg);
 
     const lineType: TripLegLineType = (() => {
       if (continuousLeg.legTransportMode === null) {
@@ -436,13 +435,6 @@ export class TripLegGeoController {
       });
     }
 
-    if (features.length === 0) {
-      const feature = this.computeBeelineFeature();
-      if (feature) {
-        features.push(feature);  
-      }
-    }
-
     return features;
   }
 
@@ -464,14 +456,6 @@ export class TripLegGeoController {
         features.push(feature);
       }
     });
-
-    if (features.length === 0) {
-      // build a bee-line at least
-      const feature = this.computeBeelineFeature();
-      if (feature) {
-        features.push(feature);
-      }
-    }
 
     // apply the needed properties
     features.forEach(feature => {
