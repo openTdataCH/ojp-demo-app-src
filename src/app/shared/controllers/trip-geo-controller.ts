@@ -1,6 +1,5 @@
 import * as GeoJSON from 'geojson';
 
-import { OJPHelpers } from '../../helpers/ojp-helpers';
 import OJP_Legacy from '../../config/ojp-legacy';
 
 import { JourneyService } from '../models/journey-service';
@@ -380,8 +379,6 @@ export class TripLegGeoController {
 
   private computeContinousLegGeoJSONFeatures(continuousLeg: OJP_Legacy.TripContinuousLeg): GeoJSON.Feature[] {
     const features: GeoJSON.Feature[] = [];
-
-    const isCar = OJPHelpers.isCar(continuousLeg);
 
     const lineType: TripLegLineType = (() => {
       if (continuousLeg.legTransportMode === null) {
