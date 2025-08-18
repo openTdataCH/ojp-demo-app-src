@@ -4,6 +4,10 @@ OJP-Demo URL: https://opentdatach.github.io/ojp-demo-app/
 
 ----
 
+18.August 2025
+- Fix double Leg/Bee-line - [Shows straight lines and link projection in IT-Routing #283](https://github.com/openTdataCH/ojp-sdk/issues/283) - [PR #284](https://github.com/openTdataCH/ojp-demo-app-src/pull/284)
+  - improves trip leg rendering logic
+
 12.August 2025
 - Updates URLs - [PR #283](https://github.com/openTdataCH/ojp-demo-app-src/pull/283)
   - use otherVersionURL - no more beta v1, v2 concept
