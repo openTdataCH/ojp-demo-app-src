@@ -745,18 +745,18 @@ export class UserTripService {
   }
 
   public updateParamsFromTrip(trip: OJP_Legacy.Trip) {
-    const hasLegs = trip.legs.length > 0
+    const hasLegs = trip.legs.length > 0;
     if (!hasLegs) {
-      return
+      return;
     }
 
-    const firstLeg = trip.legs[0]
-    const lastLeg = trip.legs[trip.legs.length - 1]
+    const firstLeg = trip.legs[0];
+    const lastLeg = trip.legs[trip.legs.length - 1];
 
-    this.fromTripLocation = new OJP_Legacy.TripLocationPoint(firstLeg.fromLocation)
-    this.toTripLocation = new OJP_Legacy.TripLocationPoint(lastLeg.toLocation)
+    this.fromTripLocation = new OJP_Legacy.TripLocationPoint(firstLeg.fromLocation);
+    this.toTripLocation = new OJP_Legacy.TripLocationPoint(lastLeg.toLocation);
 
-    this.viaTripLocations = []
+    this.viaTripLocations = [];
     
     this.tripModeType = 'monomodal';
     this.tripTransportMode = 'public_transport';
