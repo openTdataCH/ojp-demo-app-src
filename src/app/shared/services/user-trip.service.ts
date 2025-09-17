@@ -754,7 +754,14 @@ export class UserTripService {
     const lastLeg = trip.legs[trip.legs.length - 1];
 
     this.fromTripLocation = new OJP_Legacy.TripLocationPoint(firstLeg.fromLocation);
+    if (this.fromTripLocation.location.geoPosition === null) {
+      this.fromTripLocation.location.geoPosition = firstLeg.legTrack?.fromGeoPosition() ?? null;
+    }
+
     this.toTripLocation = new OJP_Legacy.TripLocationPoint(lastLeg.toLocation);
+    if (this.toTripLocation.location.geoPosition === null) {
+      this.toTripLocation.location.geoPosition = firstLeg.legTrack?.toGeoPosition() ?? null;
+    }
 
     this.viaTripLocations = [];
     
