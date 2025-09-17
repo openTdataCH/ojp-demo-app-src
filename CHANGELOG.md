@@ -4,6 +4,12 @@ OJP-Demo URL: https://opentdatach.github.io/ojp-demo-app/
 
 ----
 
+17.September 2025
+- Enable Sharing Mobility in OJP2.0 - [Sharing for DemoApp OJP2.0 #285](https://github.com/openTdataCH/ojp-demo-app-src/issues/285) - [PR #286](https://github.com/openTdataCH/ojp-demo-app-src/pull/286)
+  - for LIR, TR
+  - fix `Debug XML` dialog, allow to send custom request XMLs
+  - improve computation of endpoints and map behaviour
+
 18.August 2025
 - Fix double Leg/Bee-line - [Shows straight lines and link projection in IT-Routing #283](https://github.com/openTdataCH/ojp-sdk/issues/283) - [PR #284](https://github.com/openTdataCH/ojp-demo-app-src/pull/284)
   - improves trip leg rendering logic
