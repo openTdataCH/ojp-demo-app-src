@@ -32,7 +32,8 @@ export class InputXmlPopoverComponent {
 
     this.userTripService.selectActiveTrip(null);
     
-    const request = OJP_Legacy.TripRequest.initWithRequestMock(this.inputTripRequestXML, xmlConfig, REQUESTOR_REF);
+    const stageConfig = this.userTripService.getStageConfig();
+    const request = OJP_Legacy.TripRequest.initWithRequestMock(stageConfig, this.inputTripRequestXML, xmlConfig, REQUESTOR_REF);
     request.fetchResponse().then(response => {
       if (response.message === 'ERROR') {
         console.error('ERROR fetching OJP response');
