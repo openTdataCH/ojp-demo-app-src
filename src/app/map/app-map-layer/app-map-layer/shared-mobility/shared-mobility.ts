@@ -172,15 +172,11 @@ export class SharedMobility {
     }
 
     const name: string | null = (() => {
-      if (poiCategory === 'escooter_rental') {
-        return location.attributes['Text'] ?? null;
-      }
-
       if (provider === '2EM Car Sharing') {
         return provider
       }
-
-      if (poiCategory === 'bicycle_rental' || poiCategory === 'car_sharing') {
+      
+      if (poiCategory === 'bicycle_rental' || poiCategory === 'car_sharing' || poiCategory === 'escooter_rental') {
         return location.poi.name;
       }
 
