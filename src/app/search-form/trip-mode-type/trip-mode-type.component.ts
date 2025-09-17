@@ -126,7 +126,12 @@ export class TripModeTypeComponent implements OnInit {
     this.isNumberOfResultsEnabled = true;
     this.isNumberOfResultsBeforeEnabled = false;
     this.isNumberOfResultsAfterEnabled = false;
+    
     this.numberOfResults = TRIP_REQUEST_DEFAULT_NUMBER_OF_RESULTS;
+    if (this.userTripService.tripModeType !== 'monomodal') {
+      this.numberOfResults = 1;
+    }
+    
     this.numberOfResultsBefore = 1;
     this.numberOfResultsAfter = 4;
     this.walkSpeedDeviation = 100;
@@ -212,7 +217,7 @@ export class TripModeTypeComponent implements OnInit {
     let minDistance = null;
     let maxDistance = null;
     
-    let numberOfResults: number | null = TRIP_REQUEST_DEFAULT_NUMBER_OF_RESULTS;
+    let numberOfResults: number | null = null;
     let numberOfResultsBefore: number | null = null;
     let numberOfResultsAfter: number | null = null;
     
@@ -280,6 +285,8 @@ export class TripModeTypeComponent implements OnInit {
       if (!this.userTripService.isAdditionalRestrictionsEnabled) {
         this.userTripService.isAdditionalRestrictionsEnabled = true;
       }
+
+      this.numberOfResults = 1;
 
       this.updateAdditionalRestrictions();
     }
