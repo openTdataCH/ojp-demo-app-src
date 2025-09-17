@@ -29,6 +29,8 @@ export class InputXmlPopoverComponent {
 
     const isOJPv2 = OJP_VERSION === '2.0';
     const xmlConfig = isOJPv2 ? OJP_Legacy.XML_ConfigOJPv2 : OJP_Legacy.XML_BuilderConfigOJPv1;
+
+    this.userTripService.selectActiveTrip(null);
     
     const request = OJP_Legacy.TripRequest.initWithRequestMock(this.inputTripRequestXML, xmlConfig, REQUESTOR_REF);
     request.fetchResponse().then(response => {
