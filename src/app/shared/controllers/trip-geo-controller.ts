@@ -20,7 +20,7 @@ export class TripGeoController {
   public computeBBOX(): OJP_Legacy.GeoPositionBBOX {
     const bbox = new OJP_Legacy.GeoPositionBBOX([]);
 
-    const fromGeoPosition = this.computeFromLocation()?.geoPosition;
+    const fromGeoPosition = this.computeFromGeoPosition();
     if (fromGeoPosition) {
       bbox.extend(fromGeoPosition);
     } else {
@@ -28,7 +28,7 @@ export class TripGeoController {
       console.log(this);
     }
     
-    const toGeoPosition = this.computeToLocation()?.geoPosition;
+    const toGeoPosition = this.computeToGeoPosition();
     if (toGeoPosition) {
       bbox.extend(toGeoPosition);
     } else {
@@ -53,22 +53,34 @@ export class TripGeoController {
     return bbox;
   }
 
-  private computeFromLocation(): OJP_Legacy.Location | null {
+  private computeFromGeoPosition(): OJP_Legacy.GeoPosition | null {
     if (this.trip.legs.length === 0) {
       return null;
     }
 
     const firstLeg = this.trip.legs[0];
-    return firstLeg.fromLocation;
+    const legGeoPosition = firstLeg.fromLocation.geoPosition;
+    if (legGeoPosition !== null) {
+      return legGeoPosition;
+    }
+
+    const legTrackGeoPosition = firstLeg.legTrack?.fromGeoPosition() ?? null;
+    return legTrackGeoPosition;
   }
 
-  public computeToLocation(): OJP_Legacy.Location | null {
+  public computeToGeoPosition(): OJP_Legacy.GeoPosition | null {
     if (this.trip.legs.length === 0) {
       return null;
     }
 
     const lastLeg = this.trip.legs[this.trip.legs.length - 1];
-    return lastLeg.toLocation;
+    const legGeoPosition = lastLeg.toLocation.geoPosition;
+    if (legGeoPosition !== null) {
+      return legGeoPosition;
+    }
+
+    const legTrackGeoPosition = lastLeg.legTrack?.toGeoPosition() ?? null;
+    return legTrackGeoPosition;
   }
 }
 
