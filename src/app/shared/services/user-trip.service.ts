@@ -9,7 +9,7 @@ import * as OJP_Types from 'ojp-shared-types';
 import { APP_CONFIG } from '../../config/app-config';
 import { APP_STAGE, DEBUG_LEVEL, DEFAULT_APP_STAGE, REQUESTOR_REF, TRIP_REQUEST_DEFAULT_NUMBER_OF_RESULTS, OJP_VERSION } from '../../config/constants';
 
-import { MapService } from './map.service';
+import { IMapBoundsData, MapService } from './map.service';
 import { MapTrip } from '../types/map-geometry-types';
 import { TripData, TripLegData } from '../types/trip';
 
@@ -276,9 +276,11 @@ export class UserTripService {
         const shouldZoomToBounds = this.queryParams.has('from') || this.queryParams.has('to')
         if (shouldZoomToBounds && !this.mapService.initialMapCenter) {
           const bounds = new mapboxgl.LngLatBounds(bbox.asFeatureBBOX())
-          const mapData = {
-            bounds: bounds
-          }
+          const mapData: IMapBoundsData = {
+            bounds: bounds,
+            disableEase: true,
+          };
+          
           this.mapService.newMapBoundsRequested.emit(mapData);
         }
       }
