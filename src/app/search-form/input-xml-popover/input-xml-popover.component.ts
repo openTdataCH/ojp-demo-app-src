@@ -1,10 +1,9 @@
 import { Component, EventEmitter, Output } from '@angular/core';
-import { UserTripService } from 'src/app/shared/services/user-trip.service';
 
 import OJP_Legacy from '../../config/ojp-legacy';
-
 import { REQUESTOR_REF, OJP_VERSION } from '../../config/constants';
 
+import { UserTripService } from '../../shared/services/user-trip.service';
 @Component({
   selector: 'input-xml-popover',
   templateUrl: './input-xml-popover.component.html',
@@ -22,7 +21,7 @@ export class InputXmlPopoverComponent {
     this.inputTripRequestXML = '... loading'
     this.inputTripRequestResponseXML = 'Paste custom OJP TripRequest Response XML here...'
 
-    this.isRunningTripRequest = false
+    this.isRunningTripRequest = false;
   }
 
   public parseCustomRequestXML() {
