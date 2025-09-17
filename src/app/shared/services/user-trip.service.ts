@@ -790,47 +790,10 @@ export class UserTripService {
 
       return tripData;
     });
-
-    this.sortTrips(tripsData);
+    
     this.mergeTripLegs(tripsData);
 
     return tripsData;
-  }
-
-  private sortTrips(tripsData: TripData[]) {
-    if (this.tripModeType !== 'monomodal') {
-      return;
-    }
-
-    if (this.tripTransportMode === 'public_transport') {
-      return;
-    }
-
-    // Push first the monomodal trip with one leg matching the transport mode
-    const monomodalTrip = tripsData.find(tripData => {
-      const foundLeg = tripData.trip.legs.find(leg => {
-        if (leg.legType !== 'ContinuousLeg') {
-          return false;
-        }
-
-        const continousLeg = tripData.trip.legs[0] as OJP_Legacy.TripContinuousLeg;
-        return continousLeg.legTransportMode === this.tripTransportMode;
-      }) ?? null;
-
-      return foundLeg !== null;
-    }) ?? null;
-
-    if (monomodalTrip) {
-      const tripIdx = tripsData.indexOf(monomodalTrip);
-      tripsData.splice(tripIdx, 1);
-      tripsData.unshift(monomodalTrip);
-
-      monomodalTrip.info.comments = 'APP-HACK - sortTrips - trips were re-sorted to promote the index-' + tripIdx + ' trip first';
-
-      if (DEBUG_LEVEL === 'DEBUG') {
-        console.log(monomodalTrip.info.comments);
-      }
-    }
   }
 
   // Some of the legs can be merged
