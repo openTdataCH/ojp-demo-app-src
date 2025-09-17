@@ -17,6 +17,7 @@ export interface IMapBoundsData {
   bounds: mapboxgl.LngLatBounds
   onlyIfOutside?: boolean | null
   padding?: mapboxgl.PaddingOptions | null
+  disableEase?: boolean | null
 }
 
 export interface IMapLocationZoomData {
@@ -90,6 +91,7 @@ export class MapService {
     const mapData = {
       bounds: bounds
     }
+    
     this.newMapBoundsRequested.emit(mapData);
   }
 
@@ -134,9 +136,16 @@ export class MapService {
     // ERROR Error: Uncaught (in promise): Error: `LngLatLike` argument must be specified as a LngLat instance, an object {lng: <lng>, lat: <lat>}, an object {lon: <lng>, lat: <lat>}, or an array of [<lng>, <lat>]
     // Error: `LngLatLike` argument must be specified as a LngLat instance, an object {lng: <lng>, lat: <lat>}, an object {lon: <lng>, lat: <lat>}, or an array of [<lng>, <lat>]
     const fixedBounds: mapboxgl.LngLatBoundsLike = [newBounds.getWest(), newBounds.getSouth(), newBounds.getEast(), newBounds.getNorth()];
-    map.fitBounds(fixedBounds, {
-      padding: padding
-    })
+
+    const easingOptions: mapboxgl.EasingOptions = {
+      padding: padding,
+    };
+
+    if (mapData.disableEase) {
+      easingOptions.duration = 0;
+    }
+
+    map.fitBounds(fixedBounds, easingOptions);
   }
 
   public zoomToLocation(map: mapboxgl.Map, mapData: IMapLocationZoomData) {

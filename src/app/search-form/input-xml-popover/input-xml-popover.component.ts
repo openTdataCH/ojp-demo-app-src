@@ -1,10 +1,9 @@
 import { Component, EventEmitter, Output } from '@angular/core';
-import { UserTripService } from 'src/app/shared/services/user-trip.service';
 
 import OJP_Legacy from '../../config/ojp-legacy';
-
 import { REQUESTOR_REF, OJP_VERSION } from '../../config/constants';
 
+import { UserTripService } from '../../shared/services/user-trip.service';
 @Component({
   selector: 'input-xml-popover',
   templateUrl: './input-xml-popover.component.html',
@@ -22,7 +21,7 @@ export class InputXmlPopoverComponent {
     this.inputTripRequestXML = '... loading'
     this.inputTripRequestResponseXML = 'Paste custom OJP TripRequest Response XML here...'
 
-    this.isRunningTripRequest = false
+    this.isRunningTripRequest = false;
   }
 
   public parseCustomRequestXML() {
@@ -30,9 +29,14 @@ export class InputXmlPopoverComponent {
 
     const isOJPv2 = OJP_VERSION === '2.0';
     const xmlConfig = isOJPv2 ? OJP_Legacy.XML_ConfigOJPv2 : OJP_Legacy.XML_BuilderConfigOJPv1;
+
+    this.userTripService.selectActiveTrip(null);
     
-    const request = OJP_Legacy.TripRequest.initWithRequestMock(this.inputTripRequestXML, xmlConfig, REQUESTOR_REF);
+    const stageConfig = this.userTripService.getStageConfig();
+    const request = OJP_Legacy.TripRequest.initWithRequestMock(stageConfig, this.inputTripRequestXML, xmlConfig, REQUESTOR_REF);
     request.fetchResponse().then(response => {
+      this.isRunningTripRequest = false;
+
       if (response.message === 'ERROR') {
         console.error('ERROR fetching OJP response');
         console.log(response);

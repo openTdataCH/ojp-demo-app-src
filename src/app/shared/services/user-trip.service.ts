@@ -9,7 +9,7 @@ import * as OJP_Types from 'ojp-shared-types';
 import { APP_CONFIG } from '../../config/app-config';
 import { APP_STAGE, DEBUG_LEVEL, DEFAULT_APP_STAGE, REQUESTOR_REF, TRIP_REQUEST_DEFAULT_NUMBER_OF_RESULTS, OJP_VERSION } from '../../config/constants';
 
-import { MapService } from './map.service';
+import { IMapBoundsData, MapService } from './map.service';
 import { MapTrip } from '../types/map-geometry-types';
 import { TripData, TripLegData } from '../types/trip';
 
@@ -276,9 +276,11 @@ export class UserTripService {
         const shouldZoomToBounds = this.queryParams.has('from') || this.queryParams.has('to')
         if (shouldZoomToBounds && !this.mapService.initialMapCenter) {
           const bounds = new mapboxgl.LngLatBounds(bbox.asFeatureBBOX())
-          const mapData = {
-            bounds: bounds
-          }
+          const mapData: IMapBoundsData = {
+            bounds: bounds,
+            disableEase: true,
+          };
+          
           this.mapService.newMapBoundsRequested.emit(mapData);
         }
       }
@@ -743,18 +745,25 @@ export class UserTripService {
   }
 
   public updateParamsFromTrip(trip: OJP_Legacy.Trip) {
-    const hasLegs = trip.legs.length > 0
+    const hasLegs = trip.legs.length > 0;
     if (!hasLegs) {
-      return
+      return;
     }
 
-    const firstLeg = trip.legs[0]
-    const lastLeg = trip.legs[trip.legs.length - 1]
+    const firstLeg = trip.legs[0];
+    const lastLeg = trip.legs[trip.legs.length - 1];
 
-    this.fromTripLocation = new OJP_Legacy.TripLocationPoint(firstLeg.fromLocation)
-    this.toTripLocation = new OJP_Legacy.TripLocationPoint(lastLeg.toLocation)
+    this.fromTripLocation = new OJP_Legacy.TripLocationPoint(firstLeg.fromLocation);
+    if (this.fromTripLocation.location.geoPosition === null) {
+      this.fromTripLocation.location.geoPosition = firstLeg.legTrack?.fromGeoPosition() ?? null;
+    }
 
-    this.viaTripLocations = []
+    this.toTripLocation = new OJP_Legacy.TripLocationPoint(lastLeg.toLocation);
+    if (this.toTripLocation.location.geoPosition === null) {
+      this.toTripLocation.location.geoPosition = firstLeg.legTrack?.toGeoPosition() ?? null;
+    }
+
+    this.viaTripLocations = [];
     
     this.tripModeType = 'monomodal';
     this.tripTransportMode = 'public_transport';
@@ -788,47 +797,10 @@ export class UserTripService {
 
       return tripData;
     });
-
-    this.sortTrips(tripsData);
+    
     this.mergeTripLegs(tripsData);
 
     return tripsData;
-  }
-
-  private sortTrips(tripsData: TripData[]) {
-    if (this.tripModeType !== 'monomodal') {
-      return;
-    }
-
-    if (this.tripTransportMode === 'public_transport') {
-      return;
-    }
-
-    // Push first the monomodal trip with one leg matching the transport mode
-    const monomodalTrip = tripsData.find(tripData => {
-      const foundLeg = tripData.trip.legs.find(leg => {
-        if (leg.legType !== 'ContinuousLeg') {
-          return false;
-        }
-
-        const continousLeg = tripData.trip.legs[0] as OJP_Legacy.TripContinuousLeg;
-        return continousLeg.legTransportMode === this.tripTransportMode;
-      }) ?? null;
-
-      return foundLeg !== null;
-    }) ?? null;
-
-    if (monomodalTrip) {
-      const tripIdx = tripsData.indexOf(monomodalTrip);
-      tripsData.splice(tripIdx, 1);
-      tripsData.unshift(monomodalTrip);
-
-      monomodalTrip.info.comments = 'APP-HACK - sortTrips - trips were re-sorted to promote the index-' + tripIdx + ' trip first';
-
-      if (DEBUG_LEVEL === 'DEBUG') {
-        console.log(monomodalTrip.info.comments);
-      }
-    }
   }
 
   // Some of the legs can be merged

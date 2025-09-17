@@ -85,6 +85,11 @@ export class MapComponent implements OnInit, AfterViewInit {
 
     this.mapService.newMapBoundsRequested.subscribe(mapData => {
       this.mapLoadingPromise?.then(map => {
+        const queryParams = new URLSearchParams(document.location.search);
+        if (queryParams.get('use_mocks') === 'yes') {
+          mapData.disableEase = true;
+        }
+
         this.mapService.zoomToBounds(map, mapData);
       });
     })

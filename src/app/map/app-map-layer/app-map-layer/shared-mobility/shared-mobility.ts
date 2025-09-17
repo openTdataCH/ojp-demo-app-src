@@ -1,3 +1,4 @@
+import { OJP_VERSION } from '../../../../config/constants';
 import OJP_Legacy from '../../../../config/ojp-legacy';
 
 // https://github.com/SFOE/sharedmobility/blob/main/providers.csv
@@ -40,6 +41,8 @@ export class SharedMobility {
   }
 
   public static initFromLocation(location: OJP_Legacy.Location): SharedMobility | null {
+    const isOJPv2 = OJP_VERSION === '2.0';
+
     if (location.poi === null) {
       return null;
     }
@@ -172,15 +175,11 @@ export class SharedMobility {
     }
 
     const name: string | null = (() => {
-      if (poiCategory === 'escooter_rental') {
-        return location.attributes['Text'] ?? null;
-      }
-
       if (provider === '2EM Car Sharing') {
         return provider
       }
-
-      if (poiCategory === 'bicycle_rental' || poiCategory === 'car_sharing') {
+      
+      if (poiCategory === 'bicycle_rental' || poiCategory === 'car_sharing' || poiCategory === 'escooter_rental') {
         return location.poi.name;
       }
 
@@ -194,17 +193,23 @@ export class SharedMobility {
 
     const vehicle = new SharedMobility(poiCategory, vehicleType, provider, code, name);
 
-    const docksNoS = location.attributes['num_docks_available'] ?? null;
+    let mapAdditionalInformation: Record<string, any> = location.poi.mapAdditionalInformation ?? {};
+    if (!isOJPv2) {
+      // in OJPv1.0 the extra attributes are under LocationExtensionStructure
+      mapAdditionalInformation = location.attributes;
+    }
+
+    const docksNoS = mapAdditionalInformation['num_docks_available'] ?? null;
     if (docksNoS !== null) {
       vehicle.docksNo = parseInt(docksNoS, 10);
     }
-    const vehiclesNoS = location.attributes['num_vehicles_available'] ?? null;
+    const vehiclesNoS = mapAdditionalInformation['num_vehicles_available'] ?? null;
     if (vehiclesNoS !== null) {
       vehicle.isFixedStation = true
       vehicle.vehiclesNo = parseInt(vehiclesNoS, 10);
     }
 
-    vehicle.hireFacility = location.attributes['HireFacility'] ?? null;
+    vehicle.hireFacility = mapAdditionalInformation['HireFacility'] ?? null;
 
     if (provider === '2EM Car Sharing') {
       vehicle.vehicleName = location.poi.name;
