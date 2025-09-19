@@ -4,6 +4,10 @@ OJP-Demo URL: https://opentdatach.github.io/ojp-demo-app/
 
 ----
 
+19.September 2025
+- Fix OJP2 monomodal walking - [#288](https://github.com/openTdataCH/ojp-demo-app-src/issues/288) - [PR #289](https://github.com/openTdataCH/ojp-demo-app-src/pull/289)
+  - fix in the `ojp-sdk-legacy` SDK, use latest version
+
 17.September 2025
 - Enable Sharing Mobility in OJP2.0 - [Sharing for DemoApp OJP2.0 #285](https://github.com/openTdataCH/ojp-demo-app-src/issues/285) - [PR #286](https://github.com/openTdataCH/ojp-demo-app-src/pull/286)
   - for LIR, TR
