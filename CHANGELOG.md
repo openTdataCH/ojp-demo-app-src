@@ -4,6 +4,11 @@ OJP-Demo URL: https://opentdatach.github.io/ojp-demo-app/
 
 ----
 
+24.September 2025
+- Support for GF attribute - [GF attribute for big profile carTransportrail should be shown as well. #147](https://github.com/openTdataCH/ojp-demo-app-src/issues/147) - [PR #290](https://github.com/openTdataCH/ojp-demo-app-src/pull/290)
+  - different icon for `A__GF` services
+  - display attribute popup
+
 19.September 2025
 - Fix OJP2 monomodal walking - [#288](https://github.com/openTdataCH/ojp-demo-app-src/issues/288) - [PR #289](https://github.com/openTdataCH/ojp-demo-app-src/pull/289)
   - fix in the `ojp-sdk-legacy` SDK, use latest version

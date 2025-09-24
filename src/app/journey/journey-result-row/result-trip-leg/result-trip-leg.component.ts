@@ -605,6 +605,10 @@ export class ResultTripLegComponent implements OnInit {
           return defaultIcon;
         }
 
+        if (key === 'A__GF') {
+          return 'kom:circle-information-large';
+        }
+
         if (key.startsWith('A_')) {
           const code = key.replace(/A_*/, '');
           const standardIcon = 'fpl:sa-' + code.toLowerCase();
