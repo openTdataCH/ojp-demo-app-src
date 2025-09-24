@@ -8,7 +8,11 @@ import { DomSanitizer } from '@angular/platform-browser';
 import { StopEventType, StopPointCall, VehicleAccessType } from '../shared/types/_all';
 import { JourneyService } from '../shared/models/journey-service';
 
-type PublicTransportPictogram = 'picto-bus' | 'picto-railway' | 'picto-tram' | 'picto-rack-railway' | 'picto-funicular' | 'picto-cablecar' | 'picto-gondola' | 'picto-chairlift' | 'picto-boat' | 'car-sharing' | 'picto-bus-fallback' | 'autozug';
+type PublicTransportPictogram =  'picto-bus-fallback' | 'picto-bus'
+  | 'picto-railway' | 'picto-tram' | 'picto-rack-railway'
+  | 'picto-boat'
+  | 'picto-funicular' | 'picto-cablecar' | 'picto-gondola' | 'picto-chairlift'
+  | 'car-sharing' | 'autozug';
 
 const stopEventTypes: StopEventType[] = ['arrival', 'departure'];
 export class OJPHelpers {
