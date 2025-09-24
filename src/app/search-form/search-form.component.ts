@@ -18,8 +18,6 @@ import { DateHelpers } from '../helpers/date-helpers';
 import { UserTripService } from '../shared/services/user-trip.service'
 import { LanguageService } from '../shared/services/language.service';
 
-import { MapService } from '../shared/services/map.service';
-
 import { InputXmlPopoverComponent } from './input-xml-popover/input-xml-popover.component';
 import { EmbedSearchPopoverComponent } from './embed-search-popover/embed-search-popover.component';
 import { DebugXmlPopoverComponent } from './debug-xml-popover/debug-xml-popover.component';
