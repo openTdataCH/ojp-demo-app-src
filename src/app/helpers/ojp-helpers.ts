@@ -12,7 +12,7 @@ type PublicTransportPictogram =  'picto-bus-fallback' | 'picto-bus'
   | 'picto-railway' | 'picto-tram' | 'picto-rack-railway'
   | 'picto-boat'
   | 'picto-funicular' | 'picto-cablecar' | 'picto-gondola' | 'picto-chairlift'
-  | 'car-sharing' | 'autozug';
+  | 'car-sharing' | 'autozug' | 'train-gf';
 
 const stopEventTypes: StopEventType[] = ['arrival', 'departure'];
 export class OJPHelpers {
@@ -22,7 +22,12 @@ export class OJPHelpers {
     }
 
     if (service.mode.shortName?.text === 'ATZ') {
-      return 'autozug';
+      const hasGF = service.attribute.find(el => el.code === 'A__GF') ?? null;
+      if (hasGF) {
+        return 'train-gf';
+      } else {
+        return 'autozug';
+      }
     }
 
     if (service.mode.ptMode === 'rail') {
