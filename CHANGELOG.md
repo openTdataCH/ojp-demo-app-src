@@ -4,6 +4,10 @@ OJP-Demo URL: https://opentdatach.github.io/ojp-demo-app/
 
 ----
 
+25.September 2025
+- Enhance OJP TR params -  [PR #291](https://github.com/openTdataCH/ojp-demo-app-src/pull/291)
+  - adds conditional code for OJP 2.0 walking, use min/max/duration/distance filters
+
 24.September 2025
 - Support for GF attribute - [GF attribute for big profile carTransportrail should be shown as well. #147](https://github.com/openTdataCH/ojp-demo-app-src/issues/147) - [PR #290](https://github.com/openTdataCH/ojp-demo-app-src/pull/290)
   - different icon for `A__GF` services
