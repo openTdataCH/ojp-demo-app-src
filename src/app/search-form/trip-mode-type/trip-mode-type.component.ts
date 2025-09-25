@@ -101,6 +101,7 @@ export class TripModeTypeComponent implements OnInit {
   public mapPublicTransportModesFilter: Record<OJP_Legacy.ModeOfTransportType, boolean>;
 
   public isV1: boolean;
+  public showMinMaxDurationDistancePanel: boolean;
 
   public useRealTimeDataTypes: OJP_Legacy.UseRealtimeDataEnumeration[];
   public selectedUseRealTimeDataType: OJP_Legacy.UseRealtimeDataEnumeration;
@@ -144,6 +145,7 @@ export class TripModeTypeComponent implements OnInit {
     this.mapPublicTransportModesFilter.tram = false;
 
     this.isV1 = OJP_VERSION === '1.0';
+    this.showMinMaxDurationDistancePanel = this.isV1;
 
     this.useRealTimeDataTypes = ['full', 'explanatory', 'none'];
     this.selectedUseRealTimeDataType = this.userTripService.useRealTimeDataType;
