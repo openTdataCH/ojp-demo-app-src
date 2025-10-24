@@ -101,28 +101,44 @@ export class TripModeTypeComponent implements OnInit {
   public mapPublicTransportModesFilter: Record<OJP_Legacy.ModeOfTransportType, boolean>;
 
   public isV1: boolean;
-  public showMinMaxDurationDistancePanel: boolean;
 
   public useRealTimeDataTypes: OJP_Legacy.UseRealtimeDataEnumeration[];
   public selectedUseRealTimeDataType: OJP_Legacy.UseRealtimeDataEnumeration;
 
   constructor(public userTripService: UserTripService) {
+    const queryParams = new URLSearchParams(document.location.search);
+
     this.tripTransportModeData = appTripTransportModeData;
 
     this.tripTransportModes = JSON.parse(JSON.stringify(this.tripTransportModeData[0].transportModes));
     this.prevTransportMode = 'public_transport';
 
     this.settingsCollapseID = 'mode_custom_mode_settings_NOT_READY_YET';
-    
-    this.filterMinDurationControl.setValue('2', { emitEvent: false });
-    this.filterMaxDurationControl.setValue('30', { emitEvent: false });
-    this.filterMinDistanceControl.setValue('100', { emitEvent: false });
-    this.filterMaxDistanceControl.setValue('10000', { emitEvent: false });
 
-    this.isFilterMinDurationEnabled = true;
+    const userMinDuration = queryParams.get('minDuration');
+    const userMaxDuration = queryParams.get('maxDuration');
+    const userMinDistance = queryParams.get('minDistance');
+    const userMaxDistance = queryParams.get('maxDistance');
+    
+    this.filterMinDurationControl.setValue(userMinDuration ?? '2', { emitEvent: false });
+    this.filterMaxDurationControl.setValue(userMaxDuration ?? '30', { emitEvent: false });
+    this.filterMinDistanceControl.setValue(userMinDistance ?? '100', { emitEvent: false });
+    this.filterMaxDistanceControl.setValue(userMaxDistance ?? '10000', { emitEvent: false });
+
+    this.isFilterMinDurationEnabled = false;
     this.isFilterMaxDurationEnabled = true;
-    this.isFilterMinDistanceEnabled = true;
-    this.isFilterMaxDistanceEnabled = true;
+    this.isFilterMinDistanceEnabled = false;
+    this.isFilterMaxDistanceEnabled = false;
+
+    if (userMinDuration !== null) {
+      this.isFilterMinDurationEnabled = true;
+    }
+    if (userMinDistance !== null) {
+      this.isFilterMinDistanceEnabled = true;
+    }
+    if (userMaxDistance !== null) {
+      this.isFilterMaxDistanceEnabled = true;
+    }
 
     this.isNumberOfResultsEnabled = true;
     this.isNumberOfResultsBeforeEnabled = false;
@@ -145,7 +161,6 @@ export class TripModeTypeComponent implements OnInit {
     this.mapPublicTransportModesFilter.tram = false;
 
     this.isV1 = OJP_VERSION === '1.0';
-    this.showMinMaxDurationDistancePanel = this.isV1;
 
     this.useRealTimeDataTypes = ['full', 'explanatory', 'none'];
     this.selectedUseRealTimeDataType = this.userTripService.useRealTimeDataType;
@@ -194,10 +209,7 @@ export class TripModeTypeComponent implements OnInit {
         });
       }
 
-      const isWalking = (this.userTripService.tripTransportMode === 'walk') || (this.userTripService.tripTransportMode === 'foot');
-      if (isOJPv2 && isWalking) {
-        this.resetWalkingParams();
-      }
+      this.updateAdditionalRestrictions();
 
       this.userTripService.searchFormAfterDefaultsInited.emit();
     });
@@ -322,11 +334,6 @@ export class TripModeTypeComponent implements OnInit {
       this.userTripService.numberOfResults = TRIP_REQUEST_DEFAULT_NUMBER_OF_RESULTS;
     }
 
-    const isWalking = (this.userTripService.tripTransportMode === 'walk') || (this.userTripService.tripTransportMode === 'foot');
-    if (isOJPv2 && isWalking) {
-      this.resetWalkingParams();
-    }
-
     this.userTripService.updateTripMode();
     this.userTripService.updateTripLocationCustomMode();
 
@@ -372,16 +379,5 @@ export class TripModeTypeComponent implements OnInit {
     this.userTripService.isAdditionalRestrictionsEnabled = !this.userTripService.isAdditionalRestrictionsEnabled;
 
     this.updateAdditionalRestrictions();
-  }
-
-  private resetWalkingParams() {
-    this.filterMaxDurationControl.setValue('60', { emitEvent: false });
-    
-    this.isFilterMinDurationEnabled = false;
-    this.isFilterMaxDurationEnabled = true;
-    this.isFilterMinDistanceEnabled = false;
-    this.isFilterMaxDistanceEnabled = false;
-    
-    this.showMinMaxDurationDistancePanel = true;
   }
 }
