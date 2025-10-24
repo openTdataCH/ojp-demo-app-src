@@ -14,18 +14,18 @@ export class MapHelpers {
 
   public static computePointLngLatFromFeature(feature: GeoJSON.Feature): mapboxgl.LngLat | null {
     if (feature.geometry.type !== 'Point') {
-      return null
+      return null;
     }
 
-    const featureCoords: mapboxgl.LngLatLike = (feature.geometry as GeoJSON.Point).coordinates as [number, number]
-    const featureLngLat = mapboxgl.LngLat.convert(featureCoords)
+    const featureCoords: mapboxgl.LngLatLike = (feature.geometry as GeoJSON.Point).coordinates as [number, number];
+    const featureLngLat = mapboxgl.LngLat.convert(featureCoords);
 
-    return featureLngLat
+    return featureLngLat;
   }
 
   public static bboxPxFromLngLatWidthPx(map: mapboxgl.Map, lngLat: mapboxgl.LngLat, width: number, height: number | null = null): [mapboxgl.PointLike, mapboxgl.PointLike] {
     if (height === null) {
-      height = width
+      height = width;
     }
 
     const pointPx = map.project(lngLat);
@@ -38,29 +38,44 @@ export class MapHelpers {
         pointPx.x + width / 2,
         pointPx.y - height / 2,
       ]
-    ]
+    ];
 
-    return bboxPx
+    return bboxPx;
+  }
+
+  private static bboxPxToBbox(map: mapboxgl.Map, bboxPx: [mapboxgl.PointLike, mapboxgl.PointLike]): mapboxgl.LngLatBounds {
+    const coordSW = map.unproject(bboxPx[0]);
+    const coordNE = map.unproject(bboxPx[1]);
+    const bbox = new mapboxgl.LngLatBounds(coordSW, coordNE);
+
+    return bbox;
+  }
+
+  public static bboxFromLngLatWidthPx(map: mapboxgl.Map, lngLat: mapboxgl.LngLat, width: number, height: number | null = null): mapboxgl.LngLatBounds {
+    const bboxPx = MapHelpers.bboxPxFromLngLatWidthPx(map, lngLat, width, height);
+    const bbox = MapHelpers.bboxPxToBbox(map, bboxPx);
+    
+    return bbox;
   }
 
   public static areBoundsInsideOtherBounds(bounds: mapboxgl.LngLatBounds, otherBounds: mapboxgl.LngLatBounds): boolean {
     if (bounds.getWest() < otherBounds.getWest()) {
-      return false
+      return false;
     }
 
     if (bounds.getNorth() > otherBounds.getNorth()) {
-      return false
+      return false;
     }
 
     if (bounds.getEast() > otherBounds.getEast()) {
-      return false
+      return false;
     }
 
     if (bounds.getSouth() < otherBounds.getSouth()) {
-      return false
+      return false;
     }
 
-    return true
+    return true;
   }
 
   public static queryNearbyFeaturesByLayerIDs(map: mapboxgl.Map, lngLat: mapboxgl.LngLat, layerIDs: string[]): NearbyFeature[] {
