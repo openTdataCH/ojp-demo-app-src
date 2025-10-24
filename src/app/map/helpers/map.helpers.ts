@@ -116,9 +116,11 @@ export class MapHelpers {
   }
 
   public static highlightBBOXPxOnMap(bboxPx: [mapboxgl.PointLike, mapboxgl.PointLike], map: mapboxgl.Map) {
-    const coordSW = map.unproject(bboxPx[0]);
-    const coordNE = map.unproject(bboxPx[1]);
-    const bbox = new mapboxgl.LngLatBounds(coordSW, coordNE);
+    const bbox = MapHelpers.bboxPxToBbox(map, bboxPx);
+    MapHelpers.highlightBBOXOnMap(bbox, map);
+  }  
+  
+  public static highlightBBOXOnMap(bbox: mapboxgl.LngLatBounds, map: mapboxgl.Map) {
     const featureCoords: GeoJSON.Position[] = [
       bbox.getSouthWest().toArray(),
       bbox.getSouthEast().toArray(),
