@@ -36,7 +36,7 @@ export class WebFooterComponent implements OnInit {
     const isTopograhicPlaceMapLayerEnabled = DEBUG_LEVEL === 'DEBUG';
 
     this.model = {
-      lastUpdate: '25.Sep 2025',
+      lastUpdate: '24.Oct 2025',
       isTopograhicPlaceMapLayerEnabled: isTopograhicPlaceMapLayerEnabled,
       rasterLayers: MAP_RASTER_LAYERS,
       mapSDK_Versions: {
