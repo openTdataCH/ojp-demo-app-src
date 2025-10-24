@@ -47,7 +47,7 @@ export class WebFooterComponent implements OnInit {
       },
       mapChangelogURLs: {
         ojpDemoApp: 'https://github.com/openTdataCH/ojp-demo-app-src/blob/main/CHANGELOG.md',
-        ojpSDK_Legacy: 'https://github.com/openTdataCH/ojp-js/blob/main/CHANGELOG.md',
+        ojpSDK_Legacy: 'https://github.com/openTdataCH/ojp-js/blob/feature/ojp-sdk-legacy/CHANGELOG.md',
         ojpSDK_Next: 'https://github.com/openTdataCH/ojp-js/blob/feature/ojp-sdk-next/CHANGELOG.md',
         ojpSDK_SharedTypes: 'https://github.com/openTdataCH/ojp-shared-types/blob/main/CHANGELOG.md',
       },

@@ -236,7 +236,18 @@ export class TripModeTypeComponent implements OnInit {
     let minDistance = null;
     let maxDistance = null;
     
-    let numberOfResults: number | null = null;
+    let numberOfResults: number | null = (() => {
+      if (this.userTripService.tripModeType !== 'monomodal') {
+        return 1;
+      }
+
+      if (this.userTripService.tripTransportMode !== 'public_transport') {
+        return 0;
+      }
+
+      return TRIP_REQUEST_DEFAULT_NUMBER_OF_RESULTS;
+    })();
+
     let numberOfResultsBefore: number | null = null;
     let numberOfResultsAfter: number | null = null;
     
