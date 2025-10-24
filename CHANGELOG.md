@@ -5,7 +5,9 @@ OJP-Demo URL: https://opentdatach.github.io/ojp-demo-app/
 ----
 
 24.October 2025
-- Improve TR search for longer walking paths
+- Improve TR search for longer walking paths - [PR #294](https://github.com/openTdataCH/ojp-demo-app-src/pull/294)
+  - always show min/max/duration/distance panel
+  - allow `minDuration`, `maxDuration`, `minDistance`, `maxDistance` to be set by the user, propagate them in permalinks
 
 25.September 2025
 - Enhance OJP TR params - [PR #291](https://github.com/openTdataCH/ojp-demo-app-src/pull/291)
