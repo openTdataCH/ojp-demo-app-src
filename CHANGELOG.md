@@ -5,7 +5,7 @@ OJP-Demo URL: https://opentdatach.github.io/ojp-demo-app/
 ----
 
 25.September 2025
-- Enhance OJP TR params -  [PR #291](https://github.com/openTdataCH/ojp-demo-app-src/pull/291)
+- Enhance OJP TR params - [PR #291](https://github.com/openTdataCH/ojp-demo-app-src/pull/291)
   - adds conditional code for OJP 2.0 walking, use min/max/duration/distance filters
 
 24.September 2025
