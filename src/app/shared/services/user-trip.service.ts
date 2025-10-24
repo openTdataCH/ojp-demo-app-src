@@ -548,6 +548,19 @@ export class UserTripService {
 
     if (this.isAdditionalRestrictionsEnabled) {
       queryParams.append('advanced', 'yes');
+
+      if (this.fromTripLocation?.minDistance !== null) {
+        queryParams.append('minDistance', String(this.fromTripLocation?.minDistance));
+      }
+      if (this.fromTripLocation?.maxDistance !== null) {
+        queryParams.append('maxDistance', String(this.fromTripLocation?.maxDistance));
+      }
+      if (this.fromTripLocation?.minDuration !== null) {
+        queryParams.append('minDuration', String(this.fromTripLocation?.minDuration));
+      }
+      if (this.fromTripLocation?.maxDuration !== null) {
+        queryParams.append('maxDuration', String(this.fromTripLocation?.maxDuration));
+      }
     }
 
     this.permalinkRelativeURL = document.location.pathname.replace('/embed', '') + '?' + queryParams.toString();

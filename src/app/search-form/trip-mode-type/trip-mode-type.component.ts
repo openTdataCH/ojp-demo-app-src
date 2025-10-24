@@ -106,22 +106,39 @@ export class TripModeTypeComponent implements OnInit {
   public selectedUseRealTimeDataType: OJP_Legacy.UseRealtimeDataEnumeration;
 
   constructor(public userTripService: UserTripService) {
+    const queryParams = new URLSearchParams(document.location.search);
+
     this.tripTransportModeData = appTripTransportModeData;
 
     this.tripTransportModes = JSON.parse(JSON.stringify(this.tripTransportModeData[0].transportModes));
     this.prevTransportMode = 'public_transport';
 
     this.settingsCollapseID = 'mode_custom_mode_settings_NOT_READY_YET';
-    
-    this.filterMinDurationControl.setValue('2', { emitEvent: false });
-    this.filterMaxDurationControl.setValue('30', { emitEvent: false });
-    this.filterMinDistanceControl.setValue('100', { emitEvent: false });
-    this.filterMaxDistanceControl.setValue('10000', { emitEvent: false });
 
-    this.isFilterMinDurationEnabled = true;
+    const userMinDuration = queryParams.get('minDuration');
+    const userMaxDuration = queryParams.get('maxDuration');
+    const userMinDistance = queryParams.get('minDistance');
+    const userMaxDistance = queryParams.get('maxDistance');
+    
+    this.filterMinDurationControl.setValue(userMinDuration ?? '2', { emitEvent: false });
+    this.filterMaxDurationControl.setValue(userMaxDuration ?? '30', { emitEvent: false });
+    this.filterMinDistanceControl.setValue(userMinDistance ?? '100', { emitEvent: false });
+    this.filterMaxDistanceControl.setValue(userMaxDistance ?? '10000', { emitEvent: false });
+
+    this.isFilterMinDurationEnabled = false;
     this.isFilterMaxDurationEnabled = true;
-    this.isFilterMinDistanceEnabled = true;
-    this.isFilterMaxDistanceEnabled = true;
+    this.isFilterMinDistanceEnabled = false;
+    this.isFilterMaxDistanceEnabled = false;
+
+    if (userMinDuration !== null) {
+      this.isFilterMinDurationEnabled = true;
+    }
+    if (userMinDistance !== null) {
+      this.isFilterMinDistanceEnabled = true;
+    }
+    if (userMaxDistance !== null) {
+      this.isFilterMaxDistanceEnabled = true;
+    }
 
     this.isNumberOfResultsEnabled = true;
     this.isNumberOfResultsBeforeEnabled = false;
