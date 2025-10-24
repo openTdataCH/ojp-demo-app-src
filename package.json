@@ -28,7 +28,7 @@
     "tslib": "^2.3.0",
     "zone.js": "~0.11.4",
 
-    "ojp-sdk-legacy": "0.18.12",
+    "ojp-sdk-legacy": "0.18.13",
     "ojp-shared-types": "0.0.18",
     "ojp-sdk-next": "0.20.29",
 

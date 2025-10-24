@@ -428,14 +428,18 @@ export class UserTripService {
   updateTripEndpoint(location: OJP_Legacy.Location | null, endpointType: OJP_Legacy.JourneyPointType, updateSource: LocationUpdateSource) {
     if (endpointType === 'From') {
       if (location) {
-        this.fromTripLocation = new OJP_Legacy.TripLocationPoint(location)
+        if (this.fromTripLocation) {
+          this.fromTripLocation = this.patchTripLocationPoint(this.fromTripLocation, location);
+        }
       } else {
-        this.fromTripLocation = null
+        this.fromTripLocation = null;
       }
     }
     if (endpointType === 'To') {
       if (location) {
-        this.toTripLocation = new OJP_Legacy.TripLocationPoint(location)
+        if (this.toTripLocation) {
+          this.toTripLocation = this.patchTripLocationPoint(this.toTripLocation, location);
+        }
       } else {
         this.toTripLocation = null
       }
@@ -454,6 +458,21 @@ export class UserTripService {
 
     this.searchParamsReset.emit();
     this.updateURLs();
+  }
+
+  private patchTripLocationPoint(tripLocation: OJP_Legacy.TripLocationPoint, location: OJP_Legacy.Location) {
+    const minDistance = tripLocation.minDistance ?? null;
+    const maxDistance = tripLocation.maxDistance ?? null;
+    const minDuration = tripLocation.minDuration ?? null;
+    const maxDuration = tripLocation.maxDuration ?? null;
+
+    const newTripLocation = new OJP_Legacy.TripLocationPoint(location);
+    newTripLocation.minDistance = minDistance;
+    newTripLocation.maxDistance = maxDistance;
+    newTripLocation.minDuration = minDuration;
+    newTripLocation.maxDuration = maxDuration;
+
+    return newTripLocation;
   }
 
   updateViaPoint(location: OJP_Legacy.Location, viaIDx: number) {
