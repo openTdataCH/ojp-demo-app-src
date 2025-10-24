@@ -92,6 +92,8 @@
           </div>
         </div>
       </div>
+
+      <hr />
       
       <div class="d-flex align-items-center mb-2">
         <div class="flex-grow-1">
@@ -123,6 +125,9 @@
           <input sbbInput style="width: 50px;" [(ngModel)]="this.numberOfResultsAfter" (change)="updateAdditionalRestrictions()" />
         </div>
       </div>
+
+      <hr />
+
       <ng-container *ngIf="!this.isV1;">
         <div class="d-flex gap-2 align-items-center mb-3">
           <div>UseRealTimeData</div>
@@ -143,6 +148,8 @@
         <sbb-checkbox [(ngModel)]="this.mapPublicTransportModesFilter.tram" (change)="updateAdditionalRestrictions()">tram</sbb-checkbox>
         <sbb-checkbox [(ngModel)]="this.mapPublicTransportModesFilter.water" (change)="updateAdditionalRestrictions()">boat</sbb-checkbox>
       </div>
+
+      <hr />
 
       <ng-container *ngIf="!this.isV1;">
         <div class="mb-2">
