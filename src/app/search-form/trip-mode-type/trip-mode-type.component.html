@@ -49,7 +49,8 @@
       id="{{ this.settingsCollapseID }}"
     >
     <div class="endpoint-settings">
-      <ng-container *ngIf="this.showMinMaxDurationDistancePanel;">
+      <!-- MinMaxDurationDistancePanel -->
+      <div>
         <div class="d-flex align-items-center mb-2">
           <div class="flex-grow-1">
             <sbb-checkbox value="single-checkbox" [(ngModel)]="this.isFilterMinDurationEnabled" (change)="updateAdditionalRestrictions()">
@@ -90,7 +91,7 @@
             <input sbbInput style="width: 70px;" [formControl]="this.filterMaxDistanceControl" /> meters
           </div>
         </div>
-      </ng-container>
+      </div>
       
       <div class="d-flex align-items-center mb-2">
         <div class="flex-grow-1">
