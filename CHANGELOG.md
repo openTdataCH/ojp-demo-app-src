@@ -9,6 +9,12 @@ OJP-Demo URL: https://opentdatach.github.io/ojp-demo-app/
   - always show min/max/duration/distance panel
   - allow `minDuration`, `maxDuration`, `minDistance`, `maxDistance` to be set by the user, propagate them in permalinks
   - when dragging the points try to keep the prev properties, i.e. min/max/distance/duration
+- Updates NumberOfResults - [PR #298](https://github.com/openTdataCH/ojp-demo-app-src/pull/298)
+  - New formula for NumberOfResults
+    - if monomodal and PT => 5
+    - if monomodal and NOT PT => 0
+    - if not monomodal => 1
+    - otherwise 5
 
 25.September 2025
 - Enhance OJP TR params - [PR #291](https://github.com/openTdataCH/ojp-demo-app-src/pull/291)
