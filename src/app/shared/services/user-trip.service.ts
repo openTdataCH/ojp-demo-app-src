@@ -452,12 +452,14 @@ export class UserTripService {
   }
 
   private patchTripLocationPoint(tripLocation: OJP_Legacy.TripLocationPoint, location: OJP_Legacy.Location) {
+    const customTransportMode = tripLocation.customTransportMode ?? null;
     const minDistance = tripLocation.minDistance ?? null;
     const maxDistance = tripLocation.maxDistance ?? null;
     const minDuration = tripLocation.minDuration ?? null;
     const maxDuration = tripLocation.maxDuration ?? null;
 
     const newTripLocation = new OJP_Legacy.TripLocationPoint(location);
+    newTripLocation.customTransportMode = customTransportMode;
     newTripLocation.minDistance = minDistance;
     newTripLocation.maxDistance = maxDistance;
     newTripLocation.minDuration = minDuration;
@@ -491,27 +493,27 @@ export class UserTripService {
   }
 
   public updateURLs() {
-    const queryParams = new URLSearchParams()
+    const queryParams = new URLSearchParams();
 
-    const endpointTypes: OJP_Legacy.JourneyPointType[] = ['From', 'To']
+    const endpointTypes: OJP_Legacy.JourneyPointType[] = ['From', 'To'];
     endpointTypes.forEach(endpointType => {
-      const tripLocationPoint = endpointType === 'From' ? this.fromTripLocation : this.toTripLocation
+      const tripLocationPoint = endpointType === 'From' ? this.fromTripLocation : this.toTripLocation;
 
-      const queryParamKey = endpointType.toLowerCase()
+      const queryParamKey = endpointType.toLowerCase();
 
-      const stopPlaceRef = tripLocationPoint?.location.stopPlace?.stopPlaceRef ?? null
+      const stopPlaceRef = tripLocationPoint?.location.stopPlace?.stopPlaceRef ?? null;
       if (stopPlaceRef) {
-        queryParams.append(queryParamKey, stopPlaceRef)
+        queryParams.append(queryParamKey, stopPlaceRef);
       } else {
-        let geoPositionLngLatS = tripLocationPoint?.location.geoPosition?.asLatLngString(true) ?? null
+        let geoPositionLngLatS = tripLocationPoint?.location.geoPosition?.asLatLngString(true) ?? null;
         if (geoPositionLngLatS) {
           const includeLiteralCoords = false;
           const locationName = tripLocationPoint?.location.computeLocationName(includeLiteralCoords);
           if (locationName) {
-            geoPositionLngLatS = geoPositionLngLatS + '(' + locationName + ')'
+            geoPositionLngLatS = geoPositionLngLatS + '(' + locationName + ')';
           }
 
-          queryParams.append(queryParamKey, geoPositionLngLatS)
+          queryParams.append(queryParamKey, geoPositionLngLatS);
         }
       }
     })
@@ -522,14 +524,14 @@ export class UserTripService {
       if (location.stopPlace) {
         viaParamParts.push(location.stopPlace.stopPlaceRef);
       } else {
-        const geoPositionLngLatS = location?.geoPosition?.asLatLngString(true) ?? null
+        const geoPositionLngLatS = location?.geoPosition?.asLatLngString(true) ?? null;
         if (geoPositionLngLatS) {
           viaParamParts.push(geoPositionLngLatS);
         }
       }
     });
     if (viaParamParts.length > 0) {
-      queryParams.append('via', viaParamParts.join(';'))
+      queryParams.append('via', viaParamParts.join(';'));
     }
     
     if (this.tripModeType !== 'monomodal') {
@@ -573,7 +575,14 @@ export class UserTripService {
       }
     }
 
-    this.permalinkRelativeURL = document.location.pathname.replace('/embed', '') + '?' + queryParams.toString();
+    const permalinkQueryParams = new URLSearchParams(queryParams);
+    const currentQueryParams = new URLSearchParams(document.location.search);
+    const userVersion = currentQueryParams.get('v');
+    if (userVersion) {
+      permalinkQueryParams.append('v', userVersion);
+    }
+    this.permalinkRelativeURL = document.location.pathname.replace('/embed', '') + '?' + permalinkQueryParams.toString();
+    
     this.updateLinkedURLs(queryParams);
 
     const embedQueryParams = new URLSearchParams();
@@ -583,7 +592,7 @@ export class UserTripService {
       if (value !== null) {
         embedQueryParams.append(key, value);
       }
-    })
+    });
 
     this.embedQueryParams = embedQueryParams;
   }

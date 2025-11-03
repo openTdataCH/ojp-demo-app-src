@@ -7,6 +7,10 @@ OJP-Demo URL: https://opentdatach.github.io/ojp-demo-app/
 3.November 2025
 - Fix location pickup mobile - [PR #299](https://github.com/openTdataCH/ojp-demo-app-src/pull/299)
   - trigger update TripLocation only when we have a location
+- Fix TR params - [PR #302](https://github.com/openTdataCH/ojp-demo-app-src/pull/302)
+  - fix `Infeasible` typo - [Typo in trip status "Infeasable" #292](https://github.com/openTdataCH/ojp-demo-app-src/issues/292)
+  - keep `customTransportMode` when dragging / recreating trip endpoints
+  - if present, propagate v queryParam, for current permalink URL
 
 24.October 2025
 - Improve TR search for longer walking paths - [PR #294](https://github.com/openTdataCH/ojp-demo-app-src/pull/294)
