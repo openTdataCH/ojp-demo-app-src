@@ -9,6 +9,7 @@ import { SbbExpansionPanel } from '@sbb-esta/angular/accordion';
 import { SbbNotificationToast } from '@sbb-esta/angular/notification-toast';
 import { SbbRadioChange } from '@sbb-esta/angular/radio-button';
 
+import * as OJP_Next from 'ojp-sdk-next';
 
 import OJP_Legacy from '../config/ojp-legacy';
 
@@ -71,9 +72,9 @@ export class SearchFormComponent implements OnInit {
     public userTripService: UserTripService,
     private breakpointObserver: BreakpointObserver,
   ) {
-    this.searchTime = OJP_Legacy.DateHelpers.formatTimeHHMM(searchDate);
     const searchDate = this.userTripService.departureDate;
     this.searchDate = searchDate;
+    this.searchTime = OJP_Next.DateHelpers.formatTimeHHMM(searchDate);
 
     this.fromLocationText = '';
     this.toLocationText = '';
@@ -523,7 +524,7 @@ export class SearchFormComponent implements OnInit {
   public resetDateTime() {
     const nowDateTime = new Date();
     this.searchDate = nowDateTime;
-    this.searchTime = OJP_Legacy.DateHelpers.formatTimeHHMM(nowDateTime);
+    this.searchTime = OJP_Next.DateHelpers.formatTimeHHMM(nowDateTime);
     this.userTripService.updateDepartureDateTime(this.computeFormDepartureDate());
   }
 

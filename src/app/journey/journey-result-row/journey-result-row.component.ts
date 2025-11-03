@@ -108,9 +108,9 @@ export class JourneyResultRowComponent implements OnInit {
       this.tripHeaderStats.tripChangesInfo = trip.stats.transferNo + ' transfers';
     }
 
-    this.tripHeaderStats.tripFromTime = OJP_Legacy.DateHelpers.formatTimeHHMM(trip.stats.startDatetime);
+    this.tripHeaderStats.tripFromTime = OJP_Next.DateHelpers.formatTimeHHMM(trip.stats.startDatetime);
     
-    this.tripHeaderStats.tripToTime = OJP_Legacy.DateHelpers.formatTimeHHMM(trip.stats.endDatetime);
+    this.tripHeaderStats.tripToTime = OJP_Next.DateHelpers.formatTimeHHMM(trip.stats.endDatetime);
     const dayDiff = JourneyResultRowComponent.getDayOffset(trip.stats.endDatetime, trip.stats.startDatetime);
     if(dayDiff > 0){
       this.tripHeaderStats.tripToTime = '(+' + dayDiff + 'd) ' + this.tripHeaderStats.tripToTime;

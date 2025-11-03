@@ -152,7 +152,7 @@ export class TripInfoSearchComponent implements OnInit {
     const queryParams = new URLSearchParams();
     queryParams.set('ref', this.model.journeyRef);
     
-    const dayS =  OJP_Legacy.DateHelpers.formatDate(this.model.journeyDateTime).substring(0, 10);
+    const dayS = OJP_Next.DateHelpers.formatDate(this.model.journeyDateTime).substring(0, 10);
     queryParams.set('day', dayS);
 
     const urlAddress = document.location.pathname + '?' + queryParams.toString();

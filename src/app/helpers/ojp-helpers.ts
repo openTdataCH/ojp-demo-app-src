@@ -495,10 +495,10 @@ export class OJPHelpers {
       const sourceStopEvent = isArrival ? oldStopPoint.arrivalData : oldStopPoint.departureData;
       
       const timetableDate = sourceStopEvent?.timetableTime ?? null;
-      const timetableDateF = timetableDate ? OJP_Legacy.DateHelpers.formatTimeHHMM(timetableDate) : '';
+      const timetableDateF = timetableDate ? OJP_Next.DateHelpers.formatTimeHHMM(timetableDate) : '';
       
       const realtimeDate = sourceStopEvent?.estimatedTime ?? null;
-      const realtimeDateF = realtimeDate ? OJP_Legacy.DateHelpers.formatTimeHHMM(realtimeDate) : '';
+      const realtimeDateF = realtimeDate ? OJP_Next.DateHelpers.formatTimeHHMM(realtimeDate) : '';
 
       if (isArrival) {
         stopCall.arrival.timetable = timetableDate;
@@ -538,7 +538,7 @@ export class OJPHelpers {
 
           const endpointTimeDate = isFrom ? timedLeg.fromStopPoint.departureData?.timetableTime : timedLeg.toStopPoint.arrivalData?.timetableTime;
           if (endpointTimeDate) {
-            const endpointTimeDateS = OJP_Legacy.DateHelpers.formatTimeHHMM(endpointTimeDate);
+            const endpointTimeDateS = OJP_Next.DateHelpers.formatTimeHHMM(endpointTimeDate);
             hashParts.push(endpointTimeDateS);
           }
         });

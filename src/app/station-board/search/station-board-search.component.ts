@@ -8,6 +8,7 @@ import { SbbNotificationToast } from '@sbb-esta/angular/notification-toast';
 import * as GeoJSON from 'geojson';
 
 import * as OJP_SharedTypes from 'ojp-shared-types';
+import * as OJP_Next from 'ojp-sdk-next';
 
 import OJP_Legacy from '../../config/ojp-legacy';
 
@@ -89,7 +90,7 @@ export class StationBoardSearchComponent implements OnInit {
     this.searchLocation = null;
 
     this.stationBoardService.searchDate = this.computeSearchDateTime();
-    this.searchTime = OJP_Legacy.DateHelpers.formatTimeHHMM(this.stationBoardService.searchDate);
+    this.searchTime = OJP_Next.DateHelpers.formatTimeHHMM(this.stationBoardService.searchDate);
     
     this.isSearching = false
 
@@ -291,8 +292,9 @@ export class StationBoardSearchComponent implements OnInit {
     const now = new Date();
     const deltaNowMinutes = Math.abs((now.getTime() - searchDate.getTime()) / 1000 / 60);
     if (deltaNowMinutes > 5) {
-      const nowDateF = OJP_Legacy.DateHelpers.formatDate(new Date());
-      const searchDateF = OJP_Legacy.DateHelpers.formatDate(searchDate);
+      const nowDate = new Date();
+      const nowDateF = OJP_Next.DateHelpers.formatDate(nowDate);
+      const searchDateF = OJP_Next.DateHelpers.formatDate(searchDate);
 
       const nowDayF = nowDateF.substring(0, 10);
       const searchDayF = searchDateF.substring(0, 10);
@@ -300,8 +302,8 @@ export class StationBoardSearchComponent implements OnInit {
         queryParams.set('day', searchDayF);
       }
 
-      const nowTimeF = nowDateF.substring(11, 16);
-      const searchTimeF = searchDateF.substring(11, 16);
+      const nowTimeF = OJP_Next.DateHelpers.formatTimeHHMM(nowDate);
+      const searchTimeF = OJP_Next.DateHelpers.formatTimeHHMM(searchDate);
       if (nowTimeF !== searchTimeF) {
         queryParams.set('time', searchTimeF);
       }
@@ -575,7 +577,7 @@ export class StationBoardSearchComponent implements OnInit {
   public resetDateTime() {
     const nowDateTime = new Date();
     this.searchDate = nowDateTime;
-    this.searchTime = OJP_Legacy.DateHelpers.formatTimeHHMM(nowDateTime);
+    this.searchTime = OJP_Next.DateHelpers.formatTimeHHMM(nowDateTime);
     this.stationBoardService.searchDate = nowDateTime;
   }
 }

@@ -550,7 +550,7 @@ export class UserTripService {
     const now = new Date();
     const deltaNowMinutes = Math.abs((now.getTime() - this.departureDate.getTime()) / 1000 / 60);
     if (deltaNowMinutes > 5) {
-      const dateTimeS = OJP_Legacy.DateHelpers.formatDate(this.departureDate);
+      const dateTimeS = OJP_Next.DateHelpers.formatDate(this.departureDate);
       queryParams.append('trip_datetime', dateTimeS.substring(0, 16));
     }
 

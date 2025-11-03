@@ -115,11 +115,11 @@ export class TripInfoResult {
 
         const timetableDateSrc = sourceStopEvent?.timetabledTime ?? null;
         const timetableDate = timetableDateSrc ? new Date(Date.parse(timetableDateSrc)) : null;
-        const timetableDateF = timetableDate ? OJP_Legacy.DateHelpers.formatTimeHHMM(timetableDate) : '';
+        const timetableDateF = timetableDate ? OJP_Next.DateHelpers.formatTimeHHMM(timetableDate) : '';
 
         const realtimeDateSrc = sourceStopEvent?.estimatedTime ?? null;
         const realtimeDate = realtimeDateSrc ? new Date(Date.parse(realtimeDateSrc)) : null;
-        const realtimeDateF = realtimeDate ? OJP_Legacy.DateHelpers.formatTimeHHMM(realtimeDate) : '';
+        const realtimeDateF = realtimeDate ? OJP_Next.DateHelpers.formatTimeHHMM(realtimeDate) : '';
 
         if (isArrival) {
           stopCall.arrival.timetable = timetableDate;
