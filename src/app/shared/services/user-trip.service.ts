@@ -452,12 +452,14 @@ export class UserTripService {
   }
 
   private patchTripLocationPoint(tripLocation: OJP_Legacy.TripLocationPoint, location: OJP_Legacy.Location) {
+    const customTransportMode = tripLocation.customTransportMode ?? null;
     const minDistance = tripLocation.minDistance ?? null;
     const maxDistance = tripLocation.maxDistance ?? null;
     const minDuration = tripLocation.minDuration ?? null;
     const maxDuration = tripLocation.maxDuration ?? null;
 
     const newTripLocation = new OJP_Legacy.TripLocationPoint(location);
+    newTripLocation.customTransportMode = customTransportMode;
     newTripLocation.minDistance = minDistance;
     newTripLocation.maxDistance = maxDistance;
     newTripLocation.minDuration = minDuration;
