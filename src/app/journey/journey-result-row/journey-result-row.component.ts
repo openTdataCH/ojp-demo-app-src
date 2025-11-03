@@ -23,7 +23,7 @@ interface TripHeaderStats {
   tripDistanceS: string,
 
   isCancelled: boolean,
-  isInfeasable: boolean,
+  isInfeasible: boolean,
   isUnplanned: boolean,
 }
 
@@ -96,7 +96,7 @@ export class JourneyResultRowComponent implements OnInit {
     this.tripHeaderStats.title = 'Trip ' + ((this.idx ?? 0) + 1);
 
     this.tripHeaderStats.isCancelled = trip.stats.isCancelled === true;
-    this.tripHeaderStats.isInfeasable = trip.stats.isInfeasable === true;
+    this.tripHeaderStats.isInfeasible = trip.stats.isInfeasible === true;
     this.tripHeaderStats.isUnplanned = trip.stats.isUnplanned === true;
       
     if (trip.stats.transferNo === 0) {
