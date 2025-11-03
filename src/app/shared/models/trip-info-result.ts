@@ -1,4 +1,4 @@
-import * as OJP_Types from 'ojp-shared-types';
+import * as OJP_SharedTypes from 'ojp-shared-types';
 import * as OJP_Next from 'ojp-sdk-next';
 import OJP_Legacy from '../../config/ojp-legacy';
 
@@ -21,7 +21,7 @@ export class TripInfoResult {
     this.trackSectionsGeoPositions = [];
   }
 
-  public static initWithTripInfoDeliverySchema(tripInfoDeliverySchema: OJP_Types.TripInfoDeliverySchema | OJP_Types.OJPv1_TripInfoDeliverySchema | null): TripInfoResult | null {
+  public static initWithTripInfoDeliverySchema(tripInfoDeliverySchema: OJP_SharedTypes.TripInfoDeliverySchema | OJP_SharedTypes.OJPv1_TripInfoDeliverySchema | null): TripInfoResult | null {
     if (tripInfoDeliverySchema === null) {
       return null;
     }
@@ -141,12 +141,12 @@ export class TripInfoResult {
       const isOJPv2 = OJP_VERSION === '2.0';
 
       if (!isOJPv2) {
-        const oldTripInfoResultSchema = firstTripInfoResultSchema as OJP_Types.OJPv1_TripInfoResultStructureSchema;
+        const oldTripInfoResultSchema = firstTripInfoResultSchema as OJP_SharedTypes.OJPv1_TripInfoResultStructureSchema;
         const service = JourneyService.initWithLegacyTripInfoResultSchema(oldTripInfoResultSchema);
         return service;
       }
 
-      const serviceSchema = (firstTripInfoResultSchema as OJP_Types.TripInfoResultStructureSchema).service ?? null;
+      const serviceSchema = (firstTripInfoResultSchema as OJP_SharedTypes.TripInfoResultStructureSchema).service ?? null;
       if (serviceSchema) {
         const service = JourneyService.initWithDatedJourneySchema(serviceSchema);
         return service;

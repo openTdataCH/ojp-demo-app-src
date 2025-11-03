@@ -3,7 +3,6 @@ import { EventEmitter, Injectable } from '@angular/core'
 import mapboxgl from 'mapbox-gl'
 
 import * as OJP_Next from 'ojp-sdk-next';
-import * as OJP_Types from 'ojp-shared-types';
 import * as OJP_SharedTypes from 'ojp-shared-types';
 
 import OJP_Legacy from '../../config/ojp-legacy';
@@ -56,7 +55,7 @@ export class UserTripService {
   public geoLocationsUpdated = new EventEmitter<void>();
   public tripsDataUpdated = new EventEmitter<TripData[]>();
   
-  public tripFaresUpdated = new EventEmitter<OJP_Types.FareResultSchema[]>();
+  public tripFaresUpdated = new EventEmitter<OJP_SharedTypes.FareResultSchema[]>();
   
   public activeTripSelected = new EventEmitter<MapTrip | null>();
   public tripRequestFinished = new EventEmitter<OJP_Legacy.RequestInfo>();
@@ -490,7 +489,7 @@ export class UserTripService {
     this.activeTripSelected.emit(mapTrip);
   }
 
-  private updateFares(fareResults: OJP_Types.FareResultSchema[]) {
+  private updateFares(fareResults: OJP_SharedTypes.FareResultSchema[]) {
     this.tripFaresUpdated.emit(fareResults);
   }
 
@@ -939,7 +938,7 @@ export class UserTripService {
     this.updateFares(fareResults);
   }
 
-  public async fetchFaresForTrips(language: OJP_Legacy.Language, trips: OJP_Legacy.Trip[]): Promise<OJP_Types.FareResultSchema[]> {
+  public async fetchFaresForTrips(language: OJP_Legacy.Language, trips: OJP_Legacy.Trip[]): Promise<OJP_SharedTypes.FareResultSchema[]> {
     const fareHttpConfig = this.getStageConfig('NOVA-INT');
     const ojpSDK_Next = new OJP_Next.SDK(REQUESTOR_REF, fareHttpConfig, language, OJP_Legacy.XML_BuilderConfigOJPv1);
 
