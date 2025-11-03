@@ -271,7 +271,7 @@ export class SearchFormComponent implements OnInit {
     this.initFromMockXML(mockText);
   }
 
-  onLocationSelected(location: OJP_Legacy.Location | null, originType: OJP_Legacy.JourneyPointType) {
+  onLocationSelected(location: OJP_Legacy.Location, originType: OJP_Legacy.JourneyPointType) {
     this.userTripService.updateTripEndpoint(location, originType, 'SearchForm');
   }
 

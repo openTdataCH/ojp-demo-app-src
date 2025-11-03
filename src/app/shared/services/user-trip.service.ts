@@ -425,23 +425,15 @@ export class UserTripService {
     return 'PROD';
   }
 
-  updateTripEndpoint(location: OJP_Legacy.Location | null, endpointType: OJP_Legacy.JourneyPointType, updateSource: LocationUpdateSource) {
+  updateTripEndpoint(location: OJP_Legacy.Location, endpointType: OJP_Legacy.JourneyPointType, updateSource: LocationUpdateSource) {
     if (endpointType === 'From') {
-      if (location) {
-        if (this.fromTripLocation) {
-          this.fromTripLocation = this.patchTripLocationPoint(this.fromTripLocation, location);
-        }
-      } else {
-        this.fromTripLocation = null;
+      if (this.fromTripLocation) {
+        this.fromTripLocation = this.patchTripLocationPoint(this.fromTripLocation, location);
       }
     }
     if (endpointType === 'To') {
-      if (location) {
-        if (this.toTripLocation) {
-          this.toTripLocation = this.patchTripLocationPoint(this.toTripLocation, location);
-        }
-      } else {
-        this.toTripLocation = null
+      if (this.toTripLocation) {
+        this.toTripLocation = this.patchTripLocationPoint(this.toTripLocation, location);
       }
     }
 
