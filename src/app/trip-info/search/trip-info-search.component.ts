@@ -4,8 +4,9 @@ import { SbbExpansionPanel } from '@sbb-esta/angular/accordion';
 import { SbbDialog } from '@sbb-esta/angular/dialog';
 import { SbbNotificationToast } from '@sbb-esta/angular/notification-toast';
 
-import OJP_Legacy from '../../config/ojp-legacy';
 import * as OJP_Next from 'ojp-sdk-next';
+
+import OJP_Legacy from '../../config/ojp-legacy';
 
 import { APP_STAGE, APP_STAGEs, REQUESTOR_REF, OJP_VERSION } from '../../config/constants';
 
