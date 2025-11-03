@@ -71,13 +71,13 @@ export class SearchFormComponent implements OnInit {
     public userTripService: UserTripService,
     private breakpointObserver: BreakpointObserver,
   ) {
-    const searchDate = this.userTripService.departureDate
-    this.searchDate = searchDate
     this.searchTime = OJP_Legacy.DateHelpers.formatTimeHHMM(searchDate);
+    const searchDate = this.userTripService.departureDate;
+    this.searchDate = searchDate;
 
-    this.fromLocationText = ''
-    this.toLocationText = ''
-    this.viaText = ''
+    this.fromLocationText = '';
+    this.toLocationText = '';
+    this.viaText = '';
 
     this.appStageOptions = APP_STAGEs;
 
@@ -86,11 +86,11 @@ export class SearchFormComponent implements OnInit {
     this.requestDurationF = null;
     this.currentRequestInfo = null;
 
-    this.lastCustomTripRequestXML = null
+    this.lastCustomTripRequestXML = null;
 
-    this.useMocks = false
+    this.useMocks = false;
 
-    this.headerText = 'Search'
+    this.headerText = 'Search';
 
     this.tripRequestBoardingTypes = ['Dep', 'Arr'];
 
