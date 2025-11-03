@@ -2,6 +2,7 @@ import { AfterViewInit, Component, ElementRef, OnInit, ViewChild } from '@angula
 import { DomSanitizer } from '@angular/platform-browser';
 import { SbbDialog } from '@sbb-esta/angular/dialog';
 
+
 import OJP_Legacy from '../../config/ojp-legacy';
 
 import { StationBoardService } from '../station-board.service';
