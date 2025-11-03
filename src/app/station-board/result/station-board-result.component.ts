@@ -10,6 +10,7 @@ import { OJPHelpers } from '../../helpers/ojp-helpers';
 import { TripInfoResultPopoverComponent } from '../../journey/journey-result-row/result-trip-leg/trip-info-result-popover/trip-info-result-popover.component';
 import { SituationContent } from '../../shared/types/situations';
 import { JourneyService } from '../../shared/models/journey-service';
+import { StationBoardType } from '../types/stop-event';
 
 interface StationBoardTime {
   stopTime: string
@@ -32,7 +33,7 @@ interface StationBoardModel {
   tripHeading: string
   tripOperator: string
 
-  mapStationBoardTime: Record<OJP_Legacy.StationBoardType, StationBoardTime>
+  mapStationBoardTime: Record<StationBoardType, StationBoardTime>
   
   stopPlatform: string | null
   stopPlatformActual: string | null
@@ -53,7 +54,7 @@ export class StationBoardResultComponent implements OnInit, AfterViewInit {
   @ViewChild('stationBoardWrapper') stationBoardWrapperRef: ElementRef | undefined;
   public stopEventsData: StationBoardModel[]
   public selectedIDx: number | null
-  public stationBoardType: OJP_Legacy.StationBoardType
+  public stationBoardType: StationBoardType;
 
   constructor(private stationBoardService: StationBoardService, private tripInfoResultPopover: SbbDialog, private sanitizer: DomSanitizer) {
     this.stopEventsData = [];
@@ -157,7 +158,7 @@ export class StationBoardResultComponent implements OnInit, AfterViewInit {
     return stopTimeText;
   }
 
-  private computeDelayTime(stopPoint: OJP_Legacy.StopPoint, forBoardType: OJP_Legacy.StationBoardType): string | null {
+  private computeDelayTime(stopPoint: OJP_Legacy.StopPoint, forBoardType: StationBoardType): string | null {
     const isArrival = forBoardType === 'Arrivals';
     const stopPointTime = isArrival ? stopPoint.arrivalData : stopPoint.departureData;
 
@@ -180,7 +181,7 @@ export class StationBoardResultComponent implements OnInit, AfterViewInit {
     return delayText;
   }
 
-  private computeStopTimeData(stopPoint: OJP_Legacy.StopPoint, forBoardType: OJP_Legacy.StationBoardType): StationBoardTime | null {
+  private computeStopTimeData(stopPoint: OJP_Legacy.StopPoint, forBoardType: StationBoardType): StationBoardTime | null {
     const isArrival = forBoardType === 'Arrivals';
     const stopPointTime = isArrival ? stopPoint.arrivalData : stopPoint.departureData;
 

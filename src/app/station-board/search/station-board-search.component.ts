@@ -23,6 +23,7 @@ import { CustomStopEventXMLPopoverComponent } from './custom-stop-event-xml-popo
 import { EmbedStationBoardPopoverComponent } from './embed-station-board-popover/embed-station-board-popover.component';
 
 type URLType = 'prodv1' | 'betav1' | 'betav2' | 'beta';
+import { StationBoardType } from '../types/stop-event';
 
 @Component({
   selector: 'station-board-search',
@@ -33,14 +34,14 @@ export class StationBoardSearchComponent implements OnInit {
   @ViewChild(SbbExpansionPanel, { static: true }) searchPanel: SbbExpansionPanel | undefined;
   @ViewChild(StationBoardInputComponent) autocompleteInputComponent: StationBoardInputComponent | undefined;
 
-  public stationBoardType: OJP_Legacy.StationBoardType;
+  public stationBoardType: StationBoardType;
 
   public searchLocation: OJP_Legacy.Location | null
   
   public searchTime: string
   
   public appStageOptions: APP_STAGE[];
-  public stationBoardTypes: OJP_Legacy.StationBoardType[]
+  public stationBoardTypes: StationBoardType[];
   public isSearching: boolean
 
   private queryParams: URLSearchParams
@@ -48,7 +49,7 @@ export class StationBoardSearchComponent implements OnInit {
   public permalinkRelativeURL: string;
   public otherVersionURL: string | null;
 
-  public currentRequestInfo: OJP_Legacy.RequestInfo | null;
+  public currentRequestInfo: OJP_Next.RequestInfo | null;
 
   public headerText: string = 'Search'
 
@@ -260,7 +261,7 @@ export class StationBoardSearchComponent implements OnInit {
     return searchDate;
   }
 
-  private computeStationBoardType(): OJP_Legacy.StationBoardType {
+  private computeStationBoardType(): StationBoardType {
     const userSearchTypeStationBoardType = this.queryParams.get('type');
     if (userSearchTypeStationBoardType === 'arr') {
       return 'Arrivals';
@@ -269,7 +270,7 @@ export class StationBoardSearchComponent implements OnInit {
       return 'Departures';
     }
 
-    const defaultValue: OJP_Legacy.StationBoardType = 'Departures';
+    const defaultValue: StationBoardType = 'Departures';
     return defaultValue;
   }
 
