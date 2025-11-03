@@ -314,7 +314,6 @@ export class UserTripService {
     endpointTypes.forEach(endpointType => {
       const isFrom = endpointType === 'From'
 
-      this.fromTripLocation?.location
       const tripLocation = isFrom ? this.fromTripLocation : this.toTripLocation;
       if (tripLocation === null) {
         promises.push(emptyPromise);
