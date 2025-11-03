@@ -575,7 +575,14 @@ export class UserTripService {
       }
     }
 
-    this.permalinkRelativeURL = document.location.pathname.replace('/embed', '') + '?' + queryParams.toString();
+    const permalinkQueryParams = new URLSearchParams(queryParams);
+    const currentQueryParams = new URLSearchParams(document.location.search);
+    const userVersion = currentQueryParams.get('v');
+    if (userVersion) {
+      permalinkQueryParams.append('v', userVersion);
+    }
+    this.permalinkRelativeURL = document.location.pathname.replace('/embed', '') + '?' + permalinkQueryParams.toString();
+    
     this.updateLinkedURLs(queryParams);
 
     const embedQueryParams = new URLSearchParams();
