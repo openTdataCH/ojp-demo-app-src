@@ -21,8 +21,6 @@ import { StationBoardInputComponent } from '../input/station-board-input.compone
 import { DebugXmlPopoverComponent } from '../../search-form/debug-xml-popover/debug-xml-popover.component';
 import { CustomStopEventXMLPopoverComponent } from './custom-stop-event-xml-popover/custom-stop-event-xml-popover.component';
 import { EmbedStationBoardPopoverComponent } from './embed-station-board-popover/embed-station-board-popover.component';
-
-type URLType = 'prodv1' | 'betav1' | 'betav2' | 'beta';
 import { StationBoardType } from '../types/stop-event';
 
 @Component({
