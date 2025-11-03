@@ -1,8 +1,9 @@
 import { Component, Input, OnInit, ViewChild } from '@angular/core';
 import { SbbExpansionPanel } from '@sbb-esta/angular/accordion';
 
-import OJP_Legacy from '../../config/ojp-legacy';
 import * as OJP_Next from 'ojp-sdk-next';
+
+import OJP_Legacy from '../../config/ojp-legacy';
 
 import { DEBUG_LEVEL, REQUESTOR_REF, OJP_VERSION } from '../../config/constants';
 
