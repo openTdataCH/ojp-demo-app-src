@@ -39,7 +39,7 @@ export class JourneyPointInputComponent implements OnInit, OnChanges {
   @Input() placeholder: string = '';
   @Input() endpointType: OJP_Legacy.JourneyPointType = 'From';
   @Input() inputValue: string = '';
-  @Output() selectedLocation = new EventEmitter<OJP_Legacy.Location | null>()
+  @Output() selectedLocation = new EventEmitter<OJP_Legacy.Location>()
 
   constructor(private mapService: MapService, private userTripService: UserTripService, private languageService: LanguageService) {
     this.mapLookupLocations = {} as MapLocations
@@ -66,12 +66,7 @@ export class JourneyPointInputComponent implements OnInit, OnChanges {
         return;
       }
 
-      if (searchTerm.trim().length === 0) {
-        this.selectedLocation.emit(null);
-        return;
-      }
-
-      if (searchTerm.length < 1) {
+      if (searchTerm.trim().length < 1) {
         return;
       }
 
