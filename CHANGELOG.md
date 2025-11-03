@@ -4,6 +4,10 @@ OJP-Demo URL: https://opentdatach.github.io/ojp-demo-app/
 
 ----
 
+3.November 2025
+- Fix location pickup mobile - [PR #299](https://github.com/openTdataCH/ojp-demo-app-src/pull/299)
+  - trigger update TripLocation only when we have a location
+
 24.October 2025
 - Improve TR search for longer walking paths - [PR #294](https://github.com/openTdataCH/ojp-demo-app-src/pull/294)
   - always show min/max/duration/distance panel
