@@ -52,8 +52,8 @@ interface StationBoardModel {
 })
 export class StationBoardResultComponent implements OnInit, AfterViewInit {
   @ViewChild('stationBoardWrapper') stationBoardWrapperRef: ElementRef | undefined;
-  public stopEventsData: StationBoardModel[]
-  public selectedIDx: number | null
+  public stopEventsData: StationBoardModel[];
+  public selectedIDx: number | null;
   public stationBoardType: StationBoardType;
 
   constructor(private stationBoardService: StationBoardService, private tripInfoResultPopover: SbbDialog, private sanitizer: DomSanitizer) {
