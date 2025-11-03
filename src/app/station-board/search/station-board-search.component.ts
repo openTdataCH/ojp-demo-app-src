@@ -6,6 +6,9 @@ import { SbbDialog } from '@sbb-esta/angular/dialog';
 import { SbbNotificationToast } from '@sbb-esta/angular/notification-toast';
 
 import * as GeoJSON from 'geojson';
+
+import * as OJP_SharedTypes from 'ojp-shared-types';
+
 import OJP_Legacy from '../../config/ojp-legacy';
 
 import { APP_STAGE, APP_STAGEs, DEFAULT_APP_STAGE, REQUESTOR_REF, OJP_VERSION } from '../../config/constants';
@@ -55,7 +58,7 @@ export class StationBoardSearchComponent implements OnInit {
   public isEmbed: boolean;
 
   public isV1: boolean;
-  public useRealTimeDataTypes: OJP_Legacy.UseRealtimeDataEnumeration[];
+  public useRealTimeDataTypes: OJP_SharedTypes.UseRealtimeDataEnum[];
 
   get searchDate() {
     return this.stationBoardService.searchDate;
