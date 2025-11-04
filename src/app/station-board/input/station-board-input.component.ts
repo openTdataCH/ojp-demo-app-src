@@ -28,7 +28,6 @@ export class StationBoardInputComponent implements OnInit {
 
   public searchInputControl: FormControl;
   public stopLookups: StopLookup[]
-  private currentStopLookup: StopLookup | null
   public isBusySearching: boolean // TODO - do we actually need this?
 
    // TODO - this is an workaround to flag that the INPUT was changed programatically
@@ -39,7 +38,6 @@ export class StationBoardInputComponent implements OnInit {
   constructor(private userTripService: UserTripService, private languageService: LanguageService) {
     this.searchInputControl = new FormControl('');
     this.stopLookups = [StationBoardInputComponent.AroundMeStopLookup]
-    this.currentStopLookup = null
     this.isBusySearching = false
     this.hackIgnoreInputChangesFlag = false;
   }
@@ -172,8 +170,6 @@ export class StationBoardInputComponent implements OnInit {
       this.handleGeolocationLookup();
       return;
     }
-
-    this.currentStopLookup = stopLookup
 
     this.hackIgnoreInputChangesFlag = true;
     this.searchInputControl.setValue(stopLookup.stopName);
