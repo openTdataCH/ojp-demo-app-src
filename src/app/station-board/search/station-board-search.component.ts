@@ -360,8 +360,12 @@ export class StationBoardSearchComponent implements OnInit {
       if (response.stopEvents.length > 0) {
         const stopEvent = response.stopEvents[0];
         const firstLocation = stopEvent.stopPoint.location;
-        if (firstLocation) {
-          this.onLocationSelected(firstLocation);
+        if (firstLocation && firstLocation.geoPosition) {
+          const stopPlaceName = firstLocation.stopPlace?.stopPlaceName ?? 'temp - n/a';
+          const stopPlaceRef = firstLocation.stopPlace?.stopPlaceRef ?? 'temp - n/a';
+          const stopPlace = new StopPlace(firstLocation.geoPosition.longitude, firstLocation.geoPosition.latitude, stopPlaceName, stopPlaceRef);
+
+          this.onStopPlaceSelected(stopPlace);
         }
       }
 
