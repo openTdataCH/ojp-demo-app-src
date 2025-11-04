@@ -129,7 +129,7 @@
         <div>|</div>
       </ng-container>
 
-      <ng-container *ngIf="this.searchLocation !== null">
+      <ng-container *ngIf="this.stopPlace !== null">
         <div>
           <a href="{{ this.otherVersionURL }}" target="_blank">{{ this.userTripService.otherVersionURLText }}</a>
         </div>
@@ -139,7 +139,7 @@
       <div>
         <a href="{{ this.permalinkRelativeURL }}" target="_blank">Permalink</a>
       </div>
-      <ng-container *ngIf="this.searchLocation !== null">
+      <ng-container *ngIf="this.stopPlace !== null">
         <div>|</div>
         <div>
           <a target="_blank" (click)="loadEmbedHTMLPopover()" class="text-decoration-underline" role="button">Embed</a>
