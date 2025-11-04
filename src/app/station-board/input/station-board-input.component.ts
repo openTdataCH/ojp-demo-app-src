@@ -151,16 +151,8 @@ export class StationBoardInputComponent implements OnInit {
   }
 
   public onStopLookupSelected(ev: SbbAutocompleteSelectedEvent) {
-    const stopPlaceRef = ev.option.value as string;
-
-    let stopLookup = this.stopLookups.find(stopLookup => {
-      return stopLookup.stopPlaceRef === stopPlaceRef;
-    }) ?? null;
-
-    if (stopLookup === null) {
-      console.log('WHOOPS - cant find the stop for: ' + stopPlaceRef);
-      return;
-    }
+    const stopPlaceIdx = Number(ev.option.value);
+    const stopLookup = this.stopLookups[stopPlaceIdx];
 
     if (stopLookup.type === 'around_me') {
       this.handleGeolocationLookup();
