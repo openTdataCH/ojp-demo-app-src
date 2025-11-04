@@ -27,7 +27,7 @@ interface StopLookup {
 export class StationBoardInputComponent implements OnInit {
   @ViewChild(SbbAutocompleteTrigger, { static: true }) autocompleteInputTrigger: SbbAutocompleteTrigger | undefined;
 
-  @Output() locationSelected = new EventEmitter<OJP_Legacy.Location>()
+  @Output() stopPlaceSelected = new EventEmitter<StopPlace>();
 
   public searchInputControl: FormControl;
   public stopLookups: StopLookup[];
