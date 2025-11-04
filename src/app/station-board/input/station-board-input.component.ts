@@ -9,13 +9,12 @@ import { REQUESTOR_REF, OJP_VERSION } from '../../config/constants';
 
 import { UserTripService } from '../../shared/services/user-trip.service';
 import { LanguageService } from '../../shared/services/language.service';
+import { StopPlace } from '../../shared/models/stop-place';
 
 interface StopLookup {
-  stopPlaceRef: string
-  stopName: string
-  special_type?: 'around_me' | null
+  stopPlace: StopPlace,
+  type: 'around_me' | 'stopPlace',
   distance?: number | null
-  location?: OJP_Legacy.Location | null
 }
 
 @Component({
