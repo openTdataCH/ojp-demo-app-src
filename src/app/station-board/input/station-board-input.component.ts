@@ -162,13 +162,13 @@ export class StationBoardInputComponent implements OnInit {
       return;
     }
 
-    if (stopLookup.special_type === 'around_me') {
+    if (stopLookup.type === 'around_me') {
       this.handleGeolocationLookup();
       return;
     }
 
     this.hackIgnoreInputChangesFlag = true;
-    this.searchInputControl.setValue(stopLookup.stopName);
+    this.searchInputControl.setValue(stopLookup.stopPlace.name);
 
     const location = stopLookup.location;
     if (location) {
