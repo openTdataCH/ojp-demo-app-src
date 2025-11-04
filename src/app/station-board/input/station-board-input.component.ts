@@ -206,7 +206,6 @@ export class StationBoardInputComponent implements OnInit {
     const bboxData = [bbox_W, bbox_S, bbox_E, bbox_N];
     const request = OJP_Next.LocationInformationRequest.initWithBBOX(bboxData, ['stop'], 300);
 
-  public updateLocationText(location: OJP_Legacy.Location) {
     const ojpSDK_Next = this.createOJP_SDK_Instance();
     this.isBusySearching = true;
     const response = await ojpSDK_Next.fetchLocationInformationRequestResponse(request);
@@ -221,8 +220,9 @@ export class StationBoardInputComponent implements OnInit {
     }
   }
 
+  public updateLocationText(locationText: string) {
     this.hackIgnoreInputChangesFlag = true;
-    this.searchInputControl.setValue(stopPlaceName);
+    this.searchInputControl.setValue(locationText);
   }
 
   private createOJP_SDK_Instance(): OJP_Next.SDK {
