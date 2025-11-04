@@ -91,50 +91,44 @@ export class StationBoardInputComponent implements OnInit {
       return;
     }
 
-    this.fetchLookupLocations(searchTerm);
+    this.fetchStopLookups(searchTerm);
   }
 
-  private async fetchLookupLocations(searchTerm: string) {
-    this.isBusySearching = true;
-    const isOJPv2 = OJP_VERSION === '2.0';
-    const xmlConfig = isOJPv2 ? OJP_Legacy.XML_ConfigOJPv2 : OJP_Legacy.XML_BuilderConfigOJPv1;
-
-    const restrictionType: OJP_Legacy.RestrictionType = 'stop';
-    const stageConfig = this.userTripService.getStageConfig();
-    const locationInformationRequest = OJP_Legacy.LocationInformationRequest.initWithLocationName(stageConfig, this.languageService.language, xmlConfig, REQUESTOR_REF, searchTerm, [restrictionType]);
-    locationInformationRequest.enableExtensions = this.userTripService.currentAppStage !== 'OJP-SI';
-
-    const response = await locationInformationRequest.fetchResponse();
+  private async fetchStopLookups(searchTerm: string) {
+    const request = OJP_Next.LocationInformationRequest.initWithLocationName(searchTerm, ['stop'], 10);
     
-    this.parseLocations(response.locations);
+    const ojpSDK_Next = this.createOJP_SDK_Instance();
+
+    this.isBusySearching = true;
+    const response = await ojpSDK_Next.fetchLocationInformationRequestResponse(request);
     this.isBusySearching = false;
+
+    if (response.ok) {
+      this.parsePlaceResults(response.value.placeResult);
+    } else {
+      console.log('ERROR - failed to lookup locations for "' + searchTerm + '"');
+      console.log(response);
+      this.parsePlaceResults([]);
+    }
   }
 
-  private parseLocations(locations: OJP_Legacy.Location[], nearbyGeoPosition: OJP_Legacy.GeoPosition | null = null) {
+  private parsePlaceResults(placeResults: OJP_SharedTypes.PlaceResultSchema[], nearbyGeoPosition: OJP_Next.GeoPosition | null = null) {
     this.stopLookups = [];
     
-    locations.forEach(location => {
-      const stopPlaceRef = location.stopPlace?.stopPlaceRef as string;
-      if (stopPlaceRef === null) {
-        return
+    placeResults.forEach(placeResult => {
+      const stopPlace = StopPlace.initWithPlaceResultSchema(placeResult);
+      if (stopPlace === null) {
+        return;
       }
 
-      const stopName: string | null = (() => {
-        if (location.locationName !== null) {
-          return location.locationName;
-        }
-
-        return location.computeLocationName(); 
-      })();
-    
-      const stopLookup = <StopLookup>{
-        stopPlaceRef: stopPlaceRef,
-        stopName: stopName,
-        location: location,
+      const stopLookup: StopLookup = {
+        stopPlace: stopPlace,
+        type: 'stopPlace',
+        distance: null,
       };
 
-      if (location.geoPosition && nearbyGeoPosition) {
-        stopLookup.distance = location.geoPosition.distanceFrom(nearbyGeoPosition);
+      if (nearbyGeoPosition) {
+        stopLookup.distance = stopPlace.distanceFrom(nearbyGeoPosition);
       }
 
       this.stopLookups.push(stopLookup);
@@ -192,16 +186,16 @@ export class StationBoardInputComponent implements OnInit {
     this.searchInputControl.setValue('... looking up location');
       
     navigator.geolocation.getCurrentPosition((position: GeolocationPosition) => {
-      this.handleNewGeoPosition(position, locations => {
-        const geoPosition = new OJP_Legacy.GeoPosition(position.coords.longitude, position.coords.latitude)
-        this.parseLocations(locations, geoPosition);
+      this.handleNewGeoPosition(position, placeResults => {
+        const geoPosition = new OJP_Next.GeoPosition(position.coords.longitude, position.coords.latitude)
+        this.parsePlaceResults(placeResults, geoPosition);
     
         this.autocompleteInputTrigger?.openPanel();
       });
     });
   }
 
-  private async handleNewGeoPosition(position: GeolocationPosition, completion: (locations: OJP_Legacy.Location[]) => void) {
+  private async handleNewGeoPosition(position: GeolocationPosition, completion: (placeResults: OJP_SharedTypes.PlaceResultSchema[]) => void) {
     const bbox_width = 0.05;
     const bbox_height = 0.05;
     const bbox_W = position.coords.longitude - bbox_width / 2;
@@ -209,34 +203,34 @@ export class StationBoardInputComponent implements OnInit {
     const bbox_N = position.coords.latitude + bbox_height / 2;
     const bbox_S = position.coords.latitude - bbox_height / 2;
 
-    const isOJPv2 = OJP_VERSION === '2.0';
-    const xmlConfig = isOJPv2 ? OJP_Legacy.XML_ConfigOJPv2 : OJP_Legacy.XML_BuilderConfigOJPv1;
-    
-    const stageConfig = this.userTripService.getStageConfig();
-
-    const request = OJP_Legacy.LocationInformationRequest.initWithBBOXAndType(
-      stageConfig,
-      this.languageService.language,
-      xmlConfig,
-      REQUESTOR_REF,
-
-      bbox_W, bbox_N, bbox_E, bbox_S,
-      ['stop'],
-      300,
-    );
-    request.enableExtensions = this.userTripService.currentAppStage !== 'OJP-SI';
-
-    const response = await request.fetchResponse();
-    completion(response.locations);
-  }
+    const bboxData = [bbox_W, bbox_S, bbox_E, bbox_N];
+    const request = OJP_Next.LocationInformationRequest.initWithBBOX(bboxData, ['stop'], 300);
 
   public updateLocationText(location: OJP_Legacy.Location) {
-    const stopPlaceName = location.stopPlace?.stopPlaceName ?? null
-    if (stopPlaceName === null) {
-      return;
+    const ojpSDK_Next = this.createOJP_SDK_Instance();
+    this.isBusySearching = true;
+    const response = await ojpSDK_Next.fetchLocationInformationRequestResponse(request);
+    this.isBusySearching = false;
+
+    if (response.ok) {
+      completion(response.value.placeResult);
+    } else {
+      console.log('ERROR - failed to bbox lookup locations for "' + bboxData.join(', ') + '"');
+      console.log(response);
+      completion([]);
     }
+  }
 
     this.hackIgnoreInputChangesFlag = true;
     this.searchInputControl.setValue(stopPlaceName);
   }
+
+  private createOJP_SDK_Instance(): OJP_Next.SDK {
+    const isOJPv2 = OJP_VERSION === '2.0';
+    const xmlConfig = isOJPv2 ? OJP_Next.DefaultXML_Config : OJP_Next.XML_BuilderConfigOJPv1;
+
+    const stageConfig = this.userTripService.getStageConfig();    
+    const sdk = new OJP_Next.SDK(REQUESTOR_REF, stageConfig, this.languageService.language, xmlConfig);
+    return sdk;
+  }  
 }
