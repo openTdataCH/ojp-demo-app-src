@@ -27,18 +27,18 @@ export class StationBoardInputComponent implements OnInit {
   @Output() locationSelected = new EventEmitter<OJP_Legacy.Location>()
 
   public searchInputControl: FormControl;
-  public stopLookups: StopLookup[]
-  public isBusySearching: boolean // TODO - do we actually need this?
+  public stopLookups: StopLookup[];
+  public isBusySearching: boolean;
 
-   // TODO - this is an workaround to flag that the INPUT was changed programatically
+  // TODO - this is an workaround to flag that the INPUT was changed programatically
   //      - tried with .setValue(..., { emitEvent: false }); but didnt work as expected
   //      - therefore => workaround
   private hackIgnoreInputChangesFlag: boolean
 
   constructor(private userTripService: UserTripService, private languageService: LanguageService) {
     this.searchInputControl = new FormControl('');
-    this.stopLookups = [StationBoardInputComponent.AroundMeStopLookup]
-    this.isBusySearching = false
+    this.stopLookups = [StationBoardInputComponent.AroundMeStopLookup];
+    this.isBusySearching = false;
     this.hackIgnoreInputChangesFlag = false;
   }
 
