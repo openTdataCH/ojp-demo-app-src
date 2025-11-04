@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 
-import OJP_Legacy from '../../../config/ojp-legacy';
+import { StopPlace } from '../../../shared/models/stop-place';
 
 @Component({
   selector: 'embed-station-board-popover',
@@ -13,8 +13,8 @@ export class EmbedStationBoardPopoverComponent {
 
   }
 
-  public updateEmbedHTML(selectedLocation: OJP_Legacy.Location) {
-    const stopRef = selectedLocation.stopPlace?.stopPlaceRef ?? 'n/a';
+  public updateEmbedHTML(stopPlace: StopPlace) {
+    const stopRef = stopPlace.stopPlaceRef;
 
     const embedLinkRelativeURL = document.location.pathname.replace('/board', '/embed/board') + '?stop_id=' +  stopRef;
     const embedURL = document.location.protocol + '//' + document.location.host + embedLinkRelativeURL;

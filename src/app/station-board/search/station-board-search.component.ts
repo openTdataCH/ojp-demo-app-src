@@ -39,7 +39,7 @@ export class StationBoardSearchComponent implements OnInit {
 
   public stationBoardType: StationBoardType;
 
-  public searchLocation: OJP_Legacy.Location | null
+  public stopPlace: StopPlace | null;
   
   public searchTime: string
   
@@ -88,7 +88,7 @@ export class StationBoardSearchComponent implements OnInit {
 
     this.stationBoardType = this.computeStationBoardType();
 
-    this.searchLocation = null;
+    this.stopPlace = null;
 
     this.stationBoardService.searchDate = this.computeSearchDateTime();
     this.searchTime = OJP_Next.DateHelpers.formatTimeHHMM(this.stationBoardService.searchDate);
@@ -184,7 +184,7 @@ export class StationBoardSearchComponent implements OnInit {
   public onStopPlaceSelected(stopPlace: StopPlace) {
     this.updateCurrentRequestData(stopPlace.stopPlaceRef);
 
-    this.searchLocation = OJP_Legacy.Location.initWithLngLat(stopPlace.longitude, stopPlace.latitude);
+    this.stopPlace = stopPlace;
 
     const hackLocation = OJP_Legacy.Location.initWithLngLat(stopPlace.longitude, stopPlace.latitude);
     this.mapService.tryToCenterAndZoomToLocation(hackLocation);
@@ -218,7 +218,7 @@ export class StationBoardSearchComponent implements OnInit {
       return true;
     }
 
-    if (this.searchLocation === null) {
+    if (this.stopPlace === null) {
       return true;
     }
 
@@ -228,7 +228,7 @@ export class StationBoardSearchComponent implements OnInit {
   public searchButtonClicked() {
     this.notificationToast.dismiss();
 
-    const stopPlaceRef = this.searchLocation?.stopPlace?.stopPlaceRef ?? null;
+    const stopPlaceRef = this.stopPlace?.stopPlaceRef ?? null;
     if (stopPlaceRef === null) {
       console.error('ERROR - no stopPlaceRef available');
       return;
@@ -283,7 +283,7 @@ export class StationBoardSearchComponent implements OnInit {
       queryParams.set('type', 'arr');
     }
     
-    const stopPlaceRef = this.searchLocation?.stopPlace?.stopPlaceRef ?? null;
+    const stopPlaceRef = this.stopPlace?.stopPlaceRef ?? null;
     if (stopPlaceRef) {
       queryParams.set('stop_id', stopPlaceRef);
     }
@@ -423,32 +423,45 @@ export class StationBoardSearchComponent implements OnInit {
     this.updateHeaderText();
 
     if (this.autocompleteInputComponent) {
-      this.autocompleteInputComponent.updateLocationText(firstLocation.computeLocationName() ?? 'n/a');
+      this.autocompleteInputComponent.updateLocationText(stopPlace.name);
     }
   }
 
   private updateHeaderText() {
-    if (this.searchLocation === null) {
+    if (this.stopPlace === null) {
       return;
     }
 
-    const locationName = this.searchLocation.computeLocationName();
-    if (locationName === null) {
-      return;
-    }
-
-    this.headerText = this.stationBoardType + ' ' + locationName;
+    this.headerText = this.stationBoardType + ' ' + this.stopPlace.name;
   }
 
   private handleMapClick(feature: GeoJSON.Feature) {
-    const location = OJP_Legacy.Location.initWithFeature(feature);
-    if (location === null) {
+    const featureProperties = feature.properties ?? null;
+    if (!featureProperties) {
       return;
     }
 
-    this.searchLocation = location;
+    if (feature.geometry.type !== 'Point') {
+      console.log('ERROR - handleMapClick - invalid geometry expected');
+      console.log(feature);
+      return;
+    }
+
+    const stopPlaceName = featureProperties['stopPlace.stopPlaceName'] ?? null;
+    const stopPlaceRef = featureProperties['stopPlace.stopPlaceRef'] ?? null;
+    const coords = feature.geometry.coordinates;
+
+    if (stopPlaceName === null || stopPlaceRef === null) {
+      console.log('ERROR - handleMapClick - invalid proprerties');
+      console.log(feature);
+      return;
+    }
+
+    const stopPlace = new StopPlace(coords[0], coords[1], stopPlaceName, stopPlaceRef);
+    this.stopPlace = stopPlace;
+
     if (this.autocompleteInputComponent) {
-      this.autocompleteInputComponent.updateLocationText(location.computeLocationName() ?? 'n/a');
+      this.autocompleteInputComponent.updateLocationText(stopPlace.name);
     }
 
     this.resetResultList();
@@ -568,8 +581,8 @@ export class StationBoardSearchComponent implements OnInit {
 
     dialogRef.afterOpened().subscribe(() => {
       const popover = dialogRef.componentInstance as EmbedStationBoardPopoverComponent;
-      if (this.searchLocation) {
-        popover.updateEmbedHTML(this.searchLocation);
+      if (this.stopPlace) {
+        popover.updateEmbedHTML(this.stopPlace);
       }
     })
   }
