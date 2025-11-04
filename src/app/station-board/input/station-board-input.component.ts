@@ -170,10 +170,7 @@ export class StationBoardInputComponent implements OnInit {
     this.hackIgnoreInputChangesFlag = true;
     this.searchInputControl.setValue(stopLookup.stopPlace.name);
 
-    const location = stopLookup.location;
-    if (location) {
-      this.locationSelected.emit(location);
-    }
+    this.stopPlaceSelected.emit(stopLookup.stopPlace);
   }
 
   private handleGeolocationLookup() {
