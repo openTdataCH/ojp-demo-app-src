@@ -401,24 +401,34 @@ export class StationBoardSearchComponent implements OnInit {
   }
 
   private async lookupStopPlaceRef(stopPlaceRef: string) {
-    const isOJPv2 = OJP_VERSION === '2.0';
-    const xmlConfig = isOJPv2 ? OJP_Next.DefaultXML_Config : OJP_Next.XML_BuilderConfigOJPv1;
+    const request = OJP_Next.LocationInformationRequest.initWithPlaceRef(stopPlaceRef, ['stop'], 10);
+    const ojpSDK_Next = this.createOJP_SDK_Instance();
 
-    const stageConfig = this.userTripService.getStageConfig();
-    const locationInformationRequest = OJP_Legacy.LocationInformationRequest.initWithStopPlaceRef(stageConfig, this.languageService.language, xmlConfig, REQUESTOR_REF, stopPlaceRef);
-    locationInformationRequest.enableExtensions = this.userTripService.currentAppStage !== 'OJP-SI';
-
-    const response = await locationInformationRequest.fetchResponse();
-
-    if (response.locations.length === 0) {
-      console.error('ERROR - cant find stopPlaceRef with ID: ' + stopPlaceRef);
+    const response2 = await ojpSDK_Next.fetchLocationInformationRequestResponse(request);
+    if (!response2.ok) {
+      console.log('ERROR - LIR - initWithPlaceRef');
+      console.log(response2);
       return;
     }
 
-    const firstLocation = response.locations[0];
-    this.searchLocation = firstLocation;
+    if (response2.value.placeResult.length === 0) {
+      console.error('ERROR - cant find stopPlaceRef with ID: ' + stopPlaceRef);
+      console.log(response2);
+      return;
+    }
 
-    this.mapService.tryToCenterAndZoomToLocation(firstLocation);
+    const stopPlace = StopPlace.initWithPlaceResultSchema(response2.value.placeResult[0]);
+    if (stopPlace === null) {
+      console.error('ERROR - cant init StopPlace with ID: ' + stopPlaceRef);
+      console.log(response2);
+      return;
+    }
+
+    this.stopPlace = stopPlace;
+
+    const hackLocation = OJP_Legacy.Location.initWithLngLat(stopPlace.longitude, stopPlace.latitude);
+    this.mapService.tryToCenterAndZoomToLocation(hackLocation);
+
     this.updateURLs();
     this.updateHeaderText();
 
@@ -592,5 +602,14 @@ export class StationBoardSearchComponent implements OnInit {
     this.searchDate = nowDateTime;
     this.searchTime = OJP_Next.DateHelpers.formatTimeHHMM(nowDateTime);
     this.stationBoardService.searchDate = nowDateTime;
+  }
+
+  private createOJP_SDK_Instance(): OJP_Next.SDK {
+    const isOJPv2 = OJP_VERSION === '2.0';
+    const xmlConfig = isOJPv2 ? OJP_Next.DefaultXML_Config : OJP_Next.XML_BuilderConfigOJPv1;
+
+    const stageConfig = this.userTripService.getStageConfig();    
+    const sdk = new OJP_Next.SDK(REQUESTOR_REF, stageConfig, this.languageService.language, xmlConfig);
+    return sdk;
   }
 }
