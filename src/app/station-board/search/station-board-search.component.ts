@@ -26,6 +26,7 @@ import { DebugXmlPopoverComponent } from '../../search-form/debug-xml-popover/de
 import { CustomStopEventXMLPopoverComponent } from './custom-stop-event-xml-popover/custom-stop-event-xml-popover.component';
 import { EmbedStationBoardPopoverComponent } from './embed-station-board-popover/embed-station-board-popover.component';
 import { StationBoardType } from '../types/stop-event';
+import { StopPlace } from '../../shared/models/stop-place';
 
 @Component({
   selector: 'station-board-search',
@@ -180,14 +181,13 @@ export class StationBoardSearchComponent implements OnInit {
     return null;
   }
 
-  public onLocationSelected(location: OJP_Legacy.Location) {
-    const stopPlaceRef = location.stopPlace?.stopPlaceRef ?? null;
-    if (stopPlaceRef) {
-      this.updateCurrentRequestData(stopPlaceRef);
-    }
+  public onStopPlaceSelected(stopPlace: StopPlace) {
+    this.updateCurrentRequestData(stopPlace.stopPlaceRef);
 
-    this.searchLocation = location;
-    this.mapService.tryToCenterAndZoomToLocation(location)
+    this.searchLocation = OJP_Legacy.Location.initWithLngLat(stopPlace.longitude, stopPlace.latitude);
+
+    const hackLocation = OJP_Legacy.Location.initWithLngLat(stopPlace.longitude, stopPlace.latitude);
+    this.mapService.tryToCenterAndZoomToLocation(hackLocation);
 
     this.updateURLs();
     this.updateHeaderText();
@@ -423,7 +423,7 @@ export class StationBoardSearchComponent implements OnInit {
     this.updateHeaderText();
 
     if (this.autocompleteInputComponent) {
-      this.autocompleteInputComponent.updateLocationText(firstLocation);
+      this.autocompleteInputComponent.updateLocationText(firstLocation.computeLocationName() ?? 'n/a');
     }
   }
 
@@ -448,7 +448,7 @@ export class StationBoardSearchComponent implements OnInit {
 
     this.searchLocation = location;
     if (this.autocompleteInputComponent) {
-      this.autocompleteInputComponent.updateLocationText(location);
+      this.autocompleteInputComponent.updateLocationText(location.computeLocationName() ?? 'n/a');
     }
 
     this.resetResultList();
