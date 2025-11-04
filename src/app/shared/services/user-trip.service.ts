@@ -97,7 +97,7 @@ export class UserTripService {
 
   public initDefaults(language: OJP_Legacy.Language) {
     const isOJPv2 = OJP_VERSION === '2.0';
-    const xmlConfig = isOJPv2 ? OJP_Legacy.XML_ConfigOJPv2 : OJP_Legacy.XML_BuilderConfigOJPv1;
+    const xmlConfig = isOJPv2 ? OJP_Next.DefaultXML_Config : OJP_Next.XML_BuilderConfigOJPv1;
 
     const appStageS = this.queryParams.get('stage') ?? null;
     if (appStageS) {
@@ -333,7 +333,7 @@ export class UserTripService {
 
       const ojpRequest: OJP_Legacy.LocationInformationRequest = (() => {
         const isOJPv2 = OJP_VERSION === '2.0';
-        const xmlConfig = isOJPv2 ? OJP_Legacy.XML_ConfigOJPv2 : OJP_Legacy.XML_BuilderConfigOJPv1;
+        const xmlConfig = isOJPv2 ? OJP_Next.DefaultXML_Config : OJP_Next.XML_BuilderConfigOJPv1;
 
         const request = OJP_Legacy.LocationInformationRequest.initWithBBOXAndType(stageConfig, language, xmlConfig, REQUESTOR_REF,
           bbox.southWest.longitude,
@@ -940,11 +940,11 @@ export class UserTripService {
 
   public async fetchFaresForTrips(language: OJP_Legacy.Language, trips: OJP_Legacy.Trip[]): Promise<OJP_SharedTypes.FareResultSchema[]> {
     const fareHttpConfig = this.getStageConfig('NOVA-INT');
-    const ojpSDK_Next = new OJP_Next.SDK(REQUESTOR_REF, fareHttpConfig, language, OJP_Legacy.XML_BuilderConfigOJPv1);
+    const ojpSDK_Next = new OJP_Next.SDK(REQUESTOR_REF, fareHttpConfig, language, OJP_Next.XML_BuilderConfigOJPv1);
 
     const tripsV2: OJP_Next.Trip[] = [];
     trips.forEach(tripLegacy => {
-      const tripV2_XML = tripLegacy.asXML(OJP_Legacy.XML_ConfigOJPv2);
+      const tripV2_XML = tripLegacy.asXML(OJP_Next.DefaultXML_Config);
       const tripV2 = OJP_Next.Trip.initWithTripXML(tripV2_XML);
       tripsV2.push(tripV2);
     });

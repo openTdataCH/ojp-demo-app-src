@@ -153,7 +153,7 @@ export class JourneyResultRowComponent implements OnInit {
     }
 
     const isOJPv2 = OJP_VERSION === '2.0';
-    const xmlConfig = isOJPv2 ? OJP_Legacy.XML_ConfigOJPv2 : OJP_Legacy.XML_BuilderConfigOJPv1;
+    const xmlConfig = isOJPv2 ? OJP_Next.DefaultXML_Config : OJP_Next.XML_BuilderConfigOJPv1;
 
     const tripXML = this.tripData.trip.asXML(xmlConfig);
     // console.log(tripXML);

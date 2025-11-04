@@ -1,6 +1,8 @@
 import { Component, EventEmitter, Output } from '@angular/core';
 
+import * as OJP_Next from 'ojp-sdk-next';
 import OJP_Legacy from '../../config/ojp-legacy';
+
 import { REQUESTOR_REF, OJP_VERSION } from '../../config/constants';
 
 import { UserTripService } from '../../shared/services/user-trip.service';
@@ -28,7 +30,7 @@ export class InputXmlPopoverComponent {
     this.isRunningTripRequest = true;
 
     const isOJPv2 = OJP_VERSION === '2.0';
-    const xmlConfig = isOJPv2 ? OJP_Legacy.XML_ConfigOJPv2 : OJP_Legacy.XML_BuilderConfigOJPv1;
+    const xmlConfig = isOJPv2 ? OJP_Next.DefaultXML_Config : OJP_Next.XML_BuilderConfigOJPv1;
 
     this.userTripService.selectActiveTrip(null);
     

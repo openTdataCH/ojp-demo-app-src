@@ -266,7 +266,7 @@ export class TripInfoSearchComponent implements OnInit {
 
   private createOJP_SDK_Instance(): OJP_Next.SDK {
     const isOJPv2 = OJP_VERSION === '2.0';
-    const xmlConfig = isOJPv2 ? OJP_Legacy.XML_ConfigOJPv2 : OJP_Legacy.XML_BuilderConfigOJPv1;
+    const xmlConfig = isOJPv2 ? OJP_Next.DefaultXML_Config : OJP_Next.XML_BuilderConfigOJPv1;
 
     const stageConfig = this.userTripService.getStageConfig();    
     const sdk = new OJP_Next.SDK(REQUESTOR_REF, stageConfig, this.languageService.language, xmlConfig);

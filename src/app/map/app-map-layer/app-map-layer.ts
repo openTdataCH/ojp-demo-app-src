@@ -1,6 +1,7 @@
 import * as GeoJSON from 'geojson'
 import mapboxgl from "mapbox-gl";
 
+import * as OJP_Next from 'ojp-sdk-next';
 import OJP_Legacy from '../../config/ojp-legacy';
 
 import { AppMapLayerOptions, DEBUG_LEVEL, MAP_APP_MAP_LAYERS, REQUESTOR_REF, OJP_VERSION } from '../../config/constants'
@@ -117,7 +118,7 @@ export class AppMapLayer {
         }
 
         const isOJPv2 = OJP_VERSION === '2.0';
-        const xmlConfig = isOJPv2 ? OJP_Legacy.XML_ConfigOJPv2 : OJP_Legacy.XML_BuilderConfigOJPv1;
+        const xmlConfig = isOJPv2 ? OJP_Next.DefaultXML_Config : OJP_Next.XML_BuilderConfigOJPv1;
 
         const request = OJP_Legacy.LocationInformationRequest.initWithBBOXAndType(
             this.userTripService.getStageConfig(),
