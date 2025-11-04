@@ -43,12 +43,11 @@ export class StationBoardInputComponent implements OnInit {
   }
 
   private static get AroundMeStopLookup(): StopLookup {
-    const stopLookup = <StopLookup>{
-      stopPlaceRef: 'AROUND_ME',
-      stopName: 'Current Location',
-      special_type: 'around_me',
-      location: null,
-    }
+    const stopLookup: StopLookup = {
+      stopPlace: new StopPlace(0, 0, 'Current Location', 'n/a'),
+      type: 'around_me',
+      distance: null,
+    };
 
     return stopLookup;
   }
@@ -63,7 +62,7 @@ export class StationBoardInputComponent implements OnInit {
   }
 
   public renderLookupName(stopLookup: StopLookup): string {
-    let lookupName = stopLookup.stopName;
+    let lookupName = stopLookup.stopPlace.name;
     if (stopLookup.distance) {
       lookupName += ' (' + stopLookup.distance + ' m)';
     }
