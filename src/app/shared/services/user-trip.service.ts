@@ -13,6 +13,8 @@ import { APP_STAGE, DEBUG_LEVEL, DEFAULT_APP_STAGE, REQUESTOR_REF, TRIP_REQUEST_
 import { IMapBoundsData, MapService } from './map.service';
 import { MapTrip } from '../types/map-geometry-types';
 import { TripData, TripLegData } from '../types/trip';
+import { AnyPlace, PlaceBuilder } from '../models/place/place-builder';
+import { PlaceLocation } from '../models/place/location';
 
 type LocationUpdateSource = 'SearchForm' | 'MapDragend' | 'MapPopupClick';
 
@@ -95,10 +97,7 @@ export class UserTripService {
     this.sbbURL = null;
   }
 
-  public initDefaults(language: OJP_Legacy.Language) {
-    const isOJPv2 = OJP_VERSION === '2.0';
-    const xmlConfig = isOJPv2 ? OJP_Next.DefaultXML_Config : OJP_Next.XML_BuilderConfigOJPv1;
-
+  public async initDefaults(language: OJP_Legacy.Language) {
     const appStageS = this.queryParams.get('stage') ?? null;
     if (appStageS) {
       const userAppStage = this.computeAppStageFromString(appStageS);
@@ -130,17 +129,19 @@ export class UserTripService {
     const fromPlaceRef = this.queryParams.get('from') ?? defaultLocationsPlaceRef[fromPlaceName];
     const toPlaceRef = this.queryParams.get('to') ?? defaultLocationsPlaceRef[toPlaceName];
 
-    const promises: Promise<OJP_Legacy.Location[]>[] = [];
-
     const stageConfig = this.getStageConfig();
     if (stageConfig.authToken === null) {
       console.error('WARNING: authorization not set for stage=' + this.currentAppStage);
       console.log(stageConfig);
     }
 
-    const endpointTypes: OJP_Legacy.JourneyPointType[] = ['From', 'To']
-    endpointTypes.forEach(endpointType => {
-      const isFrom = endpointType === 'From'
+    const ojpSDK_Next = this.createOJP_SDK_Instance(language);
+
+    const bbox = new OJP_Legacy.GeoPositionBBOX([]);
+
+    const endpointTypes: OJP_Legacy.JourneyPointType[] = ['From', 'To'];
+    for (const endpointType of endpointTypes) {
+      const isFrom = endpointType === 'From';
 
       let stopPlaceRef = isFrom ? fromPlaceRef : toPlaceRef;
       
@@ -159,51 +160,71 @@ export class UserTripService {
         }
       }
 
-      const coordsLocation = OJP_Legacy.Location.initFromLiteralCoords(stopPlaceRef);
+      let place: AnyPlace | null = null;
 
-      if (coordsLocation) {
-        const coordsPromise = new Promise<OJP_Legacy.Location[]>((resolve) => {
-          resolve([coordsLocation]);
-        });
-        promises.push(coordsPromise);
+      const coordsLocation = OJP_Legacy.Location.initFromLiteralCoords(stopPlaceRef);
+      if (coordsLocation?.geoPosition) {
+        place = new PlaceLocation(coordsLocation.geoPosition.longitude, coordsLocation.geoPosition.latitude);
       } else {
-        let locationInformationRequest = OJP_Legacy.LocationInformationRequest.initWithStopPlaceRef(stageConfig, language, xmlConfig, REQUESTOR_REF, stopPlaceRef);
+        let request = OJP_Next.LocationInformationRequest.initWithPlaceRef(stopPlaceRef, 10);
         // Check if is location name instead of stopId / sloid
         if (typeof stopPlaceRef === 'string' && /^[A-Z]/.test(stopPlaceRef)) {
-          locationInformationRequest = OJP_Legacy.LocationInformationRequest.initWithLocationName(stageConfig, language, xmlConfig, REQUESTOR_REF, stopPlaceRef, []);
+          request = OJP_Next.LocationInformationRequest.initWithLocationName(stopPlaceRef, ['stop'], 10);
         }
-        locationInformationRequest.enableExtensions = this.currentAppStage !== 'OJP-SI';
 
-        const locationInformationPromise = locationInformationRequest.fetchLocations();
-        promises.push(locationInformationPromise);
+        place = await this.fetchPlace(ojpSDK_Next, request);
       }
-    });
 
-    const bbox = new OJP_Legacy.GeoPositionBBOX([])
+      if (!place) {
+        continue;
+      }
 
-    const viaPartsS = this.queryParams.get('via') ?? null
-    const viaParts: string[] = viaPartsS === null ? [] : viaPartsS.split(';')
-    viaParts.forEach(viaKey => {
-      const viaLocationFromCoords = OJP_Legacy.Location.initFromLiteralCoords(viaKey);
-      if (viaLocationFromCoords) {
-        const viaTripLocation = new OJP_Legacy.TripLocationPoint(viaLocationFromCoords);
-        this.viaTripLocations.push(viaTripLocation);
-
-        if (viaLocationFromCoords.geoPosition) {
-          bbox.extend(viaLocationFromCoords.geoPosition);
-        }
+      const location = place.asOJP_LegacyLocation();
+      if (isFrom) {
+        this.fromTripLocation = new OJP_Legacy.TripLocationPoint(location);
       } else {
-        const stopPlaceLIR = OJP_Legacy.LocationInformationRequest.initWithStopPlaceRef(stageConfig, language, xmlConfig, REQUESTOR_REF, viaKey);
-        stopPlaceLIR.enableExtensions = this.currentAppStage !== 'OJP-SI';
-        const stopPlacePromise = stopPlaceLIR.fetchLocations();
-        promises.push(stopPlacePromise);
+        this.toTripLocation = new OJP_Legacy.TripLocationPoint(location);
       }
-    });
+
+      if (location.geoPosition) {
+        bbox.extend(location.geoPosition);
+      }
+    };
+
+    this.viaTripLocations = [];
+
+    const viaPartsS = this.queryParams.get('via') ?? null;
+    const viaParts: string[] = viaPartsS === null ? [] : viaPartsS.split(';');
+    for (const viaKey of viaParts) {
+      let place: AnyPlace | null = null;
+
+      const coordsLocation = OJP_Legacy.Location.initFromLiteralCoords(viaKey);
+      if (coordsLocation?.geoPosition) {
+        place = new PlaceLocation(coordsLocation.geoPosition.longitude, coordsLocation.geoPosition.latitude);
+      } else {
+        const request = OJP_Next.LocationInformationRequest.initWithPlaceRef(viaKey, 10);
+        place = await this.fetchPlace(ojpSDK_Next, request);
+      }
+
+      if (!place) {
+        continue;
+      }
+
+      this.isViaEnabled = true;
+      
+      const location = place.asOJP_LegacyLocation();
+      const viaTripLocation = new OJP_Legacy.TripLocationPoint(location);
+      this.viaTripLocations.push(viaTripLocation);
+
+      if (location.geoPosition) {
+        bbox.extend(location.geoPosition)
+      }
+    };
     
     this.tripModeType = 'monomodal';
     const tripModeTypesS = this.queryParams.get('mode_types') ?? null;
     if (tripModeTypesS !== null) {
-      this.tripModeType = tripModeTypesS.split(';')[0] as  OJP_Legacy.TripModeType;
+      this.tripModeType = tripModeTypesS.split(';')[0] as OJP_Legacy.TripModeType;
     }
 
     this.tripTransportMode = 'public_transport';
@@ -236,58 +257,22 @@ export class UserTripService {
       return modes;
     })();
 
-    Promise.all(promises).then(locationsData => {
-      endpointTypes.forEach(endpointType => {
-        const isFrom = endpointType === 'From'
-        const locations = isFrom ? locationsData[0] : locationsData[1];
-        if (locations.length === 0) {
-          return;
-        }
+    this.locationsUpdated.emit();
+    this.geoLocationsUpdated.emit();
+    this.updateURLs();
 
-        const firstLocation = locations[0]
-        if (isFrom) {
-          this.fromTripLocation = new OJP_Legacy.TripLocationPoint(firstLocation);
-        } else {
-          this.toTripLocation = new OJP_Legacy.TripLocationPoint(firstLocation);
-        }
-
-        if (firstLocation.geoPosition) {
-          bbox.extend(firstLocation.geoPosition)
-        }
-      });
-
-      const viaLocationsData = locationsData[2] ?? null;
-      if (viaLocationsData !== null) {
-        this.isViaEnabled = true;
+    if (bbox.isValid()) {
+      const shouldZoomToBounds = this.queryParams.has('from') || this.queryParams.has('to');
+      if (shouldZoomToBounds && !this.mapService.initialMapCenter) {
+        const bounds = new mapboxgl.LngLatBounds(bbox.asFeatureBBOX());
+        const mapData: IMapBoundsData = {
+          bounds: bounds,
+          disableEase: true,
+        };
         
-        const firstLocation = viaLocationsData[0];
-        const viaTripLocation = new OJP_Legacy.TripLocationPoint(firstLocation);
-        this.viaTripLocations = [viaTripLocation];
-
-        if (firstLocation.geoPosition) {
-          bbox.extend(firstLocation.geoPosition)
-        }
+        this.mapService.newMapBoundsRequested.emit(mapData);
       }
-
-      this.locationsUpdated.emit();
-      this.geoLocationsUpdated.emit();
-      this.updateURLs();
-
-      if (bbox.isValid()) {
-        const shouldZoomToBounds = this.queryParams.has('from') || this.queryParams.has('to')
-        if (shouldZoomToBounds && !this.mapService.initialMapCenter) {
-          const bounds = new mapboxgl.LngLatBounds(bbox.asFeatureBBOX())
-          const mapData: IMapBoundsData = {
-            bounds: bounds,
-            disableEase: true,
-          };
-          
-          this.mapService.newMapBoundsRequested.emit(mapData);
-        }
-      }
-      
-      this.defaultsInited.emit();
-    });
+    }
 
     this.isAdditionalRestrictionsEnabled = ['yes', 'true', '1'].includes(this.queryParams.get('advanced') ?? 'n/a');
 
@@ -305,84 +290,80 @@ export class UserTripService {
     })();
   }
 
-  public refetchEndpointsByName(language: OJP_Legacy.Language) {
-    const promises: Promise<OJP_Legacy.Location[] | null>[] = [];
-    const emptyPromise = new Promise<null>((resolve, reject) => {
-      resolve(null);
-    });
+  private async fetchPlace(sdk: OJP_Next.SDK, request: OJP_Next.LocationInformationRequest): Promise<AnyPlace | null> {
+    const response = await sdk.fetchLocationInformationRequestResponse(request);
 
-    const endpointTypes: OJP_Legacy.JourneyPointType[] = ['From', 'To']
-    endpointTypes.forEach(endpointType => {
-      const isFrom = endpointType === 'From'
+    if (!response.ok) {
+      console.log('ERROR - fetchPlace.LIR - issue');
+      console.log(response);
+      return null;
+    }
+
+    const placeResults = response.value.placeResult;
+    if (placeResults.length === 0) {
+      return null;
+    }
+
+    const place = PlaceBuilder.initWithPlaceResultSchema(placeResults[0]);
+    return place;
+  }
+
+  public async refetchEndpointsByName(language: OJP_Legacy.Language) {
+    const ojpSDK_Next = this.createOJP_SDK_Instance(language);
+
+    const endpointTypes: OJP_Legacy.JourneyPointType[] = ['From', 'To'];
+    for (const endpointType of endpointTypes) {
+      const isFrom = endpointType === 'From';
 
       const tripLocation = isFrom ? this.fromTripLocation : this.toTripLocation;
       if (tripLocation === null) {
-        promises.push(emptyPromise);
-        return;
+        continue;
       }
 
       const geoPosition = tripLocation.location.geoPosition;
       if (geoPosition === null) {
-        promises.push(emptyPromise);
-        return;
+        continue;
       }
 
       // Search nearby locations, in a bbox of 200x200m
       const bbox = OJP_Legacy.GeoPositionBBOX.initFromGeoPosition(geoPosition, 200, 200);
-      const stageConfig = this.getStageConfig();
+      const bboxData = bbox.asFeatureBBOX();
+      const request = OJP_Next.LocationInformationRequest.initWithBBOX(bboxData, ['stop'], 300);
 
-      const ojpRequest: OJP_Legacy.LocationInformationRequest = (() => {
-        const isOJPv2 = OJP_VERSION === '2.0';
-        const xmlConfig = isOJPv2 ? OJP_Next.DefaultXML_Config : OJP_Next.XML_BuilderConfigOJPv1;
+      const response = await ojpSDK_Next.fetchLocationInformationRequestResponse(request);
 
-        const request = OJP_Legacy.LocationInformationRequest.initWithBBOXAndType(stageConfig, language, xmlConfig, REQUESTOR_REF,
-          bbox.southWest.longitude,
-          bbox.northEast.latitude,
-          bbox.northEast.longitude,
-          bbox.southWest.latitude,
-          
-          ['stop'],
-          300
-        );
-        request.enableExtensions = this.currentAppStage !== 'OJP-SI';
+      if (!response.ok) {
+          console.log('ERROR - failed to bbox lookup locations for "' + bboxData.join(', ') + '"');
+          console.log(response);
+          continue;
+      }
 
-        return request;
-      })();
-      
-      const locationInformationPromise = ojpRequest.fetchLocations();
-      promises.push(locationInformationPromise);
-    });
-
-    Promise.all(promises).then(locationsData => {
-      endpointTypes.forEach(endpointType => {
-        const isFrom = endpointType === 'From'
-        const locations = isFrom ? locationsData[0] : locationsData[1];
-        if (locations === null) {
+      const locations: OJP_Legacy.Location[] = [];
+      response.value.placeResult.forEach((placeResult) => {
+        const place = PlaceBuilder.initWithPlaceResultSchema(placeResult);
+        if (place === null) {
           return;
         }
 
-        const tripLocation = isFrom ? this.fromTripLocation : this.toTripLocation;
-        if (tripLocation === null) {
-          promises.push(emptyPromise);
-          return;
-        }
-        
-        const nearbyLocation = tripLocation.location.findClosestLocation(locations);
-        if (nearbyLocation === null) {
-          return;
-        }
+        const location = place.asOJP_LegacyLocation();
+        locations.push(location);
+      });
 
-        if (isFrom) {
-          this.fromTripLocation = new OJP_Legacy.TripLocationPoint(nearbyLocation.location)
-        } else {
-          this.toTripLocation = new OJP_Legacy.TripLocationPoint(nearbyLocation.location)
-        }
+      const nearbyLocation = tripLocation.location.findClosestLocation(locations);
+      if (nearbyLocation === null) {
+        continue;
+      }
 
-        this.updateURLs();
-        this.locationsUpdated.emit();
-        this.geoLocationsUpdated.emit();
-      })
-    });
+      if (isFrom) {
+        this.fromTripLocation = new OJP_Legacy.TripLocationPoint(nearbyLocation.location)
+      } else {
+        this.toTripLocation = new OJP_Legacy.TripLocationPoint(nearbyLocation.location)
+      }
+    };
+
+    this.updateURLs();
+    this.locationsUpdated.emit();
+    this.geoLocationsUpdated.emit();
   }
 
   public switchEndpoints() {
@@ -965,4 +946,13 @@ export class UserTripService {
   public hasPublicTransport(): boolean {
     return this.tripTransportMode === 'public_transport';
   }
+
+  private createOJP_SDK_Instance(language: OJP_Legacy.Language): OJP_Next.SDK {
+    const isOJPv2 = OJP_VERSION === '2.0';
+    const xmlConfig = isOJPv2 ? OJP_Next.DefaultXML_Config : OJP_Next.XML_BuilderConfigOJPv1;
+
+    const stageConfig = this.getStageConfig();
+    const sdk = new OJP_Next.SDK(REQUESTOR_REF, stageConfig, language, xmlConfig);
+    return sdk;
+  }  
 }
