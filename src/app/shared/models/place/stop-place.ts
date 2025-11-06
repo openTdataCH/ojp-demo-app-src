@@ -1,14 +1,21 @@
 import * as OJP_SharedTypes from 'ojp-shared-types';
 import * as OJP_Next from 'ojp-sdk-next';
 
-export class StopPlace extends OJP_Next.GeoPosition {
-  public name: string;
-  public stopPlaceRef: string;
+import { BasePlace } from '../place';
 
-  public constructor(longitude: number, latitude: number, name: string, stopPlaceRef: string) {
-    super(longitude, latitude);
-    this.name = name;
-    this.stopPlaceRef = stopPlaceRef;
+export class StopPlace extends BasePlace {
+  public stopName: string;
+  public stopRef: string;
+
+  private constructor(longitude: number, latitude: number, placeName: string, stopName: string, stopRef: string) {
+    super(longitude, latitude, 'stop', placeName);
+    this.stopName = stopName;
+    this.stopRef = stopRef;
+  }
+
+  public static Empty(stopName: string = 'n/a') {
+    const stopPlace = new StopPlace(0, 0, 'n/a', stopName, 'n/a');
+    return stopPlace;
   }
 
   public static initWithPlaceResultSchema(placeResultSchema: OJP_SharedTypes.PlaceResultSchema): StopPlace | null {
@@ -17,7 +24,7 @@ export class StopPlace extends OJP_Next.GeoPosition {
       return null;
     }
 
-    const stopName: string = (() => {
+    const stopPlaceName: string = (() => {
       const stopPlaceName = placeResultSchema.place.stopPlace?.stopPlaceName ?? null;
       if (stopPlaceName) {
         return stopPlaceName.text;
@@ -33,7 +40,9 @@ export class StopPlace extends OJP_Next.GeoPosition {
       return null;
     }
 
-    const stopPlace = new StopPlace(geoPosition.longitude, geoPosition.latitude, stopName, stopPlaceRef);
+    const placeName = placeResultSchema.place.name.text;
+
+    const stopPlace = new StopPlace(geoPosition.longitude, geoPosition.latitude, placeName, stopPlaceName, stopPlaceRef);
     return stopPlace;
   }
 }
