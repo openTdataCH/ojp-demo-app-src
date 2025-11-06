@@ -168,9 +168,9 @@ export class JourneyPointInputComponent implements OnInit, OnChanges {
   }
 
   private handleCoordsPick(location: OJP_Legacy.Location) {
-    const geoPosition = location.geoPosition
+    const geoPosition = location.geoPosition;
     if (geoPosition === null) {
-      return
+      return;
     }
 
     const place = new PlaceLocation(geoPosition.longitude, geoPosition.latitude, geoPosition.asLatLngString());
