@@ -11,7 +11,7 @@ import { REQUESTOR_REF, OJP_VERSION } from '../../config/constants';
 
 import { UserTripService } from '../../shared/services/user-trip.service';
 import { LanguageService } from '../../shared/services/language.service';
-import { StopPlace } from '../../shared/models/stop-place';
+import { StopPlace } from '../../shared/models/place/stop-place';
 
 interface StopLookup {
   stopPlace: StopPlace,
@@ -45,8 +45,11 @@ export class StationBoardInputComponent implements OnInit {
   }
 
   private static get AroundMeStopLookup(): StopLookup {
+    const currentLocationStopPlace = StopPlace.Empty();
+    currentLocationStopPlace.stopName = 'Current Location';
+
     const stopLookup: StopLookup = {
-      stopPlace: new StopPlace(0, 0, 'Current Location', 'n/a'),
+      stopPlace: currentLocationStopPlace,
       type: 'around_me',
       distance: null,
     };
@@ -64,7 +67,7 @@ export class StationBoardInputComponent implements OnInit {
   }
 
   public renderLookupName(stopLookup: StopLookup): string {
-    let lookupName = stopLookup.stopPlace.name;
+    let lookupName = stopLookup.stopPlace.stopName;
     if (stopLookup.distance) {
       lookupName += ' (' + stopLookup.distance + ' m)';
     }
@@ -159,7 +162,7 @@ export class StationBoardInputComponent implements OnInit {
     }
 
     this.hackIgnoreInputChangesFlag = true;
-    this.searchInputControl.setValue(stopLookup.stopPlace.name);
+    this.searchInputControl.setValue(stopLookup.stopPlace.stopName);
 
     this.stopPlaceSelected.emit(stopLookup.stopPlace);
   }

@@ -26,7 +26,7 @@ import { DebugXmlPopoverComponent } from '../../search-form/debug-xml-popover/de
 import { CustomStopEventXMLPopoverComponent } from './custom-stop-event-xml-popover/custom-stop-event-xml-popover.component';
 import { EmbedStationBoardPopoverComponent } from './embed-station-board-popover/embed-station-board-popover.component';
 import { StationBoardType } from '../types/stop-event';
-import { StopPlace } from '../../shared/models/stop-place';
+import { StopPlace } from '../../shared/models/place/stop-place';
 
 @Component({
   selector: 'station-board-search',
@@ -182,7 +182,7 @@ export class StationBoardSearchComponent implements OnInit {
   }
 
   public onStopPlaceSelected(stopPlace: StopPlace) {
-    this.updateCurrentRequestData(stopPlace.stopPlaceRef);
+    this.updateCurrentRequestData(stopPlace.stopRef);
 
     this.stopPlace = stopPlace;
 
@@ -228,7 +228,7 @@ export class StationBoardSearchComponent implements OnInit {
   public searchButtonClicked() {
     this.notificationToast.dismiss();
 
-    const stopPlaceRef = this.stopPlace?.stopPlaceRef ?? null;
+    const stopPlaceRef = this.stopPlace?.stopRef ?? null;
     if (stopPlaceRef === null) {
       console.error('ERROR - no stopPlaceRef available');
       return;
@@ -283,7 +283,7 @@ export class StationBoardSearchComponent implements OnInit {
       queryParams.set('type', 'arr');
     }
     
-    const stopPlaceRef = this.stopPlace?.stopPlaceRef ?? null;
+    const stopPlaceRef = this.stopPlace?.stopRef ?? null;
     if (stopPlaceRef) {
       queryParams.set('stop_id', stopPlaceRef);
     }
@@ -363,7 +363,12 @@ export class StationBoardSearchComponent implements OnInit {
         if (firstLocation && firstLocation.geoPosition) {
           const stopPlaceName = firstLocation.stopPlace?.stopPlaceName ?? 'temp - n/a';
           const stopPlaceRef = firstLocation.stopPlace?.stopPlaceRef ?? 'temp - n/a';
-          const stopPlace = new StopPlace(firstLocation.geoPosition.longitude, firstLocation.geoPosition.latitude, stopPlaceName, stopPlaceRef);
+          
+          const stopPlace = StopPlace.Empty();
+          stopPlace.longitude = firstLocation.geoPosition.longitude;
+          stopPlace.latitude = firstLocation.geoPosition.latitude;
+          stopPlace.stopName = firstLocation.stopPlace?.stopPlaceName ?? 'temp - n/a';
+          stopPlace.stopRef = firstLocation.stopPlace?.stopPlaceRef ?? 'temp - n/a';
 
           this.onStopPlaceSelected(stopPlace);
         }
@@ -437,7 +442,7 @@ export class StationBoardSearchComponent implements OnInit {
     this.updateHeaderText();
 
     if (this.autocompleteInputComponent) {
-      this.autocompleteInputComponent.updateLocationText(stopPlace.name);
+      this.autocompleteInputComponent.updateLocationText(stopPlace.stopName);
     }
   }
 
@@ -446,7 +451,7 @@ export class StationBoardSearchComponent implements OnInit {
       return;
     }
 
-    this.headerText = this.stationBoardType + ' ' + this.stopPlace.name;
+    this.headerText = this.stationBoardType + ' ' + this.stopPlace.stopName;
   }
 
   private handleMapClick(feature: GeoJSON.Feature) {
@@ -471,11 +476,16 @@ export class StationBoardSearchComponent implements OnInit {
       return;
     }
 
-    const stopPlace = new StopPlace(coords[0], coords[1], stopPlaceName, stopPlaceRef);
+    const stopPlace = StopPlace.Empty();
+    stopPlace.longitude = coords[0];
+    stopPlace.latitude = coords[1];
+    stopPlace.stopName = stopPlaceName;
+    stopPlace.stopRef = stopPlaceRef;
+    
     this.stopPlace = stopPlace;
 
     if (this.autocompleteInputComponent) {
-      this.autocompleteInputComponent.updateLocationText(stopPlace.name);
+      this.autocompleteInputComponent.updateLocationText(stopPlace.stopName);
     }
 
     this.resetResultList();

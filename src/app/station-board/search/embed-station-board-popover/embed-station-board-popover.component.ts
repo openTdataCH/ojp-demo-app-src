@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 
-import { StopPlace } from '../../../shared/models/stop-place';
+import { StopPlace } from '../../../shared/models/place/stop-place';
 
 @Component({
   selector: 'embed-station-board-popover',
@@ -14,7 +14,7 @@ export class EmbedStationBoardPopoverComponent {
   }
 
   public updateEmbedHTML(stopPlace: StopPlace) {
-    const stopRef = stopPlace.stopPlaceRef;
+    const stopRef = stopPlace.stopRef;
 
     const embedLinkRelativeURL = document.location.pathname.replace('/board', '/embed/board') + '?stop_id=' +  stopRef;
     const embedURL = document.location.protocol + '//' + document.location.host + embedLinkRelativeURL;
