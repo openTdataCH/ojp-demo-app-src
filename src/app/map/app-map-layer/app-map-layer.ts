@@ -371,8 +371,7 @@ export class AppMapLayer {
                 return;
             }
 
-            const hackLocation = OJP_Legacy.Location.initWithLngLat(place.longitude, place.latitude);
-            this.userTripService.updateTripEndpoint(hackLocation, endpointType, 'MapPopupClick');
+            this.userTripService.updateTripEndpoint(place, endpointType, 'MapPopupClick');
     
             popup.remove();
         });

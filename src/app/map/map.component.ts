@@ -11,6 +11,7 @@ import { MapHelpers } from './helpers/map.helpers';
 
 import { TripRenderController } from './controllers/trip-render-controller';
 import { LanguageService } from '../shared/services/language.service';
+import { PlaceLocation } from '../shared/models/place/location';
 
 @Component({
   selector: 'app-map',
@@ -198,8 +199,8 @@ export class MapComponent implements OnInit, AfterViewInit {
         return;
       }
 
-      const location = OJP_Legacy.Location.initWithLngLat(lngLat.lng, lngLat.lat);
-      this.userTripService.updateTripEndpoint(location, endpointType, 'MapPopupClick');
+      const place = new PlaceLocation(lngLat.lng, lngLat.lat);
+      this.userTripService.updateTripEndpoint(place, endpointType, 'MapPopupClick');
 
       this.popupContextMenu.remove();
     });
