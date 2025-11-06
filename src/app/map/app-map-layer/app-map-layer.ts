@@ -19,20 +19,20 @@ export enum FeaturePropsEnum {
 }
 
 export class AppMapLayer {
-    private language: OJP_Legacy.Language
-    private layerKey: string
+    private language: OJP_Legacy.Language;
+    private layerKey: string;
 
-    private map: mapboxgl.Map
-    public minZoom: number
+    private map: mapboxgl.Map;
     private restrictionType: OJP_SharedTypes.PlaceTypeEnum;
     public restrictionPOI: POI_Restriction | null;
+    public minZoom: number;
 
     private features: GeoJSON.Feature[];
     private mapSourceID: string;
-    private userTripService: UserTripService
+    private userTripService: UserTripService;
 
-    public isEnabled: boolean
     public lastOJPRequest: OJP_Legacy.LocationInformationRequest | null
+    public isEnabled: boolean;
 
     protected currentLocations: OJP_Legacy.Location[];
 
@@ -247,7 +247,7 @@ export class AppMapLayer {
     }
 
     private setSourceFeatures(features: GeoJSON.Feature[]) {
-        this.features = features
+        this.features = features;
     
         const source = this.map.getSource(this.mapSourceID) as mapboxgl.GeoJSONSource
         const featureCollection = <GeoJSON.FeatureCollection>{
@@ -369,7 +369,7 @@ export class AppMapLayer {
             return popupHTML;
         }
         
-        const tableTRs: string[] = []
+        const tableTRs: string[] = [];
         for (let key in featureProperties) {
             let value = featureProperties[key];
             if (typeof value === 'string') {
@@ -380,12 +380,12 @@ export class AppMapLayer {
             }
             
             const tableTR = '<tr><td>' + key + '</td><td>' + value + '</td></tr>';
-            tableTRs.push(tableTR)
+            tableTRs.push(tableTR);
         }
     
-        const tableHTML = '<table class="table">' + tableTRs.join('') + '</table>'
+        const tableHTML = '<table class="table">' + tableTRs.join('') + '</table>';
         popupHTML = popupHTML.replace('[GEOJSON_PROPERTIES_TABLE]', tableHTML);
     
-        return popupHTML
+        return popupHTML;
     }
 }
