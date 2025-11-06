@@ -15,8 +15,10 @@ import { REQUESTOR_REF, OJP_VERSION } from '../../config/constants';
 import { MapService } from '../../shared/services/map.service';
 import { LanguageService } from '../../shared/services/language.service'
 import { UserTripService } from '../../shared/services/user-trip.service';
+import { AnyPlace, PlaceBuilder } from '../../shared/models/place/place-builder';
+import { PlaceLocation } from '../../shared/models/place/location';
 
-type MapLocations = Record<OJP_SharedTypes.PlaceTypeEnum, OJP_Legacy.Location[]>;
+type MapLocations = Record<OJP_SharedTypes.PlaceTypeEnum, AnyPlace[]>;
 type OptionLocationType = [OJP_SharedTypes.PlaceTypeEnum, string];
 
 export class ErrorStateMatcher implements SbbErrorStateMatcher {
@@ -36,17 +38,17 @@ export class JourneyPointInputComponent implements OnInit, OnChanges {
 
   public inputControl = new FormControl('', [Validators.required]);
 
-  public mapLookupLocations: MapLocations;
+  public mapLookupPlaces: MapLocations;
   public optionLocationTypes: OptionLocationType[];
 
   @Input() placeholder: string = '';
   @Input() endpointType: OJP_Legacy.JourneyPointType = 'From';
   @Input() inputValue: string = '';
-  @Output() selectedLocation = new EventEmitter<OJP_Legacy.Location>()
+  @Output() selectedPlace = new EventEmitter<AnyPlace>();
 
   constructor(private mapService: MapService, private userTripService: UserTripService, private languageService: LanguageService) {
-    this.mapLookupLocations = {} as MapLocations;
-    this.resetMapLocations();
+    this.mapLookupPlaces = {} as MapLocations;
+    this.resetMapPlaces();
 
     this.optionLocationTypes = [
       ['stop', 'Stops'],
@@ -75,7 +77,7 @@ export class JourneyPointInputComponent implements OnInit, OnChanges {
 
       const coordsLocation = OJP_Legacy.Location.initFromLiteralCoords(searchTerm);
       if (coordsLocation) {
-        this.resetMapLocations()
+        this.resetMapPlaces()
         
         this.handleCoordsPick(coordsLocation)
         return
@@ -107,36 +109,37 @@ export class JourneyPointInputComponent implements OnInit, OnChanges {
       return;
     }
     
-    const locationType = optionIdParts[0] as OJP_SharedTypes.PlaceTypeEnum;
-    const locationIdx = parseInt(optionIdParts[1], 10);
+    const placeType = optionIdParts[0] as OJP_SharedTypes.PlaceTypeEnum;
+    const itemIdx = parseInt(optionIdParts[1], 10);
 
-    const location = this.mapLookupLocations[locationType][locationIdx];
+    const place = this.mapLookupPlaces[placeType][itemIdx];
 
-    const inputValue = location.computeLocationName();
+    const inputValue = place.computeName();
     this.inputControl.setValue(inputValue);
 
-    this.selectedLocation.emit(location);
+    this.selectedPlace.emit(place);
   }
 
   private async fetchJourneyPoints(searchTerm: string) {
-    const stageConfig = this.userTripService.getStageConfig();
-    const isOJPv2 = OJP_VERSION === '2.0';
-    const xmlConfig = isOJPv2 ? OJP_Next.DefaultXML_Config : OJP_Next.XML_BuilderConfigOJPv1;
+    const request = OJP_Next.LocationInformationRequest.initWithLocationName(searchTerm, []);
+    const ojpSDK_Next = this.createOJP_SDK_Instance();
+    const response = await ojpSDK_Next.fetchLocationInformationRequestResponse(request);
 
-    const request = OJP_Legacy.LocationInformationRequest.initWithLocationName(stageConfig, this.languageService.language, xmlConfig, REQUESTOR_REF, searchTerm, []);
-    request.enableExtensions = this.userTripService.currentAppStage !== 'OJP-SI';
-    
-    const response = await request.fetchResponse();
+    if (!response.ok) {
+      console.log('ERROR - failed to lookup locations for "' + searchTerm + '"');
+      console.log(response);
+      return;
+    }
 
-    this.resetMapLocations();
-      
-    response.locations.forEach(location => {
-      const locationType = location.getLocationType();
-      if (locationType === null) {
-        return;
+    this.resetMapPlaces();
+
+    response.value.placeResult.forEach((placeResult, idx) => {
+      const place = PlaceBuilder.initWithPlaceResultSchema(placeResult);
+      if (place === null) {
+          return;
       }
 
-      this.mapLookupLocations[locationType].push(location);
+      this.mapLookupPlaces[place.type].push(place);
     });
   }
 
@@ -170,14 +173,16 @@ export class JourneyPointInputComponent implements OnInit, OnChanges {
       return
     }
 
-    const inputValue = geoPosition.asLatLngString(false)
+    const place = new PlaceLocation(geoPosition.longitude, geoPosition.latitude, geoPosition.asLatLngString());
+
+    const inputValue = geoPosition.asLatLngString(false);
     this.inputControl.setValue(inputValue);
 
-    this.selectedLocation.emit(location);
+    this.selectedPlace.emit(place);
   }
 
-  private resetMapLocations() {
-    this.mapLookupLocations = {
+  private resetMapPlaces() {
+    this.mapLookupPlaces = {
       address: [],
       poi: [],
       stop: [],
@@ -185,4 +190,13 @@ export class JourneyPointInputComponent implements OnInit, OnChanges {
       location: [],
     };
   }
+
+  private createOJP_SDK_Instance(): OJP_Next.SDK {
+      const isOJPv2 = OJP_VERSION === '2.0';
+      const xmlConfig = isOJPv2 ? OJP_Next.DefaultXML_Config : OJP_Next.XML_BuilderConfigOJPv1;
+
+      const stageConfig = this.userTripService.getStageConfig();    
+      const sdk = new OJP_Next.SDK(REQUESTOR_REF, stageConfig, this.languageService.language, xmlConfig);
+      return sdk;
+  }  
 }
