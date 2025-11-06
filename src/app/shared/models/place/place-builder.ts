@@ -3,8 +3,9 @@ import * as OJP_SharedTypes from 'ojp-shared-types';
 import { Address } from './address';
 import { StopPlace } from './stop-place';
 import { Poi } from './poi';
+import { PlaceLocation } from './location';
 
-export type AnyPlace = Address | Poi | StopPlace;
+export type AnyPlace = Address | PlaceLocation | Poi | StopPlace;
 
 export class PlaceBuilder {
   public static initWithPlaceResultSchema(placeResultSchema: OJP_SharedTypes.PlaceResultSchema): AnyPlace | null {
