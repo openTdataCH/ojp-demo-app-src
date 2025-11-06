@@ -26,6 +26,7 @@ import { DebugXmlPopoverComponent } from './debug-xml-popover/debug-xml-popover.
 import { ReportIssueComponent } from '../shared/components/report-issue.component';
 
 import { OJPHelpers } from '../helpers/ojp-helpers';
+import { AnyPlace } from '../shared/models/place/place-builder';
 
 @Component({
   selector: 'app-search-form',
@@ -103,7 +104,7 @@ export class SearchFormComponent implements OnInit {
     this.gistURL = null;
   }
 
-  ngOnInit() {
+  async ngOnInit(): Promise<void> {
     if (this.useMocks) {
       this.initLocationsFromMocks()
       return;
@@ -273,15 +274,15 @@ export class SearchFormComponent implements OnInit {
     this.initFromMockXML(mockText);
   }
 
-  onLocationSelected(location: OJP_Legacy.Location, originType: OJP_Legacy.JourneyPointType) {
-    this.userTripService.updateTripEndpoint(location, originType, 'SearchForm');
+  onPlaceSelected(place: AnyPlace, originType: OJP_Legacy.JourneyPointType) {
+    this.userTripService.updateTripEndpoint(place, originType, 'SearchForm');
   }
 
-  onChangeStageAPI(ev: SbbRadioChange) {
+  public async onChangeStageAPI(ev: SbbRadioChange) {
     const newAppStage = ev.value as APP_STAGE
     this.userTripService.updateAppStage(newAppStage)
 
-    this.userTripService.refetchEndpointsByName(this.languageService.language);
+    await this.userTripService.refetchEndpointsByName(this.languageService.language);
   }
 
   onChangeDateTime() {
