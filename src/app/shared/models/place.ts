@@ -18,6 +18,11 @@ export abstract class BasePlace extends OJP_Next.GeoPosition {
       name: this.placeName,
     };
 
-    return properties
+    return properties;
+  }
+
+  public computeName() {
+    return this.placeName;
+  }
   }
 }

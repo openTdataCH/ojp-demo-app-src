@@ -45,4 +45,8 @@ export class StopPlace extends BasePlace {
     const stopPlace = new StopPlace(geoPosition.longitude, geoPosition.latitude, placeName, stopPlaceName, stopPlaceRef);
     return stopPlace;
   }
+
+  public override computeName() {
+    return this.stopName;
+  }
 }

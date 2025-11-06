@@ -115,4 +115,8 @@ export class Poi extends BasePlace {
 
     return fallbackIcon;
   }
+
+  public override computeName() {
+    return this.name;
+  }
 }

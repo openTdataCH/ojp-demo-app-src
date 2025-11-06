@@ -62,4 +62,8 @@ export class Address extends BasePlace {
 
     return properties;
   }
+
+  public override computeName() {
+    return this.addressName;
+  }
 }
