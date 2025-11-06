@@ -153,7 +153,7 @@ export class MapComponent implements OnInit, AfterViewInit {
   private handleMarkerDrag(marker: mapboxgl.Marker, endpointType: OJP_Legacy.JourneyPointType) {
     const lngLat = marker.getLngLat();
 
-    let location = OJP_Legacy.Location.initWithLngLat(lngLat.lng, lngLat.lat);
+    const location = new PlaceLocation(lngLat.lng, lngLat.lat);
 
     // Try to snap to the nearest stop
     this.userTripService.updateTripEndpoint(location, endpointType, 'MapDragend');
