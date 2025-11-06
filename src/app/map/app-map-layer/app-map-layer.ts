@@ -1,7 +1,9 @@
 import * as GeoJSON from 'geojson'
 import mapboxgl from "mapbox-gl";
 
+import * as OJP_SharedTypes from 'ojp-shared-types';
 import * as OJP_Next from 'ojp-sdk-next';
+
 import OJP_Legacy from '../../config/ojp-legacy';
 
 import { AppMapLayerOptions, DEBUG_LEVEL, MAP_APP_MAP_LAYERS, REQUESTOR_REF, OJP_VERSION } from '../../config/constants'
@@ -9,6 +11,7 @@ import { AppMapLayerOptions, DEBUG_LEVEL, MAP_APP_MAP_LAYERS, REQUESTOR_REF, OJP
 import { UserTripService } from "../../shared/services/user-trip.service";
 import { MapHelpers } from "../helpers/map.helpers";
 import { MAP_LAYERS_DEFINITIONS } from "./map-layers-def";
+import { Poi, POI_Restriction, RestrictionPoiOSMTag } from '../../shared/models/place/poi';
 
 export enum FeaturePropsEnum {
     OJP_GeoRestrictionType = 'OJP_Legacy.GeoRestrictionType',
@@ -20,9 +23,9 @@ export class AppMapLayer {
     private layerKey: string
 
     private map: mapboxgl.Map
-    private restrictionType: OJP_Legacy.RestrictionType
-    public restrictionPOI: OJP_Legacy.POI_Restriction | null
     public minZoom: number
+    private restrictionType: OJP_SharedTypes.PlaceTypeEnum;
+    public restrictionPOI: POI_Restriction | null;
 
     private features: GeoJSON.Feature[];
     private mapSourceID: string;

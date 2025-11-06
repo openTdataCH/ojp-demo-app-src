@@ -1,5 +1,9 @@
 import { RasterLayerType } from '../shared/types/_all';
+
+import * as OJP_SharedTypes from 'ojp-shared-types';
+
 import OJP_Legacy from './ojp-legacy';
+import { POI_Restriction } from '../shared/models/place/poi';
 
 type DEBUG_LEVEL_Type = 'DEBUG' | 'PROD'
 export const DEBUG_LEVEL: DEBUG_LEVEL_Type = (() => {
@@ -66,8 +70,8 @@ export const APP_STAGEs: APP_STAGE[] = (() => {
 export const REQUESTOR_REF = 'OJP_DemoApp_Beta_OJP' + OJP_VERSION;
 
 export interface AppMapLayerOptions {
-  LIR_Restriction_Type: OJP_Legacy.RestrictionType
-  LIR_POI_Type?: OJP_Legacy.POI_Restriction | null
+  LIR_Restriction_Type: OJP_SharedTypes.PlaceTypeEnum
+  LIR_POI_Type?: POI_Restriction | null
   minZoom: number
   layer_ids?: string[] | null,
   click_layer_ids?: string[] | 'SAME_AS_LAYER_IDS' | null

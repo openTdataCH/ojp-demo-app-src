@@ -1,6 +1,8 @@
 import { OJP_VERSION } from '../../../../config/constants';
 import OJP_Legacy from '../../../../config/ojp-legacy';
 
+import { Poi, RestrictionPoiOSMTag } from '../../../../shared/models/place/poi';
+
 // https://github.com/SFOE/sharedmobility/blob/main/providers.csv
 type SharedMobilityProvider = '2EM Car Sharing' | 'Bird' | 'Bolt' | 'Carvelo2go' | 'Donkey Republic'
   | 'E-drive Car Sharing' | 'JM Fleets' | 'LIEmobil' | 'Lime' | 'Mobility' | 'Nextbike'
@@ -9,7 +11,7 @@ type SharedMobilityProvider = '2EM Car Sharing' | 'Bird' | 'Bolt' | 'Carvelo2go'
 type VehicleType = 'Car' | 'E-Car' | 'Bike' | 'E-Bike' | 'E-CargoBike' | 'E-Scooter' | 'E-Moped'
 
 export class SharedMobility {
-  public poiType: OJP_Legacy.RestrictionPoiOSMTag
+  public poiType: RestrictionPoiOSMTag
   public vehicleType: VehicleType
   public provider: SharedMobilityProvider
   public code: string
@@ -21,7 +23,7 @@ export class SharedMobility {
   public vehicleName: string | null
 
   constructor(
-    poiType: OJP_Legacy.RestrictionPoiOSMTag,
+    poiType: RestrictionPoiOSMTag,
     vehicleType: VehicleType,
     provider: SharedMobilityProvider,
     code: string,
