@@ -32,12 +32,12 @@ export class ErrorStateMatcher implements SbbErrorStateMatcher {
   styleUrls: ['./journey-point-input.component.scss']
 })
 export class JourneyPointInputComponent implements OnInit, OnChanges {
-  private shouldFetchNewData = true
+  private shouldFetchNewData = true;
 
   public inputControl = new FormControl('', [Validators.required]);
 
-  public mapLookupLocations: MapLocations
-  public optionLocationTypes: OptionLocationType[]
+  public mapLookupLocations: MapLocations;
+  public optionLocationTypes: OptionLocationType[];
 
   @Input() placeholder: string = '';
   @Input() endpointType: OJP_Legacy.JourneyPointType = 'From';
@@ -45,15 +45,15 @@ export class JourneyPointInputComponent implements OnInit, OnChanges {
   @Output() selectedLocation = new EventEmitter<OJP_Legacy.Location>()
 
   constructor(private mapService: MapService, private userTripService: UserTripService, private languageService: LanguageService) {
-    this.mapLookupLocations = {} as MapLocations
-    this.resetMapLocations()
+    this.mapLookupLocations = {} as MapLocations;
+    this.resetMapLocations();
 
     this.optionLocationTypes = [
       ['stop', 'Stops'],
       ['poi', 'POIs'],
       ['topographicPlace', 'Topographic Places'],
       ['address', 'Addresses'],
-    ]
+    ];
   }
 
   ngOnInit() {
