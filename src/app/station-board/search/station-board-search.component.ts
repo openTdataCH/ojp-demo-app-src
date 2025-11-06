@@ -410,7 +410,7 @@ export class StationBoardSearchComponent implements OnInit {
   }
 
   private async lookupStopPlaceRef(stopPlaceRef: string) {
-    const request = OJP_Next.LocationInformationRequest.initWithPlaceRef(stopPlaceRef, ['stop'], 10);
+    const request = OJP_Next.LocationInformationRequest.initWithPlaceRef(stopPlaceRef, 10);
     const ojpSDK_Next = this.createOJP_SDK_Instance();
 
     const response = await ojpSDK_Next.fetchLocationInformationRequestResponse(request);
