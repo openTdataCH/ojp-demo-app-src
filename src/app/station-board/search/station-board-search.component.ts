@@ -413,23 +413,23 @@ export class StationBoardSearchComponent implements OnInit {
     const request = OJP_Next.LocationInformationRequest.initWithPlaceRef(stopPlaceRef, ['stop'], 10);
     const ojpSDK_Next = this.createOJP_SDK_Instance();
 
-    const response2 = await ojpSDK_Next.fetchLocationInformationRequestResponse(request);
-    if (!response2.ok) {
+    const response = await ojpSDK_Next.fetchLocationInformationRequestResponse(request);
+    if (!response.ok) {
       console.log('ERROR - LIR - initWithPlaceRef');
-      console.log(response2);
+      console.log(response);
       return;
     }
 
-    if (response2.value.placeResult.length === 0) {
+    if (response.value.placeResult.length === 0) {
       console.error('ERROR - cant find stopPlaceRef with ID: ' + stopPlaceRef);
-      console.log(response2);
+      console.log(response);
       return;
     }
 
-    const stopPlace = StopPlace.initWithPlaceResultSchema(response2.value.placeResult[0]);
+    const stopPlace = StopPlace.initWithPlaceResultSchema(response.value.placeResult[0]);
     if (stopPlace === null) {
       console.error('ERROR - cant init StopPlace with ID: ' + stopPlaceRef);
-      console.log(response2);
+      console.log(response);
       return;
     }
 
