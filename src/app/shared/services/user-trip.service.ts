@@ -51,7 +51,6 @@ export class UserTripService {
   public sbbURL: string | null;
   public embedQueryParams = new URLSearchParams();
 
-  public defaultsInited = new EventEmitter<void>();
   public searchFormAfterDefaultsInited = new EventEmitter<void>();
   public locationsUpdated = new EventEmitter<void>();
   public geoLocationsUpdated = new EventEmitter<void>();
