@@ -1,6 +1,9 @@
 import * as OJP_SharedTypes from 'ojp-shared-types';
 import * as OJP_Next from 'ojp-sdk-next';
 
+// TODO - remove after migration
+import OJP_Legacy from '../../../config/ojp-legacy';
+
 import { BasePlace } from '../place';
 
 export class StopPlace extends BasePlace {
@@ -48,5 +51,12 @@ export class StopPlace extends BasePlace {
 
   public override computeName() {
     return this.stopName;
+  }
+
+  public override asOJP_LegacyLocation(): OJP_Legacy.Location {
+    const location = OJP_Legacy.Location.initWithStopPlaceRef(this.stopRef, this.stopName);
+    location.geoPosition = new OJP_Legacy.GeoPosition(this.longitude, this.latitude);
+
+    return location;
   }
 }
