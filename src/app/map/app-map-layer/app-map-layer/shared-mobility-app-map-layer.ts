@@ -1,23 +1,23 @@
 import * as GeoJSON from 'geojson'
 
-import OJP_Legacy from '../../../config/ojp-legacy';
-
 import { AppMapLayer } from "../app-map-layer";
 import { SharedMobility } from './shared-mobility/shared-mobility';
 
+import { AnyPlace } from '../../../shared/models/place/place-builder';
+
 export class SharedMobilityAppMapLayer extends AppMapLayer {
-  protected override annotateFeatureFromLocations(feature: GeoJSON.Feature, locations: OJP_Legacy.Location[]): void {
+  protected override annotateFeatureFromLocations(feature: GeoJSON.Feature, places: AnyPlace[]): void {
     if (feature.properties === null) {
       return;
     }
 
-    if (locations.length === 0) {
+    if (places.length === 0) {
       return;
     }
 
     let itemsNo: number | null = null;
-    locations.forEach(location => {
-      const vehicle = SharedMobility.initFromLocation(location);
+    places.forEach(location => {
+      const vehicle = SharedMobility.initFromPlace(location);
       if (vehicle === null) {
         return;
       }
@@ -35,14 +35,14 @@ export class SharedMobilityAppMapLayer extends AppMapLayer {
       feature.properties['sharedVehicle.itemsNo'] = itemsNo;
     }
 
-    const vehicle = SharedMobility.initFromLocation(locations[0]);
+    const vehicle = SharedMobility.initFromPlace(places[0]);
     if (vehicle) {
       feature.properties['sharedVehicle.provider'] = vehicle.computeProviderLabel();
     }
   }
 
-  protected override computePopupHTML(locations: OJP_Legacy.Location[]): string | null {
-    if (locations.length === 0) {
+  protected override computePopupHTML(places: AnyPlace[]): string | null {
+    if (places.length === 0) {
       return null;
     }
 
@@ -54,21 +54,21 @@ export class SharedMobilityAppMapLayer extends AppMapLayer {
     let popupHTML = popupWrapperDIV.innerHTML;
 
     const vehicles: SharedMobility[] = [];
-    locations.forEach(location => {
-      const vehicle = SharedMobility.initFromLocation(location);
+    places.forEach(location => {
+      const vehicle = SharedMobility.initFromPlace(location);
       if (vehicle) {
         vehicles.push(vehicle);
       }
     });
 
     if (vehicles.length === 0) {
-      const firstLocation = locations[0];
+      const firstPlace = places[0];
 
       popupHTML = popupHTML.replace('[POI_NAME]', 'GENERIC SHARED MOBILITY');
 
       const tableTRs: string[] = []
-      for (let key in firstLocation.attributes) {
-        let value = firstLocation.attributes[key];
+      for (let key in firstPlace.properties) {
+        let value = firstPlace.properties[key];
         if (typeof value === 'string') {
           const valueS = new String(value)
           if (valueS.startsWith('http')) {

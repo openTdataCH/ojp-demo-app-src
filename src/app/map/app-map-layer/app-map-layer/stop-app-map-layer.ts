@@ -4,24 +4,29 @@ import OJP_Legacy from '../../../config/ojp-legacy';
 
 import { AppMapLayer } from "../app-map-layer";
 
+import { AnyPlace } from '../../../shared/models/place/place-builder';
+import { StopPlace } from '../../../shared/models/place/stop-place';
+
 export class StopAppMapLayer extends AppMapLayer {
-  protected override annotateFeatureFromLocations(feature: GeoJSON.Feature, locations: OJP_Legacy.Location[]) {
+  protected override annotateFeatureFromLocations(feature: GeoJSON.Feature, places: AnyPlace[]) {
     if (feature.properties === null) {
       return;
     }
 
-    if (locations.length === 0) {
+    if (places.length === 0) {
       return;
     }
 
-    const location = locations[0];
-    if (location.stopPlace === null) {
+    const place = places[0];
+    if (place.type !== 'stop') {
       return;
     }
 
-    const featureStopPlaceRef = location.stopPlace.stopPlaceRef;
+    const stopPlace = place as StopPlace;
+
+    const featureStopPlaceRef = stopPlace.stopRef;
     feature.properties['stopPlace.stopPlaceRef'] = featureStopPlaceRef;
-    feature.properties['stopPlace.stopPlaceName'] = location.stopPlace.stopPlaceName;
+    feature.properties['stopPlace.stopPlaceName'] = stopPlace.stopName;
 
     let featureStopPlaceRefLabel = featureStopPlaceRef.slice();
     // TEST LA issue - long ids are too long - trim the Mapbox layer label if needed
@@ -32,8 +37,8 @@ export class StopAppMapLayer extends AppMapLayer {
     feature.properties['stopPlace.stopPlaceRefLabel'] = featureStopPlaceRefLabel;
   }
 
-  protected override computePopupHTML(locations: OJP_Legacy.Location[]): string | null {
-    if (locations.length === 0) {
+  protected override computePopupHTML(places: AnyPlace[]): string | null {
+    if (places.length === 0) {
       return null;
     }
 
@@ -42,12 +47,15 @@ export class StopAppMapLayer extends AppMapLayer {
       return null;
     }
 
-    const firstLocation = locations[0];
-    const stopName = firstLocation.computeLocationName();
-    const stopId = firstLocation.stopPlace?.stopPlaceRef ?? null;
-    if (stopName === null || stopId === null) {
+    const place = places[0];
+    if (place.type !== 'stop') {
       return null;
     }
+
+    const stopPlace = place as StopPlace;
+
+    const stopName = stopPlace.stopName;
+    const stopId = stopPlace.stopRef;
 
     let popupHTML = popupWrapperDIV.innerHTML;
 

@@ -1,24 +1,25 @@
-import * as GeoJSON from 'geojson'
-
-import OJP_Legacy from '../../../config/ojp-legacy';
+import * as GeoJSON from 'geojson';
 
 import { AppMapLayer } from "../app-map-layer";
 
-type LocationStatus = 'available' | 'occupied' | 'unknown'
+import { AnyPlace } from '../../../shared/models/place/place-builder';
+import { Poi } from '../../../shared/models/place/poi';
+
+type LocationStatus = 'available' | 'occupied' | 'unknown';
 
 export class ChargingStationAppMapLayer extends AppMapLayer {
-  protected override annotateFeatureFromLocations(feature: GeoJSON.Feature, locations: OJP_Legacy.Location[]): void {
+  protected override annotateFeatureFromLocations(feature: GeoJSON.Feature, places: AnyPlace[]): void {
     if (feature.properties === null) {
       return;
     }
 
-    if (locations.length === 0) {
+    if (places.length === 0) {
       return;
     }
 
     let itemsNo = 0;
-    locations.forEach((location, idx) => {
-      const locationStatus = this.computeLocationStatus(location);
+    places.forEach((location, idx) => {
+      const locationStatus = this.computePlaceStatus(location);
       if (locationStatus === 'available') {
         itemsNo += 1;
       }
@@ -27,8 +28,8 @@ export class ChargingStationAppMapLayer extends AppMapLayer {
     feature.properties['sharedVehicle.itemsNo'] = itemsNo;
   }
 
-  private computeLocationStatus(location: OJP_Legacy.Location): LocationStatus | null {
-    const locationStatusAttr = location.attributes['locationStatus'] ?? null;
+  private computePlaceStatus(place: AnyPlace): LocationStatus | null {
+    const locationStatusAttr = place.properties['locationStatus'] ?? null;
     if (locationStatusAttr === null) {
       return null;
     }
@@ -49,41 +50,46 @@ export class ChargingStationAppMapLayer extends AppMapLayer {
     return null;
   }
 
-  protected override computePopupHTML(locations: OJP_Legacy.Location[]): string | null {
+  protected override computePopupHTML(places: AnyPlace[]): string | null {
     const popupWrapperDIV = document.getElementById('map-poi-picker-popup') as HTMLElement;
     if (popupWrapperDIV === null) {
       return null;
     }
 
-    if (locations.length === 0) {
+    if (places.length === 0) {
       return null;
     }
 
-    const firstLocation = locations[0];
-    if (firstLocation.poi === null) {
+    const firstPlace = places[0];
+    if (firstPlace.type !== 'poi') {
+      return null;
+    }
+
+    const poi = firstPlace as Poi;
+    if (poi.categories.length === 0) {
       return null;
     }
 
     // it could be that we get different POI category
-    if (firstLocation.poi.category !== 'charging_station') {
+    if (poi.categories[0] !== 'charging_station') {
       return null;
     }
 
     const tableTRs: string[] = [];
-    tableTRs.push('<tr><td style="width:50px;">Name</td><td>' + firstLocation.poi.name + ' - ' + firstLocation.locationName + '</td></tr>');
+    tableTRs.push('<tr><td style="width:50px;">Name</td><td>' + poi.name + ' - ' + firstPlace.placeName + '</td></tr>');
 
-    let codeCleaned = firstLocation.poi.code;
-    codeCleaned = codeCleaned.replace(firstLocation.poi.name, '');
-    codeCleaned = codeCleaned.replace((firstLocation.locationName ?? 'n/a'), '');
+    let codeCleaned = poi.publicCode;
+    codeCleaned = codeCleaned.replace(poi.name, '');
+    codeCleaned = codeCleaned.replace((firstPlace.placeName ?? 'n/a'), '');
     tableTRs.push('<tr><td>Code</td><td>' + codeCleaned + '</td></tr>');
 
     const statusLIs: string[] = [];
-    locations.forEach((location, idx) => {
-      if (location.poi === null) {
+    places.forEach((place, idx) => {
+      if (place.type !== 'poi') {
         return;
       }
 
-      const locationStatus = this.computeLocationStatus(location);
+      const locationStatus = this.computePlaceStatus(place);
       if (locationStatus === null) {
         return;
       }
@@ -100,13 +106,13 @@ export class ChargingStationAppMapLayer extends AppMapLayer {
         return '<span class="badge rounded-pill ' + className + '">' + locationStatus.toUpperCase() + '</span>';
       })();
 
-      const locationCode = location.attributes['Code'] ?? null;
+      const locationCode = place.properties['Code'] ?? null;
 
       const statusLI = '<li>' + locationStatusText + ' ' + locationCode + '</li>';
       statusLIs.push(statusLI);
     });
 
-    tableTRs.push('<tr><td colspan="2"><p>Chargers (' + locations.length + ')</p><ul>' + statusLIs.join('') + '</ul></td></tr>');
+    tableTRs.push('<tr><td colspan="2"><p>Chargers (' + places.length + ')</p><ul>' + statusLIs.join('') + '</ul></td></tr>');
 
     let popupHTML = popupWrapperDIV.innerHTML;
     popupHTML = popupHTML.replace('[POI_NAME]', 'Charging Station');
