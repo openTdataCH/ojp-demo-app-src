@@ -1,6 +1,6 @@
-import { OJP_VERSION } from '../../../../config/constants';
 import OJP_Legacy from '../../../../config/ojp-legacy';
 
+import { AnyPlace } from '../../../../shared/models/place/place-builder';
 import { Poi, RestrictionPoiOSMTag } from '../../../../shared/models/place/poi';
 
 // https://github.com/SFOE/sharedmobility/blob/main/providers.csv
@@ -42,37 +42,41 @@ export class SharedMobility {
     this.vehicleName = null
   }
 
-  public static initFromLocation(location: OJP_Legacy.Location): SharedMobility | null {
-    const isOJPv2 = OJP_VERSION === '2.0';
-
-    if (location.poi === null) {
+  public static initFromPlace(place: AnyPlace): SharedMobility | null {
+    if (place.type !== 'poi') {
       return null;
     }
 
-    const poiCategory = location.poi.category;
+    const poi = place as Poi;
+
+    if (poi.categories.length < 1) {
+      return null;
+    }
+
+    const poiCategory = poi.categories[0] as RestrictionPoiOSMTag;
 
     const code: string = (() => {
-      const attrCode = location.attributes['Code'] ?? null;
+      const attrCode = poi.properties['Code'] ?? null;
       if (attrCode !== null) {
         return attrCode;
       }
 
-      const poiCode = location.poi['code'];
+      const poiCode = poi.publicCode;
       return poiCode;
     })();
 
     // see https://github.com/SFOE/sharedmobility/blob/main/providers.csv
     const providerData: [SharedMobilityProvider | null, VehicleType] = (() => {
       if (poiCategory === 'bicycle_rental') {
-        if (location.locationName === 'Publibike') {
+        if (poi.placeName === 'Publibike') {
           return ['PubliBike', 'Bike']
         }
 
-        if (location.locationName === 'Publiebike') {
+        if (poi.placeName === 'Publiebike') {
           return ['PubliBike', 'E-Bike']
         }
 
-        if (location.locationName === 'Nextbike') {
+        if (poi.placeName === 'Nextbike') {
           return ['Nextbike', 'Bike']
         }
       }
@@ -172,7 +176,7 @@ export class SharedMobility {
 
     if (provider === null) {
       console.error('CANT DETECT provider');
-      console.log(location);
+      console.log(place);
       return null;
     }
 
@@ -182,24 +186,20 @@ export class SharedMobility {
       }
       
       if (poiCategory === 'bicycle_rental' || poiCategory === 'car_sharing' || poiCategory === 'escooter_rental') {
-        return location.poi.name;
+        return poi.name;
       }
 
       return null;
     })()
     if (name === null) {
       console.error('CANT find name');
-      console.log(location);
+      console.log(place);
       return null;
     }
 
     const vehicle = new SharedMobility(poiCategory, vehicleType, provider, code, name);
 
-    let mapAdditionalInformation: Record<string, any> = location.poi.mapAdditionalInformation ?? {};
-    if (!isOJPv2) {
-      // in OJPv1.0 the extra attributes are under LocationExtensionStructure
-      mapAdditionalInformation = location.attributes;
-    }
+    const mapAdditionalInformation = place.properties;
 
     const docksNoS = mapAdditionalInformation['num_docks_available'] ?? null;
     if (docksNoS !== null) {
@@ -214,7 +214,7 @@ export class SharedMobility {
     vehicle.hireFacility = mapAdditionalInformation['HireFacility'] ?? null;
 
     if (provider === '2EM Car Sharing') {
-      vehicle.vehicleName = location.poi.name;
+      vehicle.vehicleName = poi.name;
     }
 
     return vehicle;
