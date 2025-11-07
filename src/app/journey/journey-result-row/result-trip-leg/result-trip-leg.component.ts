@@ -676,14 +676,13 @@ export class ResultTripLegComponent implements OnInit {
   }
 
   public zoomToIntermediaryPoint(idx: number) {
-    const location = new OJP_Legacy.Location();
     const newGeoPosition = this.legInfoDataModel.intermediaryLocationsData[idx].geoPosition;
     if (newGeoPosition) {
       const placeLocation = new PlaceLocation(newGeoPosition.longitude, newGeoPosition.latitude);
       this.mapService.tryToCenterAndZoomToPlace(placeLocation);
     } else {
       console.log('ERROR zoomToIntermediaryPoint - no location coords');
-      console.log(location);
+      console.log(this.legInfoDataModel.intermediaryLocationsData[idx]);
     }
   }
 
