@@ -55,7 +55,7 @@ export class StopPlace extends BasePlace {
 
   public override asOJP_LegacyLocation(): OJP_Legacy.Location {
     const location = OJP_Legacy.Location.initWithStopPlaceRef(this.stopRef, this.stopName);
-    location.geoPosition = new OJP_Legacy.GeoPosition(this.longitude, this.latitude);
+    location.updateLegacyGeoPosition(this.geoPosition.longitude, this.geoPosition.latitude);
 
     return location;
   }
