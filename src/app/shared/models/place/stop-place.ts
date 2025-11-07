@@ -10,7 +10,7 @@ export class StopPlace extends BasePlace {
   public stopName: string;
   public stopRef: string;
 
-  private constructor(longitude: number, latitude: number, placeName: string, stopName: string, stopRef: string) {
+  public constructor(longitude: number, latitude: number, placeName: string, stopName: string, stopRef: string) {
     super(longitude, latitude, 'stop', placeName);
     this.stopName = stopName;
     this.stopRef = stopRef;
