@@ -162,9 +162,9 @@ export class UserTripService {
 
       let place: AnyPlace | null = null;
 
-      const coordsLocation = OJP_Legacy.Location.initFromLiteralCoords(stopPlaceRef);
-      if (coordsLocation?.geoPosition) {
-        place = new PlaceLocation(coordsLocation.geoPosition.longitude, coordsLocation.geoPosition.latitude);
+      const coordsPlace = PlaceLocation.initFromLiteralCoords(stopPlaceRef);
+      if (coordsPlace) {
+        place = coordsPlace;
       } else {
         let request = OJP_Next.LocationInformationRequest.initWithPlaceRef(stopPlaceRef, 10);
         // Check if is location name instead of stopId / sloid
@@ -187,7 +187,7 @@ export class UserTripService {
       }
 
       if (location.geoPosition) {
-        bbox.extend(location.geoPosition);
+        bbox.extend(place.geoPosition);
       }
     };
 
@@ -198,9 +198,9 @@ export class UserTripService {
     for (const viaKey of viaParts) {
       let place: AnyPlace | null = null;
 
-      const coordsLocation = OJP_Legacy.Location.initFromLiteralCoords(viaKey);
-      if (coordsLocation?.geoPosition) {
-        place = new PlaceLocation(coordsLocation.geoPosition.longitude, coordsLocation.geoPosition.latitude);
+      const coordsPlace = PlaceLocation.initFromLiteralCoords(viaKey);
+      if (coordsPlace) {
+        place = coordsPlace;
       } else {
         const request = OJP_Next.LocationInformationRequest.initWithPlaceRef(viaKey, 10);
         place = await this.fetchPlace(ojpSDK_Next, request);
@@ -217,7 +217,7 @@ export class UserTripService {
       this.viaTripLocations.push(viaTripLocation);
 
       if (location.geoPosition) {
-        bbox.extend(location.geoPosition)
+        bbox.extend(place.geoPosition);
       }
     };
     
@@ -320,8 +320,8 @@ export class UserTripService {
         continue;
       }
 
-      const geoPosition = tripLocation.location.geoPosition;
-      if (geoPosition === null) {
+      const tripPlaceLocation = PlaceBuilder.initWithLegacyLocation(tripLocation.location);
+      if (tripPlaceLocation === null) {
         continue;
       }
 
@@ -452,8 +452,8 @@ export class UserTripService {
     return newTripLocation;
   }
 
-  updateViaPoint(location: OJP_Legacy.Location, viaIDx: number) {
-    this.viaTripLocations[viaIDx].location = location;
+  updateViaPoint(place: AnyPlace, viaIDx: number) {
+    this.viaTripLocations[viaIDx].location = place.asOJP_LegacyLocation();
 
     this.locationsUpdated.emit();
     this.geoLocationsUpdated.emit();
