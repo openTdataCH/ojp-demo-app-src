@@ -13,7 +13,7 @@ import { APP_STAGE, DEBUG_LEVEL, DEFAULT_APP_STAGE, REQUESTOR_REF, TRIP_REQUEST_
 import { IMapBoundsData, MapService } from './map.service';
 import { MapTrip } from '../types/map-geometry-types';
 import { TripData, TripLegData } from '../types/trip';
-import { AnyPlace, PlaceBuilder } from '../models/place/place-builder';
+import { AnyPlace, PlaceBuilder, sortPlaces } from '../models/place/place-builder';
 import { PlaceLocation } from '../models/place/location';
 import { GeoPositionBBOX } from '../models/geo/geoposition-bbox';
 
@@ -338,26 +338,22 @@ export class UserTripService {
           continue;
       }
 
-      const locations: OJP_Legacy.Location[] = [];
-      response.value.placeResult.forEach((placeResult) => {
+      const places = response.value.placeResult.map(placeResult => {
         const place = PlaceBuilder.initWithPlaceResultSchema(placeResult);
-        if (place === null) {
-          return;
-        }
-
-        const location = place.asOJP_LegacyLocation();
-        locations.push(location);
-      });
-
-      const nearbyLocation = tripLocation.location.findClosestLocation(locations);
-      if (nearbyLocation === null) {
+        return place;
+      }).filter(Boolean) as AnyPlace[];
+      
+      if (places.length === 0) {
         continue;
       }
 
+      const sortedPlaces = sortPlaces(places, tripPlaceLocation);
+      const nearbyLocation = sortedPlaces[0].asOJP_LegacyLocation();
+
       if (isFrom) {
-        this.fromTripLocation = new OJP_Legacy.TripLocationPoint(nearbyLocation.location)
+        this.fromTripLocation = new OJP_Legacy.TripLocationPoint(nearbyLocation);
       } else {
-        this.toTripLocation = new OJP_Legacy.TripLocationPoint(nearbyLocation.location)
+        this.toTripLocation = new OJP_Legacy.TripLocationPoint(nearbyLocation);
       }
     };
 
