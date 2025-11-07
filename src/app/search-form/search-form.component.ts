@@ -146,7 +146,7 @@ export class SearchFormComponent implements OnInit {
       this.updateViaDwellTime();
     });
 
-    this.userTripService.initDefaults(this.languageService.language);
+    await this.userTripService.initDefaults(this.languageService.language);
 
     this.breakpointObserver.observe([Breakpoints.Small, Breakpoints.XSmall])
       .subscribe(result => {
