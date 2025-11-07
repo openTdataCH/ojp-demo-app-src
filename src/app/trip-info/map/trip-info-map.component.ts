@@ -3,17 +3,13 @@ import { SbbDialog } from '@sbb-esta/angular/dialog';
 
 import mapboxgl from 'mapbox-gl'
 
-import OJP_Legacy from '../../config/ojp-legacy';
-
-import { MapDebugControl } from '../../map/controls/map-debug-control'
-import { MapLayersLegendControl } from '../../map/controls/map-layers-legend-control';
 import { MapService } from '../../shared/services/map.service';
 import { UserTripService } from '../../shared/services/user-trip.service';
 import { TripInfoService } from '../trip-info.service';
 
 import { StopEventServiceRenderer as JourneyServiceRenderer } from '../../station-board/map/stop-event-service-renderer/stop-event-service-renderer';
 import { MapHelpers } from '../../map/helpers/map.helpers';
-import { LanguageService } from 'src/app/shared/services/language.service';
+import { LanguageService } from '../../shared/services/language.service';
 import { GeoPositionBBOX } from '../../shared/models/geo/geoposition-bbox';
 
 @Component({
