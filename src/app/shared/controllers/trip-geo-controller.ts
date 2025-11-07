@@ -196,9 +196,9 @@ export class TripLegGeoController {
       properties: beelineProperties,
       geometry: {
         type: 'LineString',
-        coordinates: coordinates
+        coordinates: coordinates,
       },
-      bbox: bbox.asFeatureBBOX()
+      bbox: bbox.asFeatureBBOX(),
     };
 
     return beelineFeature;

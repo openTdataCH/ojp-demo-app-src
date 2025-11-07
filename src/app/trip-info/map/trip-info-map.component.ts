@@ -99,10 +99,10 @@ export class TripInfoMapComponent implements OnInit {
     if (!bbox.isValid()) {
       console.error('Invalid BBOX for features');
       console.log(geojsonFeatures);
-      return
+      return;
     }
 
-    const bounds = new mapboxgl.LngLatBounds(bbox.asFeatureBBOX())
+    const bounds = new mapboxgl.LngLatBounds(bbox.asFeatureBBOX());
     const mapData = {
       bounds: bounds,
     }

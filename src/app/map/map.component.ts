@@ -75,14 +75,14 @@ export class MapComponent implements OnInit, AfterViewInit {
 
   ngOnInit() {
     this.userTripService.geoLocationsUpdated.subscribe(nothing => {
-      this.updateMarkers()
-    })
+      this.updateMarkers();
+    });
 
     this.userTripService.activeTripSelected.subscribe(mapTrip => {
       this.mapLoadingPromise?.then(map => {
         this.tripRenderController?.renderTrip(mapTrip?.legs ?? []);
       });
-    })
+    });
 
     this.mapService.newMapBoundsRequested.subscribe(mapData => {
       this.mapLoadingPromise?.then(map => {
@@ -93,7 +93,7 @@ export class MapComponent implements OnInit, AfterViewInit {
 
         this.mapService.zoomToBounds(map, mapData);
       });
-    })
+    });
 
     this.mapService.newMapCenterAndZoomRequested.subscribe(mapData => {
       this.mapLoadingPromise?.then(map => {
@@ -101,7 +101,7 @@ export class MapComponent implements OnInit, AfterViewInit {
       });
     });
 
-    this.initMap()
+    this.initMap();
   }
 
   ngAfterViewInit(): void {
@@ -122,13 +122,12 @@ export class MapComponent implements OnInit, AfterViewInit {
   }
 
   private updateMarkers() {
-    const endpointTypes: OJP_Legacy.JourneyPointType[] = ['From', 'To']
+    const endpointTypes: OJP_Legacy.JourneyPointType[] = ['From', 'To'];
     endpointTypes.forEach(endpointType => {
-      const isFrom = endpointType === 'From'
-      const tripLocationPoint = isFrom ? this.userTripService.fromTripLocation : this.userTripService.toTripLocation
-      const marker = isFrom ? this.fromMarker : this.toMarker
-
       this.updateMarkerLocation(marker, tripLocationPoint?.location ?? null)
+      const isFrom = endpointType === 'From';
+      const tripLocationPoint = isFrom ? this.userTripService.fromTripLocation : this.userTripService.toTripLocation;
+      const marker = isFrom ? this.fromMarker : this.toMarker;
     });
 
     if (this.userTripService.isViaEnabled) {
@@ -250,7 +249,7 @@ export class MapComponent implements OnInit, AfterViewInit {
       this.userTripService.updateViaPoint(location, markerIDx)
     })
 
-    return marker
+    return marker;
   }
 
 }

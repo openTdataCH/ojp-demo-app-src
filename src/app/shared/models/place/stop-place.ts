@@ -15,7 +15,7 @@ export class StopPlace extends BasePlace {
     this.stopName = stopName;
     this.stopRef = stopRef;
   }
-
+  
   public static Empty(stopName: string = 'n/a') {
     const stopPlace = new StopPlace(0, 0, 'n/a', stopName, 'n/a');
     return stopPlace;

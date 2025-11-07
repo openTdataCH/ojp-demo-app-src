@@ -116,7 +116,7 @@ export class StationBoardInputComponent implements OnInit {
 
   private parsePlaceResults(placeResults: OJP_SharedTypes.PlaceResultSchema[], nearbyGeoPosition: OJP_Next.GeoPosition | null = null) {
     this.stopLookups = [];
-    
+
     placeResults.forEach(placeResult => {
       const stopPlace = StopPlace.initWithPlaceResultSchema(placeResult);
       if (stopPlace === null) {

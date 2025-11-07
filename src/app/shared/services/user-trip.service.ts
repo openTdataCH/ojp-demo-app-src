@@ -23,28 +23,28 @@ type LocationUpdateSource = 'SearchForm' | 'MapDragend' | 'MapPopupClick';
 export class UserTripService {
   private queryParams: URLSearchParams
 
-  public fromTripLocation: OJP_Legacy.TripLocationPoint | null
-  public toTripLocation: OJP_Legacy.TripLocationPoint | null
-  public viaTripLocations: OJP_Legacy.TripLocationPoint[]
+  public fromTripLocation: OJP_Legacy.TripLocationPoint | null;
+  public toTripLocation: OJP_Legacy.TripLocationPoint | null;
+  public viaTripLocations: OJP_Legacy.TripLocationPoint[];
   public isViaEnabled: boolean;
 
   public isAdditionalRestrictionsEnabled: boolean;
   
-  public numberOfResults: number | null
-  public numberOfResultsBefore: number | null
-  public numberOfResultsAfter: number | null
+  public numberOfResults: number | null;
+  public numberOfResultsBefore: number | null;
+  public numberOfResultsAfter: number | null;
   public publicTransportModesFilter: OJP_Legacy.ModeOfTransportType[];
   public useRealTimeDataType: OJP_SharedTypes.UseRealtimeDataEnum;
   public walkSpeedDeviation: number | null;
 
   public currentBoardingType: OJP_Legacy.TripRequestBoardingType;
 
-  public tripModeType: OJP_Legacy.TripModeType
+  public tripModeType: OJP_Legacy.TripModeType;
   public tripTransportMode: OJP_Legacy.IndividualTransportMode;
 
-  public journeyTripRequests: OJP_Legacy.TripRequest[]
-  public departureDate: Date
-  public currentAppStage: APP_STAGE
+  public journeyTripRequests: OJP_Legacy.TripRequest[];
+  public departureDate: Date;
+  public currentAppStage: APP_STAGE;
 
   public permalinkRelativeURL: string | null;
   public otherVersionURL: string | null;
