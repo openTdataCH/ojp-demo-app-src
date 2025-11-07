@@ -364,11 +364,13 @@ export class StationBoardSearchComponent implements OnInit {
           const stopPlaceName = firstLocation.stopPlace?.stopPlaceName ?? 'temp - n/a';
           const stopPlaceRef = firstLocation.stopPlace?.stopPlaceRef ?? 'temp - n/a';
           
-          const stopPlace = StopPlace.Empty();
-          stopPlace.longitude = firstLocation.geoPosition.longitude;
-          stopPlace.latitude = firstLocation.geoPosition.latitude;
-          stopPlace.stopName = firstLocation.stopPlace?.stopPlaceName ?? 'temp - n/a';
-          stopPlace.stopRef = firstLocation.stopPlace?.stopPlaceRef ?? 'temp - n/a';
+          const stopPlace = new StopPlace(
+            firstLocation.geoPosition.longitude,
+            firstLocation.geoPosition.latitude,
+            stopPlaceName,
+            stopPlaceName,
+            stopPlaceRef,
+          );
 
           this.onStopPlaceSelected(stopPlace);
         }
@@ -475,12 +477,7 @@ export class StationBoardSearchComponent implements OnInit {
       return;
     }
 
-    const stopPlace = StopPlace.Empty();
-    stopPlace.longitude = coords[0];
-    stopPlace.latitude = coords[1];
-    stopPlace.stopName = stopPlaceName;
-    stopPlace.stopRef = stopPlaceRef;
-    
+    const stopPlace = new StopPlace(coords[0], coords[1], stopPlaceName, stopPlaceName, stopPlaceRef);
     this.stopPlace = stopPlace;
 
     if (this.autocompleteInputComponent) {
