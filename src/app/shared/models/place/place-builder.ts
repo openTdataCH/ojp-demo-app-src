@@ -80,3 +80,14 @@ export class PlaceBuilder {
     return place;
   }
 }
+
+export function sortPlaces(places: AnyPlace[], anotherPlace: AnyPlace, ascending: boolean = true): AnyPlace[] {
+  const sortedPlaces = [...places].sort((a, b) => {
+    const dA = anotherPlace.geoPosition.distanceFrom(a.geoPosition);
+    const dB = anotherPlace.geoPosition.distanceFrom(b.geoPosition);
+
+    return ascending ? dA - dB : dB - dA;
+  });
+
+  return sortedPlaces;
+}
