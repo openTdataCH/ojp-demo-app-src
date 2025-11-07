@@ -4,24 +4,26 @@ import * as OJP_Next from 'ojp-sdk-next';
 // TODO - remove after migration
 import OJP_Legacy from '../../config/ojp-legacy';
 
-export abstract class BasePlace extends OJP_Next.GeoPosition {
+export abstract class BasePlace {
+  public geoPosition: OJP_Next.GeoPosition;
   public type: OJP_SharedTypes.PlaceTypeEnum;
   public placeName: string;
+  public properties: Record<string, any>;
 
   constructor(longitude: number, latitude: number, type: OJP_SharedTypes.PlaceTypeEnum, placeName: string) {
-    super(longitude, latitude);
-
+    this.geoPosition = new OJP_Next.GeoPosition(longitude, latitude);
     this.type = type;
     this.placeName = placeName;
+    this.properties = {};
   }
 
   public computeGeoJSON_Properties() {
-    const properties: Record<string, any> = {
+    const geoJSON_Properties: Record<string, any> = {
       type: this.type,
       name: this.placeName,
     };
 
-    return properties;
+    return geoJSON_Properties;
   }
 
   public computeName() {
@@ -31,7 +33,8 @@ export abstract class BasePlace extends OJP_Next.GeoPosition {
   // TODO - remove after migration
   public asOJP_LegacyLocation(): OJP_Legacy.Location {
     const location = new OJP_Legacy.Location();
-    location.geoPosition = new OJP_Legacy.GeoPosition(this.longitude, this.latitude);
+    location.updateLegacyGeoPosition(this.geoPosition.longitude, this.geoPosition.latitude);
+    location.attributes = this.computeGeoJSON_Properties();
 
     return location;
   }
