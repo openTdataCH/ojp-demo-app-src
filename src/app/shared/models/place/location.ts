@@ -4,11 +4,9 @@ import { BasePlace } from '../place';
 
 export class PlaceLocation extends BasePlace {
   public constructor(longitude: number, latitude: number, placeName: string | null = null) {
+    super(longitude, latitude, 'location', placeName ?? 'n/a');
     if (placeName === null) {
-        const geoPosition = new OJP_Next.GeoPosition(longitude, latitude);
-        placeName = geoPosition.asLatLngString();
+      this.placeName = this.geoPosition.asLatLngString();
     }
-
-    super(longitude, latitude, 'location', placeName);
   }
 }
