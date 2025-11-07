@@ -25,6 +25,7 @@ import { TripLegData } from '../../../shared/types/trip';
 import { SituationContent } from '../../../shared/types/situations';
 import { DebugXmlPopoverComponent } from '../../../search-form/debug-xml-popover/debug-xml-popover.component';
 import { JourneyService } from '../../../shared/models/journey-service';
+import { PlaceLocation } from '../../../shared/models/place/location';
 import { GeoPositionBBOX } from '../../../shared/models/geo/geoposition-bbox';
 
 type LegTemplate = 'walk' | 'timed' | 'taxi';
@@ -666,7 +667,8 @@ export class ResultTripLegComponent implements OnInit {
     const isFrom = endpointType === 'From';
     const location = isFrom ? this.legData.leg.fromLocation : this.legData.leg.toLocation;
     if (location.geoPosition) {
-      this.mapService.tryToCenterAndZoomToLocation(location);
+      const placeLocation = new PlaceLocation(location.geoPosition.longitude, location.geoPosition.latitude);
+      this.mapService.tryToCenterAndZoomToPlace(placeLocation);
     } else {
       console.log('ERROR zoomToEndpoint - no location coords');
       console.log(location);
@@ -677,8 +679,8 @@ export class ResultTripLegComponent implements OnInit {
     const location = new OJP_Legacy.Location();
     const newGeoPosition = this.legInfoDataModel.intermediaryLocationsData[idx].geoPosition;
     if (newGeoPosition) {
-      location.geoPosition = new OJP_Legacy.GeoPosition(newGeoPosition.longitude, newGeoPosition.latitude);
-      this.mapService.tryToCenterAndZoomToLocation(location);
+      const placeLocation = new PlaceLocation(newGeoPosition.longitude, newGeoPosition.latitude);
+      this.mapService.tryToCenterAndZoomToPlace(placeLocation);
     } else {
       console.log('ERROR zoomToIntermediaryPoint - no location coords');
       console.log(location);
@@ -708,8 +710,9 @@ export class ResultTripLegComponent implements OnInit {
         return null;
       })();
 
-      if (legLocation) {
-        this.mapService.tryToCenterAndZoomToLocation(legLocation, 18);
+      if (legLocation?.geoPosition) {
+        const placeLocation = new PlaceLocation(legLocation?.geoPosition.longitude, legLocation?.geoPosition.latitude);
+        this.mapService.tryToCenterAndZoomToPlace(placeLocation, 18);
       }
     } else {
       const bbox = feature.bbox ?? null;
@@ -722,8 +725,8 @@ export class ResultTripLegComponent implements OnInit {
         // map zooms out too much for small rectangles, zoom to center instead
         if (rectangleDist < 20) {
           const centerLngLat = bounds.getCenter();
-          const centerLocation = OJP_Legacy.Location.initWithLngLat(centerLngLat.lng, centerLngLat.lat);
-          this.mapService.tryToCenterAndZoomToLocation(centerLocation, 18);
+          const placeLocation = new PlaceLocation(centerLngLat.lng, centerLngLat.lat);
+          this.mapService.tryToCenterAndZoomToPlace(placeLocation, 18);
         } else {
           const mapData = {
             bounds: bounds,

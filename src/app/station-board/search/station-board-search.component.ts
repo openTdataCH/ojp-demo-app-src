@@ -27,6 +27,7 @@ import { CustomStopEventXMLPopoverComponent } from './custom-stop-event-xml-popo
 import { EmbedStationBoardPopoverComponent } from './embed-station-board-popover/embed-station-board-popover.component';
 import { StationBoardType } from '../types/stop-event';
 import { StopPlace } from '../../shared/models/place/stop-place';
+import { PlaceLocation } from '../../shared/models/place/location';
 
 @Component({
   selector: 'station-board-search',
@@ -186,8 +187,7 @@ export class StationBoardSearchComponent implements OnInit {
 
     this.stopPlace = stopPlace;
 
-    const hackLocation = OJP_Legacy.Location.initWithLngLat(stopPlace.longitude, stopPlace.latitude);
-    this.mapService.tryToCenterAndZoomToLocation(hackLocation);
+    this.mapService.tryToCenterAndZoomToPlace(stopPlace);
 
     this.updateURLs();
     this.updateHeaderText();
@@ -435,8 +435,7 @@ export class StationBoardSearchComponent implements OnInit {
 
     this.stopPlace = stopPlace;
 
-    const hackLocation = OJP_Legacy.Location.initWithLngLat(stopPlace.longitude, stopPlace.latitude);
-    this.mapService.tryToCenterAndZoomToLocation(hackLocation);
+    this.mapService.tryToCenterAndZoomToPlace(stopPlace);
 
     this.updateURLs();
     this.updateHeaderText();
@@ -582,7 +581,12 @@ export class StationBoardSearchComponent implements OnInit {
       const stopEvents = response.stopEvents;
 
       if (stopEvents.length > 0) {
-        this.mapService.tryToCenterAndZoomToLocation(stopEvents[0].stopPoint.location);
+        const legacyGeoPosition = stopEvents[0].stopPoint.location.geoPosition;
+        if (legacyGeoPosition) {
+          const placeLocation = new PlaceLocation(legacyGeoPosition.longitude, legacyGeoPosition.latitude);
+          this.mapService.tryToCenterAndZoomToPlace(placeLocation);
+        }
+        
         this.parseStopEvents(response.stopEvents);
       } else {
         this.notificationToast.open('No StopEvents found', {

@@ -75,12 +75,12 @@ export class JourneyPointInputComponent implements OnInit, OnChanges {
         return;
       }
 
-      const coordsLocation = OJP_Legacy.Location.initFromLiteralCoords(searchTerm);
-      if (coordsLocation) {
-        this.resetMapPlaces()
+      const coordsPlace = PlaceLocation.initFromLiteralCoords(searchTerm);
+      if (coordsPlace) {
+        this.resetMapPlaces();
         
-        this.handleCoordsPick(coordsLocation)
-        return
+        this.handleCoordsPick(coordsPlace);
+        return;
       }
 
       this.fetchJourneyPoints(searchTerm);
@@ -144,7 +144,7 @@ export class JourneyPointInputComponent implements OnInit, OnChanges {
   }
 
   public handleTapOnMapButton() {
-    const location: OJP_Legacy.Location | null = (() => {
+    const location = (() => {
       if (this.endpointType === 'From') {
         return this.userTripService.fromTripLocation?.location ?? null;
       }
@@ -162,20 +162,20 @@ export class JourneyPointInputComponent implements OnInit, OnChanges {
       }
 
       return null;
-    })()
+    })();
 
-    this.mapService.tryToCenterAndZoomToLocation(location);
-  }
-
-  private handleCoordsPick(location: OJP_Legacy.Location) {
-    const geoPosition = location.geoPosition;
-    if (geoPosition === null) {
+    if ((location === null) || (location.geoPosition === null)) {
       return;
     }
 
-    const place = new PlaceLocation(geoPosition.longitude, geoPosition.latitude, geoPosition.asLatLngString());
+    const placeLocation = PlaceBuilder.initWithLegacyLocation(location);
+    if (placeLocation) {
+      this.mapService.tryToCenterAndZoomToPlace(placeLocation);
+    }
+  }
 
-    const inputValue = geoPosition.asLatLngString(false);
+  private handleCoordsPick(place: AnyPlace) {
+    const inputValue = place.geoPosition.asLatLngString();
     this.inputControl.setValue(inputValue);
 
     this.selectedPlace.emit(place);
