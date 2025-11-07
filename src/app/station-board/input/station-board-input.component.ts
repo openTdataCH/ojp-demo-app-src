@@ -130,7 +130,7 @@ export class StationBoardInputComponent implements OnInit {
       };
 
       if (nearbyGeoPosition) {
-        stopLookup.distance = stopPlace.distanceFrom(nearbyGeoPosition);
+        stopLookup.distance = stopPlace.geoPosition.distanceFrom(nearbyGeoPosition);
       }
 
       this.stopLookups.push(stopLookup);
