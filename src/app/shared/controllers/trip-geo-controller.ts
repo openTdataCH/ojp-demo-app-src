@@ -4,6 +4,7 @@ import OJP_Legacy from '../../config/ojp-legacy';
 
 import { JourneyService } from '../models/journey-service';
 import { TripLegDrawType, TripLegLineType, TripLegPropertiesEnum } from '../types/map-geometry-types';
+import { GeoPositionBBOX } from '../models/geo/geoposition-bbox';
 
 interface LinePointData {
   type: OJP_Legacy.StopPointType,
@@ -17,8 +18,8 @@ export class TripGeoController {
     this.trip = trip;
   }
 
-  public computeBBOX(): OJP_Legacy.GeoPositionBBOX {
-    const bbox = new OJP_Legacy.GeoPositionBBOX([]);
+  public computeBBOX(): GeoPositionBBOX {
+    const bbox = new GeoPositionBBOX([]);
 
     const fromGeoPosition = this.computeFromGeoPosition();
     if (fromGeoPosition) {
@@ -45,8 +46,8 @@ export class TripGeoController {
           return;
         }
 
-        bbox.extend(new OJP_Legacy.GeoPosition(featureBBOX[0], featureBBOX[1]));
-        bbox.extend(new OJP_Legacy.GeoPosition(featureBBOX[2], featureBBOX[3]));
+        bbox.extend(new OJP_Next.GeoPosition(featureBBOX[0], featureBBOX[1]));
+        bbox.extend(new OJP_Next.GeoPosition(featureBBOX[2], featureBBOX[3]));
       });
     });
 
@@ -188,7 +189,7 @@ export class TripLegGeoController {
     const lineType: TripLegLineType = this.computeLegLineType();
     beelineProperties[TripLegPropertiesEnum.LineType] = lineType;
 
-    const bbox = new OJP_Legacy.GeoPositionBBOX(beelineGeoPositions);
+    const bbox = new GeoPositionBBOX(beelineGeoPositions);
 
     const beelineFeature: GeoJSON.Feature<GeoJSON.LineString> = {
       type: 'Feature',

@@ -15,6 +15,7 @@ import { MapTrip } from '../types/map-geometry-types';
 import { TripData, TripLegData } from '../types/trip';
 import { AnyPlace, PlaceBuilder } from '../models/place/place-builder';
 import { PlaceLocation } from '../models/place/location';
+import { GeoPositionBBOX } from '../models/geo/geoposition-bbox';
 
 type LocationUpdateSource = 'SearchForm' | 'MapDragend' | 'MapPopupClick';
 
@@ -136,7 +137,7 @@ export class UserTripService {
 
     const ojpSDK_Next = this.createOJP_SDK_Instance(language);
 
-    const bbox = new OJP_Legacy.GeoPositionBBOX([]);
+    const bbox = new GeoPositionBBOX([]);
 
     const endpointTypes: OJP_Legacy.JourneyPointType[] = ['From', 'To'];
     for (const endpointType of endpointTypes) {
@@ -325,7 +326,7 @@ export class UserTripService {
       }
 
       // Search nearby locations, in a bbox of 200x200m
-      const bbox = OJP_Legacy.GeoPositionBBOX.initFromGeoPosition(geoPosition, 200, 200);
+      const bbox = GeoPositionBBOX.initFromGeoPosition(tripPlaceLocation.geoPosition, 200, 200);
       const bboxData = bbox.asFeatureBBOX();
       const request = OJP_Next.LocationInformationRequest.initWithBBOX(bboxData, ['stop'], 300);
 

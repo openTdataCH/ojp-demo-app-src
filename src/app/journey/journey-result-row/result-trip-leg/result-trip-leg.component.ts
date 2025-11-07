@@ -25,6 +25,7 @@ import { TripLegData } from '../../../shared/types/trip';
 import { SituationContent } from '../../../shared/types/situations';
 import { DebugXmlPopoverComponent } from '../../../search-form/debug-xml-popover/debug-xml-popover.component';
 import { JourneyService } from '../../../shared/models/journey-service';
+import { GeoPositionBBOX } from '../../../shared/models/geo/geoposition-bbox';
 
 type LegTemplate = 'walk' | 'timed' | 'taxi';
 
@@ -233,7 +234,7 @@ export class ResultTripLegComponent implements OnInit {
     const tripLegGeoController = new TripLegGeoController(this.legData.leg);
 
     const legFeatures = tripLegGeoController.computeGeoJSONFeatures();
-    const bbox = OJP_Legacy.GeoPositionBBOX.initFromGeoJSONFeatures(legFeatures);
+    const bbox = GeoPositionBBOX.initFromGeoJSONFeatures(legFeatures);
 
     if (!bbox.isValid()) {
       console.error('Invalid BBOX for leg');

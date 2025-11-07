@@ -14,6 +14,7 @@ import { TripInfoService } from '../trip-info.service';
 import { StopEventServiceRenderer as JourneyServiceRenderer } from '../../station-board/map/stop-event-service-renderer/stop-event-service-renderer';
 import { MapHelpers } from '../../map/helpers/map.helpers';
 import { LanguageService } from 'src/app/shared/services/language.service';
+import { GeoPositionBBOX } from '../../shared/models/geo/geoposition-bbox';
 
 @Component({
   selector: 'trip-info-map',
@@ -94,7 +95,7 @@ export class TripInfoMapComponent implements OnInit {
       return;
     }
 
-    const bbox = OJP_Legacy.GeoPositionBBOX.initFromGeoJSONFeatures(geojsonFeatures);
+    const bbox = GeoPositionBBOX.initFromGeoJSONFeatures(geojsonFeatures);
     if (!bbox.isValid()) {
       console.error('Invalid BBOX for features');
       console.log(geojsonFeatures);
