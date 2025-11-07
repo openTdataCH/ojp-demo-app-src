@@ -211,7 +211,7 @@ export class AppMapLayer {
                 }
             }
 
-            const locationKey = place.asLatLngString();
+            const locationKey = place.geoPosition.asLatLngString();
             if (!(locationKey in mapFeatures)) {
                 const feature: GeoJSON.Feature = {
                     type: 'Feature',
@@ -221,7 +221,7 @@ export class AppMapLayer {
                     },
                     geometry: {
                         type: 'Point',
-                        coordinates: place.asLngLat(),
+                        coordinates: place.geoPosition.asLngLat(),
                     }
                 };
 
@@ -349,7 +349,7 @@ export class AppMapLayer {
 
     private showPopup(places: AnyPlace[]) {
         const place = places[0];
-        const locationLngLat = place.asLngLat();
+        const locationLngLat = place.geoPosition.asLngLat();
     
         const popupHTML = this.computePopupHTML(places);
         if (popupHTML === null) {
