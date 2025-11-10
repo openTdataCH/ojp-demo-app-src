@@ -1,8 +1,9 @@
 import { Component, Input, OnInit, ViewChild } from '@angular/core';
 import { SbbExpansionPanel } from '@sbb-esta/angular/accordion';
 
-import OJP_Legacy from '../../config/ojp-legacy';
 import * as OJP_Next from 'ojp-sdk-next';
+
+import OJP_Legacy from '../../config/ojp-legacy';
 
 import { DEBUG_LEVEL, REQUESTOR_REF, OJP_VERSION } from '../../config/constants';
 
@@ -107,9 +108,9 @@ export class JourneyResultRowComponent implements OnInit {
       this.tripHeaderStats.tripChangesInfo = trip.stats.transferNo + ' transfers';
     }
 
-    this.tripHeaderStats.tripFromTime = OJP_Legacy.DateHelpers.formatTimeHHMM(trip.stats.startDatetime);
+    this.tripHeaderStats.tripFromTime = OJP_Next.DateHelpers.formatTimeHHMM(trip.stats.startDatetime);
     
-    this.tripHeaderStats.tripToTime = OJP_Legacy.DateHelpers.formatTimeHHMM(trip.stats.endDatetime);
+    this.tripHeaderStats.tripToTime = OJP_Next.DateHelpers.formatTimeHHMM(trip.stats.endDatetime);
     const dayDiff = JourneyResultRowComponent.getDayOffset(trip.stats.endDatetime, trip.stats.startDatetime);
     if(dayDiff > 0){
       this.tripHeaderStats.tripToTime = '(+' + dayDiff + 'd) ' + this.tripHeaderStats.tripToTime;
@@ -152,7 +153,7 @@ export class JourneyResultRowComponent implements OnInit {
     }
 
     const isOJPv2 = OJP_VERSION === '2.0';
-    const xmlConfig = isOJPv2 ? OJP_Legacy.XML_ConfigOJPv2 : OJP_Legacy.XML_BuilderConfigOJPv1;
+    const xmlConfig = isOJPv2 ? OJP_Next.DefaultXML_Config : OJP_Next.XML_BuilderConfigOJPv1;
 
     const tripXML = this.tripData.trip.asXML(xmlConfig);
     // console.log(tripXML);

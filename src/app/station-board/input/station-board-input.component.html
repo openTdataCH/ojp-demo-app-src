@@ -12,8 +12,8 @@
     (optionSelected)="onStopLookupSelected($event)"
     #autocompleteTemplate="sbbAutocomplete">
     <sbb-option
-      *ngFor="let stopLookup of this.stopLookups"
-      [value]="stopLookup.stopPlaceRef">
+      *ngFor="let stopLookup of this.stopLookups; index as idx"
+      [value]="idx">
       {{ renderLookupName(stopLookup) }}
     </sbb-option>
   </sbb-autocomplete>

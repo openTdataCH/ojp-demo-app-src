@@ -2,6 +2,8 @@ import { AfterViewInit, Component, ElementRef, OnInit, ViewChild } from '@angula
 import { DomSanitizer } from '@angular/platform-browser';
 import { SbbDialog } from '@sbb-esta/angular/dialog';
 
+import * as OJP_Next from 'ojp-sdk-next';
+
 import OJP_Legacy from '../../config/ojp-legacy';
 
 import { StationBoardService } from '../station-board.service';
@@ -10,6 +12,7 @@ import { OJPHelpers } from '../../helpers/ojp-helpers';
 import { TripInfoResultPopoverComponent } from '../../journey/journey-result-row/result-trip-leg/trip-info-result-popover/trip-info-result-popover.component';
 import { SituationContent } from '../../shared/types/situations';
 import { JourneyService } from '../../shared/models/journey-service';
+import { StationBoardType } from '../types/stop-event';
 
 interface StationBoardTime {
   stopTime: string
@@ -32,7 +35,7 @@ interface StationBoardModel {
   tripHeading: string
   tripOperator: string
 
-  mapStationBoardTime: Record<OJP_Legacy.StationBoardType, StationBoardTime>
+  mapStationBoardTime: Record<StationBoardType, StationBoardTime>
   
   stopPlatform: string | null
   stopPlatformActual: string | null
@@ -51,9 +54,9 @@ interface StationBoardModel {
 })
 export class StationBoardResultComponent implements OnInit, AfterViewInit {
   @ViewChild('stationBoardWrapper') stationBoardWrapperRef: ElementRef | undefined;
-  public stopEventsData: StationBoardModel[]
-  public selectedIDx: number | null
-  public stationBoardType: OJP_Legacy.StationBoardType
+  public stopEventsData: StationBoardModel[];
+  public selectedIDx: number | null;
+  public stationBoardType: StationBoardType;
 
   constructor(private stationBoardService: StationBoardService, private tripInfoResultPopover: SbbDialog, private sanitizer: DomSanitizer) {
     this.stopEventsData = [];
@@ -152,12 +155,12 @@ export class StationBoardResultComponent implements OnInit, AfterViewInit {
       return null
     }
 
-    const stopTimeText = OJP_Legacy.DateHelpers.formatTimeHHMM(stopTime);
+    const stopTimeText = OJP_Next.DateHelpers.formatTimeHHMM(stopTime);
     
     return stopTimeText;
   }
 
-  private computeDelayTime(stopPoint: OJP_Legacy.StopPoint, forBoardType: OJP_Legacy.StationBoardType): string | null {
+  private computeDelayTime(stopPoint: OJP_Legacy.StopPoint, forBoardType: StationBoardType): string | null {
     const isArrival = forBoardType === 'Arrivals';
     const stopPointTime = isArrival ? stopPoint.arrivalData : stopPoint.departureData;
 
@@ -180,7 +183,7 @@ export class StationBoardResultComponent implements OnInit, AfterViewInit {
     return delayText;
   }
 
-  private computeStopTimeData(stopPoint: OJP_Legacy.StopPoint, forBoardType: OJP_Legacy.StationBoardType): StationBoardTime | null {
+  private computeStopTimeData(stopPoint: OJP_Legacy.StopPoint, forBoardType: StationBoardType): StationBoardTime | null {
     const isArrival = forBoardType === 'Arrivals';
     const stopPointTime = isArrival ? stopPoint.arrivalData : stopPoint.departureData;
 
@@ -190,8 +193,8 @@ export class StationBoardResultComponent implements OnInit, AfterViewInit {
 
     const hasDelay = stopPointTime.delayMinutes !== null;
     
-    const timetableTimeF = OJP_Legacy.DateHelpers.formatTimeHHMM(stopPointTime.timetableTime);
-    const estimatedTimeF = stopPointTime.estimatedTime ? OJP_Legacy.DateHelpers.formatTimeHHMM(stopPointTime.estimatedTime) : 'n/a';
+    const timetableTimeF = OJP_Next.DateHelpers.formatTimeHHMM(stopPointTime.timetableTime);
+    const estimatedTimeF = stopPointTime.estimatedTime ? OJP_Next.DateHelpers.formatTimeHHMM(stopPointTime.estimatedTime) : 'n/a';
     const hasDelayDifferentTime = stopPointTime.estimatedTime ? (timetableTimeF !== estimatedTimeF) : false;
 
     const stopTime = this.computeStopTime(stopPointTime.timetableTime);

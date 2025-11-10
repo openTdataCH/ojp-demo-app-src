@@ -3,6 +3,7 @@ import { Component } from '@angular/core';
 import OJP_Legacy from '../../config/ojp-legacy';
 
 import { UserTripService } from '../../shared/services/user-trip.service';
+import { PlaceBuilder } from '../../shared/models/place/place-builder';
 
 @Component({
   selector: 'embed-search-popover',
@@ -18,38 +19,19 @@ export class EmbedSearchPopoverComponent {
   public toLocationChecked = true
 
   constructor(private userTripService: UserTripService) {
-    this.fromLocationText = EmbedSearchPopoverComponent.computeLocationText(userTripService.fromTripLocation?.location);
-    this.toLocationText = EmbedSearchPopoverComponent.computeLocationText(userTripService.toTripLocation?.location);
+    this.fromLocationText = EmbedSearchPopoverComponent.computeLocationText(userTripService.fromTripLocation);
+    this.toLocationText = EmbedSearchPopoverComponent.computeLocationText(userTripService.toTripLocation);
 
     this.updateEmbedHTML();
   }
 
-  private static computeLocationText(location: OJP_Legacy.Location | null | undefined): string {
-    if (!location) {
-      return ''
+  private static computeLocationText(tripLocationPoint: OJP_Legacy.TripLocationPoint | null): string {
+    if (!tripLocationPoint) {
+      return '';
     }
 
-    const locationType = location.getLocationType();
-
-    if (locationType === 'stop') {
-      const locationName = location.computeLocationName();
-      const stopRef = location.stopPlace?.stopPlaceRef ?? '';
-
-      const locationText = locationName + '(stopRef ' + stopRef + ')';
-      return locationText;
-    }
-
-    const geoPosition = location.geoPosition;
-    if (geoPosition) {
-      const locationName = location.computeLocationName() ?? '';
-      const geoPositionLngLatS = geoPosition.asLatLngString(true) ?? '';
-
-      const locationText = locationName + '(coords ' + geoPositionLngLatS + ')';
-      return locationText;
-    }
-
-    const defaultLocationText = locationType + ' - ' + (location.computeLocationName() ?? '');
-    return defaultLocationText;
+    const place = PlaceBuilder.initWithLegacyLocation(tripLocationPoint.location);
+    return place?.computeName() ?? '';
   }
 
   public updateEmbedHTML() {

@@ -1,10 +1,12 @@
-import OJP_Legacy from '../config/ojp-legacy';
+import { DomSanitizer } from '@angular/platform-browser';
+
 import * as OJP_Next from 'ojp-sdk-next';
+
+import OJP_Legacy from '../config/ojp-legacy';
 
 import { LegStopPointData } from '../shared/components/service-stops.component';
 import { DEBUG_LEVEL } from '../config/constants';
 import { SituationContent } from '../shared/types/situations';
-import { DomSanitizer } from '@angular/platform-browser';
 import { StopEventType, StopPointCall, VehicleAccessType } from '../shared/types/_all';
 import { JourneyService } from '../shared/models/journey-service';
 
@@ -493,10 +495,10 @@ export class OJPHelpers {
       const sourceStopEvent = isArrival ? oldStopPoint.arrivalData : oldStopPoint.departureData;
       
       const timetableDate = sourceStopEvent?.timetableTime ?? null;
-      const timetableDateF = timetableDate ? OJP_Legacy.DateHelpers.formatTimeHHMM(timetableDate) : '';
+      const timetableDateF = timetableDate ? OJP_Next.DateHelpers.formatTimeHHMM(timetableDate) : '';
       
       const realtimeDate = sourceStopEvent?.estimatedTime ?? null;
-      const realtimeDateF = realtimeDate ? OJP_Legacy.DateHelpers.formatTimeHHMM(realtimeDate) : '';
+      const realtimeDateF = realtimeDate ? OJP_Next.DateHelpers.formatTimeHHMM(realtimeDate) : '';
 
       if (isArrival) {
         stopCall.arrival.timetable = timetableDate;
@@ -536,7 +538,7 @@ export class OJPHelpers {
 
           const endpointTimeDate = isFrom ? timedLeg.fromStopPoint.departureData?.timetableTime : timedLeg.toStopPoint.arrivalData?.timetableTime;
           if (endpointTimeDate) {
-            const endpointTimeDateS = OJP_Legacy.DateHelpers.formatTimeHHMM(endpointTimeDate);
+            const endpointTimeDateS = OJP_Next.DateHelpers.formatTimeHHMM(endpointTimeDate);
             hashParts.push(endpointTimeDateS);
           }
         });
