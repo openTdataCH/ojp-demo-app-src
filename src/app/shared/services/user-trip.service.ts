@@ -100,20 +100,24 @@ export class UserTripService {
     const isOJPv2 = OJP_VERSION === '2.0';
     const xmlConfig = isOJPv2 ? OJP_Legacy.XML_ConfigOJPv2 : OJP_Legacy.XML_BuilderConfigOJPv1;
 
-    const appStageS = this.queryParams.get('stage') ?? null;
-    if (appStageS) {
-      const userAppStage = this.computeAppStageFromString(appStageS);
-      if (userAppStage) {
-        setTimeout(() => {
-          // HACK 
-          // without the setTimeout , the parent src/app/journey/journey-search/journey-search.component.html template 
-          // gives following errors core.mjs:9157 ERROR RuntimeError: NG0100: ExpressionChangedAfterItHasBeenCheckedError: 
-          // Expression has changed after it was checked. Previous value: 'PROD'. Current value: 'INT'. 
-          // Find more at https://angular.io/errors/NG0100
-          this.currentAppStage = userAppStage;
-        });
+    const appStage = (() => {
+       const appStageS = this.queryParams.get('stage') ?? null;
+      if (appStageS) {
+        const userAppStage = this.computeAppStageFromString(appStageS);
+        return userAppStage;
       }
-    }
+
+      return this.currentAppStage;
+    })();
+
+    setTimeout(() => {
+      // HACK 
+      // without the setTimeout , the parent src/app/journey/journey-search/journey-search.component.html template 
+      // gives following errors core.mjs:9157 ERROR RuntimeError: NG0100: ExpressionChangedAfterItHasBeenCheckedError: 
+      // Expression has changed after it was checked. Previous value: 'PROD'. Current value: 'INT'. 
+      // Find more at https://angular.io/errors/NG0100
+      this.currentAppStage = appStage;
+    });
 
     const defaultLocationsPlaceRef = {
       "Bern": "8507000",
@@ -133,9 +137,9 @@ export class UserTripService {
 
     const promises: Promise<OJP_Legacy.Location[]>[] = [];
 
-    const stageConfig = this.getStageConfig();
+    const stageConfig = this.getStageConfig(appStage);
     if (stageConfig.authToken === null) {
-      console.error('WARNING: authorization not set for stage=' + this.currentAppStage);
+      console.error('WARNING: authorization not set for stage=' + appStage);
       console.log(stageConfig);
     }
 
@@ -146,12 +150,12 @@ export class UserTripService {
       let stopPlaceRef = isFrom ? fromPlaceRef : toPlaceRef;
       
       // OJP-SI cant handle StopRefs
-      if (this.currentAppStage === 'OJP-SI') {
+      if (appStage === 'OJP-SI') {
         stopPlaceRef = isFrom ? fromPlaceName : toPlaceName;
       }
       
       // LA Beta hack, strip everything before |
-      if (this.currentAppStage === 'LA Beta') {
+      if (appStage === 'LA Beta') {
         const stopPlaceRefMatches = stopPlaceRef.match(/^[^\|]+?\|(.+?)$/);
         if (stopPlaceRefMatches) {
           stopPlaceRef = stopPlaceRefMatches[1];
@@ -173,7 +177,7 @@ export class UserTripService {
         if (typeof stopPlaceRef === 'string' && /^[A-Z]/.test(stopPlaceRef)) {
           locationInformationRequest = OJP_Legacy.LocationInformationRequest.initWithLocationName(stageConfig, language, xmlConfig, REQUESTOR_REF, stopPlaceRef, []);
         }
-        locationInformationRequest.enableExtensions = this.currentAppStage !== 'OJP-SI';
+        locationInformationRequest.enableExtensions = appStage !== 'OJP-SI';
 
         const locationInformationPromise = locationInformationRequest.fetchLocations();
         promises.push(locationInformationPromise);
@@ -195,7 +199,7 @@ export class UserTripService {
         }
       } else {
         const stopPlaceLIR = OJP_Legacy.LocationInformationRequest.initWithStopPlaceRef(stageConfig, language, xmlConfig, REQUESTOR_REF, viaKey);
-        stopPlaceLIR.enableExtensions = this.currentAppStage !== 'OJP-SI';
+        stopPlaceLIR.enableExtensions = appStage !== 'OJP-SI';
         const stopPlacePromise = stopPlaceLIR.fetchLocations();
         promises.push(stopPlacePromise);
       }
