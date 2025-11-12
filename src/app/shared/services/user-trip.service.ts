@@ -241,6 +241,18 @@ export class UserTripService {
       return modes;
     })();
 
+    this.railSubmodesFilter = (() => {
+      const modes: string[] = [];
+
+      const railSubmodesS = this.queryParams.get('rail_submodes') ?? null;
+      if (railSubmodesS === null) {
+        return modes;
+      }
+
+      const userRailSubmodes = railSubmodesS.split(',').map(el => el.toLowerCase().trim());
+      return userRailSubmodes;
+    })();
+
     Promise.all(promises).then(locationsData => {
       endpointTypes.forEach(endpointType => {
         const isFrom = endpointType === 'From'
