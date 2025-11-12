@@ -4,6 +4,9 @@ OJP-Demo URL: https://opentdatach.github.io/ojp-demo-app/
 
 ----
 
+12.November 2025
+- TR RailSubmode filter - [PR #304](https://github.com/openTdataCH/ojp-demo-app-src/pull/304)
+
 3.November 2025
 - Fix location pickup mobile - [PR #299](https://github.com/openTdataCH/ojp-demo-app-src/pull/299)
   - trigger update TripLocation only when we have a location

@@ -596,6 +596,7 @@ export class SearchFormComponent implements OnInit {
       this.userTripService.numberOfResultsBefore,
       this.userTripService.numberOfResultsAfter,
       this.userTripService.publicTransportModesFilter,
+      this.userTripService.railSubmodesFilter,
     );
 
     if (tripRequest !== null) {
