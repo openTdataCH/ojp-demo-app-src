@@ -564,6 +564,10 @@ export class UserTripService {
       queryParams.append('public_transport_modes', this.publicTransportModesFilter.join(','));
     }
 
+    if (this.railSubmodesFilter.length > 0) {
+      queryParams.append('rail_submodes', this.railSubmodesFilter.join(','));
+    }
+
     const now = new Date();
     const deltaNowMinutes = Math.abs((now.getTime() - this.departureDate.getTime()) / 1000 / 60);
     if (deltaNowMinutes > 5) {
