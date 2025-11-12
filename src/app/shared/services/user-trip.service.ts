@@ -143,9 +143,9 @@ export class UserTripService {
       console.log(stageConfig);
     }
 
-    const endpointTypes: OJP_Legacy.JourneyPointType[] = ['From', 'To']
+    const endpointTypes: OJP_Legacy.JourneyPointType[] = ['From', 'To'];
     endpointTypes.forEach(endpointType => {
-      const isFrom = endpointType === 'From'
+      const isFrom = endpointType === 'From';
 
       let stopPlaceRef = isFrom ? fromPlaceRef : toPlaceRef;
       
