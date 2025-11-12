@@ -30,6 +30,7 @@ export class UserTripService {
   public numberOfResultsBefore: number | null
   public numberOfResultsAfter: number | null
   public publicTransportModesFilter: OJP_Legacy.ModeOfTransportType[];
+  public railSubmodesFilter: string[];
   public useRealTimeDataType: OJP_Legacy.UseRealtimeDataEnumeration;
   public walkSpeedDeviation: number | null;
 
@@ -72,6 +73,7 @@ export class UserTripService {
     this.numberOfResultsBefore = null;
     this.numberOfResultsAfter = null;
     this.publicTransportModesFilter = [];
+    this.railSubmodesFilter = [];
     this.useRealTimeDataType = 'explanatory';
     this.walkSpeedDeviation = null;
     
