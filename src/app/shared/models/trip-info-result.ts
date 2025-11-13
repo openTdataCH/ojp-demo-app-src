@@ -21,7 +21,7 @@ export class TripInfoResult {
     this.trackSectionsGeoPositions = [];
   }
 
-  public static initWithTripInfoDeliverySchema(tripInfoDeliverySchema: OJP_Types.TripInfoDeliverySchema | OJP_Types.OJPv1_TripInfoDeliverySchema | null): TripInfoResult | null {
+  public static initWithTripInfoDeliverySchema(ojpVersion: OJP_Legacy.OJP_VERSION_Type, tripInfoDeliverySchema: OJP_Types.TripInfoDeliverySchema | OJP_Types.OJPv1_TripInfoDeliverySchema | null): TripInfoResult | null {
     if (tripInfoDeliverySchema === null) {
       return null;
     }
@@ -45,11 +45,27 @@ export class TripInfoResult {
       return null;
     }
 
-    const mapPlaces: Record<string, OJP_Next.Place> = {};
-    const places = tripInfoDeliverySchema.tripInfoResponseContext?.places?.place ?? [];
-    places.forEach(placeSchema => {
-      const place = OJP_Next.Place.initWithXMLSchema(placeSchema);
+    const places: OJP_Next.Place[] = [];
+    if (ojpVersion === '2.0') {
+      const tripInfoDeliverySchemaOJPv2 = tripInfoDeliverySchema as OJP_Types.TripInfoDeliverySchema;
 
+      const placesSchema = tripInfoDeliverySchemaOJPv2.tripInfoResponseContext?.places?.place ?? [];
+      placesSchema.forEach(placeSchema => {
+        const place = OJP_Next.Place.initWithXMLSchema(placeSchema);
+        places.push(place);
+      });
+    } else {
+      const tripInfoDeliverySchemaOJPv1 = tripInfoDeliverySchema as OJP_Types.OJPv1_TripInfoDeliverySchema;
+
+      const placesSchema = tripInfoDeliverySchemaOJPv1.tripInfoResponseContext?.places?.location ?? [];
+      placesSchema.forEach(placeSchema => {
+        const place = OJP_Next.Place.initWithOJPv1XMLSchema(placeSchema);
+        places.push(place);
+      });
+    }
+
+    const mapPlaces: Record<string, OJP_Next.Place> = {};
+    places.forEach(place => {
       const stopPlaceRef = place.stopPlace?.stopPlaceRef ?? null;
       if (stopPlaceRef) {
         mapPlaces[stopPlaceRef] = place;

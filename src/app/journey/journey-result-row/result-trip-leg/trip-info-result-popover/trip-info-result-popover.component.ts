@@ -44,7 +44,7 @@ export class TripInfoResultPopoverComponent {
     this.model.isFetching = false;
 
     if (response.ok) {
-      const tripInfoResult = TripInfoResult.initWithTripInfoDeliverySchema(response.value);
+      const tripInfoResult = TripInfoResult.initWithTripInfoDeliverySchema(OJP_VERSION, response.value);
       this.tripInfoService.tripInfoResultUpdated.emit(tripInfoResult);
     } else {
       console.error('fetchJourneyRef - error');
