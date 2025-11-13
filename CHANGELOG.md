@@ -4,6 +4,11 @@ OJP-Demo URL: https://opentdatach.github.io/ojp-demo-app/
 
 ----
 
+13.November 2025
+- Patch OJPv1 requests - [PR #305](https://github.com/openTdataCH/ojp-demo-app-src/pull/305)
+  - handle OJPv1 `GeneralAttributeSchema`
+  - TIR - use OJPv1 `Location` schema for context locations
+
 12.November 2025
 - TR RailSubmode filter - [PR #304](https://github.com/openTdataCH/ojp-demo-app-src/pull/304)
 
