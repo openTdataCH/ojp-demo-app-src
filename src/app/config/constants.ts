@@ -76,7 +76,7 @@ export interface AppMapLayerOptions {
   minZoom: number
   layer_ids?: string[] | null,
   click_layer_ids?: string[] | 'SAME_AS_LAYER_IDS' | null
-}
+};
 
 export const MAP_APP_MAP_LAYERS: Record<string, AppMapLayerOptions> = {
   'stops': {
