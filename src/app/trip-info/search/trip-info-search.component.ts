@@ -169,7 +169,7 @@ export class TripInfoSearchComponent implements OnInit {
     this.model.isSearching = false;
 
     if (response.ok) {
-      const tripInfoResult = TripInfoResult.initWithTripInfoDeliverySchema(response.value);
+      const tripInfoResult = TripInfoResult.initWithTripInfoDeliverySchema(OJP_VERSION, response.value);
       this.parseTripInfo(request.requestInfo, tripInfoResult);
     } else {
       this.notificationToast.open('Invalid TripInfoRequest result: ' + response.error.message, {
@@ -248,7 +248,7 @@ export class TripInfoSearchComponent implements OnInit {
     const ojpSDK_Next = this.createOJP_SDK_Instance();
     const response = await ojpSDK_Next.fetchTripInfoRequestResponse(request);
     if (response.ok) {
-      const tripInfoResult = TripInfoResult.initWithTripInfoDeliverySchema(response.value);
+      const tripInfoResult = TripInfoResult.initWithTripInfoDeliverySchema(OJP_VERSION, response.value);
       this.parseTripInfo(request.requestInfo, tripInfoResult);
     } else {
       this.notificationToast.open('Invalid TripInfoRequest result: ' + response.error.message, {

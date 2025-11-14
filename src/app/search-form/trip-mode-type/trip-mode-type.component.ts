@@ -101,6 +101,7 @@ export class TripModeTypeComponent implements OnInit {
   public walkSpeedDeviationValues: number[];
 
   public mapPublicTransportModesFilter: Record<OJP_Legacy.ModeOfTransportType, boolean>;
+  public mapRailSubmodeFilter: Record<string, boolean>;
 
   public isV1: boolean;
 
@@ -161,6 +162,13 @@ export class TripModeTypeComponent implements OnInit {
     this.mapPublicTransportModesFilter.bus = false;
     this.mapPublicTransportModesFilter.water = false;
     this.mapPublicTransportModesFilter.tram = false;
+    this.mapRailSubmodeFilter = {
+      international: false,
+      highSpeedRail: false,
+      interregionalRail: false,
+      railShuttle: false,
+      local: false,
+    };
 
     this.isV1 = OJP_VERSION === '1.0';
 
@@ -231,6 +239,12 @@ export class TripModeTypeComponent implements OnInit {
       });
     }
 
+    if (this.mapPublicTransportModesFilter.rail) {
+      this.userTripService.railSubmodesFilter.forEach(railSubmode => {
+        this.mapRailSubmodeFilter[railSubmode] = true;
+      });
+    }
+
     this.updateAdditionalRestrictions();
 
     this.userTripService.searchFormAfterDefaultsInited.emit();
@@ -293,6 +307,18 @@ export class TripModeTypeComponent implements OnInit {
           this.userTripService.publicTransportModesFilter.push(modeFilter);
         }
       });
+
+      
+
+      this.userTripService.railSubmodesFilter = [];
+      if (this.mapPublicTransportModesFilter.rail) {
+        const availableRailSubmodesFilter: string[] = Object.keys(this.mapRailSubmodeFilter);
+        availableRailSubmodesFilter.forEach(railSubmode => {
+          if (this.mapRailSubmodeFilter[railSubmode]) {
+            this.userTripService.railSubmodesFilter.push(railSubmode);
+          }
+        });
+      }
 
       this.userTripService.walkSpeedDeviation = this.walkSpeedDeviation;
     }

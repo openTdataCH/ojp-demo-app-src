@@ -34,6 +34,7 @@ export class UserTripService {
   public numberOfResultsBefore: number | null;
   public numberOfResultsAfter: number | null;
   public publicTransportModesFilter: OJP_Legacy.ModeOfTransportType[];
+  public railSubmodesFilter: string[];
   public useRealTimeDataType: OJP_SharedTypes.UseRealtimeDataEnum;
   public walkSpeedDeviation: number | null;
 
@@ -75,6 +76,7 @@ export class UserTripService {
     this.numberOfResultsBefore = null;
     this.numberOfResultsAfter = null;
     this.publicTransportModesFilter = [];
+    this.railSubmodesFilter = [];
     this.useRealTimeDataType = 'explanatory';
     this.walkSpeedDeviation = null;
     
@@ -98,20 +100,24 @@ export class UserTripService {
   }
 
   public async initDefaults(language: OJP_Legacy.Language) {
-    const appStageS = this.queryParams.get('stage') ?? null;
-    if (appStageS) {
-      const userAppStage = this.computeAppStageFromString(appStageS);
-      if (userAppStage) {
-        setTimeout(() => {
-          // HACK 
-          // without the setTimeout , the parent src/app/journey/journey-search/journey-search.component.html template 
-          // gives following errors core.mjs:9157 ERROR RuntimeError: NG0100: ExpressionChangedAfterItHasBeenCheckedError: 
-          // Expression has changed after it was checked. Previous value: 'PROD'. Current value: 'INT'. 
-          // Find more at https://angular.io/errors/NG0100
-          this.currentAppStage = userAppStage;
-        });
+    const appStage = (() => {
+       const appStageS = this.queryParams.get('stage') ?? null;
+      if (appStageS) {
+        const userAppStage = this.computeAppStageFromString(appStageS);
+        return userAppStage;
       }
-    }
+
+      return this.currentAppStage;
+    })();
+
+    setTimeout(() => {
+      // HACK 
+      // without the setTimeout , the parent src/app/journey/journey-search/journey-search.component.html template 
+      // gives following errors core.mjs:9157 ERROR RuntimeError: NG0100: ExpressionChangedAfterItHasBeenCheckedError: 
+      // Expression has changed after it was checked. Previous value: 'PROD'. Current value: 'INT'. 
+      // Find more at https://angular.io/errors/NG0100
+      this.currentAppStage = appStage;
+    });
 
     const defaultLocationsPlaceRef = {
       "Bern": "8507000",
@@ -129,13 +135,7 @@ export class UserTripService {
     const fromPlaceRef = this.queryParams.get('from') ?? defaultLocationsPlaceRef[fromPlaceName];
     const toPlaceRef = this.queryParams.get('to') ?? defaultLocationsPlaceRef[toPlaceName];
 
-    const stageConfig = this.getStageConfig();
-    if (stageConfig.authToken === null) {
-      console.error('WARNING: authorization not set for stage=' + this.currentAppStage);
-      console.log(stageConfig);
-    }
-
-    const ojpSDK_Next = this.createOJP_SDK_Instance(language);
+    const ojpSDK_Next = this.createOJP_SDK_Instance(language, appStage);
 
     const bbox = new GeoPositionBBOX([]);
 
@@ -146,12 +146,12 @@ export class UserTripService {
       let stopPlaceRef = isFrom ? fromPlaceRef : toPlaceRef;
       
       // OJP-SI cant handle StopRefs
-      if (this.currentAppStage === 'OJP-SI') {
+      if (appStage === 'OJP-SI') {
         stopPlaceRef = isFrom ? fromPlaceName : toPlaceName;
       }
       
       // LA Beta hack, strip everything before |
-      if (this.currentAppStage === 'LA Beta') {
+      if (appStage === 'LA Beta') {
         const stopPlaceRefMatches = stopPlaceRef.match(/^[^\|]+?\|(.+?)$/);
         if (stopPlaceRefMatches) {
           stopPlaceRef = stopPlaceRefMatches[1];
@@ -255,6 +255,18 @@ export class UserTripService {
       });
       
       return modes;
+    })();
+
+    this.railSubmodesFilter = (() => {
+      const modes: string[] = [];
+
+      const railSubmodesS = this.queryParams.get('rail_submodes') ?? null;
+      if (railSubmodesS === null) {
+        return modes;
+      }
+
+      const userRailSubmodes = railSubmodesS.split(',').map(el => el.toLowerCase().trim());
+      return userRailSubmodes;
     })();
 
     this.locationsUpdated.emit();
@@ -524,6 +536,10 @@ export class UserTripService {
 
     if (this.publicTransportModesFilter.length > 0) {
       queryParams.append('public_transport_modes', this.publicTransportModesFilter.join(','));
+    }
+
+    if (this.railSubmodesFilter.length > 0) {
+      queryParams.append('rail_submodes', this.railSubmodesFilter.join(','));
     }
 
     const now = new Date();
@@ -945,11 +961,16 @@ export class UserTripService {
     return this.tripTransportMode === 'public_transport';
   }
 
-  private createOJP_SDK_Instance(language: OJP_Legacy.Language): OJP_Next.SDK {
+  private createOJP_SDK_Instance(language: OJP_Legacy.Language, appStage: APP_STAGE): OJP_Next.SDK {
     const isOJPv2 = OJP_VERSION === '2.0';
     const xmlConfig = isOJPv2 ? OJP_Next.DefaultXML_Config : OJP_Next.XML_BuilderConfigOJPv1;
 
-    const stageConfig = this.getStageConfig();
+    const stageConfig = this.getStageConfig(appStage);
+    if (stageConfig.authToken === null) {
+      console.error('WARNING: authorization not set for stage=' + appStage);
+      console.log(stageConfig);
+    }
+
     const sdk = new OJP_Next.SDK(REQUESTOR_REF, stageConfig, language, xmlConfig);
     return sdk;
   }  
