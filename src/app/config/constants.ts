@@ -1,9 +1,8 @@
 import { RasterLayerType } from '../shared/types/_all';
 
 import * as OJP_SharedTypes from 'ojp-shared-types';
-
 import * as OJP_Next from 'ojp-sdk-next';
-import OJP_Legacy from './ojp-legacy';
+
 import { POI_Restriction } from '../shared/models/place/poi';
 
 type DEBUG_LEVEL_Type = 'DEBUG' | 'PROD'
