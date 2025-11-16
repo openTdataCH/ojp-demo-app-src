@@ -168,7 +168,14 @@ export class Poi extends BasePlace {
 
     properties['poi.name'] = this.name;
     properties['poi.publicCode'] = this.publicCode;
-    properties['poi.categories'] = this.categories.join(', ');
+
+    const categories: string[] = [this.category];
+    if (this.subCategory !== null) {
+      categories.push(this.subCategory);
+    }
+    
+    properties['poi.category'] = this.category;
+    properties['poi.subCategory'] = this.subCategory ?? '';
 
     return properties;
   }
@@ -179,12 +186,8 @@ export class Poi extends BasePlace {
   public computePoiMapIcon(): string {
     const fallbackIcon = 'poi-unknown';
 
-    if (this.categories.length < 1) {
-        return fallbackIcon;
-    }
-
-    const category = this.categories[0];
-    const subCategory = this.categories[1] ?? null;
+    const category = this.category;
+    const subCategory = this.subCategory;
 
     if (!(category in mapPoiSubCategoryIcons)) {
       return fallbackIcon;
