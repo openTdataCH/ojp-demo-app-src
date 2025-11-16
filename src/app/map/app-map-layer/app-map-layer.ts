@@ -140,10 +140,11 @@ export class AppMapLayer {
 
         const ojpSDK_Next = this.userTripService.createOJP_SDK_Instance(this.language);
         const request = ojpSDK_Next.requests.LocationInformationRequest.initWithBBOX(bboxData, restrictionTypes, featuresLimit);
-        if (isOJPv2) {
-            // in OJP2 - POI queries are done with <PersonalMode>
+
+        if (request.payload.restrictions) {
             if (this.restrictionType === 'poi') {
-                if (request.payload.restrictions) {
+                if (isOJPv2) {
+                    // in OJP2 - POI queries are done with <PersonalMode>
                     const personalMode: OJP_SharedTypes.PersonalModesEnum | null = (() => {
                         const poiRestrictionTags = this.restrictionPOI?.tags ?? [];
 
@@ -169,7 +170,6 @@ export class AppMapLayer {
                 }
             }
         }
-
         
         const response = await request.fetchResponse(ojpSDK_Next);
 
@@ -205,12 +205,9 @@ export class AppMapLayer {
 
                 if (place.type === 'poi') {
                     const poi = place as Poi;
-                    if (poi.categories.length === 0) {
-                        const poiCategory = poi.categories[0] as RestrictionPoiOSMTag;
-                        if (!layerPoiType.tags.includes(poiCategory)) {
-                            placesDiscarded.push(place);
-                            return;
-                        }
+                    if (!layerPoiType.tags.includes(poi.category)) {
+                        placesDiscarded.push(place);
+                        return;
                     }
                 }
             }
