@@ -1,3 +1,4 @@
+import * as OJP_SharedTypes from 'ojp-shared-types';
 import * as OJP_Next from 'ojp-sdk-next';
 import OJP_Legacy from '../../config/ojp-legacy';
 
@@ -47,3 +48,8 @@ export interface CreateIssueBody {
   responseXML: string
   projectKey: string
 }
+
+export type AnyPlaceResultSchema = OJP_SharedTypes.PlaceResultSchema | OJP_SharedTypes.OJPv1_LocationResultSchema;
+
+export type AnyLocationInformationRequestResponse = OJP_Next.LocationInformationRequestResponse | OJP_Next.OJPv1_LocationInformationRequestResponse;
+
