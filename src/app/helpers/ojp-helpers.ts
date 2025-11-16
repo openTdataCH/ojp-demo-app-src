@@ -1,13 +1,14 @@
 import { DomSanitizer } from '@angular/platform-browser';
 
 import * as OJP_Next from 'ojp-sdk-next';
+import * as OJP_SharedTypes from 'ojp-shared-types';
 
 import OJP_Legacy from '../config/ojp-legacy';
 
 import { LegStopPointData } from '../shared/components/service-stops.component';
 import { DEBUG_LEVEL } from '../config/constants';
 import { SituationContent } from '../shared/types/situations';
-import { AnyLocationInformationRequestResponse, AnyPlaceResultSchema, StopEventType, StopPointCall, VehicleAccessType } from '../shared/types/_all';
+import { AnyLocationInformationRequestResponse, AnyPlaceResultSchema, AnyPlaceSchema, AnyTripInfoRequestResponse, StopEventType, StopPointCall, VehicleAccessType } from '../shared/types/_all';
 import { JourneyService } from '../shared/models/journey-service';
 import { PlaceLocation } from '../shared/models/place/location';
 
@@ -558,6 +559,39 @@ export class OJPHelpers {
     }
 
     return distanceMeters + 'm'
+  }
+
+  public static parseAnyPlaceContext(version: OJP_Next.OJP_VERSION, response: AnyTripInfoRequestResponse): AnyPlaceResultSchema[] {
+    const isOJPv2 = version === '2.0';
+
+    let placeResults: AnyPlaceResultSchema[] = [];
+    if (isOJPv2) {
+      const responseOJPv2 = response as OJP_Next.TripInfoRequestResponse;
+      if (responseOJPv2.ok) {
+        const places = responseOJPv2.value.tripInfoResponseContext?.places?.place ?? [];
+        placeResults = places.map(place => {
+          const placeResult: OJP_SharedTypes.PlaceResultSchema = {
+            place: place,
+            complete: true,
+          };
+          return placeResult;
+        });
+      }
+    } else {
+      const responseOJPv1 = response as OJP_Next.OJPv1_TripInfoRequestResponse;
+      if (responseOJPv1.ok) {
+        const places = responseOJPv1.value.tripInfoResponseContext?.places?.location ?? [];
+        placeResults = places.map(place => {
+          const placeResult: OJP_SharedTypes.OJPv1_LocationResultSchema = {
+            location: place,
+            complete: true,
+          };
+          return placeResult;
+        });
+      }
+    }
+
+    return placeResults;
   }
 
   public static parseAnyPlaceResult(version: OJP_Next.OJP_VERSION, response: AnyLocationInformationRequestResponse): AnyPlaceResultSchema[] {
