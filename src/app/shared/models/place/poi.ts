@@ -95,6 +95,7 @@ export class Poi extends BasePlace {
 
     const categories: string[] = [];
     categoryNodes.forEach(categoryNode => {
+      // OJP v2
       categoryNode.pointOfInterestClassification.forEach(poiClassification => {
         categories.push(poiClassification);
       });
