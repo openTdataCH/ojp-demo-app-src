@@ -2,6 +2,7 @@ import * as OJP_SharedTypes from 'ojp-shared-types';
 import * as OJP_Next from 'ojp-sdk-next';
 
 import { BasePlace } from '../place';
+import { AnyPlaceResultSchema } from '../../types/_all';
 
 type POI_OSM_TagSharedMobility = 'escooter_rental' | 'car_sharing' | 'bicycle_rental' | 'charging_station'
 type POI_OSM_TagPOI = 'service' | 'shopping' | 'leisure' | 'catering' | 'public' | 'parkride' | 'accommodation' | 'sbb_services' | 'other'
@@ -34,16 +35,37 @@ export class Poi extends BasePlace {
     this.topographicPlaceRef = null;
   }
 
-  public static initWithPlaceResultSchema(placeResultSchema: OJP_SharedTypes.PlaceResultSchema): Poi | null {
-    const placeName = placeResultSchema.place.name.text;
+  public static initWithPlaceResultSchema(version: OJP_Next.OJP_VERSION, placeResultSchema: AnyPlaceResultSchema): Poi | null {
+    const isOJPv2 = version === '2.0';
 
-    const geoPosition = new OJP_Next.GeoPosition(placeResultSchema.place.geoPosition);
-    if (!geoPosition.isValid()) {
+    const poiContainer = (() => {
+      if (isOJPv2) {
+        return (placeResultSchema as OJP_SharedTypes.PlaceResultSchema).place.pointOfInterest ?? null;
+      } else {
+        return (placeResultSchema as OJP_SharedTypes.OJPv1_LocationResultSchema).location.pointOfInterest ?? null;
+      }
+    })();
+    if (poiContainer === null) {
       return null;
     }
 
-    const poiContainer = placeResultSchema.place.pointOfInterest ?? null;
-    if (poiContainer === null) {
+    const placeName = (() => {
+      if (isOJPv2) {
+        return (placeResultSchema as OJP_SharedTypes.PlaceResultSchema).place.name.text;
+      } else {
+        return (placeResultSchema as OJP_SharedTypes.OJPv1_LocationResultSchema).location.locationName.text;
+      }
+    })();
+
+    const geoPositioSchema = (() => {
+      if (isOJPv2) {
+        return (placeResultSchema as OJP_SharedTypes.PlaceResultSchema).place.geoPosition;
+      } else {
+        return (placeResultSchema as OJP_SharedTypes.OJPv1_LocationResultSchema).location.geoPosition;
+      }
+    })();
+    const geoPosition = new OJP_Next.GeoPosition(geoPositioSchema);
+    if (!geoPosition.isValid()) {
       return null;
     }
 

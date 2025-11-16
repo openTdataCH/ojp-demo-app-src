@@ -6,6 +6,8 @@ import OJP_Legacy from '../../../config/ojp-legacy';
 
 import { BasePlace } from '../place';
 
+import { AnyPlaceResultSchema } from '../../types/_all';
+
 export class StopPlace extends BasePlace {
   public stopName: string;
   public stopRef: string;
@@ -21,29 +23,54 @@ export class StopPlace extends BasePlace {
     return stopPlace;
   }
 
-  public static initWithPlaceResultSchema(placeResultSchema: OJP_SharedTypes.PlaceResultSchema): StopPlace | null {
-    const stopPlaceRef = placeResultSchema.place.stopPlace?.stopPlaceRef ?? null;
+  public static initWithPlaceResultSchema(version: OJP_Next.OJP_VERSION, placeResultSchema: AnyPlaceResultSchema): StopPlace | null {
+    const isOJPv2 = version === '2.0';
+
+    const stopPlaceSchema: OJP_SharedTypes.StopPlaceSchema | null = (() => {
+      if (isOJPv2) {
+        return (placeResultSchema as OJP_SharedTypes.PlaceResultSchema).place.stopPlace ?? null;
+      } else {
+        return (placeResultSchema as OJP_SharedTypes.OJPv1_LocationResultSchema).location.stopPlace ?? null;
+      }
+    })();
+
+    if (stopPlaceSchema === null) {
+      return null;
+    }
+
+    const stopPlaceRef = stopPlaceSchema.stopPlaceRef ?? null;
     if (stopPlaceRef === null) {
       return null;
     }
 
-    const stopPlaceName: string = (() => {
-      const stopPlaceName = placeResultSchema.place.stopPlace?.stopPlaceName ?? null;
+    const placeName = (() => {
+      if (isOJPv2) {
+        return (placeResultSchema as OJP_SharedTypes.PlaceResultSchema).place.name.text;
+      } else {
+        return (placeResultSchema as OJP_SharedTypes.OJPv1_LocationResultSchema).location.locationName.text;
+      }
+    })();
+    
+    const stopPlaceName = (() => {
+      const stopPlaceName = stopPlaceSchema.stopPlaceName ?? null;
       if (stopPlaceName) {
         return stopPlaceName.text;
       }
 
-      const stopName = placeResultSchema.place.name.text;
-
-      return stopName;
+      return placeName;
     })();
 
-    const geoPosition = new OJP_Next.GeoPosition(placeResultSchema.place.geoPosition);
+    const geoPositioSchema = (() => {
+      if (isOJPv2) {
+        return (placeResultSchema as OJP_SharedTypes.PlaceResultSchema).place.geoPosition;
+      } else {
+        return (placeResultSchema as OJP_SharedTypes.OJPv1_LocationResultSchema).location.geoPosition;
+      }
+    })();
+    const geoPosition = new OJP_Next.GeoPosition(geoPositioSchema);
     if (!geoPosition.isValid()) {
       return null;
     }
-
-    const placeName = placeResultSchema.place.name.text;
 
     const stopPlace = new StopPlace(geoPosition.longitude, geoPosition.latitude, placeName, stopPlaceName, stopPlaceRef);
     return stopPlace;
