@@ -52,7 +52,7 @@ export class SharedMobility {
     const poiCategory = poi.category;
 
     const code: string = (() => {
-      const attrCode = poi.properties['Code'] ?? null;
+      const attrCode = poi.properties['code'] ?? null;
       if (attrCode !== null) {
         return attrCode;
       }
@@ -197,17 +197,17 @@ export class SharedMobility {
 
     const mapAdditionalInformation = place.properties;
 
-    const docksNoS = mapAdditionalInformation['num_docks_available'] ?? null;
+    const docksNoS = mapAdditionalInformation['numDocksAvailable'] ?? null;
     if (docksNoS !== null) {
       vehicle.docksNo = parseInt(docksNoS, 10);
     }
-    const vehiclesNoS = mapAdditionalInformation['num_vehicles_available'] ?? null;
+    const vehiclesNoS = mapAdditionalInformation['numVehiclesAvailable'] ?? null;
     if (vehiclesNoS !== null) {
       vehicle.isFixedStation = true
       vehicle.vehiclesNo = parseInt(vehiclesNoS, 10);
     }
 
-    vehicle.hireFacility = mapAdditionalInformation['HireFacility'] ?? null;
+    vehicle.hireFacility = mapAdditionalInformation['hireFacility'] ?? null;
 
     if (provider === '2EM Car Sharing') {
       vehicle.vehicleName = poi.name;
