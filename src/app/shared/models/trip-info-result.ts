@@ -1,6 +1,8 @@
 import * as OJP_Types from 'ojp-shared-types';
 import * as OJP_Next from 'ojp-sdk-next';
 
+import OJP_Legacy from '../../config/ojp-legacy';
+
 import { OJP_VERSION } from '../../config/constants';
 
 import { StopEventType, StopPointCall, StopPointCallType } from '../types/_all';
