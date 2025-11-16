@@ -50,6 +50,6 @@ export interface CreateIssueBody {
 }
 
 export type AnyPlaceResultSchema = OJP_SharedTypes.PlaceResultSchema | OJP_SharedTypes.OJPv1_LocationResultSchema;
-
+export type AnyLocationInformationRequest = OJP_Next.LocationInformationRequest | OJP_Next.OJPv1_LocationInformationRequest;
 export type AnyLocationInformationRequestResponse = OJP_Next.LocationInformationRequestResponse | OJP_Next.OJPv1_LocationInformationRequestResponse;
 
