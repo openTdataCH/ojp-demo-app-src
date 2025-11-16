@@ -597,20 +597,20 @@ export class OJPHelpers {
   public static parseAnyPlaceResult(version: OJP_Next.OJP_VERSION, response: AnyLocationInformationRequestResponse): AnyPlaceResultSchema[] {
     const isOJPv2 = version === '2.0';
 
-    let places: AnyPlaceResultSchema[] = [];
+    let placeResults: AnyPlaceResultSchema[] = [];
     
     if (isOJPv2) {
       const responseOJPv2 = response as OJP_Next.LocationInformationRequestResponse;
       if (responseOJPv2.ok) {
-        places = places.concat(responseOJPv2.value.placeResult);
+        placeResults = placeResults.concat(responseOJPv2.value.placeResult);
       }
     } else {
       const responseOJPv1 = response as OJP_Next.OJPv1_LocationInformationRequestResponse;
       if (responseOJPv1.ok) {
-        places = places.concat(responseOJPv1.value.location);
+        placeResults = placeResults.concat(responseOJPv1.value.location);
       }
     }
 
-    return places;
+    return placeResults;
   }
 }
