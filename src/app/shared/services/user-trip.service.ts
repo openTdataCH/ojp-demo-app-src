@@ -961,9 +961,8 @@ export class UserTripService {
     return this.tripTransportMode === 'public_transport';
   }
 
-  private createOJP_SDK_Instance(language: OJP_Legacy.Language, appStage: APP_STAGE): OJP_Next.SDK {
+  public createOJP_SDK_Instance(language: OJP_Legacy.Language, appStage: APP_STAGE = this.currentAppStage): OJP_Next.AnySDK {
     const isOJPv2 = OJP_VERSION === '2.0';
-    const xmlConfig = isOJPv2 ? OJP_Next.DefaultXML_Config : OJP_Next.XML_BuilderConfigOJPv1;
 
     const stageConfig = this.getStageConfig(appStage);
     if (stageConfig.authToken === null) {
@@ -971,7 +970,12 @@ export class UserTripService {
       console.log(stageConfig);
     }
 
-    const sdk = new OJP_Next.SDK(REQUESTOR_REF, stageConfig, language, xmlConfig);
-    return sdk;
-  }  
+    if (isOJPv2) {
+      const sdk = OJP_Next.SDK.create(REQUESTOR_REF, stageConfig, language);
+      return sdk;
+    } else {
+      const sdk = OJP_Next.SDK.v1(REQUESTOR_REF, stageConfig, language);
+      return sdk;
+    }
+  }
 }
