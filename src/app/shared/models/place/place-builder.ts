@@ -39,7 +39,7 @@ export class PlaceBuilder {
     try {
       placePoi = Poi.initWithPlaceResultSchema(version, placeResultSchema);
     } catch (error) {
-      console.error('Address.initWithPlaceResultSchema:', error);
+      console.error('Poi.initWithPlaceResultSchema:', error);
       console.log(placeResultSchema);
     }
     if (placePoi) {
