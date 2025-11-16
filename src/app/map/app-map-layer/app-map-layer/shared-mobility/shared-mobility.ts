@@ -49,11 +49,7 @@ export class SharedMobility {
 
     const poi = place as Poi;
 
-    if (poi.categories.length < 1) {
-      return null;
-    }
-
-    const poiCategory = poi.categories[0] as RestrictionPoiOSMTag;
+    const poiCategory = poi.category;
 
     const code: string = (() => {
       const attrCode = poi.properties['Code'] ?? null;

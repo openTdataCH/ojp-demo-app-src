@@ -31,14 +31,9 @@ export class POIAppMapLayer extends AppMapLayer {
     }
 
     const poi = firstPlace as Poi;
-    if (poi.categories.length < 2) {
-      return null;
-    }
 
-    // convention 
-    // -> TODO: add category, subCategory to Poi class
-    const poiCategory = poi.categories[0];
-    const poiSubCategory = poi.categories[1];
+    const poiCategory = poi.category;
+    const poiSubCategory = poi.subCategory ?? '';
 
     const popupWrapperDIV = document.getElementById('map-poi-picker-popup') as HTMLElement;
     if (popupWrapperDIV === null) {
