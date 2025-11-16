@@ -23,15 +23,21 @@ const mapPoiSubCategoryIcons = <Record<RestrictionPoiOSMTag, string[]>>{
 export class Poi extends BasePlace {
   public publicCode: string;
   public name: string;
-  public categories: string[];
+
+  public category: RestrictionPoiOSMTag;
+  public subCategory: string | null;
+
   public topographicPlaceRef: string | null;
   
-  private constructor(longitude: number, latitude: number, placeName: string, publicCode: string, name: string, poiCategories: string[]) {
+  private constructor(longitude: number, latitude: number, placeName: string, publicCode: string, name: string, category: RestrictionPoiOSMTag, subCategory: string | null) {
     super(longitude, latitude, 'poi', placeName);
     
     this.publicCode = publicCode;
     this.name = name;
-    this.categories = poiCategories;
+    
+    this.category = category;
+    this.subCategory = subCategory;
+    
     this.topographicPlaceRef = null;
   }
 
@@ -81,11 +87,59 @@ export class Poi extends BasePlace {
       });
     });
 
-    if (categories.length === 0) {
-      throw new Error('JSON error: cant extract categories');
+    const category: RestrictionPoiOSMTag | null = (() => {
+      if (isOJPv2) {
+        if (categories.length === 0) {
+          return null;
+        }
+
+        const category = categories[0] as RestrictionPoiOSMTag;
+        return category;
+      } else {
+        let categoryOJPv1: string | null = null;
+        categoryNodes.forEach(categoryNode => {
+          categoryNode.osmTag.forEach(osmTagNode => {
+            if (osmTagNode.tag === 'POI_0') {
+              categoryOJPv1 = osmTagNode.value;
+            }
+
+            if (osmTagNode.tag === 'amenity') {
+              categoryOJPv1 = osmTagNode.value;
+            }
+          });
+        });
+
+        if (categoryOJPv1 !== null) {
+          return categoryOJPv1 as RestrictionPoiOSMTag;
+        }
+
+        return null;
+      }
+    })();
+    if (category === null) {
+      throw new Error('JSON error: cant compute POI category');
     }
 
-    const poi = new Poi(geoPosition.longitude, geoPosition.latitude, placeName, publicCode, name, categories);
+    const subCategory: string | null = (() => {
+      if (!isOJPv2) {
+        let subCategoryOJPv1: string | null = null;
+        categoryNodes.forEach(categoryNode => {
+          categoryNode.osmTag.forEach(osmTagNode => {
+            if (osmTagNode.tag === 'POI_1') {
+              subCategoryOJPv1 = osmTagNode.value;
+            }
+          });
+        });
+
+        if (subCategoryOJPv1 !== null) {
+          return subCategoryOJPv1;
+        }
+      }
+
+      return null;
+    })();
+
+    const poi = new Poi(geoPosition.longitude, geoPosition.latitude, placeName, publicCode, name, category, subCategory);
     
     poi.properties = {};
     const poiAdditionalInformationItems = poiContainer.pOIAdditionalInformation?.pOIAdditionalInformation ?? [];
