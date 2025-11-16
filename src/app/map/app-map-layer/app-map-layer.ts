@@ -167,6 +167,30 @@ export class AppMapLayer {
                             personalMode: [personalMode],
                         };
                     }
+                } else {
+                    const poiTags = this.restrictionPOI?.tags ?? [];
+                    if (poiTags.length > 0) {
+                        request.payload.restrictions.pointOfInterestFilter = {
+                            pointOfInterestCategory: [
+                                {
+                                    osmTag: [],
+                                    pointOfInterestClassification: [],
+                                }
+                            ],
+                        };
+
+                        const isSharedMobility = this.restrictionPOI?.poiType === 'shared_mobility';
+                        const poiOsmTagKey = isSharedMobility ? 'amenity' : 'POI';
+
+                        const firstCategoryFilter = request.payload.restrictions.pointOfInterestFilter.pointOfInterestCategory[0];
+
+                        poiTags.forEach(poiTagValue => {
+                            firstCategoryFilter.osmTag.push({
+                                tag: poiOsmTagKey,
+                                value: poiTagValue,
+                            })
+                        });
+                    }
                 }
             }
         }
