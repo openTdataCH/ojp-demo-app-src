@@ -7,7 +7,7 @@ import OJP_Legacy from '../config/ojp-legacy';
 import { LegStopPointData } from '../shared/components/service-stops.component';
 import { DEBUG_LEVEL } from '../config/constants';
 import { SituationContent } from '../shared/types/situations';
-import { StopEventType, StopPointCall, VehicleAccessType } from '../shared/types/_all';
+import { AnyLocationInformationRequestResponse, AnyPlaceResultSchema, StopEventType, StopPointCall, VehicleAccessType } from '../shared/types/_all';
 import { JourneyService } from '../shared/models/journey-service';
 
 type PublicTransportPictogram =  'picto-bus-fallback' | 'picto-bus'
@@ -557,5 +557,25 @@ export class OJPHelpers {
     }
 
     return distanceMeters + 'm'
+  }
+
+  public static parseAnyPlaceResult(version: OJP_Next.OJP_VERSION, response: AnyLocationInformationRequestResponse): AnyPlaceResultSchema[] {
+    const isOJPv2 = version === '2.0';
+
+    let places: AnyPlaceResultSchema[] = [];
+    
+    if (isOJPv2) {
+      const responseOJPv2 = response as OJP_Next.LocationInformationRequestResponse;
+      if (responseOJPv2.ok) {
+        places = places.concat(responseOJPv2.value.placeResult);
+      }
+    } else {
+      const responseOJPv1 = response as OJP_Next.OJPv1_LocationInformationRequestResponse;
+      if (responseOJPv1.ok) {
+        places = places.concat(responseOJPv1.value.location);
+      }
+    }
+
+    return places;
   }
 }
