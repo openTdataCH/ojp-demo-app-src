@@ -155,10 +155,40 @@ export class Poi extends BasePlace {
     const poi = new Poi(geoPosition.longitude, geoPosition.latitude, placeName, publicCode, name, category, subCategory);
     
     poi.properties = {};
-    const poiAdditionalInformationItems = poiContainer.pOIAdditionalInformation?.pOIAdditionalInformation ?? [];
-    poiAdditionalInformationItems.forEach(item => {
-      poi.properties[item.key] = item.value;
-    });
+    if (isOJPv2) {
+      const poiAdditionalInformationItems = (poiContainer as OJP_SharedTypes.PointOfInterestSchema).pOIAdditionalInformation?.pOIAdditionalInformation ?? [];
+      poiAdditionalInformationItems.forEach(item => {
+        // Use same mechanism as the XML parser to transform the tag names (i.e. snake_case to camelCase) 
+        const newKey = OJP_Next.XmlSerializer.transformTagName(item.key);
+        poi.properties[newKey] = item.value;
+      });
+
+      const attributes = (placeResultSchema as OJP_SharedTypes.PlaceResultSchema).place.attribute ?? [];
+      if (attributes.length > 0) {
+        console.log('TODO: unhandled attributes in OJP2.0 Poi');
+        console.log(placeResultSchema);
+      }
+    } else {
+      const locationExtensionStructure = (placeResultSchema as OJP_SharedTypes.OJPv1_LocationResultSchema).location.extension?.locationExtensionStructure ?? null;
+      if (locationExtensionStructure !== null) {
+        for (let key in locationExtensionStructure) {
+          poi.properties[key] = locationExtensionStructure[key];
+        }
+      }
+
+      const attributes = (placeResultSchema as OJP_SharedTypes.OJPv1_LocationResultSchema).location.attribute ?? [];
+      attributes.forEach(attributeData => {
+        poi.properties['text'] = attributeData.text.text;
+        poi.properties['code'] = attributeData.code;
+
+        if ('hireFacility' in attributeData) {
+          poi.properties['hireFacility'] = attributeData['hireFacility'];
+        }
+        if ('importance' in attributeData) {
+          poi.properties['importance'] = Number(attributeData['importance']);
+        }
+      });
+    }
 
     return poi;
   }
