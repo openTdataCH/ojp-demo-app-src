@@ -66,12 +66,9 @@ export class ChargingStationAppMapLayer extends AppMapLayer {
     }
 
     const poi = firstPlace as Poi;
-    if (poi.categories.length === 0) {
-      return null;
-    }
 
     // it could be that we get different POI category
-    if (poi.categories[0] !== 'charging_station') {
+    if (poi.category !== 'charging_station') {
       return null;
     }
 
