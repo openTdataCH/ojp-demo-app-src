@@ -75,8 +75,21 @@ export class Poi extends BasePlace {
       return null;
     }
 
-    const publicCode = poiContainer.publicCode;
-    const name = poiContainer.name.text;
+    const publicCode = (() => {
+      if (isOJPv2) {
+        return (poiContainer as OJP_SharedTypes.PointOfInterestSchema).publicCode;
+      } else {
+        return (poiContainer as OJP_SharedTypes.OJPv1_PointOfInterestSchema).pointOfInterestCode;
+      }
+    })();
+    
+    const name = (() => {
+      if (isOJPv2) {
+        return (poiContainer as OJP_SharedTypes.PointOfInterestSchema).name.text;
+      } else {
+        return (poiContainer as OJP_SharedTypes.OJPv1_PointOfInterestSchema).pointOfInterestName.text;
+      }
+    })();
 
     const categoryNodes = poiContainer.pointOfInterestCategory ?? [];
 
