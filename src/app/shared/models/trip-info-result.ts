@@ -5,9 +5,11 @@ import OJP_Legacy from '../../config/ojp-legacy';
 
 import { OJP_VERSION } from '../../config/constants';
 
-import { StopEventType, StopPointCall, StopPointCallType } from '../types/_all';
+import { AnyTripInfoRequestResponse, StopEventType, StopPointCall, StopPointCallType } from '../types/_all';
 import { OJPHelpers } from '../../helpers/ojp-helpers';
 import { JourneyService } from './journey-service';
+import { StopPlace } from './place/stop-place';
+import { PlaceBuilder } from './place/place-builder';
 
 const stopEventTypes: StopEventType[] = ['arrival', 'departure'];
 
@@ -22,10 +24,12 @@ export class TripInfoResult {
     this.trackSectionsGeoPositions = [];
   }
 
-  public static initWithTripInfoDeliverySchema(ojpVersion: OJP_Legacy.OJP_VERSION_Type, tripInfoDeliverySchema: OJP_Types.TripInfoDeliverySchema | OJP_Types.OJPv1_TripInfoDeliverySchema | null): TripInfoResult | null {
-    if (tripInfoDeliverySchema === null) {
+  public static initWithTripInfoResponse(ojpVersion: OJP_Legacy.OJP_VERSION_Type, response: AnyTripInfoRequestResponse | null): TripInfoResult | null {
+    if (response === null || !response.ok) {
       return null;
     }
+
+    const tripInfoDeliverySchema = response.value;
 
     if (tripInfoDeliverySchema.tripInfoResult.length === 0) {
       console.error('ERROR: TripInfoResult.initWithTripInfoDeliverySchema: empty tripInfoResult');
@@ -46,35 +50,18 @@ export class TripInfoResult {
       return null;
     }
 
-    const places: OJP_Next.Place[] = [];
-    if (ojpVersion === '2.0') {
-      const tripInfoDeliverySchemaOJPv2 = tripInfoDeliverySchema as OJP_Types.TripInfoDeliverySchema;
+    const places: StopPlace[] = [];
+    const placeResults = OJPHelpers.parseAnyPlaceContext(ojpVersion, response);
+    placeResults.forEach(placeResult => {
+      const place = PlaceBuilder.initWithPlaceResultSchema(ojpVersion, placeResult);
+      if (place && place.type === 'stop') {
+        places.push(place as StopPlace);
+      }
+    });
 
-      const placesSchema = tripInfoDeliverySchemaOJPv2.tripInfoResponseContext?.places?.place ?? [];
-      placesSchema.forEach(placeSchema => {
-        const place = OJP_Next.Place.initWithXMLSchema(placeSchema);
-        places.push(place);
-      });
-    } else {
-      const tripInfoDeliverySchemaOJPv1 = tripInfoDeliverySchema as OJP_Types.OJPv1_TripInfoDeliverySchema;
-
-      const placesSchema = tripInfoDeliverySchemaOJPv1.tripInfoResponseContext?.places?.location ?? [];
-      placesSchema.forEach(placeSchema => {
-        const place = OJP_Next.Place.initWithOJPv1XMLSchema(placeSchema);
-        places.push(place);
-      });
-    }
-
-    const mapPlaces: Record<string, OJP_Next.Place> = {};
+    const mapPlaces: Record<string, StopPlace> = {};
     places.forEach(place => {
-      const stopPlaceRef = place.stopPlace?.stopPlaceRef ?? null;
-      if (stopPlaceRef) {
-        mapPlaces[stopPlaceRef] = place;
-      }
-      const stopPointRef = place.stopPoint?.stopPointRef ?? null;
-      if (stopPointRef) {
-        mapPlaces[stopPointRef] = place;
-      }
+      mapPlaces[place.stopRef] = place;
     });
 
     const calls: StopPointCall[] = [];

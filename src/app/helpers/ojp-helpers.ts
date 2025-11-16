@@ -9,6 +9,7 @@ import { DEBUG_LEVEL } from '../config/constants';
 import { SituationContent } from '../shared/types/situations';
 import { AnyLocationInformationRequestResponse, AnyPlaceResultSchema, StopEventType, StopPointCall, VehicleAccessType } from '../shared/types/_all';
 import { JourneyService } from '../shared/models/journey-service';
+import { PlaceLocation } from '../shared/models/place/location';
 
 type PublicTransportPictogram =  'picto-bus-fallback' | 'picto-bus'
   | 'picto-railway' | 'picto-tram' | 'picto-rack-railway'
@@ -486,7 +487,7 @@ export class OJPHelpers {
 
     const geoPosition = oldStopPoint.location.geoPosition;
     if (geoPosition) {
-      stopCall.place = OJP_Next.Place.initWithCoords(geoPosition.longitude, geoPosition.latitude);
+      stopCall.place = new PlaceLocation(geoPosition.longitude, geoPosition.latitude);
     }
     
     stopEventTypes.forEach(stopEventType => {
