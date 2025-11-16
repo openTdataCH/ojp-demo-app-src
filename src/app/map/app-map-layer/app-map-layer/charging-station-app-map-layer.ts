@@ -103,7 +103,7 @@ export class ChargingStationAppMapLayer extends AppMapLayer {
         return '<span class="badge rounded-pill ' + className + '">' + locationStatus.toUpperCase() + '</span>';
       })();
 
-      const locationCode = place.properties['Code'] ?? null;
+      const locationCode = place.properties['code'] ?? null;
 
       const statusLI = '<li>' + locationStatusText + ' ' + locationCode + '</li>';
       statusLIs.push(statusLI);
