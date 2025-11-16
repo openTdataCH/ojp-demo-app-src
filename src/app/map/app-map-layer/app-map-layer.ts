@@ -2,17 +2,18 @@ import * as GeoJSON from 'geojson'
 import mapboxgl from "mapbox-gl";
 
 import * as OJP_SharedTypes from 'ojp-shared-types';
-import * as OJP_Next from 'ojp-sdk-next';
 
 import OJP_Legacy from '../../config/ojp-legacy';
 
-import { AppMapLayerOptions, DEBUG_LEVEL, MAP_APP_MAP_LAYERS, REQUESTOR_REF, OJP_VERSION } from '../../config/constants'
+import { AppMapLayerOptions, DEBUG_LEVEL, MAP_APP_MAP_LAYERS, OJP_VERSION } from '../../config/constants'
 
 import { UserTripService } from "../../shared/services/user-trip.service";
 import { MapHelpers } from "../helpers/map.helpers";
 import { MAP_LAYERS_DEFINITIONS } from "./map-layers-def";
 import { AnyPlace, PlaceBuilder } from '../../shared/models/place/place-builder';
 import { Poi, POI_Restriction, RestrictionPoiOSMTag } from '../../shared/models/place/poi';
+import { OJPHelpers } from '../../helpers/ojp-helpers';
+import { AnyLocationInformationRequest } from '../../shared/types/_all';
 
 export enum FeaturePropsEnum {
     OJP_GeoRestrictionType = 'OJP_Legacy.GeoRestrictionType',
@@ -33,7 +34,7 @@ export class AppMapLayer {
     private userTripService: UserTripService;
 
     public isEnabled: boolean;
-    public lastOJPRequest: OJP_Next.LocationInformationRequest | null;
+    public lastOJPRequest: AnyLocationInformationRequest | null;
 
     protected mapCurrentPlaces: Record<string, AnyPlace>;
 
@@ -137,11 +138,12 @@ export class AppMapLayer {
             }
         })();
 
-        const request = OJP_Next.LocationInformationRequest.initWithBBOX(bboxData, restrictionTypes, featuresLimit);
+        const ojpSDK_Next = this.userTripService.createOJP_SDK_Instance(this.language);
+        const request = ojpSDK_Next.requests.LocationInformationRequest.initWithBBOX(bboxData, restrictionTypes, featuresLimit);
         if (isOJPv2) {
             // in OJP2 - POI queries are done with <PersonalMode>
             if (this.restrictionType === 'poi') {
-                if (request.restrictions) {
+                if (request.payload.restrictions) {
                     const personalMode: OJP_SharedTypes.PersonalModesEnum | null = (() => {
                         const poiRestrictionTags = this.restrictionPOI?.tags ?? [];
 
@@ -159,7 +161,7 @@ export class AppMapLayer {
                     })();
 
                     if (personalMode !== null) {
-                        request.restrictions.modes = {
+                        request.payload.restrictions.modes = {
                             ptMode: [],
                             personalMode: [personalMode],
                         };
@@ -168,8 +170,8 @@ export class AppMapLayer {
             }
         }
 
-        const ojpSDK_Next = this.createOJP_SDK_Instance();
-        const response = await ojpSDK_Next.fetchLocationInformationRequestResponse(request);
+        
+        const response = await request.fetchResponse(ojpSDK_Next);
 
         this.lastOJPRequest = request;
 
@@ -185,8 +187,10 @@ export class AppMapLayer {
         const placesDiscarded: AnyPlace[] = [];
         const mapFeatures: Record<string, GeoJSON.Feature> = {};
 
-        response.value.placeResult.forEach((placeResult, idx) => {
-            const place = PlaceBuilder.initWithPlaceResultSchema(placeResult);
+        const placeResults = OJPHelpers.parseAnyPlaceResult(OJP_VERSION, response);
+
+        placeResults.forEach((placeResult, idx) => {
+            const place = PlaceBuilder.initWithPlaceResultSchema(OJP_VERSION, placeResult);
             if (place === null) {
                 return;
             }
@@ -417,14 +421,4 @@ export class AppMapLayer {
     
         return popupHTML;
     }
-
-    // TODO - share createOJP_SDK_Instance with src/app/station-board/search/station-board-search.component.ts ?
-    private createOJP_SDK_Instance(): OJP_Next.SDK {
-        const isOJPv2 = OJP_VERSION === '2.0';
-        const xmlConfig = isOJPv2 ? OJP_Next.DefaultXML_Config : OJP_Next.XML_BuilderConfigOJPv1;
-
-        const stageConfig = this.userTripService.getStageConfig();    
-        const sdk = new OJP_Next.SDK(REQUESTOR_REF, stageConfig, this.language, xmlConfig);
-        return sdk;
-    }  
 }

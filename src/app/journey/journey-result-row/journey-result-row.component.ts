@@ -164,12 +164,11 @@ export class JourneyResultRowComponent implements OnInit {
     // HACK - keep for now only timedLegs
     tripV2.leg = tripV2.leg.filter(el => (el.timedLeg || el.transferLeg));
 
-    const trrRequest = OJP_Next.TripRefineRequest.initWithTrip(tripV2);
-
-    const stage = this.userTripService.getStageConfig();
-
-    const ojpSDK_Next = new OJP_Next.SDK(REQUESTOR_REF, stage, this.languageService.language);
-    const trrResponse = await ojpSDK_Next.fetchTripRefineRequestResponse(trrRequest);
+    const stageConfig = this.userTripService.getStageConfig();
+    const ojpSDK_Next = OJP_Next.SDK.create(REQUESTOR_REF, stageConfig, this.languageService.language);
+    const trrRequest = ojpSDK_Next.requests.TripRefineRequest.initWithTrip(tripV2);
+    
+    const trrResponse = await trrRequest.fetchResponse(ojpSDK_Next);
     if (!trrResponse.ok) {
       console.error('ERROR - fetchTripRefineRequestResponse');
       console.log(trrRequest);

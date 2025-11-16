@@ -16,6 +16,8 @@ import { TripData, TripLegData } from '../types/trip';
 import { AnyPlace, PlaceBuilder, sortPlaces } from '../models/place/place-builder';
 import { PlaceLocation } from '../models/place/location';
 import { GeoPositionBBOX } from '../models/geo/geoposition-bbox';
+import { OJPHelpers } from '../../helpers/ojp-helpers';
+import { AnyLocationInformationRequestResponse } from '../types/_all';
 
 type LocationUpdateSource = 'SearchForm' | 'MapDragend' | 'MapPopupClick';
 
@@ -166,13 +168,14 @@ export class UserTripService {
       if (coordsPlace) {
         place = coordsPlace;
       } else {
-        let request = OJP_Next.LocationInformationRequest.initWithPlaceRef(stopPlaceRef, 10);
+        let request = ojpSDK_Next.requests.LocationInformationRequest.initWithPlaceRef(stopPlaceRef, 10);
         // Check if is location name instead of stopId / sloid
         if (typeof stopPlaceRef === 'string' && /^[A-Z]/.test(stopPlaceRef)) {
-          request = OJP_Next.LocationInformationRequest.initWithLocationName(stopPlaceRef, ['stop'], 10);
+          request = ojpSDK_Next.requests.LocationInformationRequest.initWithLocationName(stopPlaceRef, ['stop'], 10);
         }
+        const response = await request.fetchResponse(ojpSDK_Next);
 
-        place = await this.fetchPlace(ojpSDK_Next, request);
+        place = this.parsePlace(response);
       }
 
       if (!place) {
@@ -202,8 +205,9 @@ export class UserTripService {
       if (coordsPlace) {
         place = coordsPlace;
       } else {
-        const request = OJP_Next.LocationInformationRequest.initWithPlaceRef(viaKey, 10);
-        place = await this.fetchPlace(ojpSDK_Next, request);
+        const request = ojpSDK_Next.requests.LocationInformationRequest.initWithPlaceRef(viaKey, 10);
+        const response = await request.fetchResponse(ojpSDK_Next);
+        place = this.parsePlace(response);
       }
 
       if (!place) {
@@ -302,21 +306,19 @@ export class UserTripService {
     })();
   }
 
-  private async fetchPlace(sdk: OJP_Next.SDK, request: OJP_Next.LocationInformationRequest): Promise<AnyPlace | null> {
-    const response = await sdk.fetchLocationInformationRequestResponse(request);
-
+  private parsePlace(response: AnyLocationInformationRequestResponse): AnyPlace | null {
     if (!response.ok) {
       console.log('ERROR - fetchPlace.LIR - issue');
       console.log(response);
       return null;
     }
 
-    const placeResults = response.value.placeResult;
+    const placeResults = OJPHelpers.parseAnyPlaceResult(OJP_VERSION, response);
     if (placeResults.length === 0) {
       return null;
     }
 
-    const place = PlaceBuilder.initWithPlaceResultSchema(placeResults[0]);
+    const place = PlaceBuilder.initWithPlaceResultSchema(OJP_VERSION, placeResults[0]);
     return place;
   }
 
@@ -340,9 +342,9 @@ export class UserTripService {
       // Search nearby locations, in a bbox of 200x200m
       const bbox = GeoPositionBBOX.initFromGeoPosition(tripPlaceLocation.geoPosition, 200, 200);
       const bboxData = bbox.asFeatureBBOX();
-      const request = OJP_Next.LocationInformationRequest.initWithBBOX(bboxData, ['stop'], 300);
+      const request = ojpSDK_Next.requests.LocationInformationRequest.initWithBBOX(bboxData, ['stop'], 300);
 
-      const response = await ojpSDK_Next.fetchLocationInformationRequestResponse(request);
+      const response = await request.fetchResponse(ojpSDK_Next);
 
       if (!response.ok) {
           console.log('ERROR - failed to bbox lookup locations for "' + bboxData.join(', ') + '"');
@@ -350,8 +352,10 @@ export class UserTripService {
           continue;
       }
 
-      const places = response.value.placeResult.map(placeResult => {
-        const place = PlaceBuilder.initWithPlaceResultSchema(placeResult);
+      const placeResults = OJPHelpers.parseAnyPlaceResult(OJP_VERSION, response);
+
+      const places = placeResults.map(placeResult => {
+        const place = PlaceBuilder.initWithPlaceResultSchema(OJP_VERSION, placeResult);
         return place;
       }).filter(Boolean) as AnyPlace[];
       
@@ -935,8 +939,8 @@ export class UserTripService {
 
   public async fetchFaresForTrips(language: OJP_Legacy.Language, trips: OJP_Legacy.Trip[]): Promise<OJP_SharedTypes.FareResultSchema[]> {
     const fareHttpConfig = this.getStageConfig('NOVA-INT');
-    const ojpSDK_Next = new OJP_Next.SDK(REQUESTOR_REF, fareHttpConfig, language, OJP_Next.XML_BuilderConfigOJPv1);
-
+    const ojpSDK_Next = OJP_Next.SDK.v1(REQUESTOR_REF, fareHttpConfig, language);
+    
     const tripsV2: OJP_Next.Trip[] = [];
     trips.forEach(tripLegacy => {
       const tripV2_XML = tripLegacy.asXML(OJP_Next.DefaultXML_Config);
@@ -944,8 +948,8 @@ export class UserTripService {
       tripsV2.push(tripV2);
     });
 
-    const fareRequest = OJP_Next.FareRequest.initWithOJPv2Trips(tripsV2);
-    const response = await ojpSDK_Next.fetchFareRequestResponse(fareRequest);
+    const fareRequest = ojpSDK_Next.requests.FareRequest.initWithOJPv2Trips(tripsV2);
+    const response = await fareRequest.fetchResponse(ojpSDK_Next);
 
     if (!response.ok) {
       console.log('ERROR: fetchFareRequestResponse');

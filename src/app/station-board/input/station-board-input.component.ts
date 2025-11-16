@@ -7,11 +7,13 @@ import { SbbAutocompleteSelectedEvent, SbbAutocompleteTrigger } from '@sbb-esta/
 import * as OJP_SharedTypes from 'ojp-shared-types';
 import * as OJP_Next from 'ojp-sdk-next';
 
-import { REQUESTOR_REF, OJP_VERSION } from '../../config/constants';
+import { OJP_VERSION } from '../../config/constants';
 
 import { UserTripService } from '../../shared/services/user-trip.service';
 import { LanguageService } from '../../shared/services/language.service';
 import { StopPlace } from '../../shared/models/place/stop-place';
+import { OJPHelpers } from '../../helpers/ojp-helpers';
+import { AnyPlaceResultSchema } from '../../shared/types/_all';
 
 interface StopLookup {
   stopPlace: StopPlace,
@@ -97,16 +99,17 @@ export class StationBoardInputComponent implements OnInit {
   }
 
   private async fetchStopLookups(searchTerm: string) {
-    const request = OJP_Next.LocationInformationRequest.initWithLocationName(searchTerm, ['stop'], 10);
-    
-    const ojpSDK_Next = this.createOJP_SDK_Instance();
+    const ojpSDK_Next = this.userTripService.createOJP_SDK_Instance(this.languageService.language);
+
+    const request = ojpSDK_Next.requests.LocationInformationRequest.initWithLocationName(searchTerm, ['stop'], 10);
 
     this.isBusySearching = true;
-    const response = await ojpSDK_Next.fetchLocationInformationRequestResponse(request);
+    const response = await request.fetchResponse(ojpSDK_Next);
     this.isBusySearching = false;
 
     if (response.ok) {
-      this.parsePlaceResults(response.value.placeResult);
+      const placeResults = OJPHelpers.parseAnyPlaceResult(OJP_VERSION, response);
+      this.parsePlaceResults(placeResults);
     } else {
       console.log('ERROR - failed to lookup locations for "' + searchTerm + '"');
       console.log(response);
@@ -114,11 +117,11 @@ export class StationBoardInputComponent implements OnInit {
     }
   }
 
-  private parsePlaceResults(placeResults: OJP_SharedTypes.PlaceResultSchema[], nearbyGeoPosition: OJP_Next.GeoPosition | null = null) {
+  private parsePlaceResults(placeResults: AnyPlaceResultSchema[], nearbyGeoPosition: OJP_Next.GeoPosition | null = null) {
     this.stopLookups = [];
 
     placeResults.forEach(placeResult => {
-      const stopPlace = StopPlace.initWithPlaceResultSchema(placeResult);
+      const stopPlace = StopPlace.initWithPlaceResultSchema(OJP_VERSION, placeResult);
       if (stopPlace === null) {
         return;
       }
@@ -186,7 +189,7 @@ export class StationBoardInputComponent implements OnInit {
     });
   }
 
-  private async handleNewGeoPosition(position: GeolocationPosition, completion: (placeResults: OJP_SharedTypes.PlaceResultSchema[]) => void) {
+  private async handleNewGeoPosition(position: GeolocationPosition, completion: (placeResults: AnyPlaceResultSchema[]) => void) {
     const bbox_width = 0.05;
     const bbox_height = 0.05;
     const bbox_W = position.coords.longitude - bbox_width / 2;
@@ -194,16 +197,18 @@ export class StationBoardInputComponent implements OnInit {
     const bbox_N = position.coords.latitude + bbox_height / 2;
     const bbox_S = position.coords.latitude - bbox_height / 2;
 
-    const bboxData = [bbox_W, bbox_S, bbox_E, bbox_N];
-    const request = OJP_Next.LocationInformationRequest.initWithBBOX(bboxData, ['stop'], 300);
+    const ojpSDK_Next = this.userTripService.createOJP_SDK_Instance(this.languageService.language);
 
-    const ojpSDK_Next = this.createOJP_SDK_Instance();
+    const bboxData = [bbox_W, bbox_S, bbox_E, bbox_N];
+    const request = ojpSDK_Next.requests.LocationInformationRequest.initWithBBOX(bboxData, ['stop'], 300);
+
     this.isBusySearching = true;
-    const response = await ojpSDK_Next.fetchLocationInformationRequestResponse(request);
+    const response = await request.fetchResponse(ojpSDK_Next);
     this.isBusySearching = false;
 
     if (response.ok) {
-      completion(response.value.placeResult);
+      const placeResults = OJPHelpers.parseAnyPlaceResult(OJP_VERSION, response);
+      completion(placeResults);
     } else {
       console.log('ERROR - failed to bbox lookup locations for "' + bboxData.join(', ') + '"');
       console.log(response);
@@ -215,13 +220,4 @@ export class StationBoardInputComponent implements OnInit {
     this.hackIgnoreInputChangesFlag = true;
     this.searchInputControl.setValue(locationText);
   }
-
-  private createOJP_SDK_Instance(): OJP_Next.SDK {
-    const isOJPv2 = OJP_VERSION === '2.0';
-    const xmlConfig = isOJPv2 ? OJP_Next.DefaultXML_Config : OJP_Next.XML_BuilderConfigOJPv1;
-
-    const stageConfig = this.userTripService.getStageConfig();    
-    const sdk = new OJP_Next.SDK(REQUESTOR_REF, stageConfig, this.languageService.language, xmlConfig);
-    return sdk;
-  }  
 }

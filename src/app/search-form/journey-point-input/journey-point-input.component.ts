@@ -6,17 +6,16 @@ import { SbbAutocompleteSelectedEvent } from '@sbb-esta/angular/autocomplete';
 import { SbbErrorStateMatcher } from '@sbb-esta/angular/core';
 
 import * as OJP_SharedTypes from 'ojp-shared-types';
-import * as OJP_Next from 'ojp-sdk-next';
-
 import OJP_Legacy from '../../config/ojp-legacy';
 
-import { REQUESTOR_REF, OJP_VERSION } from '../../config/constants';
+import { OJP_VERSION } from '../../config/constants';
 
 import { MapService } from '../../shared/services/map.service';
 import { LanguageService } from '../../shared/services/language.service'
 import { UserTripService } from '../../shared/services/user-trip.service';
 import { AnyPlace, PlaceBuilder } from '../../shared/models/place/place-builder';
 import { PlaceLocation } from '../../shared/models/place/location';
+import { OJPHelpers } from '../../helpers/ojp-helpers';
 
 type MapLocations = Record<OJP_SharedTypes.PlaceTypeEnum, AnyPlace[]>;
 type OptionLocationType = [OJP_SharedTypes.PlaceTypeEnum, string];
@@ -121,9 +120,10 @@ export class JourneyPointInputComponent implements OnInit, OnChanges {
   }
 
   private async fetchJourneyPoints(searchTerm: string) {
-    const request = OJP_Next.LocationInformationRequest.initWithLocationName(searchTerm, []);
-    const ojpSDK_Next = this.createOJP_SDK_Instance();
-    const response = await ojpSDK_Next.fetchLocationInformationRequestResponse(request);
+    const ojpSDK_Next = this.userTripService.createOJP_SDK_Instance(this.languageService.language);
+    const request = ojpSDK_Next.requests.LocationInformationRequest.initWithLocationName(searchTerm, []);
+    
+    const response = await request.fetchResponse(ojpSDK_Next);
 
     if (!response.ok) {
       console.log('ERROR - failed to lookup locations for "' + searchTerm + '"');
@@ -133,8 +133,9 @@ export class JourneyPointInputComponent implements OnInit, OnChanges {
 
     this.resetMapPlaces();
 
-    response.value.placeResult.forEach((placeResult, idx) => {
-      const place = PlaceBuilder.initWithPlaceResultSchema(placeResult);
+    const placeResults = OJPHelpers.parseAnyPlaceResult(OJP_VERSION, response);
+    placeResults.forEach((placeResult, idx) => {
+      const place = PlaceBuilder.initWithPlaceResultSchema(OJP_VERSION, placeResult);
       if (place === null) {
           return;
       }
@@ -190,13 +191,4 @@ export class JourneyPointInputComponent implements OnInit, OnChanges {
       location: [],
     };
   }
-
-  private createOJP_SDK_Instance(): OJP_Next.SDK {
-      const isOJPv2 = OJP_VERSION === '2.0';
-      const xmlConfig = isOJPv2 ? OJP_Next.DefaultXML_Config : OJP_Next.XML_BuilderConfigOJPv1;
-
-      const stageConfig = this.userTripService.getStageConfig();    
-      const sdk = new OJP_Next.SDK(REQUESTOR_REF, stageConfig, this.languageService.language, xmlConfig);
-      return sdk;
-  }  
 }

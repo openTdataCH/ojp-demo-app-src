@@ -412,23 +412,24 @@ export class StationBoardSearchComponent implements OnInit {
   }
 
   private async lookupStopPlaceRef(stopPlaceRef: string) {
-    const request = OJP_Next.LocationInformationRequest.initWithPlaceRef(stopPlaceRef, 10);
-    const ojpSDK_Next = this.createOJP_SDK_Instance();
+    const ojpSDK_Next = this.userTripService.createOJP_SDK_Instance(this.languageService.language);
+    const request = ojpSDK_Next.requests.LocationInformationRequest.initWithPlaceRef(stopPlaceRef, 10);
 
-    const response = await ojpSDK_Next.fetchLocationInformationRequestResponse(request);
+    const response = await request.fetchResponse(ojpSDK_Next);
     if (!response.ok) {
       console.log('ERROR - LIR - initWithPlaceRef');
       console.log(response);
       return;
     }
 
-    if (response.value.placeResult.length === 0) {
+    const places = OJPHelpers.parseAnyPlaceResult(OJP_VERSION, response);
+    if (places.length === 0) {
       console.error('ERROR - cant find stopPlaceRef with ID: ' + stopPlaceRef);
       console.log(response);
       return;
     }
 
-    const stopPlace = StopPlace.initWithPlaceResultSchema(response.value.placeResult[0]);
+    const stopPlace = StopPlace.initWithPlaceResultSchema(OJP_VERSION, places[0]);
     if (stopPlace === null) {
       console.error('ERROR - cant init StopPlace with ID: ' + stopPlaceRef);
       console.log(response);
@@ -617,14 +618,5 @@ export class StationBoardSearchComponent implements OnInit {
     this.searchDate = nowDateTime;
     this.searchTime = OJP_Next.DateHelpers.formatTimeHHMM(nowDateTime);
     this.stationBoardService.searchDate = nowDateTime;
-  }
-
-  private createOJP_SDK_Instance(): OJP_Next.SDK {
-    const isOJPv2 = OJP_VERSION === '2.0';
-    const xmlConfig = isOJPv2 ? OJP_Next.DefaultXML_Config : OJP_Next.XML_BuilderConfigOJPv1;
-
-    const stageConfig = this.userTripService.getStageConfig();    
-    const sdk = new OJP_Next.SDK(REQUESTOR_REF, stageConfig, this.languageService.language, xmlConfig);
-    return sdk;
   }
 }

@@ -6,7 +6,7 @@ import { SbbNotificationToast } from '@sbb-esta/angular/notification-toast';
 
 import * as OJP_Next from 'ojp-sdk-next';
 
-import { APP_STAGE, APP_STAGEs, REQUESTOR_REF, OJP_VERSION } from '../../config/constants';
+import { APP_STAGE, APP_STAGEs, OJP_VERSION } from '../../config/constants';
 
 import { UserTripService } from '../../shared/services/user-trip.service';
 import { TripInfoService } from '../trip-info.service';
@@ -159,13 +159,13 @@ export class TripInfoSearchComponent implements OnInit {
   }
 
   private async fetchTripInfo() {
-    const request = OJP_Next.TripInfoRequest.initWithJourneyRef(this.model.journeyRef, this.model.journeyDateTime);
+    const ojpSDK_Next = this.userTripService.createOJP_SDK_Instance(this.languageService.language);
+
+    const request = ojpSDK_Next.requests.TripInfoRequest.initWithJourneyRef(this.model.journeyRef, this.model.journeyDateTime);
     request.enableTrackProjection();
 
-    const ojpSDK_Next = this.createOJP_SDK_Instance();
-
     this.model.isSearching = true;
-    const response = await ojpSDK_Next.fetchTripInfoRequestResponse(request);
+    const response = await request.fetchResponse(ojpSDK_Next);
     this.model.isSearching = false;
 
     if (response.ok) {
@@ -242,11 +242,12 @@ export class TripInfoSearchComponent implements OnInit {
   }
 
   private async handleCustomResponse(responseXML: string) {
-    const request = OJP_Next.TripInfoRequest.initWithResponseMock(responseXML);
-    request.enableTrackProjection();
+    const ojpSDK_Next = this.userTripService.createOJP_SDK_Instance(this.languageService.language);
 
-    const ojpSDK_Next = this.createOJP_SDK_Instance();
-    const response = await ojpSDK_Next.fetchTripInfoRequestResponse(request);
+    const request = ojpSDK_Next.requests.TripInfoRequest.initWithResponseMock(responseXML);
+    request.enableTrackProjection();
+    
+    const response = await request.fetchResponse(ojpSDK_Next);
     if (response.ok) {
       const tripInfoResult = TripInfoResult.initWithTripInfoDeliverySchema(OJP_VERSION, response.value);
       this.parseTripInfo(request.requestInfo, tripInfoResult);
@@ -258,14 +259,5 @@ export class TripInfoSearchComponent implements OnInit {
       console.log(this.model);
       console.log(response);
     }
-  }
-
-  private createOJP_SDK_Instance(): OJP_Next.SDK {
-    const isOJPv2 = OJP_VERSION === '2.0';
-    const xmlConfig = isOJPv2 ? OJP_Next.DefaultXML_Config : OJP_Next.XML_BuilderConfigOJPv1;
-
-    const stageConfig = this.userTripService.getStageConfig();    
-    const sdk = new OJP_Next.SDK(REQUESTOR_REF, stageConfig, this.languageService.language, xmlConfig);
-    return sdk;
   }
 }

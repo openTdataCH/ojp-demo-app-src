@@ -34,13 +34,12 @@ export class TripInfoResultPopoverComponent {
   public async fetchJourneyRef(journeyRef: string, journeyDateTime: Date) {
     this.model.title = 'JourneyRef: ' + journeyRef;
 
-    const request = OJP_Next.TripInfoRequest.initWithJourneyRef(journeyRef, journeyDateTime);
+    const ojpSDK_Next = this.userTripService.createOJP_SDK_Instance(this.languageService.language);
+    const request = ojpSDK_Next.requests.TripInfoRequest.initWithJourneyRef(journeyRef, journeyDateTime);
     request.enableTrackProjection();
 
-    const ojpSDK_Next = this.createOJP_SDK_Instance();
-
     this.model.isFetching = true;
-    const response = await ojpSDK_Next.fetchTripInfoRequestResponse(request);
+    const response = await request.fetchResponse(ojpSDK_Next);
     this.model.isFetching = false;
 
     if (response.ok) {
@@ -54,14 +53,5 @@ export class TripInfoResultPopoverComponent {
 
       this.tripInfoService.tripInfoResultUpdated.emit(null);
     }
-  }
-
-  private createOJP_SDK_Instance(): OJP_Next.SDK {
-    const stageConfig = this.userTripService.getStageConfig();
-    const isOJPv2 = OJP_VERSION === '2.0';
-    const xmlConfig = isOJPv2 ? OJP_Next.DefaultXML_Config : OJP_Next.XML_BuilderConfigOJPv1;
-
-    const sdk = new OJP_Next.SDK(REQUESTOR_REF, stageConfig, this.languageService.language, xmlConfig);
-    return sdk;
   }
 }
