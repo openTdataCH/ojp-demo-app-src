@@ -5,7 +5,7 @@ import { AppMapLayer } from "../app-map-layer";
 import { AnyPlace } from '../../../shared/models/place/place-builder';
 import { Poi } from '../../../shared/models/place/poi';
 
-type LocationStatus = 'available' | 'occupied' | 'unknown';
+type LocationStatus = 'available' | 'occupied' | 'unknown' | 'n/a';
 
 export class ChargingStationAppMapLayer extends AppMapLayer {
   protected override annotateFeatureFromLocations(feature: GeoJSON.Feature, places: AnyPlace[]): void {
@@ -28,10 +28,12 @@ export class ChargingStationAppMapLayer extends AppMapLayer {
     feature.properties['sharedVehicle.itemsNo'] = itemsNo;
   }
 
-  private computePlaceStatus(place: AnyPlace): LocationStatus | null {
+  private computePlaceStatus(place: AnyPlace): LocationStatus {
+    const defaultValue: LocationStatus = 'n/a';
+
     const locationStatusAttr = place.properties['locationStatus'] ?? null;
     if (locationStatusAttr === null) {
-      return null;
+      return defaultValue;
     }
 
     const featureLocationStatus = locationStatusAttr.toUpperCase();
@@ -47,7 +49,7 @@ export class ChargingStationAppMapLayer extends AppMapLayer {
       return 'unknown'
     }
 
-    return null;
+    return defaultValue;
   }
 
   protected override computePopupHTML(places: AnyPlace[]): string | null {
@@ -87,17 +89,14 @@ export class ChargingStationAppMapLayer extends AppMapLayer {
       }
 
       const locationStatus = this.computePlaceStatus(place);
-      if (locationStatus === null) {
-        return;
-      }
 
       const locationStatusText = (() => {
-        let className = 'bg-success';
+        let className = 'bg-secondary';
+        if (locationStatus === 'available') {
+          className = 'bg-success';
+        }
         if (locationStatus === 'occupied') {
           className = 'bg-danger';
-        }
-        if (locationStatus === 'unknown') {
-          className = 'bg-secondary';
         }
 
         return '<span class="badge rounded-pill ' + className + '">' + locationStatus.toUpperCase() + '</span>';
