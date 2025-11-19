@@ -38,6 +38,8 @@ export class StationBoardSearchComponent implements OnInit {
   @ViewChild(SbbExpansionPanel, { static: true }) searchPanel: SbbExpansionPanel | undefined;
   @ViewChild(StationBoardInputComponent) autocompleteInputComponent: StationBoardInputComponent | undefined;
 
+  public currentAppStage: APP_STAGE;
+
   public stationBoardType: StationBoardType;
 
   public stopPlace: StopPlace | null;
@@ -81,6 +83,8 @@ export class StationBoardSearchComponent implements OnInit {
     private embedHTMLPopover: SbbDialog,
     private router: Router,
   ) {
+    this.currentAppStage = DEFAULT_APP_STAGE;
+
     this.queryParams = new URLSearchParams(document.location.search);
 
     this.appStageOptions = APP_STAGEs;
@@ -112,21 +116,19 @@ export class StationBoardSearchComponent implements OnInit {
     this.useRealTimeDataTypes = ['full', 'explanatory', 'none'];
   }
 
-  ngOnInit(): void {
-    const userStage = this.queryParams.get('stage');
-    if (userStage) {
-      const newAppStage = this.computeAppStageFromString(userStage);
-      if (newAppStage) {
-        setTimeout(() => {
-          // HACK 
-          // without the setTimeout , the parent src/app/station-board/station-board.component.html template 
-          // gives following errors core.mjs:9157 ERROR RuntimeError: NG0100: ExpressionChangedAfterItHasBeenCheckedError: 
-          // Expression has changed after it was checked. Previous value: 'PROD'. Current value: 'INT'. 
-          // Find more at https://angular.io/errors/NG0100
-          this.userTripService.updateAppStage(newAppStage);
-        });
-      }
-    }
+  async ngOnInit(): Promise<void> {
+    const appStage = OJPHelpers.computeAppStage();
+
+    setTimeout(() => {
+      // HACK 
+      // without the setTimeout , the parent src/app/station-board/station-board.component.html template 
+      // gives following errors core.mjs:9157 ERROR RuntimeError: NG0100: ExpressionChangedAfterItHasBeenCheckedError: 
+      // Expression has changed after it was checked. Previous value: 'PROD'. Current value: 'INT'. 
+      // Find more at https://angular.io/errors/NG0100
+      this.userTripService.currentAppStage = appStage;
+    });
+
+    this.currentAppStage = appStage;
 
     const userStopID = this.queryParams.get('stop_id');
     if (userStopID) {
