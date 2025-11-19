@@ -297,8 +297,8 @@ export class StationBoardSearchComponent implements OnInit {
       }
     }
 
-    if (this.userTripService.currentAppStage !== DEFAULT_APP_STAGE) {
-      const stageS = this.userTripService.currentAppStage.toLowerCase();
+    if (this.currentAppStage !== DEFAULT_APP_STAGE) {
+      const stageS = this.currentAppStage.toLowerCase();
       queryParams.append('stage', stageS);
     }
 
