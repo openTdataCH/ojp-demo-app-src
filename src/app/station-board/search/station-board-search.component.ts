@@ -134,7 +134,7 @@ export class StationBoardSearchComponent implements OnInit {
     if (userStopID) {
       this.updateCurrentRequestData(userStopID);
 
-      this.fetchStopEventsForStopRef(userStopID);
+      await this.fetchStopEventsForStopRef(userStopID);
       this.lookupStopPlaceRef(userStopID);
     }
 
@@ -227,7 +227,7 @@ export class StationBoardSearchComponent implements OnInit {
     return false;
   }
 
-  public searchButtonClicked() {
+  public async searchButtonClicked() {
     this.notificationToast.dismiss();
 
     const stopPlaceRef = this.stopPlace?.stopRef ?? null;
@@ -236,7 +236,7 @@ export class StationBoardSearchComponent implements OnInit {
       return;
     }
 
-    this.fetchStopEventsForStopRef(stopPlaceRef);
+    await this.fetchStopEventsForStopRef(stopPlaceRef);
   }
 
   private computeSearchDateTime(): Date {
@@ -336,14 +336,13 @@ export class StationBoardSearchComponent implements OnInit {
     }
   }
 
-  private fetchStopEventsForStopRef(stopPlaceRef: string) {
+  private async fetchStopEventsForStopRef(stopPlaceRef: string) {
     const stopEventRequest = this.computeStopEventRequest(stopPlaceRef);
-    stopEventRequest.enableExtensions = this.userTripService.currentAppStage !== 'OJP-SI';
+    stopEventRequest.enableExtensions = this.currentAppStage !== 'OJP-SI';
 
-    stopEventRequest.fetchResponse().then(response => {
-      this.currentRequestInfo = stopEventRequest.requestInfo;
-      this.parseStopEvents(response.stopEvents);
-    });
+    const response = await stopEventRequest.fetchResponse();
+    this.currentRequestInfo = stopEventRequest.requestInfo;
+    this.parseStopEvents(response.stopEvents);
   }
 
   private async fetchStopEventFromMocks() {
