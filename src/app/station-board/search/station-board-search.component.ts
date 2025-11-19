@@ -170,20 +170,6 @@ export class StationBoardSearchComponent implements OnInit {
     this.initFromMockXML(mockText);
   }
 
-  private computeAppStageFromString(appStageS: string): APP_STAGE | null {
-    const availableStagesLower: string[] = this.appStageOptions.map(stage => {
-      return stage.toLowerCase();
-    });
-
-    const appStage = appStageS.trim() as APP_STAGE;
-    const stageIDX = availableStagesLower.indexOf(appStage.toLowerCase());
-    if (stageIDX !== -1) {
-      return this.appStageOptions[stageIDX];
-    }
-
-    return null;
-  }
-
   public onStopPlaceSelected(stopPlace: StopPlace) {
     this.updateCurrentRequestData(stopPlace.stopRef);
 
