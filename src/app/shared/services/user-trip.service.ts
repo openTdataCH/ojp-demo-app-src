@@ -102,15 +102,7 @@ export class UserTripService {
   }
 
   public async initDefaults(language: OJP_Legacy.Language) {
-    const appStage = (() => {
-       const appStageS = this.queryParams.get('stage') ?? null;
-      if (appStageS) {
-        const userAppStage = this.computeAppStageFromString(appStageS);
-        return userAppStage;
-      }
-
-      return this.currentAppStage;
-    })();
+    const appStage = OJPHelpers.computeAppStage();
 
     setTimeout(() => {
       // HACK 
@@ -400,22 +392,6 @@ export class UserTripService {
 
     this.searchParamsReset.emit();
     this.updateURLs();
-  }
-
-  private computeAppStageFromString(appStageS: string): APP_STAGE {
-    const availableStages = Object.keys(APP_CONFIG.stages) as APP_STAGE[];
-
-    const availableStagesLower: string[] = availableStages.map(stage => {
-      return stage.toLowerCase();
-    });
-
-    const appStage = appStageS.trim() as APP_STAGE;
-    const stageIDX = availableStagesLower.indexOf(appStage.toLowerCase());
-    if (stageIDX !== -1) {
-      return availableStages[stageIDX];
-    }
-
-    return 'PROD';
   }
 
   updateTripEndpoint(place: AnyPlace, endpointType: OJP_Legacy.JourneyPointType, updateSource: LocationUpdateSource) {
