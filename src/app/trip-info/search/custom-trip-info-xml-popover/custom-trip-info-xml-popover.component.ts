@@ -1,9 +1,9 @@
 import { Component, EventEmitter, Output } from '@angular/core';
-import { UserTripService } from 'src/app/shared/services/user-trip.service';
+
 
 import * as OJP_Next from 'ojp-sdk-next';
-import { TripInfoResult } from '../../../shared/models/trip-info-result';
-import { REQUESTOR_REF } from '../../../config/constants';
+
+import { UserTripService } from 'src/app/shared/services/user-trip.service';
 import { LanguageService } from '../../../shared/services/language.service';
 
 @Component({
@@ -29,12 +29,11 @@ export class CustomTripInfoXMLPopoverComponent {
   public async parseCustomRequestXML() {
     this.isRunningRequest = true
 
-    const request = OJP_Next.TripInfoRequest.initWithRequestMock(this.customRequestXMLs);
-
-    const ojpSDK_Next = this.createOJP_SDK_Instance();
+    const ojpSDK_Next = this.userTripService.createOJP_SDK_Instance(this.languageService.language);
+    const request = ojpSDK_Next.requests.TripInfoRequest.initWithRequestMock(this.customRequestXMLs);
     
     this.isRunningRequest = true;
-    await ojpSDK_Next.fetchTripInfoRequestResponse(request);
+    await request.fetchResponse(ojpSDK_Next);
     this.isRunningRequest = false;
 
     if (request.requestInfo.responseXML !== null) {
@@ -46,11 +45,5 @@ export class CustomTripInfoXMLPopoverComponent {
 
   public parseCustomResponseXML() {
     this.customResponseSaved.emit(this.customResponseXMLs)
-  }
-
-  private createOJP_SDK_Instance(): OJP_Next.SDK {
-    const stageConfig = this.userTripService.getStageConfig();    
-    const sdk = new OJP_Next.SDK(REQUESTOR_REF, stageConfig, this.languageService.language);
-    return sdk;
   }
 }

@@ -6,7 +6,7 @@
         
         <div class="d-flex align-items-center">
           <div class="flex-grow-1">
-            <station-board-input (locationSelected)="onLocationSelected($event)">
+            <station-board-input (stopPlaceSelected)="onStopPlaceSelected($event)">
             </station-board-input>
           </div>
         </div>
@@ -68,7 +68,7 @@
         
         <div class="mb-3 d-flex" *ngIf="!this.isEmbed">
           <div>
-            <sbb-radio-group class="sbb-radio-group-horizontal" [(ngModel)]="this.userTripService.currentAppStage">
+            <sbb-radio-group class="sbb-radio-group-horizontal" [(ngModel)]="this.currentAppStage">
               <sbb-radio-button *ngFor="let appStageOption of this.appStageOptions" 
                 [value]="appStageOption" (change)="onChangeStageAPI($event)">
                 {{ appStageOption }}
@@ -129,7 +129,7 @@
         <div>|</div>
       </ng-container>
 
-      <ng-container *ngIf="this.searchLocation !== null">
+      <ng-container *ngIf="this.stopPlace !== null">
         <div>
           <a href="{{ this.otherVersionURL }}" target="_blank">{{ this.userTripService.otherVersionURLText }}</a>
         </div>
@@ -139,7 +139,7 @@
       <div>
         <a href="{{ this.permalinkRelativeURL }}" target="_blank">Permalink</a>
       </div>
-      <ng-container *ngIf="this.searchLocation !== null">
+      <ng-container *ngIf="this.stopPlace !== null">
         <div>|</div>
         <div>
           <a target="_blank" (click)="loadEmbedHTMLPopover()" class="text-decoration-underline" role="button">Embed</a>

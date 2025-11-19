@@ -15,7 +15,7 @@ type PageModel = {
     ojpLegacy: string,
     ojpNext: string,
     ojpSharedTypes: string,
-    ojpAPI: OJP_Legacy.OJP_VERSION_Type,
+    ojpAPI: OJP_Next.OJP_VERSION,
   },
   mapChangelogURLs: {
     ojpDemoApp: string,

@@ -1,5 +1,7 @@
+import * as OJP_SharedTypes from 'ojp-shared-types';
 import * as OJP_Next from 'ojp-sdk-next';
 import OJP_Legacy from '../../config/ojp-legacy';
+import { AnyPlace } from '../models/place/place-builder';
 
 export type StopEventType = 'arrival' | 'departure';
 export type VehicleAccessType = 'PLATFORM_ACCESS_WITHOUT_ASSISTANCE' | 'PLATFORM_ACCESS_WITH_ASSISTANCE' | 'PLATFORM_ACCESS_WITH_ASSISTANCE_WHEN_NOTIFIED' | 'PLATFORM_NOT_WHEELCHAIR_ACCESSIBLE' | 'ALTERNATIVE_TRANSPORT' | 'NO_DATA';
@@ -19,7 +21,7 @@ export interface MapEventTimeData {
 
 export interface StopPointCall {
   type: StopPointCallType,
-  place: OJP_Next.Place | null,
+  place: AnyPlace | null,
   stopPointRef: string,
   stopPointName: string,
   platform: MapEventPlatformData,
@@ -47,3 +49,10 @@ export interface CreateIssueBody {
   responseXML: string
   projectKey: string
 }
+
+export type AnyPlaceSchema = OJP_SharedTypes.PlaceSchema | OJP_SharedTypes.OJPv1_LocationSchema;
+export type AnyPlaceResultSchema = OJP_SharedTypes.PlaceResultSchema | OJP_SharedTypes.OJPv1_LocationResultSchema;
+export type AnyLocationInformationRequest = OJP_Next.LocationInformationRequest | OJP_Next.OJPv1_LocationInformationRequest;
+export type AnyLocationInformationRequestResponse = OJP_Next.LocationInformationRequestResponse | OJP_Next.OJPv1_LocationInformationRequestResponse;
+export type AnyTripInfoRequestResponse = OJP_Next.TripInfoRequestResponse | OJP_Next.OJPv1_TripInfoRequestResponse;
+export type AnyPointOfInterestSchema = OJP_SharedTypes.PointOfInterestSchema | OJP_SharedTypes.OJPv1_PointOfInterestSchema;

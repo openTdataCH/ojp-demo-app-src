@@ -12,6 +12,7 @@ import { MapLayersLegendControl } from '../../map/controls/map-layers-legend-con
 import { LanguageService } from './language.service';
 import { TripGeoController } from '../controllers/trip-geo-controller';
 import { MAP_RASTER_LAYERS } from '../../config/constants';
+import { AnyPlace } from '../models/place/place-builder';
 
 export interface IMapBoundsData {
   bounds: mapboxgl.LngLatBounds
@@ -63,18 +64,9 @@ export class MapService {
     return map;
   }
 
-  public tryToCenterAndZoomToLocation(location: OJP_Legacy.Location | null, zoomValue: number = 16.0) {
-    if (location === null) {
-      return;
-    }
-
-    const locationLngLat = location.geoPosition?.asLngLat() ?? null
-    if (locationLngLat === null) {
-      return;
-    }
-
+  public tryToCenterAndZoomToPlace(place: AnyPlace, zoomValue: number = 16.0) {
     this.newMapCenterAndZoomRequested.emit({
-      lnglat: locationLngLat,
+      lnglat: place.geoPosition.asLngLat(),
       zoom: zoomValue,
     });
   }

@@ -1,12 +1,17 @@
-import OJP_Legacy from '../config/ojp-legacy';
+import { DomSanitizer } from '@angular/platform-browser';
+
 import * as OJP_Next from 'ojp-sdk-next';
+import * as OJP_SharedTypes from 'ojp-shared-types';
+
+import OJP_Legacy from '../config/ojp-legacy';
 
 import { LegStopPointData } from '../shared/components/service-stops.component';
-import { DEBUG_LEVEL } from '../config/constants';
+import { APP_STAGE, DEBUG_LEVEL, DEFAULT_APP_STAGE } from '../config/constants';
 import { SituationContent } from '../shared/types/situations';
-import { DomSanitizer } from '@angular/platform-browser';
-import { StopEventType, StopPointCall, VehicleAccessType } from '../shared/types/_all';
+import { AnyLocationInformationRequestResponse, AnyPlaceResultSchema, AnyPlaceSchema, AnyTripInfoRequestResponse, StopEventType, StopPointCall, VehicleAccessType } from '../shared/types/_all';
 import { JourneyService } from '../shared/models/journey-service';
+import { PlaceLocation } from '../shared/models/place/location';
+import { APP_CONFIG } from '../config/app-config';
 
 type PublicTransportPictogram =  'picto-bus-fallback' | 'picto-bus'
   | 'picto-railway' | 'picto-tram' | 'picto-rack-railway'
@@ -484,7 +489,7 @@ export class OJPHelpers {
 
     const geoPosition = oldStopPoint.location.geoPosition;
     if (geoPosition) {
-      stopCall.place = OJP_Next.Place.initWithCoords(geoPosition.longitude, geoPosition.latitude);
+      stopCall.place = new PlaceLocation(geoPosition.longitude, geoPosition.latitude);
     }
     
     stopEventTypes.forEach(stopEventType => {
@@ -493,10 +498,10 @@ export class OJPHelpers {
       const sourceStopEvent = isArrival ? oldStopPoint.arrivalData : oldStopPoint.departureData;
       
       const timetableDate = sourceStopEvent?.timetableTime ?? null;
-      const timetableDateF = timetableDate ? OJP_Legacy.DateHelpers.formatTimeHHMM(timetableDate) : '';
+      const timetableDateF = timetableDate ? OJP_Next.DateHelpers.formatTimeHHMM(timetableDate) : '';
       
       const realtimeDate = sourceStopEvent?.estimatedTime ?? null;
-      const realtimeDateF = realtimeDate ? OJP_Legacy.DateHelpers.formatTimeHHMM(realtimeDate) : '';
+      const realtimeDateF = realtimeDate ? OJP_Next.DateHelpers.formatTimeHHMM(realtimeDate) : '';
 
       if (isArrival) {
         stopCall.arrival.timetable = timetableDate;
@@ -536,7 +541,7 @@ export class OJPHelpers {
 
           const endpointTimeDate = isFrom ? timedLeg.fromStopPoint.departureData?.timetableTime : timedLeg.toStopPoint.arrivalData?.timetableTime;
           if (endpointTimeDate) {
-            const endpointTimeDateS = OJP_Legacy.DateHelpers.formatTimeHHMM(endpointTimeDate);
+            const endpointTimeDateS = OJP_Next.DateHelpers.formatTimeHHMM(endpointTimeDate);
             hashParts.push(endpointTimeDateS);
           }
         });
@@ -555,5 +560,80 @@ export class OJPHelpers {
     }
 
     return distanceMeters + 'm'
+  }
+
+  public static parseAnyPlaceContext(version: OJP_Next.OJP_VERSION, response: AnyTripInfoRequestResponse): AnyPlaceResultSchema[] {
+    const isOJPv2 = version === '2.0';
+
+    let placeResults: AnyPlaceResultSchema[] = [];
+    if (isOJPv2) {
+      const responseOJPv2 = response as OJP_Next.TripInfoRequestResponse;
+      if (responseOJPv2.ok) {
+        const places = responseOJPv2.value.tripInfoResponseContext?.places?.place ?? [];
+        placeResults = places.map(place => {
+          const placeResult: OJP_SharedTypes.PlaceResultSchema = {
+            place: place,
+            complete: true,
+          };
+          return placeResult;
+        });
+      }
+    } else {
+      const responseOJPv1 = response as OJP_Next.OJPv1_TripInfoRequestResponse;
+      if (responseOJPv1.ok) {
+        const places = responseOJPv1.value.tripInfoResponseContext?.places?.location ?? [];
+        placeResults = places.map(place => {
+          const placeResult: OJP_SharedTypes.OJPv1_LocationResultSchema = {
+            location: place,
+            complete: true,
+          };
+          return placeResult;
+        });
+      }
+    }
+
+    return placeResults;
+  }
+
+  public static parseAnyPlaceResult(version: OJP_Next.OJP_VERSION, response: AnyLocationInformationRequestResponse): AnyPlaceResultSchema[] {
+    const isOJPv2 = version === '2.0';
+
+    let placeResults: AnyPlaceResultSchema[] = [];
+    
+    if (isOJPv2) {
+      const responseOJPv2 = response as OJP_Next.LocationInformationRequestResponse;
+      if (responseOJPv2.ok) {
+        placeResults = placeResults.concat(responseOJPv2.value.placeResult);
+      }
+    } else {
+      const responseOJPv1 = response as OJP_Next.OJPv1_LocationInformationRequestResponse;
+      if (responseOJPv1.ok) {
+        placeResults = placeResults.concat(responseOJPv1.value.location);
+      }
+    }
+
+    return placeResults;
+  }
+
+  public static computeAppStage(): APP_STAGE {
+    const queryParams = new URLSearchParams(document.location.search);
+    const userAppStageS = queryParams.get('stage') ?? null;
+    if (userAppStageS === null) {
+      return DEFAULT_APP_STAGE;  
+    }
+
+    const availableStages = Object.keys(APP_CONFIG.stages) as APP_STAGE[];
+
+    const availableStagesLower: string[] = availableStages.map(stage => {
+      return stage.toLowerCase();
+    });
+
+    const appStage = userAppStageS.trim() as APP_STAGE;
+    const stageIDX = availableStagesLower.indexOf(appStage.toLowerCase());
+    if (stageIDX !== -1) {
+      return availableStages[stageIDX];
+    }
+    
+    return DEFAULT_APP_STAGE;
   }
 }

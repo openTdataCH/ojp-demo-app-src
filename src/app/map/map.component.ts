@@ -3,7 +3,9 @@ import { SbbDialog } from "@sbb-esta/angular/dialog";
 
 import mapboxgl from 'mapbox-gl'
 
+import * as OJP_Next from 'ojp-sdk-next';
 import OJP_Legacy from '../config/ojp-legacy';
+
 import { MapService } from '../shared/services/map.service';
 import { UserTripService } from '../shared/services/user-trip.service';
 
@@ -11,6 +13,8 @@ import { MapHelpers } from './helpers/map.helpers';
 
 import { TripRenderController } from './controllers/trip-render-controller';
 import { LanguageService } from '../shared/services/language.service';
+import { PlaceLocation } from '../shared/models/place/location';
+import { AnyPlace, PlaceBuilder } from '../shared/models/place/place-builder';
 
 @Component({
   selector: 'app-map',
@@ -74,14 +78,14 @@ export class MapComponent implements OnInit, AfterViewInit {
 
   ngOnInit() {
     this.userTripService.geoLocationsUpdated.subscribe(nothing => {
-      this.updateMarkers()
-    })
+      this.updateMarkers();
+    });
 
     this.userTripService.activeTripSelected.subscribe(mapTrip => {
       this.mapLoadingPromise?.then(map => {
         this.tripRenderController?.renderTrip(mapTrip?.legs ?? []);
       });
-    })
+    });
 
     this.mapService.newMapBoundsRequested.subscribe(mapData => {
       this.mapLoadingPromise?.then(map => {
@@ -92,7 +96,7 @@ export class MapComponent implements OnInit, AfterViewInit {
 
         this.mapService.zoomToBounds(map, mapData);
       });
-    })
+    });
 
     this.mapService.newMapCenterAndZoomRequested.subscribe(mapData => {
       this.mapLoadingPromise?.then(map => {
@@ -100,7 +104,7 @@ export class MapComponent implements OnInit, AfterViewInit {
       });
     });
 
-    this.initMap()
+    this.initMap();
   }
 
   ngAfterViewInit(): void {
@@ -121,24 +125,29 @@ export class MapComponent implements OnInit, AfterViewInit {
   }
 
   private updateMarkers() {
-    const endpointTypes: OJP_Legacy.JourneyPointType[] = ['From', 'To']
+    const endpointTypes: OJP_Legacy.JourneyPointType[] = ['From', 'To'];
     endpointTypes.forEach(endpointType => {
-      const isFrom = endpointType === 'From'
-      const tripLocationPoint = isFrom ? this.userTripService.fromTripLocation : this.userTripService.toTripLocation
-      const marker = isFrom ? this.fromMarker : this.toMarker
-
-      this.updateMarkerLocation(marker, tripLocationPoint?.location ?? null)
+      const isFrom = endpointType === 'From';
+      const tripLocationPoint = isFrom ? this.userTripService.fromTripLocation : this.userTripService.toTripLocation;
+      const marker = isFrom ? this.fromMarker : this.toMarker;
+      const place = PlaceBuilder.initWithLegacyLocation(tripLocationPoint?.location ?? null);
+      this.updateMarkerLocation(marker, place);
     });
 
     if (this.userTripService.isViaEnabled) {
       this.userTripService.viaTripLocations.forEach((viaTripLocation, markerIDx) => {
         let marker = this.viaMarkers[markerIDx] ?? null;
+        const place = PlaceBuilder.initWithLegacyLocation(viaTripLocation.location);
+        if (place === null) {
+          return;
+        }
+
         if (marker === null) {
-          marker = this.createViaMarker(viaTripLocation.location, markerIDx);
+          marker = this.createViaMarker(place, markerIDx);
           this.viaMarkers.push(marker);
         }
 
-        this.updateMarkerLocation(marker, viaTripLocation.location);
+        this.updateMarkerLocation(marker, place);
       });
     } else {
       this.viaMarkers.forEach(marker => {
@@ -152,7 +161,7 @@ export class MapComponent implements OnInit, AfterViewInit {
   private handleMarkerDrag(marker: mapboxgl.Marker, endpointType: OJP_Legacy.JourneyPointType) {
     const lngLat = marker.getLngLat();
 
-    let location = OJP_Legacy.Location.initWithLngLat(lngLat.lng, lngLat.lat);
+    const location = new PlaceLocation(lngLat.lng, lngLat.lat);
 
     // Try to snap to the nearest stop
     this.userTripService.updateTripEndpoint(location, endpointType, 'MapDragend');
@@ -198,8 +207,8 @@ export class MapComponent implements OnInit, AfterViewInit {
         return;
       }
 
-      const location = OJP_Legacy.Location.initWithLngLat(lngLat.lng, lngLat.lat);
-      this.userTripService.updateTripEndpoint(location, endpointType, 'MapPopupClick');
+      const place = new PlaceLocation(lngLat.lng, lngLat.lat);
+      this.userTripService.updateTripEndpoint(place, endpointType, 'MapPopupClick');
 
       this.popupContextMenu.remove();
     });
@@ -209,32 +218,29 @@ export class MapComponent implements OnInit, AfterViewInit {
       .addTo(map);
   }
 
-  private updateMarkerLocation(marker: mapboxgl.Marker, location: OJP_Legacy.Location | null) {
-    const lnglat = location?.geoPosition?.asLngLat() ?? null;
-    if (lnglat === null) {
+  private updateMarkerLocation(marker: mapboxgl.Marker, place: AnyPlace | null) {
+    if (place === null) {
       marker.remove();
       return;
     }
 
     const isNotOnMap = marker.getLngLat() === undefined;
-
-    marker.setLngLat(lnglat);
-
     if (isNotOnMap) {
       this.mapLoadingPromise?.then(map => {
         marker.addTo(map);
       });
     }
+
+    marker.setLngLat(place.geoPosition.asLngLat());
   }
 
-  private createViaMarker(location: OJP_Legacy.Location, markerIDx: number): mapboxgl.Marker {
+  private createViaMarker(place: AnyPlace, markerIDx: number): mapboxgl.Marker {
     const markerDIV = document.createElement('div');
     markerDIV.className = 'marker-journey-endpoint marker-journey-endpoint-Via';
 
-    let isDraggable = false
-    if (location.geoPosition?.properties === null) {
-      // Only markers from coordinates-pickers are draggable
-      isDraggable = true
+    let isDraggable = false;
+    if (place.type === 'location') {
+      isDraggable = true;
     }
 
     const marker = new mapboxgl.Marker({
@@ -245,11 +251,11 @@ export class MapComponent implements OnInit, AfterViewInit {
 
     marker.on('dragend', ev => {
       const lngLat = marker.getLngLat();
-      let location = OJP_Legacy.Location.initWithLngLat(lngLat.lng, lngLat.lat);
-      this.userTripService.updateViaPoint(location, markerIDx)
-    })
+      const place = new PlaceLocation(lngLat.lng, lngLat.lat);
+      this.userTripService.updateViaPoint(place, markerIDx)
+    });
 
-    return marker
+    return marker;
   }
 
 }
