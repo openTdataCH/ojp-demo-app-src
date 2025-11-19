@@ -184,9 +184,9 @@ export class TripModeTypeComponent implements OnInit {
     this.tripTransportModes = JSON.parse(JSON.stringify(tripTransportModeData.transportModes));
     this.prevTransportMode = this.userTripService.tripTransportMode;
 
-    await this.userTripService.initDefaults(this.languageService.language);
-
-    this.initAfterTripService();
+    this.userTripService.defaultsInited.subscribe(nothing => {
+      this.initAfterTripService();
+    });
 
     this.filterMinDurationControl.valueChanges.pipe(debounceTime(200)).subscribe(value => {
       this.updateAdditionalRestrictions();

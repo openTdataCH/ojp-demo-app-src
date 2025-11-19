@@ -55,6 +55,7 @@ export class UserTripService {
   public sbbURL: string | null;
   public embedQueryParams = new URLSearchParams();
 
+  public defaultsInited = new EventEmitter<void>();
   public searchFormAfterDefaultsInited = new EventEmitter<void>();
   public locationsUpdated = new EventEmitter<void>();
   public geoLocationsUpdated = new EventEmitter<void>();
@@ -296,6 +297,8 @@ export class UserTripService {
 
       return 'Dep' as OJP_Legacy.TripRequestBoardingType;
     })();
+
+    this.defaultsInited.emit();
   }
 
   private parsePlace(response: AnyLocationInformationRequestResponse): AnyPlace | null {
