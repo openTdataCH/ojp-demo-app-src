@@ -6,11 +6,12 @@ import * as OJP_SharedTypes from 'ojp-shared-types';
 import OJP_Legacy from '../config/ojp-legacy';
 
 import { LegStopPointData } from '../shared/components/service-stops.component';
-import { DEBUG_LEVEL } from '../config/constants';
+import { APP_STAGE, DEBUG_LEVEL, DEFAULT_APP_STAGE } from '../config/constants';
 import { SituationContent } from '../shared/types/situations';
 import { AnyLocationInformationRequestResponse, AnyPlaceResultSchema, AnyPlaceSchema, AnyTripInfoRequestResponse, StopEventType, StopPointCall, VehicleAccessType } from '../shared/types/_all';
 import { JourneyService } from '../shared/models/journey-service';
 import { PlaceLocation } from '../shared/models/place/location';
+import { APP_CONFIG } from '../config/app-config';
 
 type PublicTransportPictogram =  'picto-bus-fallback' | 'picto-bus'
   | 'picto-railway' | 'picto-tram' | 'picto-rack-railway'
@@ -612,5 +613,27 @@ export class OJPHelpers {
     }
 
     return placeResults;
+  }
+
+  public static computeAppStage(): APP_STAGE {
+    const queryParams = new URLSearchParams(document.location.search);
+    const userAppStageS = queryParams.get('stage') ?? null;
+    if (userAppStageS === null) {
+      return DEFAULT_APP_STAGE;  
+    }
+
+    const availableStages = Object.keys(APP_CONFIG.stages) as APP_STAGE[];
+
+    const availableStagesLower: string[] = availableStages.map(stage => {
+      return stage.toLowerCase();
+    });
+
+    const appStage = userAppStageS.trim() as APP_STAGE;
+    const stageIDX = availableStagesLower.indexOf(appStage.toLowerCase());
+    if (stageIDX !== -1) {
+      return availableStages[stageIDX];
+    }
+    
+    return DEFAULT_APP_STAGE;
   }
 }
