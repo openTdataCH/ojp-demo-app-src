@@ -606,6 +606,56 @@ export class OJPHelpers {
     return mapPlaces;
   }
 
+  public static parseAnyStopEventResultPlaceContext(version: OJP_Next.OJP_VERSION, response: AnyStopEventRequestResponse): Record<string, StopPlace> {
+    const isOJPv2 = version === '2.0';
+
+    let placeResults: AnyPlaceResultSchema[] = [];
+    if (isOJPv2) {
+      const responseOJPv2 = response as OJP_Next.StopEventRequestResponse;
+      if (responseOJPv2.ok) {
+        const places = responseOJPv2.value.stopEventResponseContext?.places?.place ?? [];
+        placeResults = places.map(place => {
+          const placeResult: OJP_SharedTypes.PlaceResultSchema = {
+            place: place,
+            complete: true,
+          };
+          return placeResult;
+        });
+      }
+    } else {
+      const responseOJPv1 = response as OJP_Next.OJPv1_StopEventRequestResponse;
+      if (responseOJPv1.ok) {
+        const places = responseOJPv1.value.stopEventResponseContext?.places?.location ?? [];
+        placeResults = places.map(place => {
+          const placeResult: OJP_SharedTypes.OJPv1_LocationResultSchema = {
+            location: place,
+            complete: true,
+          };
+          return placeResult;
+        });
+      }
+    }
+
+    const mapPlaces = OJPHelpers.mapAnyPlaceResults(version, placeResults);
+    return mapPlaces;
+  }
+
+  public static parseAnyStopEventResultSituationsContext(sanitizer: DomSanitizer, version: OJP_Next.OJP_VERSION, response: AnyStopEventRequestResponse): Record<string, SituationContent[]> {
+    const mapSituations: Record<string, SituationContent[]> = {};
+
+    if (response.ok) {
+      const situationsSchema = response.value.stopEventResponseContext?.situations?.ptSituation ?? [];
+      situationsSchema.forEach(situationSchema => {
+        const situationElements = SituationContent.initWithAnySituationSchema(sanitizer, version, situationSchema);
+        if (situationElements.length > 0) {
+          mapSituations[situationElements[0].situationNumber] = situationElements;
+        }
+      });
+    }
+
+    return mapSituations;
+  }
+
   private static mapAnyPlaceResults(ojpVersion: OJP_Next.OJP_VERSION, placeResults: AnyPlaceResultSchema[]) {
     const places: StopPlace[] = [];
     placeResults.forEach(placeResult => {
