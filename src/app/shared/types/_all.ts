@@ -54,5 +54,6 @@ export type AnyPlaceSchema = OJP_SharedTypes.PlaceSchema | OJP_SharedTypes.OJPv1
 export type AnyPlaceResultSchema = OJP_SharedTypes.PlaceResultSchema | OJP_SharedTypes.OJPv1_LocationResultSchema;
 export type AnyLocationInformationRequest = OJP_Next.LocationInformationRequest | OJP_Next.OJPv1_LocationInformationRequest;
 export type AnyLocationInformationRequestResponse = OJP_Next.LocationInformationRequestResponse | OJP_Next.OJPv1_LocationInformationRequestResponse;
+export type AnyStopEventRequestResponse = OJP_Next.StopEventRequestResponse | OJP_Next.OJPv1_StopEventRequestResponse;
 export type AnyTripInfoRequestResponse = OJP_Next.TripInfoRequestResponse | OJP_Next.OJPv1_TripInfoRequestResponse;
 export type AnyPointOfInterestSchema = OJP_SharedTypes.PointOfInterestSchema | OJP_SharedTypes.OJPv1_PointOfInterestSchema;
