@@ -27,6 +27,12 @@ export class StopPlace extends BasePlace {
     return stopPlace;
   }
 
+  // static init to avoid exposing subType
+  public static initWithCoordsRefAndName(longitude: number, latitude: number, placeName: string, stopName: string, stopRef: string) {
+    const stopPlace = new StopPlace(longitude, latitude, placeName, stopName, stopRef);
+    return stopPlace;
+  }
+
   public static initWithPlaceResultSchema(version: OJP_Next.OJP_VERSION, placeResultSchema: AnyPlaceResultSchema): StopPlace | null {
     const isOJPv2 = version === '2.0';
 
