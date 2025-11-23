@@ -6,13 +6,13 @@ import OJP_Legacy from '../../config/ojp-legacy';
 
 import { MapDebugControl } from 'src/app/map/controls/map-debug-control';
 import { MapLayersLegendControl } from 'src/app/map/controls/map-layers-legend-control';
-import { MapService } from 'src/app/shared/services/map.service';
-import { UserTripService } from 'src/app/shared/services/user-trip.service';
+import { MapService } from '../../shared/services/map.service';
+import { UserTripService } from '../../shared/services/user-trip.service';
 import { StationBoardService } from '../station-board.service';
 
 import { StopEventServiceRenderer } from './stop-event-service-renderer/stop-event-service-renderer';
-import { MapHelpers } from 'src/app/map/helpers/map.helpers';
-import { LanguageService } from 'src/app/shared/services/language.service';
+import { MapHelpers } from '../../map/helpers/map.helpers';
+import { LanguageService } from '../../shared/services/language.service';
 
 @Component({
   selector: 'station-board-map',
