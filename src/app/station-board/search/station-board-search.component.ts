@@ -167,7 +167,7 @@ export class StationBoardSearchComponent implements OnInit {
       return;
     }
 
-    this.initFromMockXML(mockText);
+    await this.initFromMockXML(mockText);
   }
 
   public onStopPlaceSelected(stopPlace: StopPlace) {
@@ -338,7 +338,28 @@ export class StationBoardSearchComponent implements OnInit {
     await this.initFromMockXML(mockText);
   }
 
-  private initFromMockXML(mockText: string) {
+  private async initFromMockXML(mockText: string) {
+    const sdk = this.userTripService.createOJP_SDK_Instance(this.languageService.language);
+
+    const request = sdk.requests.StopEventRequest.initWithResponseMock(mockText);
+    const response = await request.fetchResponse(sdk);
+
+    if (!response.ok) {
+      console.log('ERROR - while fetching SER response');
+      console.log(request);
+      this.parseStopEvents([]);
+      return;
+    }
+
+    const stopEventResults = this.parseStopEventRequestResponse(response);
+
+    if (stopEventResults.length > 0) {
+      const place = stopEventResults[0].thisCall.place ?? null;
+      if (place?.type === 'stop') {
+        this.onStopPlaceSelected(place as StopPlace);
+      }
+    }
+  }
     const isOJPv2 = OJP_VERSION === '2.0';
     const xmlConfig = isOJPv2 ? OJP_Next.DefaultXML_Config : OJP_Next.XML_BuilderConfigOJPv1;
 
