@@ -8,14 +8,18 @@ import { BasePlace } from '../place';
 
 import { AnyPlaceResultSchema } from '../../types/_all';
 
+type PlaceSubType = 'stop-point' | 'stop-place';
+
 export class StopPlace extends BasePlace {
   public stopName: string;
   public stopRef: string;
+  public subType: PlaceSubType;
 
-  public constructor(longitude: number, latitude: number, placeName: string, stopName: string, stopRef: string) {
+  private constructor(longitude: number, latitude: number, placeName: string, stopName: string, stopRef: string, subType: PlaceSubType = 'stop-place') {
     super(longitude, latitude, 'stop', placeName);
     this.stopName = stopName;
     this.stopRef = stopRef;
+    this.subType = subType;
   }
   
   public static Empty(stopName: string = 'n/a') {
@@ -34,11 +38,29 @@ export class StopPlace extends BasePlace {
       }
     })();
 
-    if (stopPlaceSchema === null) {
+    const stopPointSchema: OJP_SharedTypes.StopPointSchema | null = (() => {
+      if (isOJPv2) {
+        return (placeResultSchema as OJP_SharedTypes.PlaceResultSchema).place.stopPoint ?? null;
+      } else {
+        return (placeResultSchema as OJP_SharedTypes.OJPv1_LocationResultSchema).location.stopPoint ?? null;
+      }
+    })();
+
+    if ((stopPlaceSchema === null) && (stopPointSchema === null)) {
       return null;
     }
 
-    const stopPlaceRef = stopPlaceSchema.stopPlaceRef ?? null;
+    const stopPlaceRef = (() => {
+      if (stopPlaceSchema) {
+        return stopPlaceSchema.stopPlaceRef ?? null;
+      }
+
+      if (stopPointSchema) {
+        return stopPointSchema.stopPointRef ?? null;
+      }
+
+      return null;
+    })(); 
     if (stopPlaceRef === null) {
       return null;
     }
@@ -50,11 +72,14 @@ export class StopPlace extends BasePlace {
         return (placeResultSchema as OJP_SharedTypes.OJPv1_LocationResultSchema).location.locationName.text;
       }
     })();
-    
+
     const stopPlaceName = (() => {
-      const stopPlaceName = stopPlaceSchema.stopPlaceName ?? null;
-      if (stopPlaceName) {
-        return stopPlaceName.text;
+      if (stopPlaceSchema && stopPlaceSchema.stopPlaceName) {
+        return stopPlaceSchema.stopPlaceName.text;
+      }
+
+      if (stopPointSchema && stopPointSchema.stopPointName) {
+        return stopPointSchema.stopPointName.text;
       }
 
       return placeName;
@@ -72,7 +97,10 @@ export class StopPlace extends BasePlace {
       return null;
     }
 
-    const stopPlace = new StopPlace(geoPosition.longitude, geoPosition.latitude, placeName, stopPlaceName, stopPlaceRef);
+    const subType: PlaceSubType = stopPlaceSchema === null ? 'stop-point' : 'stop-point';
+
+    const stopPlace = new StopPlace(geoPosition.longitude, geoPosition.latitude, placeName, stopPlaceName, stopPlaceRef, subType);
+
     return stopPlace;
   }
 
