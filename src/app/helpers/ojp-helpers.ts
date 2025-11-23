@@ -469,7 +469,6 @@ export class OJPHelpers {
 
   public static convertOJP_LegacyStopPoint2StopPointCall(oldStopPoint: OJP_Legacy.StopPoint): StopPointCall {
     const stopCall: StopPointCall = {
-      type: oldStopPoint.stopPointType,
       place: null,
       stopPointRef: oldStopPoint.location.stopPlace?.stopPlaceRef ?? 'n/a stopPointRef',
       stopPointName: oldStopPoint.location.stopPlace?.stopPlaceName ?? 'n/a stopPointName',
