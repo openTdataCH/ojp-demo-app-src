@@ -5,7 +5,7 @@ import { FormControl, FormGroupDirective, NgForm, Validators } from '@angular/fo
 import { SbbAutocompleteSelectedEvent } from '@sbb-esta/angular/autocomplete';
 import { SbbErrorStateMatcher } from '@sbb-esta/angular/core';
 
-import * as OJP_SharedTypes from 'ojp-shared-types';
+import * as OJP_Types from 'ojp-shared-types';
 import OJP_Legacy from '../../config/ojp-legacy';
 
 import { OJP_VERSION } from '../../config/constants';
@@ -17,8 +17,8 @@ import { AnyPlace, PlaceBuilder } from '../../shared/models/place/place-builder'
 import { PlaceLocation } from '../../shared/models/place/location';
 import { OJPHelpers } from '../../helpers/ojp-helpers';
 
-type MapLocations = Record<OJP_SharedTypes.PlaceTypeEnum, AnyPlace[]>;
-type OptionLocationType = [OJP_SharedTypes.PlaceTypeEnum, string];
+type MapLocations = Record<OJP_Types.PlaceTypeEnum, AnyPlace[]>;
+type OptionLocationType = [OJP_Types.PlaceTypeEnum, string];
 
 export class ErrorStateMatcher implements SbbErrorStateMatcher {
   isErrorState(control: FormControl | null, form: FormGroupDirective | NgForm | null): boolean {
@@ -108,7 +108,7 @@ export class JourneyPointInputComponent implements OnInit, OnChanges {
       return;
     }
     
-    const placeType = optionIdParts[0] as OJP_SharedTypes.PlaceTypeEnum;
+    const placeType = optionIdParts[0] as OJP_Types.PlaceTypeEnum;
     const itemIdx = parseInt(optionIdParts[1], 10);
 
     const place = this.mapLookupPlaces[placeType][itemIdx];

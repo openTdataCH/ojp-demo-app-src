@@ -8,7 +8,7 @@ import { SbbNotificationToast } from '@sbb-esta/angular/notification-toast';
 
 import * as GeoJSON from 'geojson';
 
-import * as OJP_SharedTypes from 'ojp-shared-types';
+import * as OJP_Types from 'ojp-shared-types';
 import * as OJP_Next from 'ojp-sdk-next';
 
 import { APP_STAGE, APP_STAGEs, DEFAULT_APP_STAGE, OJP_VERSION } from '../../config/constants';
@@ -64,7 +64,7 @@ export class StationBoardSearchComponent implements OnInit {
   public isEmbed: boolean;
 
   public isV1: boolean;
-  public useRealTimeDataTypes: OJP_SharedTypes.UseRealtimeDataEnum[];
+  public useRealTimeDataTypes: OJP_Types.UseRealtimeDataEnum[];
 
   get searchDate() {
     return this.stationBoardService.searchDate;
@@ -378,17 +378,17 @@ export class StationBoardSearchComponent implements OnInit {
     const mapPlaces = OJPHelpers.parseAnyStopEventResultPlaceContext(OJP_VERSION, response);
     const mapSituations = OJPHelpers.parseAnyStopEventResultSituationsContext(this.sanitizer, OJP_VERSION, response);
 
-    const stopEventResultsSchema: OJP_SharedTypes.StopEventResultSchema[] = (() => {
+    const stopEventResultsSchema: OJP_Types.StopEventResultSchema[] = (() => {
       if (isOJPv2) {
-        return response.value.stopEventResult as OJP_SharedTypes.StopEventResultSchema[];
+        return response.value.stopEventResult as OJP_Types.StopEventResultSchema[];
       } else {
-        const stopEventResultsOJPv1 = response.value.stopEventResult as OJP_SharedTypes.OJPv1_StopEventResultSchema[];
+        const stopEventResultsOJPv1 = response.value.stopEventResult as OJP_Types.OJPv1_StopEventResultSchema[];
 
-        const stopEventResultsOJPv2: OJP_SharedTypes.StopEventResultSchema[] = [];
+        const stopEventResultsOJPv2: OJP_Types.StopEventResultSchema[] = [];
         stopEventResultsOJPv1.forEach(stopEventResultOJPv1 => {
           const serviceOJPv2 = JourneyService.initWithLegacyStopEventResultSchema(stopEventResultOJPv1);
 
-          const stopEventResult: OJP_SharedTypes.StopEventResultSchema = {
+          const stopEventResult: OJP_Types.StopEventResultSchema = {
             id: stopEventResultOJPv1.id,
             stopEvent: {
               previousCall: stopEventResultOJPv1.stopEvent.previousCall,

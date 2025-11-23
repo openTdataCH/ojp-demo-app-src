@@ -2,7 +2,7 @@ import { EventEmitter, Injectable } from '@angular/core'
 
 import mapboxgl from 'mapbox-gl'
 
-import * as OJP_SharedTypes from 'ojp-shared-types';
+import * as OJP_Types from 'ojp-shared-types';
 import * as OJP_Next from 'ojp-sdk-next';
 
 import OJP_Legacy from '../../config/ojp-legacy';
@@ -37,7 +37,7 @@ export class UserTripService {
   public numberOfResultsAfter: number | null;
   public publicTransportModesFilter: OJP_Legacy.ModeOfTransportType[];
   public railSubmodesFilter: string[];
-  public useRealTimeDataType: OJP_SharedTypes.UseRealtimeDataEnum;
+  public useRealTimeDataType: OJP_Types.UseRealtimeDataEnum;
   public walkSpeedDeviation: number | null;
 
   public currentBoardingType: OJP_Legacy.TripRequestBoardingType;
@@ -61,7 +61,7 @@ export class UserTripService {
   public geoLocationsUpdated = new EventEmitter<void>();
   public tripsDataUpdated = new EventEmitter<TripData[]>();
   
-  public tripFaresUpdated = new EventEmitter<OJP_SharedTypes.FareResultSchema[]>();
+  public tripFaresUpdated = new EventEmitter<OJP_Types.FareResultSchema[]>();
   
   public activeTripSelected = new EventEmitter<MapTrip | null>();
   public tripRequestFinished = new EventEmitter<OJP_Legacy.RequestInfo>();
@@ -463,7 +463,7 @@ export class UserTripService {
     this.activeTripSelected.emit(mapTrip);
   }
 
-  private updateFares(fareResults: OJP_SharedTypes.FareResultSchema[]) {
+  private updateFares(fareResults: OJP_Types.FareResultSchema[]) {
     this.tripFaresUpdated.emit(fareResults);
   }
 
@@ -916,7 +916,7 @@ export class UserTripService {
     this.updateFares(fareResults);
   }
 
-  public async fetchFaresForTrips(language: OJP_Legacy.Language, trips: OJP_Legacy.Trip[]): Promise<OJP_SharedTypes.FareResultSchema[]> {
+  public async fetchFaresForTrips(language: OJP_Legacy.Language, trips: OJP_Legacy.Trip[]): Promise<OJP_Types.FareResultSchema[]> {
     const fareHttpConfig = this.getStageConfig('NOVA-INT');
     const ojpSDK_Next = OJP_Next.SDK.v1(REQUESTOR_REF, fareHttpConfig, language);
     

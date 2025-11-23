@@ -1,7 +1,7 @@
 import * as GeoJSON from 'geojson'
 import mapboxgl from "mapbox-gl";
 
-import * as OJP_SharedTypes from 'ojp-shared-types';
+import * as OJP_Types from 'ojp-shared-types';
 
 import OJP_Legacy from '../../config/ojp-legacy';
 
@@ -25,7 +25,7 @@ export class AppMapLayer {
     private layerKey: string;
 
     private map: mapboxgl.Map;
-    private restrictionType: OJP_SharedTypes.PlaceTypeEnum;
+    private restrictionType: OJP_Types.PlaceTypeEnum;
     public restrictionPOI: POI_Restriction | null;
     public minZoom: number;
 
@@ -125,7 +125,7 @@ export class AppMapLayer {
         }
         const bboxData = [mapBounds.getWest(), mapBounds.getSouth(), mapBounds.getEast(), mapBounds.getNorth()];
 
-        const restrictionTypes: OJP_SharedTypes.PlaceTypeEnum[] = (() => {
+        const restrictionTypes: OJP_Types.PlaceTypeEnum[] = (() => {
             if (isOJPv2) {
                 if (this.restrictionType === 'stop') {
                     return ['stop'];
@@ -145,7 +145,7 @@ export class AppMapLayer {
             if (this.restrictionType === 'poi') {
                 if (isOJPv2) {
                     // in OJP2 - POI queries are done with <PersonalMode>
-                    const personalMode: OJP_SharedTypes.PersonalModesEnum | null = (() => {
+                    const personalMode: OJP_Types.PersonalModesEnum | null = (() => {
                         const poiRestrictionTags = this.restrictionPOI?.tags ?? [];
 
                         if (poiRestrictionTags.includes('car_sharing')) {

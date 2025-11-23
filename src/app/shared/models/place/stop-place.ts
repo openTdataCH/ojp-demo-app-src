@@ -1,4 +1,4 @@
-import * as OJP_SharedTypes from 'ojp-shared-types';
+import * as OJP_Types from 'ojp-shared-types';
 import * as OJP_Next from 'ojp-sdk-next';
 
 // TODO - remove after migration
@@ -44,19 +44,19 @@ export class StopPlace extends BasePlace {
   public static initWithPlaceResultSchema(version: OJP_Next.OJP_VERSION, placeResultSchema: AnyPlaceResultSchema): StopPlace | null {
     const isOJPv2 = version === '2.0';
 
-    const stopPlaceSchema: OJP_SharedTypes.StopPlaceSchema | null = (() => {
+    const stopPlaceSchema: OJP_Types.StopPlaceSchema | null = (() => {
       if (isOJPv2) {
-        return (placeResultSchema as OJP_SharedTypes.PlaceResultSchema).place.stopPlace ?? null;
+        return (placeResultSchema as OJP_Types.PlaceResultSchema).place.stopPlace ?? null;
       } else {
-        return (placeResultSchema as OJP_SharedTypes.OJPv1_LocationResultSchema).location.stopPlace ?? null;
+        return (placeResultSchema as OJP_Types.OJPv1_LocationResultSchema).location.stopPlace ?? null;
       }
     })();
 
-    const stopPointSchema: OJP_SharedTypes.StopPointSchema | null = (() => {
+    const stopPointSchema: OJP_Types.StopPointSchema | null = (() => {
       if (isOJPv2) {
-        return (placeResultSchema as OJP_SharedTypes.PlaceResultSchema).place.stopPoint ?? null;
+        return (placeResultSchema as OJP_Types.PlaceResultSchema).place.stopPoint ?? null;
       } else {
-        return (placeResultSchema as OJP_SharedTypes.OJPv1_LocationResultSchema).location.stopPoint ?? null;
+        return (placeResultSchema as OJP_Types.OJPv1_LocationResultSchema).location.stopPoint ?? null;
       }
     })();
 
@@ -81,9 +81,9 @@ export class StopPlace extends BasePlace {
 
     const placeName = (() => {
       if (isOJPv2) {
-        return (placeResultSchema as OJP_SharedTypes.PlaceResultSchema).place.name.text;
+        return (placeResultSchema as OJP_Types.PlaceResultSchema).place.name.text;
       } else {
-        return (placeResultSchema as OJP_SharedTypes.OJPv1_LocationResultSchema).location.locationName.text;
+        return (placeResultSchema as OJP_Types.OJPv1_LocationResultSchema).location.locationName.text;
       }
     })();
 
@@ -101,9 +101,9 @@ export class StopPlace extends BasePlace {
 
     const geoPositioSchema = (() => {
       if (isOJPv2) {
-        return (placeResultSchema as OJP_SharedTypes.PlaceResultSchema).place.geoPosition;
+        return (placeResultSchema as OJP_Types.PlaceResultSchema).place.geoPosition;
       } else {
-        return (placeResultSchema as OJP_SharedTypes.OJPv1_LocationResultSchema).location.geoPosition;
+        return (placeResultSchema as OJP_Types.OJPv1_LocationResultSchema).location.geoPosition;
       }
     })();
     const geoPosition = new OJP_Next.GeoPosition(geoPositioSchema);

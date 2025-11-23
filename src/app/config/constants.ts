@@ -1,6 +1,6 @@
 import { RasterLayerType } from '../shared/types/_all';
 
-import * as OJP_SharedTypes from 'ojp-shared-types';
+import * as OJP_Types from 'ojp-shared-types';
 import * as OJP_Next from 'ojp-sdk-next';
 
 import { POI_Restriction } from '../shared/models/place/poi';
@@ -70,7 +70,7 @@ export const APP_STAGEs: APP_STAGE[] = (() => {
 export const REQUESTOR_REF = 'OJP_DemoApp_Beta_OJP' + OJP_VERSION;
 
 export interface AppMapLayerOptions {
-  LIR_Restriction_Type: OJP_SharedTypes.PlaceTypeEnum
+  LIR_Restriction_Type: OJP_Types.PlaceTypeEnum
   LIR_POI_Type?: POI_Restriction | null
   minZoom: number
   layer_ids?: string[] | null,

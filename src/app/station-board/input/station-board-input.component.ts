@@ -4,7 +4,6 @@ import { debounceTime, distinctUntilChanged } from 'rxjs/operators'
 
 import { SbbAutocompleteSelectedEvent, SbbAutocompleteTrigger } from '@sbb-esta/angular/autocomplete';
 
-import * as OJP_SharedTypes from 'ojp-shared-types';
 import * as OJP_Next from 'ojp-sdk-next';
 
 import { OJP_VERSION } from '../../config/constants';

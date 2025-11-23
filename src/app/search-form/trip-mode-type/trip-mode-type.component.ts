@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { debounceTime } from 'rxjs';
 
-import * as OJP_SharedTypes from 'ojp-shared-types';
+import * as OJP_Types from 'ojp-shared-types';
 import OJP_Legacy from '../../config/ojp-legacy';
 
 import { UserTripService } from '../../shared/services/user-trip.service';
@@ -105,8 +105,8 @@ export class TripModeTypeComponent implements OnInit {
 
   public isV1: boolean;
 
-  public useRealTimeDataTypes: OJP_SharedTypes.UseRealtimeDataEnum[];
-  public selectedUseRealTimeDataType: OJP_SharedTypes.UseRealtimeDataEnum;
+  public useRealTimeDataTypes: OJP_Types.UseRealtimeDataEnum[];
+  public selectedUseRealTimeDataType: OJP_Types.UseRealtimeDataEnum;
 
   constructor(public userTripService: UserTripService, private languageService: LanguageService) {
     const queryParams = new URLSearchParams(document.location.search);

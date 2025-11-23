@@ -1,4 +1,4 @@
-import * as OJP_SharedTypes from 'ojp-shared-types';
+import * as OJP_Types from 'ojp-shared-types';
 import * as OJP_Next from 'ojp-sdk-next';
 
 import { BasePlace } from '../place';
@@ -46,9 +46,9 @@ export class Poi extends BasePlace {
 
     const poiContainer = (() => {
       if (isOJPv2) {
-        return (placeResultSchema as OJP_SharedTypes.PlaceResultSchema).place.pointOfInterest ?? null;
+        return (placeResultSchema as OJP_Types.PlaceResultSchema).place.pointOfInterest ?? null;
       } else {
-        return (placeResultSchema as OJP_SharedTypes.OJPv1_LocationResultSchema).location.pointOfInterest ?? null;
+        return (placeResultSchema as OJP_Types.OJPv1_LocationResultSchema).location.pointOfInterest ?? null;
       }
     })();
     if (poiContainer === null) {
@@ -57,17 +57,17 @@ export class Poi extends BasePlace {
 
     const placeName = (() => {
       if (isOJPv2) {
-        return (placeResultSchema as OJP_SharedTypes.PlaceResultSchema).place.name.text;
+        return (placeResultSchema as OJP_Types.PlaceResultSchema).place.name.text;
       } else {
-        return (placeResultSchema as OJP_SharedTypes.OJPv1_LocationResultSchema).location.locationName.text;
+        return (placeResultSchema as OJP_Types.OJPv1_LocationResultSchema).location.locationName.text;
       }
     })();
 
     const geoPositioSchema = (() => {
       if (isOJPv2) {
-        return (placeResultSchema as OJP_SharedTypes.PlaceResultSchema).place.geoPosition;
+        return (placeResultSchema as OJP_Types.PlaceResultSchema).place.geoPosition;
       } else {
-        return (placeResultSchema as OJP_SharedTypes.OJPv1_LocationResultSchema).location.geoPosition;
+        return (placeResultSchema as OJP_Types.OJPv1_LocationResultSchema).location.geoPosition;
       }
     })();
     const geoPosition = new OJP_Next.GeoPosition(geoPositioSchema);
@@ -77,17 +77,17 @@ export class Poi extends BasePlace {
 
     const publicCode = (() => {
       if (isOJPv2) {
-        return (poiContainer as OJP_SharedTypes.PointOfInterestSchema).publicCode;
+        return (poiContainer as OJP_Types.PointOfInterestSchema).publicCode;
       } else {
-        return (poiContainer as OJP_SharedTypes.OJPv1_PointOfInterestSchema).pointOfInterestCode;
+        return (poiContainer as OJP_Types.OJPv1_PointOfInterestSchema).pointOfInterestCode;
       }
     })();
     
     const name = (() => {
       if (isOJPv2) {
-        return (poiContainer as OJP_SharedTypes.PointOfInterestSchema).name.text;
+        return (poiContainer as OJP_Types.PointOfInterestSchema).name.text;
       } else {
-        return (poiContainer as OJP_SharedTypes.OJPv1_PointOfInterestSchema).pointOfInterestName.text;
+        return (poiContainer as OJP_Types.OJPv1_PointOfInterestSchema).pointOfInterestName.text;
       }
     })();
 
@@ -157,27 +157,27 @@ export class Poi extends BasePlace {
     
     poi.properties = {};
     if (isOJPv2) {
-      const poiAdditionalInformationItems = (poiContainer as OJP_SharedTypes.PointOfInterestSchema).pOIAdditionalInformation?.pOIAdditionalInformation ?? [];
+      const poiAdditionalInformationItems = (poiContainer as OJP_Types.PointOfInterestSchema).pOIAdditionalInformation?.pOIAdditionalInformation ?? [];
       poiAdditionalInformationItems.forEach(item => {
         // Use same mechanism as the XML parser to transform the tag names (i.e. snake_case to camelCase) 
         const newKey = OJP_Next.XmlSerializer.transformTagName(item.key);
         poi.properties[newKey] = item.value;
       });
 
-      const attributes = (placeResultSchema as OJP_SharedTypes.PlaceResultSchema).place.attribute ?? [];
+      const attributes = (placeResultSchema as OJP_Types.PlaceResultSchema).place.attribute ?? [];
       if (attributes.length > 0) {
         console.log('TODO: unhandled attributes in OJP2.0 Poi');
         console.log(placeResultSchema);
       }
     } else {
-      const locationExtensionStructure = (placeResultSchema as OJP_SharedTypes.OJPv1_LocationResultSchema).location.extension?.locationExtensionStructure ?? null;
+      const locationExtensionStructure = (placeResultSchema as OJP_Types.OJPv1_LocationResultSchema).location.extension?.locationExtensionStructure ?? null;
       if (locationExtensionStructure !== null) {
         for (let key in locationExtensionStructure) {
           poi.properties[key] = locationExtensionStructure[key];
         }
       }
 
-      const attributes = (placeResultSchema as OJP_SharedTypes.OJPv1_LocationResultSchema).location.attribute ?? [];
+      const attributes = (placeResultSchema as OJP_Types.OJPv1_LocationResultSchema).location.attribute ?? [];
       attributes.forEach(attributeData => {
         poi.properties['text'] = attributeData.text.text;
         poi.properties['code'] = attributeData.code;

@@ -1,7 +1,7 @@
 import { DomSanitizer } from '@angular/platform-browser';
 
 import * as OJP_Next from 'ojp-sdk-next';
-import * as OJP_SharedTypes from 'ojp-shared-types';
+import * as OJP_Types from 'ojp-shared-types';
 
 import OJP_Legacy from '../config/ojp-legacy';
 
@@ -581,7 +581,7 @@ export class OJPHelpers {
       if (responseOJPv2.ok) {
         const places = responseOJPv2.value.tripInfoResponseContext?.places?.place ?? [];
         placeResults = places.map(place => {
-          const placeResult: OJP_SharedTypes.PlaceResultSchema = {
+          const placeResult: OJP_Types.PlaceResultSchema = {
             place: place,
             complete: true,
           };
@@ -593,7 +593,7 @@ export class OJPHelpers {
       if (responseOJPv1.ok) {
         const places = responseOJPv1.value.tripInfoResponseContext?.places?.location ?? [];
         placeResults = places.map(place => {
-          const placeResult: OJP_SharedTypes.OJPv1_LocationResultSchema = {
+          const placeResult: OJP_Types.OJPv1_LocationResultSchema = {
             location: place,
             complete: true,
           };
@@ -615,7 +615,7 @@ export class OJPHelpers {
       if (responseOJPv2.ok) {
         const places = responseOJPv2.value.stopEventResponseContext?.places?.place ?? [];
         placeResults = places.map(place => {
-          const placeResult: OJP_SharedTypes.PlaceResultSchema = {
+          const placeResult: OJP_Types.PlaceResultSchema = {
             place: place,
             complete: true,
           };
@@ -627,7 +627,7 @@ export class OJPHelpers {
       if (responseOJPv1.ok) {
         const places = responseOJPv1.value.stopEventResponseContext?.places?.location ?? [];
         placeResults = places.map(place => {
-          const placeResult: OJP_SharedTypes.OJPv1_LocationResultSchema = {
+          const placeResult: OJP_Types.OJPv1_LocationResultSchema = {
             location: place,
             complete: true,
           };
@@ -715,7 +715,7 @@ export class OJPHelpers {
     return DEFAULT_APP_STAGE;
   }
 
-  public static createStopPointCall(callAtStopSchema: OJP_SharedTypes.CallAtStopSchema, place: StopPlace | null): StopPointCall {
+  public static createStopPointCall(callAtStopSchema: OJP_Types.CallAtStopSchema, place: StopPlace | null): StopPointCall {
     const vehicleAccessTypeS = callAtStopSchema.nameSuffix?.text ?? null;
     const vehicleAccessType = OJPHelpers.computePlatformAssistance(vehicleAccessTypeS);
 

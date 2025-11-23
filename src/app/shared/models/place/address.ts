@@ -1,4 +1,4 @@
-import * as OJP_SharedTypes from 'ojp-shared-types';
+import * as OJP_Types from 'ojp-shared-types';
 import * as OJP_Next from 'ojp-sdk-next';
 
 import { BasePlace } from '../place';
@@ -30,9 +30,9 @@ export class Address extends BasePlace {
 
     const addressContainer = (() => {
       if (isOJPv2) {
-        return (placeResultSchema as OJP_SharedTypes.PlaceResultSchema).place.address ?? null;
+        return (placeResultSchema as OJP_Types.PlaceResultSchema).place.address ?? null;
       } else {
-        return (placeResultSchema as OJP_SharedTypes.OJPv1_LocationResultSchema).location.address ?? null;
+        return (placeResultSchema as OJP_Types.OJPv1_LocationResultSchema).location.address ?? null;
       }
     })();
     if (addressContainer === null) {
@@ -41,9 +41,9 @@ export class Address extends BasePlace {
 
     const geoPositioSchema = (() => {
       if (isOJPv2) {
-        return (placeResultSchema as OJP_SharedTypes.PlaceResultSchema).place.geoPosition;
+        return (placeResultSchema as OJP_Types.PlaceResultSchema).place.geoPosition;
       } else {
-        return (placeResultSchema as OJP_SharedTypes.OJPv1_LocationResultSchema).location.geoPosition;
+        return (placeResultSchema as OJP_Types.OJPv1_LocationResultSchema).location.geoPosition;
       }
     })();
     const geoPosition = new OJP_Next.GeoPosition(geoPositioSchema);
@@ -53,9 +53,9 @@ export class Address extends BasePlace {
 
     const placeName = (() => {
       if (isOJPv2) {
-        return (placeResultSchema as OJP_SharedTypes.PlaceResultSchema).place.name.text;
+        return (placeResultSchema as OJP_Types.PlaceResultSchema).place.name.text;
       } else {
-        return (placeResultSchema as OJP_SharedTypes.OJPv1_LocationResultSchema).location.locationName.text;
+        return (placeResultSchema as OJP_Types.OJPv1_LocationResultSchema).location.locationName.text;
       }
     })();
 
