@@ -6,7 +6,7 @@ import { SbbNotificationToast } from '@sbb-esta/angular/notification-toast';
 
 import * as OJP_Next from 'ojp-sdk-next';
 
-import { APP_STAGE, APP_STAGEs, OJP_VERSION } from '../../config/constants';
+import { APP_STAGE, APP_STAGEs, DEFAULT_APP_STAGE, OJP_VERSION } from '../../config/constants';
 
 import { UserTripService } from '../../shared/services/user-trip.service';
 import { TripInfoService } from '../trip-info.service';
@@ -14,8 +14,11 @@ import { DebugXmlPopoverComponent } from '../../search-form/debug-xml-popover/de
 import { CustomTripInfoXMLPopoverComponent } from './custom-trip-info-xml-popover/custom-trip-info-xml-popover.component';
 import { LanguageService } from '../../shared/services/language.service';
 import { TripInfoResult } from '../../shared/models/trip-info-result';
+import { OJPHelpers } from '../../helpers/ojp-helpers';
 
 interface PagelModel {
+  currentAppStage: APP_STAGE,
+
   journeyRef: string
   journeyDateTime: Date,
   appStageOptions: APP_STAGE[],
@@ -52,6 +55,8 @@ export class TripInfoSearchComponent implements OnInit {
     this.queryParams = new URLSearchParams(document.location.search);
 
     this.model = {
+      currentAppStage: DEFAULT_APP_STAGE,
+
       journeyRef: '',
       journeyDateTime: new Date(),
       appStageOptions: APP_STAGEs,
@@ -69,20 +74,18 @@ export class TripInfoSearchComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    const userStage = this.queryParams.get('stage');
-    if (userStage) {
-      const newAppStage = this.computeAppStageFromString(userStage);
-      if (newAppStage) {
-        setTimeout(() => {
-          // HACK 
-          // without the setTimeout , the parent src/app/trip-info/trip-info.component.html template 
-          // gives following errors core.mjs:9157 ERROR RuntimeError: NG0100: ExpressionChangedAfterItHasBeenCheckedError: 
-          // Expression has changed after it was checked. Previous value: 'PROD'. Current value: 'INT'. 
-          // Find more at https://angular.io/errors/NG0100
-          this.userTripService.updateAppStage(newAppStage);
-        });
-      }
-    }
+    const appStage = OJPHelpers.computeAppStage();
+
+    setTimeout(() => {
+      // HACK 
+      // without the setTimeout , the parent src/app/station-board/station-board.component.html template 
+      // gives following errors core.mjs:9157 ERROR RuntimeError: NG0100: ExpressionChangedAfterItHasBeenCheckedError: 
+      // Expression has changed after it was checked. Previous value: 'PROD'. Current value: 'INT'. 
+      // Find more at https://angular.io/errors/NG0100
+      this.userTripService.currentAppStage = appStage;
+    });
+
+    this.model.currentAppStage = appStage;
 
     this.tripInfoService.tripInfoResultUpdated.subscribe(tripInfoResult => {
       if (tripInfoResult !== null) {
