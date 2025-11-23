@@ -22,11 +22,11 @@ import { TripLegGeoController } from '../../../shared/controllers/trip-geo-contr
 
 import { TripInfoResultPopoverComponent } from './trip-info-result-popover/trip-info-result-popover.component';
 import { TripLegData } from '../../../shared/types/trip';
-import { SituationContent } from '../../../shared/types/situations';
 import { DebugXmlPopoverComponent } from '../../../search-form/debug-xml-popover/debug-xml-popover.component';
 import { JourneyService } from '../../../shared/models/journey-service';
 import { PlaceLocation } from '../../../shared/models/place/location';
 import { GeoPositionBBOX } from '../../../shared/models/geo/geoposition-bbox';
+import { SituationContent } from '../../../shared/models/situation';
 
 type LegTemplate = 'walk' | 'timed' | 'taxi';
 

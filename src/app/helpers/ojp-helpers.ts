@@ -7,11 +7,11 @@ import OJP_Legacy from '../config/ojp-legacy';
 
 import { LegStopPointData } from '../shared/components/service-stops.component';
 import { APP_STAGE, DEBUG_LEVEL, DEFAULT_APP_STAGE } from '../config/constants';
-import { SituationContent } from '../shared/types/situations';
 import { AnyLocationInformationRequestResponse, AnyPlaceResultSchema, AnyPlaceSchema, AnyTripInfoRequestResponse, StopEventType, StopPointCall, VehicleAccessType } from '../shared/types/_all';
 import { JourneyService } from '../shared/models/journey-service';
 import { PlaceLocation } from '../shared/models/place/location';
 import { APP_CONFIG } from '../config/app-config';
+import { SituationContent } from '../shared/models/situation';
 
 type PublicTransportPictogram =  'picto-bus-fallback' | 'picto-bus'
   | 'picto-railway' | 'picto-tram' | 'picto-rack-railway'
@@ -214,66 +214,61 @@ export class OJPHelpers {
   }
 
   public static computeSituationsData(sanitizer: DomSanitizer, siriSituations: OJP_Legacy.PtSituationElement[]): SituationContent[] {
-    const situationsData: OJP_Legacy.SituationContent[] = [];
+    const situationsData: SituationContent[] = [];
 
     siriSituations.forEach(situation => {
       if (situation.situationContent !== null) {
-        situationsData.push(situation.situationContent);
+        const situationContent = SituationContent.initWithData(
+          sanitizer, 
+          situation.situationNumber, 
+          situation.situationContent.summary, 
+          situation.situationContent.descriptions, 
+          situation.situationContent.details
+        );
+        situationsData.push(situationContent);
       }
 
       situation.publishingActions.forEach(publishingAction => {
         const mapTextualContent = publishingAction.passengerInformation.mapTextualContent;
 
-        const situationData = <OJP_Legacy.SituationContent>{};
+        const summary: string = (() => {
+          if ('Summary' in mapTextualContent) {
+            return mapTextualContent['Summary'].join('. ');
+          } else {
+            return 'Summary n/a';
+          }
+        })();
 
-        if ('Summary' in mapTextualContent) {
-          situationData.summary = mapTextualContent['Summary'].join('. ');
-        } else {
-          situationData.summary = 'Summary n/a';
-        }
-
-        situationData.descriptions = [];
+        let descriptions: string[] = [];
         if ('Description' in mapTextualContent) {
-          situationData.descriptions = mapTextualContent['Description'];
+          descriptions = mapTextualContent['Description'];
         }
 
-        situationData.details = [];
+        let details: string[] = [];
         const detailKeys = ['Consequence', 'Duration', 'Reason', 'Recommendation', 'Remark'];
         detailKeys.forEach(detailKey => {
           if (detailKey in mapTextualContent) {
-            situationData.details = situationData.details.concat(mapTextualContent[detailKey]);
+            details = details.concat(mapTextualContent[detailKey]);
           }
         });
 
-        const infoLink = publishingAction.passengerInformation.infoLink
+        const infoLink = publishingAction.passengerInformation.infoLink;
         if (infoLink) {
-          situationData.details.push(infoLink.label)
+          details.push(infoLink.label);
         }
 
-        situationsData.push(situationData);
+        const situationContent = SituationContent.initWithData(
+          sanitizer, 
+          situation.situationNumber, 
+          summary, 
+          descriptions, 
+          details
+        );
+        situationsData.push(situationContent);
       });
     });
 
-    const safeSituationsData = situationsData.map(el => {
-      const safeEl: SituationContent = {
-        summary: el.summary,
-        descriptions: el.descriptions,
-        // details might contain HTML, sanitize content
-        safeDetails: el.details.map(detailS => {
-          // HACK: always open in a new tab/window
-          detailS = detailS.replace('<a href', '<a target="_blank" href');
-
-          const textarea = document.createElement('textarea');
-          textarea.innerHTML = detailS;
-          const safeDetail = sanitizer.bypassSecurityTrustHtml(textarea.value);
-          return safeDetail;
-        }),
-      };
-
-      return safeEl;
-    });
-
-    return safeSituationsData;
+    return situationsData;
   }
 
   public static async fetchGist(gistId: string): Promise<string | null> {
