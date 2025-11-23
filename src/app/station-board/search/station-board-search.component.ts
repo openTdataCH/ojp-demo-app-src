@@ -359,33 +359,57 @@ export class StationBoardSearchComponent implements OnInit {
         this.onStopPlaceSelected(place as StopPlace);
       }
     }
+
+    this.parseStopEvents(stopEventResults);
   }
+
+  private parseStopEventRequestResponse(response: AnyStopEventRequestResponse): StopEventResult[] {
+    if (!response.ok) {
+      return [];
+    }
+
     const isOJPv2 = OJP_VERSION === '2.0';
-    const xmlConfig = isOJPv2 ? OJP_Next.DefaultXML_Config : OJP_Next.XML_BuilderConfigOJPv1;
 
-    const request = OJP_Legacy.StopEventRequest.initWithMock(mockText, xmlConfig, REQUESTOR_REF);
-    request.fetchResponse().then(response => {
-      if (response.stopEvents.length > 0) {
-        const stopEvent = response.stopEvents[0];
-        const firstLocation = stopEvent.stopPoint.location;
-        if (firstLocation && firstLocation.geoPosition) {
-          const stopPlaceName = firstLocation.stopPlace?.stopPlaceName ?? 'temp - n/a';
-          const stopPlaceRef = firstLocation.stopPlace?.stopPlaceRef ?? 'temp - n/a';
-          
-          const stopPlace = new StopPlace(
-            firstLocation.geoPosition.longitude,
-            firstLocation.geoPosition.latitude,
-            stopPlaceName,
-            stopPlaceName,
-            stopPlaceRef,
-          );
+    const mapPlaces = OJPHelpers.parseAnyStopEventResultPlaceContext(OJP_VERSION, response);
+    const mapSituations = OJPHelpers.parseAnyStopEventResultSituationsContext(this.sanitizer, OJP_VERSION, response);
 
-          this.onStopPlaceSelected(stopPlace);
-        }
+    const stopEventResultsSchema: OJP_SharedTypes.StopEventResultSchema[] = (() => {
+      if (isOJPv2) {
+        return response.value.stopEventResult as OJP_SharedTypes.StopEventResultSchema[];
+      } else {
+        const stopEventResultsOJPv1 = response.value.stopEventResult as OJP_SharedTypes.OJPv1_StopEventResultSchema[];
+
+        const stopEventResultsOJPv2: OJP_SharedTypes.StopEventResultSchema[] = [];
+        stopEventResultsOJPv1.forEach(stopEventResultOJPv1 => {
+          const serviceOJPv2 = JourneyService.initWithLegacyStopEventResultSchema(stopEventResultOJPv1);
+
+          const stopEventResult: OJP_SharedTypes.StopEventResultSchema = {
+            id: stopEventResultOJPv1.id,
+            stopEvent: {
+              previousCall: stopEventResultOJPv1.stopEvent.previousCall,
+              thisCall: stopEventResultOJPv1.stopEvent.thisCall,
+              onwardCall: stopEventResultOJPv1.stopEvent.onwardCall,
+              service: serviceOJPv2,
+              operatingDays: stopEventResultOJPv1.stopEvent.operatingDays,
+            },
+          };
+
+          stopEventResultsOJPv2.push(stopEventResult);
+        });
+
+        return stopEventResultsOJPv2;
       }
+    })();
 
-      this.parseStopEvents(response.stopEvents);
+    const stopEventResults: StopEventResult[] = [];
+    stopEventResultsSchema.forEach(stopEventResultSchema => {
+      const stopEventResult = StopEventResult.initWithStopEventResultSchema(stopEventResultSchema, mapPlaces, mapSituations);
+      if (stopEventResult) {
+        stopEventResults.push(stopEventResult);
+      }
     });
+
+    return stopEventResults;
   }
 
   private computeStopEventRequest(stopPlaceRef: string) {
