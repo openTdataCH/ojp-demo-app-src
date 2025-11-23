@@ -15,11 +15,19 @@ export class StopPlace extends BasePlace {
   public stopRef: string;
   public subType: PlaceSubType;
 
+  public parentRef: string | null;
+  public plannedQuay: string | null;
+  public estimatedQuay: string | null;
+
   private constructor(longitude: number, latitude: number, placeName: string, stopName: string, stopRef: string, subType: PlaceSubType = 'stop-place') {
     super(longitude, latitude, 'stop', placeName);
     this.stopName = stopName;
     this.stopRef = stopRef;
     this.subType = subType;
+
+    this.parentRef = null;
+    this.plannedQuay = null;
+    this.estimatedQuay = null;
   }
   
   public static Empty(stopName: string = 'n/a') {
@@ -106,6 +114,12 @@ export class StopPlace extends BasePlace {
     const subType: PlaceSubType = stopPlaceSchema === null ? 'stop-point' : 'stop-point';
 
     const stopPlace = new StopPlace(geoPosition.longitude, geoPosition.latitude, placeName, stopPlaceName, stopPlaceRef, subType);
+
+    if (stopPointSchema !== null) {
+      stopPlace.parentRef = stopPointSchema.parentRef ?? null;
+      stopPlace.plannedQuay = stopPointSchema.plannedQuay?.text ?? null;
+      stopPlace.estimatedQuay = stopPointSchema.estimatedQuay?.text ?? null;
+    }
 
     return stopPlace;
   }
