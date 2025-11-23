@@ -73,6 +73,33 @@ export class JourneyService implements OJP_Types.DatedJourneySchema  {
     return service;
   }
 
+  private static initWithLegacyDatedJourneySchema(schema: OJP_Types.OJPv1_DatedJourneySchema): JourneyService {
+    const publishedServiceName = schema.publishedLineName;
+    const attributesV2 = JourneyService.convertAttributesV2Schema(schema.attribute);
+    
+    const originText: OJP_Types.InternationalTextSchema = {
+      text: ''
+    };
+
+    const service = new JourneyService(schema.operatingDayRef, schema.journeyRef, schema.lineRef, schema.mode, publishedServiceName, attributesV2, originText);
+
+    service.conventionalModeOfOperation = schema.conventionalModeOfOperation;
+    service.publicCode = schema.publicCode;
+    service.directionRef = schema.directionRef;
+    service.productCategory = schema.productCategory;
+    service.trainNumber = undefined; // this comes from TimedLeg
+    service.operatorRef = schema.operatorRef;
+    service.destinationStopPointRef = schema.destinationStopPointRef;
+    service.destinationText = schema.destinationText;
+    service.unplanned = schema.unplanned;
+    service.cancelled = schema.cancelled;
+    service.deviation = schema.deviation;
+
+    service.situationFullRefs = undefined; // is set in the other constructors
+
+    return service;
+  }
+
   // Init with OJP 1.0 XML schema - TripRequest
   // - it needs the TimedLeg because there we have the the 'publishedJourneyNumber' stored
   public static initWithLegacyTripTimedLegSchema(legacyTripLegSchema: OJP_Types.OJPv1_TimedLegSchema): JourneyService {
