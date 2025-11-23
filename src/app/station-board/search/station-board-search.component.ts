@@ -1,5 +1,6 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
+import { DomSanitizer } from '@angular/platform-browser';
 
 import { SbbExpansionPanel } from '@sbb-esta/angular/accordion';
 import { SbbDialog } from '@sbb-esta/angular/dialog';
@@ -10,9 +11,7 @@ import * as GeoJSON from 'geojson';
 import * as OJP_SharedTypes from 'ojp-shared-types';
 import * as OJP_Next from 'ojp-sdk-next';
 
-import OJP_Legacy from '../../config/ojp-legacy';
-
-import { APP_STAGE, APP_STAGEs, DEFAULT_APP_STAGE, REQUESTOR_REF, OJP_VERSION } from '../../config/constants';
+import { APP_STAGE, APP_STAGEs, DEFAULT_APP_STAGE, OJP_VERSION } from '../../config/constants';
 
 import { OJPHelpers } from '../../helpers/ojp-helpers';
 
@@ -27,7 +26,9 @@ import { CustomStopEventXMLPopoverComponent } from './custom-stop-event-xml-popo
 import { EmbedStationBoardPopoverComponent } from './embed-station-board-popover/embed-station-board-popover.component';
 import { StationBoardType } from '../types/stop-event';
 import { StopPlace } from '../../shared/models/place/stop-place';
-import { PlaceLocation } from '../../shared/models/place/location';
+import { StopEventResult } from '../../shared/models/stop-event-result';
+import { AnyStopEventRequestResponse } from '../../shared/types/_all';
+import { JourneyService } from '../../shared/models/journey-service';
 
 @Component({
   selector: 'station-board-search',
@@ -82,6 +83,7 @@ export class StationBoardSearchComponent implements OnInit {
     public userTripService: UserTripService,
     private embedHTMLPopover: SbbDialog,
     private router: Router,
+    private sanitizer: DomSanitizer,
   ) {
     this.currentAppStage = DEFAULT_APP_STAGE;
 
