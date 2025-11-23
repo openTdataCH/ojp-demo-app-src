@@ -25,10 +25,23 @@ export class StopEventResult {
     this.situationsContent = situationsContent;
   }
 
+  private static computeStopCalls(callsAtStopSchema: OJP_Types.CallAtStopSchema[], mapPlaces: Record<string, StopPlace>): StopPointCall[] {
+    const calls: StopPointCall[] = [];
+    callsAtStopSchema.forEach((callAtStopSchema, idx) => {
+      const stopRef = callAtStopSchema.stopPointRef;
+      const place = mapPlaces[stopRef] ?? null;
+
+      const stopCall = OJPHelpers.createStopPointCall(callAtStopSchema, place);
+      calls.push(stopCall);
+    });
+
+    return calls;
+  }
+
   public static initWithStopEventResultSchema(resultSchema: OJP_Types.StopEventResultSchema, mapPlaces: Record<string, StopPlace>, mapSituations: Record<string, SituationContent[]>): StopEventResult | null {
-    const prevStopCalls = OJPHelpers.computeStopCalls(resultSchema.stopEvent.previousCall.map(el => el.callAtStop), mapPlaces);
-    const thisStopCall = OJPHelpers.computeStopCalls([resultSchema.stopEvent.thisCall.callAtStop], mapPlaces)[0];
-    const nextStopCalls = OJPHelpers.computeStopCalls(resultSchema.stopEvent.onwardCall.map(el => el.callAtStop), mapPlaces);
+    const prevStopCalls = StopEventResult.computeStopCalls(resultSchema.stopEvent.previousCall.map(el => el.callAtStop), mapPlaces);
+    const thisStopCall = StopEventResult.computeStopCalls([resultSchema.stopEvent.thisCall.callAtStop], mapPlaces)[0];
+    const nextStopCalls = StopEventResult.computeStopCalls(resultSchema.stopEvent.onwardCall.map(el => el.callAtStop), mapPlaces);
 
     const serviceSchema = resultSchema.stopEvent.service;
     if (!serviceSchema) {
