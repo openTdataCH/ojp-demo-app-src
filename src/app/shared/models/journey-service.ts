@@ -103,23 +103,13 @@ export class JourneyService implements OJP_Types.DatedJourneySchema  {
   // Init with OJP 1.0 XML schema - TripRequest
   // - it needs the TimedLeg because there we have the the 'publishedJourneyNumber' stored
   public static initWithLegacyTripTimedLegSchema(legacyTripLegSchema: OJP_Types.OJPv1_TimedLegSchema): JourneyService {
-    const legacyServiceSchema = legacyTripLegSchema.service;
-    const publishedServiceName = legacyServiceSchema.publishedLineName;
-    const attributesV2 = JourneyService.convertAttributesV2Schema(legacyServiceSchema.attribute);
-
-    const service = new JourneyService(legacyServiceSchema.operatingDayRef, legacyServiceSchema.journeyRef, legacyServiceSchema.lineRef, legacyServiceSchema.mode, publishedServiceName, attributesV2);
-
-    service.conventionalModeOfOperation = legacyServiceSchema.conventionalModeOfOperation;
-    service.publicCode = legacyServiceSchema.publicCode;
-    service.directionRef = legacyServiceSchema.directionRef;
-    service.productCategory = legacyServiceSchema.productCategory;
+    const schema = legacyTripLegSchema.service;
+    
+    const service = JourneyService.initWithLegacyDatedJourneySchema(schema);
     service.trainNumber = legacyTripLegSchema.extension?.publishedJourneyNumber?.text ?? undefined;
-    service.operatorRef = legacyServiceSchema.operatorRef;
-    service.destinationStopPointRef = legacyServiceSchema.destinationStopPointRef;
-    service.destinationText = legacyServiceSchema.destinationText;
-    service.unplanned = legacyServiceSchema.unplanned;
-    service.cancelled = legacyServiceSchema.cancelled;
-    service.deviation = legacyServiceSchema.deviation;
+
+
+    return service;
 
     return service;
   }
