@@ -557,7 +557,7 @@ export class OJPHelpers {
     return distanceMeters + 'm'
   }
 
-  public static parseAnyPlaceContext(version: OJP_Next.OJP_VERSION, response: AnyTripInfoRequestResponse): AnyPlaceResultSchema[] {
+  public static parseAnyTripInfoPlaceContext(version: OJP_Next.OJP_VERSION, response: AnyTripInfoRequestResponse): Record<string, StopPlace> {
     const isOJPv2 = version === '2.0';
 
     let placeResults: AnyPlaceResultSchema[] = [];
@@ -587,7 +587,25 @@ export class OJPHelpers {
       }
     }
 
-    return placeResults;
+    const mapPlaces = OJPHelpers.mapAnyPlaceResults(version, placeResults);
+    return mapPlaces;
+  }
+
+  private static mapAnyPlaceResults(ojpVersion: OJP_Next.OJP_VERSION, placeResults: AnyPlaceResultSchema[]) {
+    const places: StopPlace[] = [];
+    placeResults.forEach(placeResult => {
+      const place = PlaceBuilder.initWithPlaceResultSchema(ojpVersion, placeResult);
+      if (place && place.type === 'stop') {
+        places.push(place as StopPlace);
+      }
+    });
+
+    const mapPlaces: Record<string, StopPlace> = {};
+    places.forEach(place => {
+      mapPlaces[place.stopRef] = place;
+    });
+
+    return mapPlaces;
   }
 
   public static parseAnyPlaceResult(version: OJP_Next.OJP_VERSION, response: AnyLocationInformationRequestResponse): AnyPlaceResultSchema[] {

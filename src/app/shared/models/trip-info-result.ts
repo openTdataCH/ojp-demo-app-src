@@ -50,19 +50,7 @@ export class TripInfoResult {
       return null;
     }
 
-    const places: StopPlace[] = [];
-    const placeResults = OJPHelpers.parseAnyPlaceContext(ojpVersion, response);
-    placeResults.forEach(placeResult => {
-      const place = PlaceBuilder.initWithPlaceResultSchema(ojpVersion, placeResult);
-      if (place && place.type === 'stop') {
-        places.push(place as StopPlace);
-      }
-    });
-
-    const mapPlaces: Record<string, StopPlace> = {};
-    places.forEach(place => {
-      mapPlaces[place.stopRef] = place;
-    });
+    const mapPlaces = OJPHelpers.parseAnyTripInfoPlaceContext(ojpVersion, response);
 
     const calls: StopPointCall[] = [];
 
