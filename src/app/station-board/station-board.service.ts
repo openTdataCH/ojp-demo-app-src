@@ -2,18 +2,18 @@ import { EventEmitter, Injectable, Output } from "@angular/core";
 
 import mapboxgl from "mapbox-gl";
 
-import OJP_Legacy from '../config/ojp-legacy';
 import { StationBoardType } from "./types/stop-event";
+import { StopEventResult } from "../shared/models/stop-event-result";
 
 export type StationBoardData = {
     type: StationBoardType,
-    items: OJP_Legacy.StopEvent[],
+    items: StopEventResult[],
 };
 
 @Injectable( {providedIn: 'root'} )
 export class StationBoardService {
-    @Output() stationBoardEntrySelected = new EventEmitter<OJP_Legacy.StopEvent | null>()
     @Output() stationBoardDataUpdated = new EventEmitter<StationBoardData>();
+    @Output() stationBoardEntrySelected = new EventEmitter<StopEventResult | null>();
     @Output() stationOnMapClicked = new EventEmitter<mapboxgl.GeoJSONFeature>();
 
     public searchDate = new Date();
