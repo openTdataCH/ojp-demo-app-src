@@ -465,7 +465,7 @@ export class StationBoardSearchComponent implements OnInit {
       return;
     }
 
-    const stopPlace = new StopPlace(coords[0], coords[1], stopPlaceName, stopPlaceName, stopPlaceRef);
+    const stopPlace = StopPlace.initWithCoordsRefAndName(coords[0], coords[1], stopPlaceName, stopPlaceName, stopPlaceRef);
     this.stopPlace = stopPlace;
 
     if (this.autocompleteInputComponent) {
