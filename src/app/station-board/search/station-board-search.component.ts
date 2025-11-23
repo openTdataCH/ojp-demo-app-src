@@ -335,7 +335,7 @@ export class StationBoardSearchComponent implements OnInit {
     const mockURL = '/path/to/mock.xml';
 
     const mockText = await (await fetch(mockURL)).text();
-    this.initFromMockXML(mockText);
+    await this.initFromMockXML(mockText);
   }
 
   private initFromMockXML(mockText: string) {
@@ -521,7 +521,7 @@ export class StationBoardSearchComponent implements OnInit {
     this.updateURLs();
   }
 
-  public loadCustomXMLPopover() {
+  public async loadCustomXMLPopover() {
     const dialogRef = this.customXmlPopover.open(CustomStopEventXMLPopoverComponent, {
       position: { top: '20px' },
     });
@@ -538,19 +538,19 @@ export class StationBoardSearchComponent implements OnInit {
 
       popover.customRequestXMLs = this.currentRequestInfo?.requestXML ?? 'n/a';
 
-      popover.customRequestSaved.subscribe((responseXML) => {
+      popover.customRequestSaved.subscribe(async (responseXML) => {
         dialogRef.close()
-        this.handleCustomResponse(responseXML);
+        await this.handleCustomResponse(responseXML);
       })
 
-      popover.customResponseSaved.subscribe((responseXML) => {
+      popover.customResponseSaved.subscribe(async (responseXML) => {
         dialogRef.close()
-        this.handleCustomResponse(responseXML);
+        await this.handleCustomResponse(responseXML);
       })
     });
   }
 
-  private handleCustomResponse(responseXML: string) {
+  private async handleCustomResponse(responseXML: string) {
     if (this.currentRequestInfo === null) {
       return;
     }
