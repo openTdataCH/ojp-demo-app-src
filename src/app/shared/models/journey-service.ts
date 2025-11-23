@@ -22,6 +22,13 @@ export class JourneyService implements OJP_Types.DatedJourneySchema  {
   public unplanned?: boolean;
   public cancelled?: boolean;
   public deviation?: boolean;
+
+  public situationFullRefs?: {
+    situationFullRef: {
+      participantRef: string;
+      situationNumber: string;
+    }[]
+  }
  
   private constructor(operatingDayRef: string, journeyRef: string, lineRef: string, mode: OJP_Types.ModeStructureSchema, publishedServiceName: OJP_Types.InternationalTextSchema, attribute: OJP_Types.GeneralAttributeSchema[], originText: OJP_Types.InternationalTextSchema) {
     this.conventionalModeOfOperation = undefined;
@@ -42,6 +49,8 @@ export class JourneyService implements OJP_Types.DatedJourneySchema  {
     this.unplanned = undefined;
     this.cancelled = undefined;
     this.deviation = undefined;
+    
+    this.situationFullRefs = undefined;
   }
 
   // Init with OJP 2.0 XML schema
@@ -59,6 +68,7 @@ export class JourneyService implements OJP_Types.DatedJourneySchema  {
     service.unplanned = schema.unplanned;
     service.cancelled = schema.cancelled;
     service.deviation = schema.deviation;
+    service.situationFullRefs = schema.situationFullRefs;
     
     return service;
   }
