@@ -1,5 +1,6 @@
 import * as OJP_Types from 'ojp-shared-types';
 import OJP_Legacy from '../../config/ojp-legacy';
+
 import { TripLegLineType } from '../types/map-geometry-types';
 
 export class JourneyService implements OJP_Types.DatedJourneySchema  {
