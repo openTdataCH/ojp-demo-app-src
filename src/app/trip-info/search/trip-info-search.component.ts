@@ -34,13 +34,13 @@ interface PagelModel {
 export class TripInfoSearchComponent implements OnInit {
   @ViewChild(SbbExpansionPanel, { static: true }) searchPanel: SbbExpansionPanel | undefined;
 
-  private queryParams: URLSearchParams
+  private queryParams: URLSearchParams;
 
-  public model: PagelModel
+  public model: PagelModel;
 
   public currentRequestInfo: OJP_Next.RequestInfo | null;
 
-  public headerText: string = 'Search Trip Info'
+  public headerText: string = 'Search Trip Info';
 
   private useMocks = false;
 
