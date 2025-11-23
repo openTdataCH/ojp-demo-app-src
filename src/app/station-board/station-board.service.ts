@@ -12,11 +12,13 @@ export type StationBoardData = {
 
 @Injectable( {providedIn: 'root'} )
 export class StationBoardService {
-    @Output() stationBoardDataUpdated = new EventEmitter<StationBoardData>()
     @Output() stationBoardEntrySelected = new EventEmitter<OJP_Legacy.StopEvent | null>()
-    @Output() stationOnMapClicked = new EventEmitter<mapboxgl.GeoJSONFeature>()
+    @Output() stationBoardDataUpdated = new EventEmitter<StationBoardData>();
+    @Output() stationOnMapClicked = new EventEmitter<mapboxgl.GeoJSONFeature>();
 
     public searchDate = new Date();
 
-    constructor() {}
+    constructor() {
+        
+    }
 }

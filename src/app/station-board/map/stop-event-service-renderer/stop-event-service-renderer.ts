@@ -8,7 +8,7 @@ import serviceTrackLineLayerJSON from './map-layers-def/service-track-line.json'
 import serviceTrackStopLayerJSON from './map-layers-def/service-track-stop.json'
 import { TripInfoResult } from '../../../shared/models/trip-info-result';
 
-type LinePointType = 'prev' | 'next'
+type LinePointType = 'prev' | 'next';
 
 export class StopEventServiceRenderer {
     private map: mapboxgl.Map

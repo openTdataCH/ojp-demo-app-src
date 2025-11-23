@@ -175,7 +175,7 @@ export class OJPHelpers {
     const dateDiffSeconds = (depArrTime.realtime.getTime() - depArrTime.timetable.getTime()) / 1000;
     if (Math.abs(dateDiffSeconds) < 0.1) {
       return null;
-    }      
+    }
 
     const delayTextParts: string[] = [];
     delayTextParts.push(' ');
