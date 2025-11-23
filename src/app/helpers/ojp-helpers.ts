@@ -164,6 +164,20 @@ export class OJPHelpers {
     stopPointData.geoPosition = stopPointData.geoPosition;
   }
 
+  public static computeDelayMinutes(depArrType: StopEventType, stopPoint: StopPointCall): number | null {
+    const isArr = depArrType === 'arrival';
+    const depArrTime = isArr ? stopPoint.arrival : stopPoint.departure;
+
+    if ((depArrTime.timetable === null) || (depArrTime.realtime === null)) {
+      return null;
+    }
+
+    const dateDiffSeconds = (depArrTime.realtime.getTime() - depArrTime.timetable.getTime()) / 1000
+    const delayMinutes = Math.floor(dateDiffSeconds / 60)
+
+    return delayMinutes;
+  }
+
   private static computeStopPointDelayText(depArrType: StopEventType, stopPoint: StopPointCall): string | null {
     const isArr = depArrType === 'arrival';
     const depArrTime = isArr ? stopPoint.arrival : stopPoint.departure;
