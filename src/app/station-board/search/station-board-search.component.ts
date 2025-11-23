@@ -383,8 +383,8 @@ export class StationBoardSearchComponent implements OnInit {
     return stopEventRequest;
   }
 
-  private parseStopEvents(stopEvents: OJP_Legacy.StopEvent[]): void {
-    const hasResults = stopEvents.length > 0;
+  private parseStopEvents(stopEventResults: StopEventResult[]): void {
+    const hasResults = stopEventResults.length > 0;
     if (hasResults) {
       this.searchPanel?.close();
 
@@ -393,7 +393,7 @@ export class StationBoardSearchComponent implements OnInit {
 
     const stationBoardData: StationBoardData = {
       type: this.stationBoardType,
-      items: stopEvents,
+      items: stopEventResults,
     }
     this.stationBoardService.stationBoardDataUpdated.emit(stationBoardData);
   }
