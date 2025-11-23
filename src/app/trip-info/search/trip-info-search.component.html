@@ -11,14 +11,6 @@
               <input sbbInput placeholder="type a JourneyRef" value="" [(ngModel)]="this.model.journeyRef" />
             </sbb-form-field>
           </div>
-          
-          <div
-            *ngIf="this.currentRequestInfo?.requestXML"
-            class="xml-info"
-            (click)="showRequestXmlPopover()"
-          >
-            <span class="layer-xml-info badge bg-info text-dark">XML</span>
-          </div>
         </div>
 
         <div class="d-flex">
@@ -78,3 +70,15 @@
     </sbb-accordion>
   </div>
 </div>
+
+<ng-container *ngIf="this.currentRequestInfo?.requestXML">
+  <div class="row mb-2">
+    <div class="col">
+      <div class="d-flex flex-row-reverse gap-1">
+        <div class="xml-info" (click)="showRequestXmlPopover()">
+          <span class="layer-xml-info badge bg-info text-dark">XML</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</ng-container>
