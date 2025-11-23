@@ -4,13 +4,10 @@ import { SbbDialog } from '@sbb-esta/angular/dialog';
 
 import * as OJP_Next from 'ojp-sdk-next';
 
-import OJP_Legacy from '../../config/ojp-legacy';
-
 import { StationBoardService } from '../station-board.service';
 import { OJPHelpers } from '../../helpers/ojp-helpers';
 
 import { TripInfoResultPopoverComponent } from '../../journey/journey-result-row/result-trip-leg/trip-info-result-popover/trip-info-result-popover.component';
-import { JourneyService } from '../../shared/models/journey-service';
 import { StationBoardType } from '../types/stop-event';
 import { StopEventResult } from '../../shared/models/stop-event-result';
 import { StopEventType, StopPointCall } from '../../shared/types/_all';
@@ -140,16 +137,6 @@ export class StationBoardResultComponent implements OnInit, AfterViewInit {
 
   public hasSituations(stopEvent: StationBoardModel): boolean {
     return stopEvent.situations.length > 0;
-  }
-
-  private computeServiceLineNumber(stopEvent: OJP_Legacy.StopEvent): string {
-    const serviceShortName = stopEvent.journeyService.ptMode.shortName ?? 'N/A';
-    const serviceLineNumber = stopEvent.journeyService.serviceLineNumber;
-    if (serviceLineNumber) {
-        return serviceLineNumber
-    } else {
-        return serviceShortName;
-    }
   }
 
   private computeStopTime(stopTime: Date | null): string | null {
