@@ -23,7 +23,9 @@ interface PagelModel {
   journeyDateTime: Date,
   appStageOptions: APP_STAGE[],
   isSearching: boolean,
-  permalinkURLAddress: string
+  
+  otherVersionURL: string | null,
+  permalinkURLAddress: string,
 }
 
 @Component({
@@ -61,10 +63,12 @@ export class TripInfoSearchComponent implements OnInit {
       journeyDateTime: new Date(),
       appStageOptions: APP_STAGEs,
       isSearching: false,
+
+      otherVersionURL: null,
       permalinkURLAddress: '',
     }
 
-    this.updatePermalinkURLAddress();
+    this.updateURLs();
 
     this.currentRequestInfo = null;
 
@@ -105,6 +109,8 @@ export class TripInfoSearchComponent implements OnInit {
       if (dayRef) {
         this.model.journeyDateTime = new Date(dayRef);
       }
+
+      this.updateURLs();
       
       this.fetchTripInfo();
     }
@@ -132,7 +138,7 @@ export class TripInfoSearchComponent implements OnInit {
   }
 
   public onDateTimeChanged() {
-    this.updatePermalinkURLAddress();
+    this.updateURLs();
   }
 
   public isSearchButtonDisabled(): boolean {
@@ -149,16 +155,38 @@ export class TripInfoSearchComponent implements OnInit {
     this.fetchTripInfo();
   }
 
-  private updatePermalinkURLAddress() {
+  private updateURLs() {
     const queryParams = new URLSearchParams();
     queryParams.set('ref', this.model.journeyRef);
     
     const dayS = OJP_Next.DateHelpers.formatDate(this.model.journeyDateTime).substring(0, 10);
     queryParams.set('day', dayS);
 
+    if (this.model.currentAppStage !== DEFAULT_APP_STAGE) {
+      const stageS = this.model.currentAppStage.toLowerCase();
+      queryParams.append('stage', stageS);
+    }
+
     const urlAddress = document.location.pathname + '?' + queryParams.toString();
     
     this.model.permalinkURLAddress = urlAddress;
+    this.updateLinkedURLs(queryParams);
+  }
+
+  private updateLinkedURLs(queryParams: URLSearchParams) {
+    const isOJPv2 = OJP_VERSION === '2.0';
+
+    const otherVersionQueryParams = new URLSearchParams(queryParams);
+    this.userTripService.updateStageLinkedURL(otherVersionQueryParams, isOJPv2);
+    if (isOJPv2) {
+      // v1
+      this.model.otherVersionURL = 'https://tools.odpch.ch/beta-ojp-demo/trip?' + otherVersionQueryParams.toString();
+      this.userTripService.otherVersionURLText = 'BETA (OJP 1.0)';
+    } else {
+      // v2
+      this.model.otherVersionURL = 'https://opentdatach.github.io/ojp-demo-app/trip?' + otherVersionQueryParams.toString();
+      this.userTripService.otherVersionURLText = 'PROD (OJP 2.0)';
+    }
   }
 
   private async fetchTripInfo() {

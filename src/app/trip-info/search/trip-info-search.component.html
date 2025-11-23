@@ -78,6 +78,16 @@
         <div class="xml-info" (click)="showRequestXmlPopover()">
           <span class="layer-xml-info badge bg-info text-dark">XML</span>
         </div>
+        <div>|</div>
+
+        <div>
+          <a href="{{ this.model.otherVersionURL }}" target="_blank">{{ this.userTripService.otherVersionURLText }}</a>
+        </div>
+        <div>|</div>
+        
+        <div>
+          <a href="{{ this.model.permalinkURLAddress }}" target="_blank">Permalink</a>
+        </div>
       </div>
     </div>
   </div>
