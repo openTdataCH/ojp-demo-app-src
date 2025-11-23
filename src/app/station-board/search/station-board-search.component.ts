@@ -367,20 +367,21 @@ export class StationBoardSearchComponent implements OnInit {
     });
   }
 
-  private computeStopEventRequest(stopPlaceRef: string): OJP_Legacy.StopEventRequest {
-    const isOJPv2 = OJP_VERSION === '2.0';
-    const xmlConfig = isOJPv2 ? OJP_Next.DefaultXML_Config : OJP_Next.XML_BuilderConfigOJPv1;
+  private computeStopEventRequest(stopPlaceRef: string) {
+    const sdk = this.userTripService.createOJP_SDK_Instance(this.languageService.language);
 
-    const stopEventType: OJP_Legacy.StopEventType = this.stationBoardType === 'Arrivals' ? 'arrival' : 'departure'
     const stopEventDate = this.computeStopBoardDate();
-    const appStageConfig = this.userTripService.getStageConfig();
-    const stopEventRequest = OJP_Legacy.StopEventRequest.initWithStopPlaceRef(appStageConfig, this.languageService.language, xmlConfig, REQUESTOR_REF, stopPlaceRef, stopEventType, stopEventDate);
-    stopEventRequest.useRealTimeDataType = this.userTripService.useRealTimeDataType;
-    
-    // for debug XML dialog
-    stopEventRequest.updateRequestXML();
+    const request = sdk.requests.StopEventRequest.initWithPlaceRefAndDate(stopPlaceRef, stopEventDate);
+    if (request.payload.params) {
+      request.payload.params.useRealtimeData = this.userTripService.useRealTimeDataType;
+      if (this.stationBoardType === 'Arrivals') {
+        request.payload.params.stopEventType = 'arrival';
+      } else {
+        request.payload.params.stopEventType = 'departure';
+      }
+    }
 
-    return stopEventRequest;
+    return request;
   }
 
   private parseStopEvents(stopEventResults: StopEventResult[]): void {
