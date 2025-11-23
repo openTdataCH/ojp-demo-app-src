@@ -10,9 +10,11 @@ import { StationBoardService } from '../station-board.service';
 import { OJPHelpers } from '../../helpers/ojp-helpers';
 
 import { TripInfoResultPopoverComponent } from '../../journey/journey-result-row/result-trip-leg/trip-info-result-popover/trip-info-result-popover.component';
-import { SituationContent } from '../../shared/types/situations';
 import { JourneyService } from '../../shared/models/journey-service';
 import { StationBoardType } from '../types/stop-event';
+import { StopEventResult } from '../../shared/models/stop-event-result';
+import { StopEventType, StopPointCall } from '../../shared/types/_all';
+import { SituationContent } from '../../shared/models/situation';
 
 interface StationBoardTime {
   stopTime: string
@@ -24,7 +26,7 @@ interface StationBoardTime {
 }
 
 interface StationBoardModel {
-  stopEvent: OJP_Legacy.StopEvent
+  stopEvent: StopEventResult
 
   serviceLineNumber: string
   servicePtMode: string
@@ -160,11 +162,11 @@ export class StationBoardResultComponent implements OnInit, AfterViewInit {
     return stopTimeText;
   }
 
-  private computeDelayTime(stopPoint: OJP_Legacy.StopPoint, forBoardType: StationBoardType): string | null {
+  private computeDelayTime(stopPoint: StopPointCall, forBoardType: StationBoardType): string | null {
     const isArrival = forBoardType === 'Arrivals';
-    const stopPointTime = isArrival ? stopPoint.arrivalData : stopPoint.departureData;
 
-    const delayMinutes = stopPointTime?.delayMinutes ?? null;
+    const stopEventType: StopEventType = isArrival ? 'arrival' : 'departure';
+    const delayMinutes = OJPHelpers.computeDelayMinutes(stopEventType, stopPoint);
     if (delayMinutes === null) {
       return null;
     }
@@ -183,21 +185,26 @@ export class StationBoardResultComponent implements OnInit, AfterViewInit {
     return delayText;
   }
 
-  private computeStopTimeData(stopPoint: OJP_Legacy.StopPoint, forBoardType: StationBoardType): StationBoardTime | null {
+  private computeStopTimeData(stopPoint: StopPointCall, forBoardType: StationBoardType): StationBoardTime | null {
     const isArrival = forBoardType === 'Arrivals';
-    const stopPointTime = isArrival ? stopPoint.arrivalData : stopPoint.departureData;
+    const stopPointTime = isArrival ? stopPoint.arrival : stopPoint.departure;
 
     if (stopPointTime === null) {
       return null;
     }
 
-    const hasDelay = stopPointTime.delayMinutes !== null;
-    
-    const timetableTimeF = OJP_Next.DateHelpers.formatTimeHHMM(stopPointTime.timetableTime);
-    const estimatedTimeF = stopPointTime.estimatedTime ? OJP_Next.DateHelpers.formatTimeHHMM(stopPointTime.estimatedTime) : 'n/a';
-    const hasDelayDifferentTime = stopPointTime.estimatedTime ? (timetableTimeF !== estimatedTimeF) : false;
+    if (stopPointTime.timetable === null) {
+      return null;
+    }
 
-    const stopTime = this.computeStopTime(stopPointTime.timetableTime);
+    const delayMinutes = this.computeDelayTime(stopPoint, forBoardType);
+    const hasDelay = delayMinutes !== null;
+    
+    const timetableTimeF = OJP_Next.DateHelpers.formatTimeHHMM(stopPointTime.timetable);
+    const estimatedTimeF = stopPointTime.realtime ? OJP_Next.DateHelpers.formatTimeHHMM(stopPointTime.realtime) : 'n/a';
+    const hasDelayDifferentTime = stopPointTime.realtime ? (timetableTimeF !== estimatedTimeF) : false;
+
+    const stopTime = this.computeStopTime(stopPointTime.timetable);
     if (stopTime === null) {
       return null;
     }
@@ -214,23 +221,21 @@ export class StationBoardResultComponent implements OnInit, AfterViewInit {
     return stopTimeData;
   }
 
-  private computeStationBoardModel(stopEvent: OJP_Legacy.StopEvent): StationBoardModel {
-    const serviceLineNumber = this.computeServiceLineNumber(stopEvent);
-    const servicePtMode = stopEvent.journeyService.ptMode.shortName ?? 'N/A';
+  private computeStationBoardModel(stopEvent: StopEventResult): StationBoardModel {
+    const servicePtMode = stopEvent.service.mode.ptMode ?? 'N/A';
 
-    const arrivalTime = this.computeStopTimeData(stopEvent.stopPoint, 'Arrivals');
-    const departureTime = this.computeStopTimeData(stopEvent.stopPoint, 'Departures');
+    const arrivalTime = this.computeStopTimeData(stopEvent.thisCall, 'Arrivals');
+    const departureTime = this.computeStopTimeData(stopEvent.thisCall, 'Departures');
 
-    const stopPlatformActual = stopEvent.stopPoint.plannedPlatform === stopEvent.stopPoint.actualPlatform ? null : stopEvent.stopPoint.actualPlatform;
+    const stopPlatformActual = stopEvent.thisCall.platform.timetable === stopEvent.thisCall.platform.realtime ? null : stopEvent.thisCall.platform.timetable;
 
-    const isCancelled = stopEvent.journeyService.hasCancellation === true;
-    const hasDeviation = stopEvent.journeyService.hasDeviation === true;
-    const isUnplanned = stopEvent.journeyService.isUnplanned === true;
+    const isCancelled = stopEvent.service.cancelled === true;
+    const hasDeviation = stopEvent.service.deviation === true;
+    const isUnplanned = stopEvent.service.unplanned === true;
 
-    const service = JourneyService.initWithOJP_LegacyJourneyService(stopEvent.journeyService);
+    const service = stopEvent.service;
 
     const model = <StationBoardModel>{
-        situations: OJPHelpers.computeSituationsData(this.sanitizer, stopEvent.stopPoint.siriSituations),
       stopEvent: stopEvent,
       serviceLineNumber: stopEvent.service.publishedServiceName.text ?? 'n/a',
       servicePtMode: servicePtMode,
@@ -247,6 +252,7 @@ export class StationBoardResultComponent implements OnInit, AfterViewInit {
       stopPlatform: stopEvent.thisCall.platform.timetable,
       stopPlatformActual: stopPlatformActual,
       
+      situations: stopEvent.situationsContent,
 
       isCancelled: isCancelled,
       hasDeviation: hasDeviation,
