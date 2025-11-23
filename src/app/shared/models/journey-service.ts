@@ -110,6 +110,25 @@ export class JourneyService implements OJP_Types.DatedJourneySchema  {
 
 
     return service;
+  }
+
+  // Init with OJP 1.0 XML schema - TripRequest
+  // - it needs the TimedLeg because there we have the the 'publishedJourneyNumber' stored
+  public static initWithLegacyStopEventResultSchema(legacyStopEventResultSchema: OJP_Types.OJPv1_StopEventResultSchema): JourneyService {
+    const schema = legacyStopEventResultSchema.stopEvent.service;
+    
+    const service = JourneyService.initWithLegacyDatedJourneySchema(schema);
+    service.trainNumber = legacyStopEventResultSchema.stopEvent.extension?.publishedJourneyNumber?.text ?? undefined;
+
+    service.situationFullRefs = {
+      situationFullRef: []
+    };
+    const situationFullRefItems = legacyStopEventResultSchema.stopEvent.thisCall.callAtStop.situationFullRef ?? [];
+    situationFullRefItems.forEach(item => {
+      if (service.situationFullRefs) {
+        service.situationFullRefs.situationFullRef.push(item);
+      }
+    });
 
     return service;
   }
