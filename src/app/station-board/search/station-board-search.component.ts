@@ -323,12 +323,15 @@ export class StationBoardSearchComponent implements OnInit {
   }
 
   private async fetchStopEventsForStopRef(stopPlaceRef: string) {
+    const sdk = this.userTripService.createOJP_SDK_Instance(this.languageService.language);
+    
     const stopEventRequest = this.computeStopEventRequest(stopPlaceRef);
-    stopEventRequest.enableExtensions = this.currentAppStage !== 'OJP-SI';
 
-    const response = await stopEventRequest.fetchResponse();
+    const response = await stopEventRequest.fetchResponse(sdk);
     this.currentRequestInfo = stopEventRequest.requestInfo;
-    this.parseStopEvents(response.stopEvents);
+    
+    const stopEventResults = this.parseStopEventRequestResponse(response);
+    this.parseStopEvents(stopEventResults);
   }
 
   private async fetchStopEventFromMocks() {
@@ -607,25 +610,29 @@ export class StationBoardSearchComponent implements OnInit {
     const isOJPv2 = OJP_VERSION === '2.0';
     const xmlConfig = isOJPv2 ? OJP_Next.DefaultXML_Config : OJP_Next.XML_BuilderConfigOJPv1;
 
-    const request = OJP_Legacy.StopEventRequest.initWithMock(responseXML, xmlConfig, REQUESTOR_REF);
-    request.fetchResponse().then(response => {
-      const stopEvents = response.stopEvents;
+    const sdk = this.userTripService.createOJP_SDK_Instance(this.languageService.language);
 
-      if (stopEvents.length > 0) {
-        const legacyGeoPosition = stopEvents[0].stopPoint.location.geoPosition;
-        if (legacyGeoPosition) {
-          const placeLocation = new PlaceLocation(legacyGeoPosition.longitude, legacyGeoPosition.latitude);
-          this.mapService.tryToCenterAndZoomToPlace(placeLocation);
-        }
-        
-        this.parseStopEvents(response.stopEvents);
-      } else {
-        this.notificationToast.open('No StopEvents found', {
-          type: 'error',
-          verticalPosition: 'top',
-        });
+    const request = sdk.requests.StopEventRequest.initWithResponseMock(responseXML);
+    const response = await request.fetchResponse(sdk);
+
+    if (!response.ok) {
+      this.notificationToast.open('No StopEvents found', {
+        type: 'error',
+        verticalPosition: 'top',
+      });
+      return;
+    }
+
+    const stopEventResults = this.parseStopEventRequestResponse(response);
+
+    if (stopEventResults.length > 0) {
+      const place = stopEventResults[0].thisCall.place ?? null;
+      if (place?.type === 'stop') {
+        this.mapService.tryToCenterAndZoomToPlace(place);
       }
-    });
+    }
+
+    this.parseStopEvents(stopEventResults);
   }
 
   private updateCurrentRequestData(stopRef: string): void {
