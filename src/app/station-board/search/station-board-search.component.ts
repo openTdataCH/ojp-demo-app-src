@@ -265,7 +265,7 @@ export class StationBoardSearchComponent implements OnInit {
   }
 
   private updateURLs() {
-    const queryParams = new URLSearchParams()
+    const queryParams = new URLSearchParams();
     
     if (this.stationBoardType === 'Arrivals') {
       queryParams.set('type', 'arr');
