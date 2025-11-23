@@ -13,6 +13,7 @@ import { StationBoardService } from '../station-board.service';
 import { StopEventServiceRenderer } from './stop-event-service-renderer/stop-event-service-renderer';
 import { MapHelpers } from '../../map/helpers/map.helpers';
 import { LanguageService } from '../../shared/services/language.service';
+import { StopEventResult } from '../../shared/models/stop-event-result';
 
 @Component({
   selector: 'station-board-map',
@@ -72,7 +73,7 @@ export class StationBoardMapComponent implements OnInit {
     this.stopEventServiceRenderer = new StopEventServiceRenderer(map);
   }
 
-  private updateMapForEntry(stopEvent: OJP_Legacy.StopEvent | null) {
+  private updateMapForEntry(stopEvent: StopEventResult | null) {
     if (stopEvent === null) {
       this.stopEventServiceRenderer?.resetStopEventLayers();
     } else {
