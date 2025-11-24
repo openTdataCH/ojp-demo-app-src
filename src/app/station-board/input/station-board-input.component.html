@@ -13,7 +13,7 @@
     #autocompleteTemplate="sbbAutocomplete">
     <sbb-option
       *ngFor="let stopLookup of this.stopLookups; index as idx"
-      [value]="idx">
+      [value]="idx.toString()">
       {{ renderLookupName(stopLookup) }}
     </sbb-option>
   </sbb-autocomplete>
