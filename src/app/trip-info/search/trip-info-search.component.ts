@@ -90,6 +90,7 @@ export class TripInfoSearchComponent implements OnInit {
     });
 
     this.model.currentAppStage = appStage;
+    this.userTripService.updateAppStage(appStage);
 
     this.tripInfoService.tripInfoResultUpdated.subscribe(tripInfoResult => {
       if (tripInfoResult !== null) {

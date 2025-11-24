@@ -131,6 +131,7 @@ export class StationBoardSearchComponent implements OnInit {
     });
 
     this.currentAppStage = appStage;
+    this.userTripService.updateAppStage(appStage);
 
     const userStopID = this.queryParams.get('stop_id');
     if (userStopID) {
