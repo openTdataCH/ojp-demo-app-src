@@ -68,6 +68,8 @@ export class UserTripService {
 
   public searchParamsReset = new EventEmitter<void>();
 
+  public stageChanged = new EventEmitter<APP_STAGE>();
+
   constructor(private mapService: MapService) {
     this.queryParams = new URLSearchParams(document.location.search)
 
@@ -113,6 +115,8 @@ export class UserTripService {
       // Find more at https://angular.io/errors/NG0100
       this.currentAppStage = appStage;
     });
+
+    this.updateAppStage(appStage);
 
     const defaultLocationsPlaceRef = {
       "Bern": "8507000",
@@ -693,6 +697,7 @@ export class UserTripService {
 
   public updateAppStage(newStage: APP_STAGE) {
     this.currentAppStage = newStage;
+    this.stageChanged.emit(newStage);
     this.updateURLs();
   }
 
