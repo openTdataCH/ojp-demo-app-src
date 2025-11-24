@@ -4,6 +4,13 @@ OJP-Demo URL: https://opentdatach.github.io/ojp-demo-app/
 
 ----
 
+24.November 2025
+- Migrate LIR/SER to use ojp-sdk-next - [PR #303](https://github.com/openTdataCH/ojp-demo-app-src/pull/305)
+  - migrate `LocationInformationRequest`, `StopEventRequest` requests / parsers to use `ojp-sdk-next` SDK
+  - use new SDK constructs for `FareRequest`, `TripInfoRequest`, `TripRefineRequest` requests / parsers
+  - extract shared models from legacy SDK: Place (Address, Location, PointOfInterest, StopPlace), Situation, StopEventResult, GeoPositionBBOX
+  - use a consistent way to switch stages, versions between search/board/trip tabs
+
 13.November 2025
 - Patch OJPv1 requests - [PR #305](https://github.com/openTdataCH/ojp-demo-app-src/pull/305)
   - handle OJPv1 `GeneralAttributeSchema`
