@@ -89,8 +89,8 @@ export class StationBoardInputComponent implements OnInit {
       this.stopLookups = [StationBoardInputComponent.AroundMeStopLookup];
       return;
     }
-
-    if (searchTerm.length < 3) {
+    
+    if (searchTerm.length < 2) {
       return;
     }
 
