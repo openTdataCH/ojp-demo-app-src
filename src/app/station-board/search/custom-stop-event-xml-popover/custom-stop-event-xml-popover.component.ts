@@ -1,9 +1,10 @@
 import { Component, EventEmitter, Output } from '@angular/core';
 import { UserTripService } from 'src/app/shared/services/user-trip.service';
 
-import OJP_Legacy from '../../../config/ojp-legacy';
+import * as OJP_Next from 'ojp-sdk-next';
 
-import { REQUESTOR_REF, OJP_VERSION } from '../../../config/constants';
+import { OJP_VERSION } from '../../../config/constants';
+import { LanguageService } from '../../../shared/services/language.service';
 
 @Component({
   selector: 'custom-stop-event-popover',
@@ -18,30 +19,29 @@ export class CustomStopEventXMLPopoverComponent {
   @Output() customRequestSaved = new EventEmitter<string>()
   @Output() customResponseSaved = new EventEmitter<string>()
 
-  constructor(private userTripService: UserTripService) {
+  constructor(private userTripService: UserTripService, private languageService: LanguageService) {
     this.customRequestXMLs = '... wait'
     this.customResponseXMLs = 'Paste custom OJP StopEventRequest Response XML here...'
 
     this.isRunningRequest = false
   }
 
-  public parseCustomRequestXML() {
+  public async parseCustomRequestXML() {
     this.isRunningRequest = true;
     const isOJPv2 = OJP_VERSION === '2.0';
-    const xmlConfig = isOJPv2 ? OJP_Legacy.XML_ConfigOJPv2 : OJP_Legacy.XML_BuilderConfigOJPv1;
+    const xmlConfig = isOJPv2 ? OJP_Next.DefaultXML_Config : OJP_Next.XML_BuilderConfigOJPv1;
 
-    const stageConfig = this.userTripService.getStageConfig();
-    const request = OJP_Legacy.StopEventRequest.initWithRequestMock(this.customRequestXMLs, stageConfig, xmlConfig, REQUESTOR_REF);
-    request.fetchResponse().then(response => {
-      this.isRunningRequest = false;
-      const responseXML = request.requestInfo.responseXML;
-      if (responseXML === null) {
-        console.log('ERROR - no response from StopEventRequest');
-        return;
-      }
+    const sdk = this.userTripService.createOJP_SDK_Instance(this.languageService.language);
+    const request = sdk.requests.StopEventRequest.initWithRequestMock(this.customRequestXMLs);
+    const response = await request.fetchResponse(sdk);
 
-      this.customRequestSaved.emit(responseXML);
-    });
+    if (!response.ok) {
+      console.log('ERROR - no response from StopEventRequest');
+      console.log(request);
+      return;
+    }
+
+    this.customRequestSaved.emit(request.requestInfo.requestXML ?? 'n/a');
   }
 
   public parseCustomResponseXML() {

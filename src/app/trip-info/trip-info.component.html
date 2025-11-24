@@ -1,8 +1,8 @@
 <div class="d-flex flex-column vh-100 overflow-hidden">
   <web-header class="ms-2"></web-header>
   <nav sbb-tab-nav-bar>
-    <a sbb-tab-link [active]="'false'" [routerLink]="'../search'" [queryParams]="{ stage: this.userTripService.currentAppStage }">Journey Search</a>
-    <a sbb-tab-link [active]="'false'" [routerLink]="'../board'" [queryParams]="{ stage: this.userTripService.currentAppStage }">Station Board</a>
+    <a sbb-tab-link [active]="'false'" [routerLink]="'../search'" [queryParams]="this.queryParams">Journey Search</a>
+    <a sbb-tab-link [active]="'false'" [routerLink]="'../board'" [queryParams]="this.queryParams">Station Board</a>
     <a sbb-tab-link [active]="'true'">Trip Info</a>
   </nav>
 

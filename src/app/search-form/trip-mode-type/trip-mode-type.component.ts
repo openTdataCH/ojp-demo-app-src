@@ -2,9 +2,11 @@ import { Component, OnInit } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { debounceTime } from 'rxjs';
 
+import * as OJP_Types from 'ojp-shared-types';
 import OJP_Legacy from '../../config/ojp-legacy';
 
 import { UserTripService } from '../../shared/services/user-trip.service';
+import { LanguageService } from '../../shared/services/language.service';
 import { FormatHelpers } from '../../helpers/format-helpers';
 
 import { TRIP_REQUEST_DEFAULT_NUMBER_OF_RESULTS, OJP_VERSION } from '../../config/constants';
@@ -103,10 +105,10 @@ export class TripModeTypeComponent implements OnInit {
 
   public isV1: boolean;
 
-  public useRealTimeDataTypes: OJP_Legacy.UseRealtimeDataEnumeration[];
-  public selectedUseRealTimeDataType: OJP_Legacy.UseRealtimeDataEnumeration;
+  public useRealTimeDataTypes: OJP_Types.UseRealtimeDataEnum[];
+  public selectedUseRealTimeDataType: OJP_Types.UseRealtimeDataEnum;
 
-  constructor(public userTripService: UserTripService) {
+  constructor(public userTripService: UserTripService, private languageService: LanguageService) {
     const queryParams = new URLSearchParams(document.location.search);
 
     this.tripTransportModeData = appTripTransportModeData;
@@ -174,7 +176,7 @@ export class TripModeTypeComponent implements OnInit {
     this.selectedUseRealTimeDataType = this.userTripService.useRealTimeDataType;
   }
 
-  ngOnInit() {
+  async ngOnInit(): Promise<void> {
     const tripTransportModeData = this.tripTransportModeData.find(tripTransportMode => {
       return tripTransportMode.modeType === this.userTripService.tripModeType;
     }) ?? this.tripTransportModeData[0];
@@ -183,49 +185,7 @@ export class TripModeTypeComponent implements OnInit {
     this.prevTransportMode = this.userTripService.tripTransportMode;
 
     this.userTripService.defaultsInited.subscribe(nothing => {
-      this.userTripService.updateTripLocationCustomMode();
-
-      const isMonomodal = this.userTripService.tripModeType === 'monomodal';
-
-      if (!isMonomodal) {
-        this.userTripService.isAdditionalRestrictionsEnabled = true;
-        this.updateAdditionalRestrictions();
-      }
-
-      const isCar = this.userTripService.tripTransportMode === carTransportMode;
-      if (isMonomodal && isCar) {
-        this.numberOfResults = 0;
-        this.userTripService.numberOfResults = 0;
-      }
-
-      if (this.userTripService.publicTransportModesFilter.length > 0) {
-        this.userTripService.isAdditionalRestrictionsEnabled = true;
-
-        this.userTripService.publicTransportModesFilter.forEach(userPublicTransportMode => {
-          if (userPublicTransportMode === 'bus') {
-            this.mapPublicTransportModesFilter.bus = true;
-          }
-          if (userPublicTransportMode === 'rail') {
-            this.mapPublicTransportModesFilter.rail = true;
-          }
-          if (userPublicTransportMode === 'water') {
-            this.mapPublicTransportModesFilter.water = true;
-          }
-          if (userPublicTransportMode === 'tram') {
-            this.mapPublicTransportModesFilter.tram = true;
-          }
-        });
-
-        if (this.mapPublicTransportModesFilter.rail) {
-          this.userTripService.railSubmodesFilter.forEach(railSubmode => {
-            this.mapRailSubmodeFilter[railSubmode] = true;
-          });
-        }
-      }
-
-      this.updateAdditionalRestrictions();
-
-      this.userTripService.searchFormAfterDefaultsInited.emit();
+      this.initAfterTripService();
     });
 
     this.filterMinDurationControl.valueChanges.pipe(debounceTime(200)).subscribe(value => {
@@ -242,6 +202,52 @@ export class TripModeTypeComponent implements OnInit {
     });
 
     this.settingsCollapseID = 'mode_custom_mode_settings_0';
+  }
+
+  private initAfterTripService() {
+    this.userTripService.updateTripLocationCustomMode();
+
+    const isMonomodal = this.userTripService.tripModeType === 'monomodal';
+
+    if (!isMonomodal) {
+      this.userTripService.isAdditionalRestrictionsEnabled = true;
+      this.updateAdditionalRestrictions();
+    }
+
+    const isCar = this.userTripService.tripTransportMode === carTransportMode;
+    if (isMonomodal && isCar) {
+      this.numberOfResults = 0;
+      this.userTripService.numberOfResults = 0;
+    }
+
+    if (this.userTripService.publicTransportModesFilter.length > 0) {
+      this.userTripService.isAdditionalRestrictionsEnabled = true;
+
+      this.userTripService.publicTransportModesFilter.forEach(userPublicTransportMode => {
+        if (userPublicTransportMode === 'bus') {
+          this.mapPublicTransportModesFilter.bus = true;
+        }
+        if (userPublicTransportMode === 'rail') {
+          this.mapPublicTransportModesFilter.rail = true;
+        }
+        if (userPublicTransportMode === 'water') {
+          this.mapPublicTransportModesFilter.water = true;
+        }
+        if (userPublicTransportMode === 'tram') {
+          this.mapPublicTransportModesFilter.tram = true;
+        }
+      });
+    }
+
+    if (this.mapPublicTransportModesFilter.rail) {
+      this.userTripService.railSubmodesFilter.forEach(railSubmode => {
+        this.mapRailSubmodeFilter[railSubmode] = true;
+      });
+    }
+
+    this.updateAdditionalRestrictions();
+
+    this.userTripService.searchFormAfterDefaultsInited.emit();
   }
 
   public updateAdditionalRestrictions() {

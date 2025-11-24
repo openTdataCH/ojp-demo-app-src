@@ -1,9 +1,11 @@
 import * as GeoJSON from 'geojson';
 
+import * as OJP_Next from 'ojp-sdk-next';
 import OJP_Legacy from '../../config/ojp-legacy';
 
 import { JourneyService } from '../models/journey-service';
 import { TripLegDrawType, TripLegLineType, TripLegPropertiesEnum } from '../types/map-geometry-types';
+import { GeoPositionBBOX } from '../models/geo/geoposition-bbox';
 
 interface LinePointData {
   type: OJP_Legacy.StopPointType,
@@ -17,8 +19,8 @@ export class TripGeoController {
     this.trip = trip;
   }
 
-  public computeBBOX(): OJP_Legacy.GeoPositionBBOX {
-    const bbox = new OJP_Legacy.GeoPositionBBOX([]);
+  public computeBBOX(): GeoPositionBBOX {
+    const bbox = new GeoPositionBBOX([]);
 
     const fromGeoPosition = this.computeFromGeoPosition();
     if (fromGeoPosition) {
@@ -45,42 +47,54 @@ export class TripGeoController {
           return;
         }
 
-        bbox.extend(new OJP_Legacy.GeoPosition(featureBBOX[0], featureBBOX[1]));
-        bbox.extend(new OJP_Legacy.GeoPosition(featureBBOX[2], featureBBOX[3]));
+        bbox.extend(new OJP_Next.GeoPosition(featureBBOX[0], featureBBOX[1]));
+        bbox.extend(new OJP_Next.GeoPosition(featureBBOX[2], featureBBOX[3]));
       });
     });
 
     return bbox;
   }
 
-  private computeFromGeoPosition(): OJP_Legacy.GeoPosition | null {
+  private computeFromGeoPosition(): OJP_Next.GeoPosition | null {
     if (this.trip.legs.length === 0) {
       return null;
     }
 
     const firstLeg = this.trip.legs[0];
-    const legGeoPosition = firstLeg.fromLocation.geoPosition;
-    if (legGeoPosition !== null) {
-      return legGeoPosition;
+    const legLegacyGeoPosition = firstLeg.fromLocation.geoPosition;
+    if (legLegacyGeoPosition) {
+      const geoPosition = new OJP_Next.GeoPosition(legLegacyGeoPosition.longitude, legLegacyGeoPosition.latitude);
+      return geoPosition;
     }
 
-    const legTrackGeoPosition = firstLeg.legTrack?.fromGeoPosition() ?? null;
-    return legTrackGeoPosition;
+    const legTrackLegacyGeoPosition = firstLeg.legTrack?.fromGeoPosition() ?? null;
+    if (legTrackLegacyGeoPosition) {
+      const geoPosition = new OJP_Next.GeoPosition(legTrackLegacyGeoPosition.longitude, legTrackLegacyGeoPosition.latitude);
+      return geoPosition;
+    }
+
+    return null;
   }
 
-  public computeToGeoPosition(): OJP_Legacy.GeoPosition | null {
+  public computeToGeoPosition(): OJP_Next.GeoPosition | null {
     if (this.trip.legs.length === 0) {
       return null;
     }
 
     const lastLeg = this.trip.legs[this.trip.legs.length - 1];
-    const legGeoPosition = lastLeg.toLocation.geoPosition;
-    if (legGeoPosition !== null) {
-      return legGeoPosition;
+    const legLegacyGeoPosition = lastLeg.toLocation.geoPosition;
+    if (legLegacyGeoPosition !== null) {
+      const geoPosition = new OJP_Next.GeoPosition(legLegacyGeoPosition.longitude, legLegacyGeoPosition.latitude);
+      return geoPosition;
     }
 
-    const legTrackGeoPosition = lastLeg.legTrack?.toGeoPosition() ?? null;
-    return legTrackGeoPosition;
+    const legTrackLegacyGeoPosition = lastLeg.legTrack?.toGeoPosition() ?? null;
+    if (legTrackLegacyGeoPosition) {
+      const geoPosition = new OJP_Next.GeoPosition(legTrackLegacyGeoPosition.longitude, legTrackLegacyGeoPosition.latitude);
+      return geoPosition;
+    }
+
+    return null;
   }
 }
 
@@ -177,7 +191,7 @@ export class TripLegGeoController {
 
     const coordinates: GeoJSON.Position[] = [];
     beelineGeoPositions.forEach(geoPosition => {
-      coordinates.push(geoPosition.asPosition());
+      coordinates.push(geoPosition.asLngLat());
     });
 
     const beelineProperties: GeoJSON.GeoJsonProperties = {};
@@ -188,39 +202,42 @@ export class TripLegGeoController {
     const lineType: TripLegLineType = this.computeLegLineType();
     beelineProperties[TripLegPropertiesEnum.LineType] = lineType;
 
-    const bbox = new OJP_Legacy.GeoPositionBBOX(beelineGeoPositions);
+    const bbox = new GeoPositionBBOX(beelineGeoPositions);
 
     const beelineFeature: GeoJSON.Feature<GeoJSON.LineString> = {
       type: 'Feature',
       properties: beelineProperties,
       geometry: {
         type: 'LineString',
-        coordinates: coordinates
+        coordinates: coordinates,
       },
-      bbox: bbox.asFeatureBBOX()
+      bbox: bbox.asFeatureBBOX(),
     };
 
     return beelineFeature;
   }
 
-  private computeBeelineGeoPositions(): OJP_Legacy.GeoPosition[] {
-    const geoPositions: OJP_Legacy.GeoPosition[] = [];
+  private computeBeelineGeoPositions(): OJP_Next.GeoPosition[] {
+    const geoPositions: OJP_Next.GeoPosition[] = [];
 
     if (this.leg.fromLocation.geoPosition) {
-      geoPositions.push(this.leg.fromLocation.geoPosition);
+      const geoPosition = new OJP_Next.GeoPosition(this.leg.fromLocation.geoPosition.longitude, this.leg.fromLocation.geoPosition.latitude);
+      geoPositions.push(geoPosition);
     }
 
     if (this.leg.legType === 'TimedLeg') {
       const timedLeg = this.leg as OJP_Legacy.TripTimedLeg;
       timedLeg.intermediateStopPoints.forEach(stopPoint => {
         if (stopPoint.location.geoPosition) {
-          geoPositions.push(stopPoint.location.geoPosition);
+          const geoPosition = new OJP_Next.GeoPosition(stopPoint.location.geoPosition.longitude, stopPoint.location.geoPosition.latitude);
+          geoPositions.push(geoPosition);
         }
       });
     }
 
     if (this.leg.toLocation.geoPosition) {
-      geoPositions.push(this.leg.toLocation.geoPosition);
+      const geoPosition = new OJP_Next.GeoPosition(this.leg.toLocation.geoPosition.longitude, this.leg.toLocation.geoPosition.latitude);
+      geoPositions.push(geoPosition);
     }
 
     return geoPositions;

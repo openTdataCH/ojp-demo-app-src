@@ -1,14 +1,15 @@
 import * as GeoJSON from 'geojson'
 import mapboxgl from "mapbox-gl";
 
-import OJP_Legacy from '../../../config/ojp-legacy';
 import * as OJP_Next from 'ojp-sdk-next';
 
 import serviceTrackLineLayerJSON from './map-layers-def/service-track-line.json'
 import serviceTrackStopLayerJSON from './map-layers-def/service-track-stop.json'
 import { TripInfoResult } from '../../../shared/models/trip-info-result';
+import { StopEventResult } from '../../../shared/models/stop-event-result';
+import { StopPointCall } from '../../../shared/types/_all';
 
-type LinePointType = 'prev' | 'next'
+type LinePointType = 'prev' | 'next';
 
 export class StopEventServiceRenderer {
     private map: mapboxgl.Map
@@ -42,12 +43,12 @@ export class StopEventServiceRenderer {
         map.addLayer(serviceTrackStopLayer);
     }
 
-    public drawStopEvent(stopEvent: OJP_Legacy.StopEvent) {
-        const convertStopPointsToGeoPosition = (stopPoints: OJP_Legacy.StopPoint[]) => {
+    public drawStopEvent(stopEvent: StopEventResult) {
+        const convertStopPointsToGeoPosition = (stopPoints: StopPointCall[]) => {
             const geoPositions: OJP_Next.GeoPosition[] = [];
             
             stopPoints.forEach(el => {
-                const geoPosition = el.location.geoPosition ?? null;
+                const geoPosition = el.place?.geoPosition ?? null;
                 if (geoPosition) {
                     geoPositions.push(new OJP_Next.GeoPosition(geoPosition.longitude, geoPosition.latitude));
                 }
@@ -56,9 +57,9 @@ export class StopEventServiceRenderer {
             return geoPositions;
         };
 
-        const prevStopPositions = convertStopPointsToGeoPosition(stopEvent.prevStopPoints);
-        const nextStopPositions = convertStopPointsToGeoPosition(stopEvent.nextStopPoints);
-        const currentStopPositions = convertStopPointsToGeoPosition([stopEvent.stopPoint]);
+        const prevStopPositions = convertStopPointsToGeoPosition(stopEvent.prevCalls);
+        const nextStopPositions = convertStopPointsToGeoPosition(stopEvent.nextCalls);
+        const currentStopPositions = convertStopPointsToGeoPosition([stopEvent.thisCall]);
 
         this.drawStopPositions(prevStopPositions, nextStopPositions, currentStopPositions[0] ?? null, []);
     }

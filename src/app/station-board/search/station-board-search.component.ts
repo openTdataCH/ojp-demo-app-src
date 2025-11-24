@@ -1,14 +1,17 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
+import { DomSanitizer } from '@angular/platform-browser';
 
 import { SbbExpansionPanel } from '@sbb-esta/angular/accordion';
 import { SbbDialog } from '@sbb-esta/angular/dialog';
 import { SbbNotificationToast } from '@sbb-esta/angular/notification-toast';
 
 import * as GeoJSON from 'geojson';
-import OJP_Legacy from '../../config/ojp-legacy';
 
-import { APP_STAGE, APP_STAGEs, DEFAULT_APP_STAGE, REQUESTOR_REF, OJP_VERSION } from '../../config/constants';
+import * as OJP_Types from 'ojp-shared-types';
+import * as OJP_Next from 'ojp-sdk-next';
+
+import { APP_STAGE, APP_STAGEs, DEFAULT_APP_STAGE, OJP_VERSION } from '../../config/constants';
 
 import { OJPHelpers } from '../../helpers/ojp-helpers';
 
@@ -21,8 +24,11 @@ import { StationBoardInputComponent } from '../input/station-board-input.compone
 import { DebugXmlPopoverComponent } from '../../search-form/debug-xml-popover/debug-xml-popover.component';
 import { CustomStopEventXMLPopoverComponent } from './custom-stop-event-xml-popover/custom-stop-event-xml-popover.component';
 import { EmbedStationBoardPopoverComponent } from './embed-station-board-popover/embed-station-board-popover.component';
-
-type URLType = 'prodv1' | 'betav1' | 'betav2' | 'beta';
+import { StationBoardType } from '../types/stop-event';
+import { StopPlace } from '../../shared/models/place/stop-place';
+import { StopEventResult } from '../../shared/models/stop-event-result';
+import { AnyStopEventRequestResponse } from '../../shared/types/_all';
+import { JourneyService } from '../../shared/models/journey-service';
 
 @Component({
   selector: 'station-board-search',
@@ -33,14 +39,16 @@ export class StationBoardSearchComponent implements OnInit {
   @ViewChild(SbbExpansionPanel, { static: true }) searchPanel: SbbExpansionPanel | undefined;
   @ViewChild(StationBoardInputComponent) autocompleteInputComponent: StationBoardInputComponent | undefined;
 
-  public stationBoardType: OJP_Legacy.StationBoardType;
+  public currentAppStage: APP_STAGE;
 
-  public searchLocation: OJP_Legacy.Location | null
+  public stationBoardType: StationBoardType;
+
+  public stopPlace: StopPlace | null;
   
   public searchTime: string
   
   public appStageOptions: APP_STAGE[];
-  public stationBoardTypes: OJP_Legacy.StationBoardType[]
+  public stationBoardTypes: StationBoardType[];
   public isSearching: boolean
 
   private queryParams: URLSearchParams
@@ -48,7 +56,7 @@ export class StationBoardSearchComponent implements OnInit {
   public permalinkRelativeURL: string;
   public otherVersionURL: string | null;
 
-  public currentRequestInfo: OJP_Legacy.RequestInfo | null;
+  public currentRequestInfo: OJP_Next.RequestInfo | null;
 
   public headerText: string = 'Search'
 
@@ -56,7 +64,7 @@ export class StationBoardSearchComponent implements OnInit {
   public isEmbed: boolean;
 
   public isV1: boolean;
-  public useRealTimeDataTypes: OJP_Legacy.UseRealtimeDataEnumeration[];
+  public useRealTimeDataTypes: OJP_Types.UseRealtimeDataEnum[];
 
   get searchDate() {
     return this.stationBoardService.searchDate;
@@ -75,7 +83,10 @@ export class StationBoardSearchComponent implements OnInit {
     public userTripService: UserTripService,
     private embedHTMLPopover: SbbDialog,
     private router: Router,
+    private sanitizer: DomSanitizer,
   ) {
+    this.currentAppStage = DEFAULT_APP_STAGE;
+
     this.queryParams = new URLSearchParams(document.location.search);
 
     this.appStageOptions = APP_STAGEs;
@@ -84,10 +95,10 @@ export class StationBoardSearchComponent implements OnInit {
 
     this.stationBoardType = this.computeStationBoardType();
 
-    this.searchLocation = null;
+    this.stopPlace = null;
 
     this.stationBoardService.searchDate = this.computeSearchDateTime();
-    this.searchTime = OJP_Legacy.DateHelpers.formatTimeHHMM(this.stationBoardService.searchDate);
+    this.searchTime = OJP_Next.DateHelpers.formatTimeHHMM(this.stationBoardService.searchDate);
     
     this.isSearching = false
 
@@ -107,27 +118,26 @@ export class StationBoardSearchComponent implements OnInit {
     this.useRealTimeDataTypes = ['full', 'explanatory', 'none'];
   }
 
-  ngOnInit(): void {
-    const userStage = this.queryParams.get('stage');
-    if (userStage) {
-      const newAppStage = this.computeAppStageFromString(userStage);
-      if (newAppStage) {
-        setTimeout(() => {
-          // HACK 
-          // without the setTimeout , the parent src/app/station-board/station-board.component.html template 
-          // gives following errors core.mjs:9157 ERROR RuntimeError: NG0100: ExpressionChangedAfterItHasBeenCheckedError: 
-          // Expression has changed after it was checked. Previous value: 'PROD'. Current value: 'INT'. 
-          // Find more at https://angular.io/errors/NG0100
-          this.userTripService.updateAppStage(newAppStage);
-        });
-      }
-    }
+  async ngOnInit(): Promise<void> {
+    const appStage = OJPHelpers.computeAppStage();
+
+    setTimeout(() => {
+      // HACK 
+      // without the setTimeout , the parent src/app/station-board/station-board.component.html template 
+      // gives following errors core.mjs:9157 ERROR RuntimeError: NG0100: ExpressionChangedAfterItHasBeenCheckedError: 
+      // Expression has changed after it was checked. Previous value: 'PROD'. Current value: 'INT'. 
+      // Find more at https://angular.io/errors/NG0100
+      this.userTripService.currentAppStage = appStage;
+    });
+
+    this.currentAppStage = appStage;
+    this.userTripService.updateAppStage(appStage);
 
     const userStopID = this.queryParams.get('stop_id');
     if (userStopID) {
       this.updateCurrentRequestData(userStopID);
 
-      this.fetchStopEventsForStopRef(userStopID);
+      await this.fetchStopEventsForStopRef(userStopID);
       this.lookupStopPlaceRef(userStopID);
     }
 
@@ -160,31 +170,15 @@ export class StationBoardSearchComponent implements OnInit {
       return;
     }
 
-    this.initFromMockXML(mockText);
+    await this.initFromMockXML(mockText);
   }
 
-  private computeAppStageFromString(appStageS: string): APP_STAGE | null {
-    const availableStagesLower: string[] = this.appStageOptions.map(stage => {
-      return stage.toLowerCase();
-    });
+  public onStopPlaceSelected(stopPlace: StopPlace) {
+    this.updateCurrentRequestData(stopPlace.stopRef);
 
-    const appStage = appStageS.trim() as APP_STAGE;
-    const stageIDX = availableStagesLower.indexOf(appStage.toLowerCase());
-    if (stageIDX !== -1) {
-      return this.appStageOptions[stageIDX];
-    }
+    this.stopPlace = stopPlace;
 
-    return null;
-  }
-
-  public onLocationSelected(location: OJP_Legacy.Location) {
-    const stopPlaceRef = location.stopPlace?.stopPlaceRef ?? null;
-    if (stopPlaceRef) {
-      this.updateCurrentRequestData(stopPlaceRef);
-    }
-
-    this.searchLocation = location;
-    this.mapService.tryToCenterAndZoomToLocation(location)
+    this.mapService.tryToCenterAndZoomToPlace(stopPlace);
 
     this.updateURLs();
     this.updateHeaderText();
@@ -215,23 +209,23 @@ export class StationBoardSearchComponent implements OnInit {
       return true;
     }
 
-    if (this.searchLocation === null) {
+    if (this.stopPlace === null) {
       return true;
     }
 
     return false;
   }
 
-  public searchButtonClicked() {
+  public async searchButtonClicked() {
     this.notificationToast.dismiss();
 
-    const stopPlaceRef = this.searchLocation?.stopPlace?.stopPlaceRef ?? null;
+    const stopPlaceRef = this.stopPlace?.stopRef ?? null;
     if (stopPlaceRef === null) {
       console.error('ERROR - no stopPlaceRef available');
       return;
     }
 
-    this.fetchStopEventsForStopRef(stopPlaceRef);
+    await this.fetchStopEventsForStopRef(stopPlaceRef);
   }
 
   private computeSearchDateTime(): Date {
@@ -260,7 +254,7 @@ export class StationBoardSearchComponent implements OnInit {
     return searchDate;
   }
 
-  private computeStationBoardType(): OJP_Legacy.StationBoardType {
+  private computeStationBoardType(): StationBoardType {
     const userSearchTypeStationBoardType = this.queryParams.get('type');
     if (userSearchTypeStationBoardType === 'arr') {
       return 'Arrivals';
@@ -269,18 +263,18 @@ export class StationBoardSearchComponent implements OnInit {
       return 'Departures';
     }
 
-    const defaultValue: OJP_Legacy.StationBoardType = 'Departures';
+    const defaultValue: StationBoardType = 'Departures';
     return defaultValue;
   }
 
   private updateURLs() {
-    const queryParams = new URLSearchParams()
+    const queryParams = new URLSearchParams();
     
     if (this.stationBoardType === 'Arrivals') {
       queryParams.set('type', 'arr');
     }
     
-    const stopPlaceRef = this.searchLocation?.stopPlace?.stopPlaceRef ?? null;
+    const stopPlaceRef = this.stopPlace?.stopRef ?? null;
     if (stopPlaceRef) {
       queryParams.set('stop_id', stopPlaceRef);
     }
@@ -289,8 +283,9 @@ export class StationBoardSearchComponent implements OnInit {
     const now = new Date();
     const deltaNowMinutes = Math.abs((now.getTime() - searchDate.getTime()) / 1000 / 60);
     if (deltaNowMinutes > 5) {
-      const nowDateF = OJP_Legacy.DateHelpers.formatDate(new Date());
-      const searchDateF = OJP_Legacy.DateHelpers.formatDate(searchDate);
+      const nowDate = new Date();
+      const nowDateF = OJP_Next.DateHelpers.formatDate(nowDate);
+      const searchDateF = OJP_Next.DateHelpers.formatDate(searchDate);
 
       const nowDayF = nowDateF.substring(0, 10);
       const searchDayF = searchDateF.substring(0, 10);
@@ -298,16 +293,16 @@ export class StationBoardSearchComponent implements OnInit {
         queryParams.set('day', searchDayF);
       }
 
-      const nowTimeF = nowDateF.substring(11, 16);
-      const searchTimeF = searchDateF.substring(11, 16);
+      const nowTimeF = OJP_Next.DateHelpers.formatTimeHHMM(nowDate);
+      const searchTimeF = OJP_Next.DateHelpers.formatTimeHHMM(searchDate);
       if (nowTimeF !== searchTimeF) {
         queryParams.set('time', searchTimeF);
       }
     }
 
-    if (this.userTripService.currentAppStage !== DEFAULT_APP_STAGE) {
-      const stageS = this.userTripService.currentAppStage.toLowerCase();
-      queryParams.append('stage', stageS)
+    if (this.currentAppStage !== DEFAULT_APP_STAGE) {
+      const stageS = this.currentAppStage.toLowerCase();
+      queryParams.append('stage', stageS);
     }
 
     this.permalinkRelativeURL = document.location.pathname.replace('/embed', '') + '?' + queryParams.toString();
@@ -330,59 +325,118 @@ export class StationBoardSearchComponent implements OnInit {
     }
   }
 
-  private fetchStopEventsForStopRef(stopPlaceRef: string) {
+  private async fetchStopEventsForStopRef(stopPlaceRef: string) {
+    const sdk = this.userTripService.createOJP_SDK_Instance(this.languageService.language);
+    
     const stopEventRequest = this.computeStopEventRequest(stopPlaceRef);
-    stopEventRequest.enableExtensions = this.userTripService.currentAppStage !== 'OJP-SI';
 
-    stopEventRequest.fetchResponse().then(response => {
-      this.currentRequestInfo = stopEventRequest.requestInfo;
-      this.parseStopEvents(response.stopEvents);
-    });
+    const response = await stopEventRequest.fetchResponse(sdk);
+    this.currentRequestInfo = stopEventRequest.requestInfo;
+    
+    const stopEventResults = this.parseStopEventRequestResponse(response);
+    this.parseStopEvents(stopEventResults);
   }
 
   private async fetchStopEventFromMocks() {
     const mockURL = '/path/to/mock.xml';
 
     const mockText = await (await fetch(mockURL)).text();
-    this.initFromMockXML(mockText);
+    await this.initFromMockXML(mockText);
   }
 
-  private initFromMockXML(mockText: string) {
-    const isOJPv2 = OJP_VERSION === '2.0';
-    const xmlConfig = isOJPv2 ? OJP_Legacy.XML_ConfigOJPv2 : OJP_Legacy.XML_BuilderConfigOJPv1;
+  private async initFromMockXML(mockText: string) {
+    const sdk = this.userTripService.createOJP_SDK_Instance(this.languageService.language);
 
-    const request = OJP_Legacy.StopEventRequest.initWithMock(mockText, xmlConfig, REQUESTOR_REF);
-    request.fetchResponse().then(response => {
-      if (response.stopEvents.length > 0) {
-        const stopEvent = response.stopEvents[0];
-        const firstLocation = stopEvent.stopPoint.location;
-        if (firstLocation) {
-          this.onLocationSelected(firstLocation);
-        }
+    const request = sdk.requests.StopEventRequest.initWithResponseMock(mockText);
+    const response = await request.fetchResponse(sdk);
+
+    if (!response.ok) {
+      console.log('ERROR - while fetching SER response');
+      console.log(request);
+      this.parseStopEvents([]);
+      return;
+    }
+
+    const stopEventResults = this.parseStopEventRequestResponse(response);
+
+    if (stopEventResults.length > 0) {
+      const place = stopEventResults[0].thisCall.place ?? null;
+      if (place?.type === 'stop') {
+        this.onStopPlaceSelected(place as StopPlace);
       }
+    }
 
-      this.parseStopEvents(response.stopEvents);
-    });
+    this.parseStopEvents(stopEventResults);
   }
 
-  private computeStopEventRequest(stopPlaceRef: string): OJP_Legacy.StopEventRequest {
+  private parseStopEventRequestResponse(response: AnyStopEventRequestResponse): StopEventResult[] {
+    if (!response.ok) {
+      return [];
+    }
+
     const isOJPv2 = OJP_VERSION === '2.0';
-    const xmlConfig = isOJPv2 ? OJP_Legacy.XML_ConfigOJPv2 : OJP_Legacy.XML_BuilderConfigOJPv1;
 
-    const stopEventType: OJP_Legacy.StopEventType = this.stationBoardType === 'Arrivals' ? 'arrival' : 'departure'
-    const stopEventDate = this.computeStopBoardDate();
-    const appStageConfig = this.userTripService.getStageConfig();
-    const stopEventRequest = OJP_Legacy.StopEventRequest.initWithStopPlaceRef(appStageConfig, this.languageService.language, xmlConfig, REQUESTOR_REF, stopPlaceRef, stopEventType, stopEventDate);
-    stopEventRequest.useRealTimeDataType = this.userTripService.useRealTimeDataType;
-    
-    // for debug XML dialog
-    stopEventRequest.updateRequestXML();
+    const mapPlaces = OJPHelpers.parseAnyStopEventResultPlaceContext(OJP_VERSION, response);
+    const mapSituations = OJPHelpers.parseAnyStopEventResultSituationsContext(this.sanitizer, OJP_VERSION, response);
 
-    return stopEventRequest;
+    const stopEventResultsSchema: OJP_Types.StopEventResultSchema[] = (() => {
+      if (isOJPv2) {
+        return response.value.stopEventResult as OJP_Types.StopEventResultSchema[];
+      } else {
+        const stopEventResultsOJPv1 = response.value.stopEventResult as OJP_Types.OJPv1_StopEventResultSchema[];
+
+        const stopEventResultsOJPv2: OJP_Types.StopEventResultSchema[] = [];
+        stopEventResultsOJPv1.forEach(stopEventResultOJPv1 => {
+          const serviceOJPv2 = JourneyService.initWithLegacyStopEventResultSchema(stopEventResultOJPv1);
+
+          const stopEventResult: OJP_Types.StopEventResultSchema = {
+            id: stopEventResultOJPv1.id,
+            stopEvent: {
+              previousCall: stopEventResultOJPv1.stopEvent.previousCall,
+              thisCall: stopEventResultOJPv1.stopEvent.thisCall,
+              onwardCall: stopEventResultOJPv1.stopEvent.onwardCall,
+              service: serviceOJPv2,
+              operatingDays: stopEventResultOJPv1.stopEvent.operatingDays,
+            },
+          };
+
+          stopEventResultsOJPv2.push(stopEventResult);
+        });
+
+        return stopEventResultsOJPv2;
+      }
+    })();
+
+    const stopEventResults: StopEventResult[] = [];
+    stopEventResultsSchema.forEach(stopEventResultSchema => {
+      const stopEventResult = StopEventResult.initWithStopEventResultSchema(stopEventResultSchema, mapPlaces, mapSituations);
+      if (stopEventResult) {
+        stopEventResults.push(stopEventResult);
+      }
+    });
+
+    return stopEventResults;
   }
 
-  private parseStopEvents(stopEvents: OJP_Legacy.StopEvent[]): void {
-    const hasResults = stopEvents.length > 0;
+  private computeStopEventRequest(stopPlaceRef: string) {
+    const sdk = this.userTripService.createOJP_SDK_Instance(this.languageService.language);
+
+    const stopEventDate = this.computeStopBoardDate();
+    const request = sdk.requests.StopEventRequest.initWithPlaceRefAndDate(stopPlaceRef, stopEventDate);
+    if (request.payload.params) {
+      request.payload.params.useRealtimeData = this.userTripService.useRealTimeDataType;
+      if (this.stationBoardType === 'Arrivals') {
+        request.payload.params.stopEventType = 'arrival';
+      } else {
+        request.payload.params.stopEventType = 'departure';
+      }
+    }
+
+    return request;
+  }
+
+  private parseStopEvents(stopEventResults: StopEventResult[]): void {
+    const hasResults = stopEventResults.length > 0;
     if (hasResults) {
       this.searchPanel?.close();
 
@@ -391,60 +445,83 @@ export class StationBoardSearchComponent implements OnInit {
 
     const stationBoardData: StationBoardData = {
       type: this.stationBoardType,
-      items: stopEvents,
+      items: stopEventResults,
     }
     this.stationBoardService.stationBoardDataUpdated.emit(stationBoardData);
   }
 
   private async lookupStopPlaceRef(stopPlaceRef: string) {
-    const isOJPv2 = OJP_VERSION === '2.0';
-    const xmlConfig = isOJPv2 ? OJP_Legacy.XML_ConfigOJPv2 : OJP_Legacy.XML_BuilderConfigOJPv1;
+    const ojpSDK_Next = this.userTripService.createOJP_SDK_Instance(this.languageService.language);
+    const request = ojpSDK_Next.requests.LocationInformationRequest.initWithPlaceRef(stopPlaceRef, 10);
 
-    const stageConfig = this.userTripService.getStageConfig();
-    const locationInformationRequest = OJP_Legacy.LocationInformationRequest.initWithStopPlaceRef(stageConfig, this.languageService.language, xmlConfig, REQUESTOR_REF, stopPlaceRef);
-    locationInformationRequest.enableExtensions = this.userTripService.currentAppStage !== 'OJP-SI';
-
-    const response = await locationInformationRequest.fetchResponse();
-
-    if (response.locations.length === 0) {
-      console.error('ERROR - cant find stopPlaceRef with ID: ' + stopPlaceRef);
+    const response = await request.fetchResponse(ojpSDK_Next);
+    if (!response.ok) {
+      console.log('ERROR - LIR - initWithPlaceRef');
+      console.log(response);
       return;
     }
 
-    const firstLocation = response.locations[0];
-    this.searchLocation = firstLocation;
+    const places = OJPHelpers.parseAnyPlaceResult(OJP_VERSION, response);
+    if (places.length === 0) {
+      console.error('ERROR - cant find stopPlaceRef with ID: ' + stopPlaceRef);
+      console.log(response);
+      return;
+    }
 
-    this.mapService.tryToCenterAndZoomToLocation(firstLocation);
+    const stopPlace = StopPlace.initWithPlaceResultSchema(OJP_VERSION, places[0]);
+    if (stopPlace === null) {
+      console.error('ERROR - cant init StopPlace with ID: ' + stopPlaceRef);
+      console.log(response);
+      return;
+    }
+
+    this.stopPlace = stopPlace;
+
+    this.mapService.tryToCenterAndZoomToPlace(stopPlace);
+
     this.updateURLs();
     this.updateHeaderText();
 
     if (this.autocompleteInputComponent) {
-      this.autocompleteInputComponent.updateLocationText(firstLocation);
+      this.autocompleteInputComponent.updateLocationText(stopPlace.stopName);
     }
   }
 
   private updateHeaderText() {
-    if (this.searchLocation === null) {
+    if (this.stopPlace === null) {
       return;
     }
 
-    const locationName = this.searchLocation.computeLocationName();
-    if (locationName === null) {
-      return;
-    }
-
-    this.headerText = this.stationBoardType + ' ' + locationName;
+    this.headerText = this.stationBoardType + ' ' + this.stopPlace.stopName;
   }
 
   private handleMapClick(feature: GeoJSON.Feature) {
-    const location = OJP_Legacy.Location.initWithFeature(feature);
-    if (location === null) {
+    const featureProperties = feature.properties ?? null;
+    if (!featureProperties) {
       return;
     }
 
-    this.searchLocation = location;
+    if (feature.geometry.type !== 'Point') {
+      console.log('ERROR - handleMapClick - invalid geometry expected');
+      console.log(feature);
+      return;
+    }
+
+    const stopPlaceName = featureProperties['stopPlace.stopPlaceName'] ?? null;
+    const stopPlaceRef = featureProperties['stopPlace.stopPlaceRef'] ?? null;
+    const coords = feature.geometry.coordinates;
+
+    if (stopPlaceName === null || stopPlaceRef === null) {
+      console.log('ERROR - handleMapClick - invalid proprerties');
+      console.log(feature);
+      return;
+    }
+
+    const stopPlace = StopPlace.initWithCoordsRefAndName(coords[0], coords[1], stopPlaceName, stopPlaceName, stopPlaceRef);
+    this.stopPlace = stopPlace;
+
     if (this.autocompleteInputComponent) {
-      this.autocompleteInputComponent.updateLocationText(location);
+      this.autocompleteInputComponent.updateLocationText(stopPlace.stopName);
     }
 
     this.resetResultList();
@@ -496,7 +573,7 @@ export class StationBoardSearchComponent implements OnInit {
     this.updateURLs();
   }
 
-  public loadCustomXMLPopover() {
+  public async loadCustomXMLPopover() {
     const dialogRef = this.customXmlPopover.open(CustomStopEventXMLPopoverComponent, {
       position: { top: '20px' },
     });
@@ -513,19 +590,19 @@ export class StationBoardSearchComponent implements OnInit {
 
       popover.customRequestXMLs = this.currentRequestInfo?.requestXML ?? 'n/a';
 
-      popover.customRequestSaved.subscribe((responseXML) => {
+      popover.customRequestSaved.subscribe(async (responseXML) => {
         dialogRef.close()
-        this.handleCustomResponse(responseXML);
+        await this.handleCustomResponse(responseXML);
       })
 
-      popover.customResponseSaved.subscribe((responseXML) => {
+      popover.customResponseSaved.subscribe(async (responseXML) => {
         dialogRef.close()
-        this.handleCustomResponse(responseXML);
+        await this.handleCustomResponse(responseXML);
       })
     });
   }
 
-  private handleCustomResponse(responseXML: string) {
+  private async handleCustomResponse(responseXML: string) {
     if (this.currentRequestInfo === null) {
       return;
     }
@@ -534,22 +611,31 @@ export class StationBoardSearchComponent implements OnInit {
     this.currentRequestInfo.responseXML = responseXML;
 
     const isOJPv2 = OJP_VERSION === '2.0';
-    const xmlConfig = isOJPv2 ? OJP_Legacy.XML_ConfigOJPv2 : OJP_Legacy.XML_BuilderConfigOJPv1;
+    const xmlConfig = isOJPv2 ? OJP_Next.DefaultXML_Config : OJP_Next.XML_BuilderConfigOJPv1;
 
-    const request = OJP_Legacy.StopEventRequest.initWithMock(responseXML, xmlConfig, REQUESTOR_REF);
-    request.fetchResponse().then(response => {
-      const stopEvents = response.stopEvents;
+    const sdk = this.userTripService.createOJP_SDK_Instance(this.languageService.language);
 
-      if (stopEvents.length > 0) {
-        this.mapService.tryToCenterAndZoomToLocation(stopEvents[0].stopPoint.location);
-        this.parseStopEvents(response.stopEvents);
-      } else {
-        this.notificationToast.open('No StopEvents found', {
-          type: 'error',
-          verticalPosition: 'top',
-        });
+    const request = sdk.requests.StopEventRequest.initWithResponseMock(responseXML);
+    const response = await request.fetchResponse(sdk);
+
+    if (!response.ok) {
+      this.notificationToast.open('No StopEvents found', {
+        type: 'error',
+        verticalPosition: 'top',
+      });
+      return;
+    }
+
+    const stopEventResults = this.parseStopEventRequestResponse(response);
+
+    if (stopEventResults.length > 0) {
+      const place = stopEventResults[0].thisCall.place ?? null;
+      if (place?.type === 'stop') {
+        this.mapService.tryToCenterAndZoomToPlace(place);
       }
-    });
+    }
+
+    this.parseStopEvents(stopEventResults);
   }
 
   private updateCurrentRequestData(stopRef: string): void {
@@ -564,8 +650,8 @@ export class StationBoardSearchComponent implements OnInit {
 
     dialogRef.afterOpened().subscribe(() => {
       const popover = dialogRef.componentInstance as EmbedStationBoardPopoverComponent;
-      if (this.searchLocation) {
-        popover.updateEmbedHTML(this.searchLocation);
+      if (this.stopPlace) {
+        popover.updateEmbedHTML(this.stopPlace);
       }
     })
   }
@@ -573,7 +659,7 @@ export class StationBoardSearchComponent implements OnInit {
   public resetDateTime() {
     const nowDateTime = new Date();
     this.searchDate = nowDateTime;
-    this.searchTime = OJP_Legacy.DateHelpers.formatTimeHHMM(nowDateTime);
+    this.searchTime = OJP_Next.DateHelpers.formatTimeHHMM(nowDateTime);
     this.stationBoardService.searchDate = nowDateTime;
   }
 }

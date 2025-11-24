@@ -1,13 +1,19 @@
 import * as GeoJSON from 'geojson'
 import mapboxgl from "mapbox-gl";
 
+import * as OJP_Types from 'ojp-shared-types';
+
 import OJP_Legacy from '../../config/ojp-legacy';
 
-import { AppMapLayerOptions, DEBUG_LEVEL, MAP_APP_MAP_LAYERS, REQUESTOR_REF, OJP_VERSION } from '../../config/constants'
+import { AppMapLayerOptions, DEBUG_LEVEL, MAP_APP_MAP_LAYERS, OJP_VERSION } from '../../config/constants'
 
 import { UserTripService } from "../../shared/services/user-trip.service";
 import { MapHelpers } from "../helpers/map.helpers";
 import { MAP_LAYERS_DEFINITIONS } from "./map-layers-def";
+import { AnyPlace, PlaceBuilder } from '../../shared/models/place/place-builder';
+import { Poi, POI_Restriction, RestrictionPoiOSMTag } from '../../shared/models/place/poi';
+import { OJPHelpers } from '../../helpers/ojp-helpers';
+import { AnyLocationInformationRequest } from '../../shared/types/_all';
 
 export enum FeaturePropsEnum {
     OJP_GeoRestrictionType = 'OJP_Legacy.GeoRestrictionType',
@@ -15,22 +21,22 @@ export enum FeaturePropsEnum {
 }
 
 export class AppMapLayer {
-    private language: OJP_Legacy.Language
-    private layerKey: string
+    private language: OJP_Legacy.Language;
+    private layerKey: string;
 
-    private map: mapboxgl.Map
-    private restrictionType: OJP_Legacy.RestrictionType
-    public restrictionPOI: OJP_Legacy.POI_Restriction | null
-    public minZoom: number
+    private map: mapboxgl.Map;
+    private restrictionType: OJP_Types.PlaceTypeEnum;
+    public restrictionPOI: POI_Restriction | null;
+    public minZoom: number;
 
     private features: GeoJSON.Feature[];
     private mapSourceID: string;
-    private userTripService: UserTripService
+    private userTripService: UserTripService;
 
-    public isEnabled: boolean
-    public lastOJPRequest: OJP_Legacy.LocationInformationRequest | null
+    public isEnabled: boolean;
+    public lastOJPRequest: AnyLocationInformationRequest | null;
 
-    protected currentLocations: OJP_Legacy.Location[];
+    protected mapCurrentPlaces: Record<string, AnyPlace>;
 
     constructor(language: OJP_Legacy.Language, layerKey: string, map: mapboxgl.Map, appMapLayerOptions: AppMapLayerOptions, userTripService: UserTripService) {
         this.language = language;
@@ -55,7 +61,7 @@ export class AppMapLayer {
 
         this.addMapSourceAndLayers();
 
-        this.currentLocations = [];
+        this.mapCurrentPlaces = {};
     }
 
     private addMapSourceAndLayers() {
@@ -108,6 +114,8 @@ export class AppMapLayer {
             return;
         }
 
+        const isOJPv2 = OJP_VERSION === '2.0';
+
         const isPOI_all = this.restrictionType === 'poi' && this.restrictionPOI?.poiType === 'poi';
         const featuresLimit = isPOI_all ? 1000 : 300;
 
@@ -115,42 +123,99 @@ export class AppMapLayer {
         if (mapBounds === null) {
             return;
         }
+        const bboxData = [mapBounds.getWest(), mapBounds.getSouth(), mapBounds.getEast(), mapBounds.getNorth()];
 
-        const isOJPv2 = OJP_VERSION === '2.0';
-        const xmlConfig = isOJPv2 ? OJP_Legacy.XML_ConfigOJPv2 : OJP_Legacy.XML_BuilderConfigOJPv1;
+        const restrictionTypes: OJP_Types.PlaceTypeEnum[] = (() => {
+            if (isOJPv2) {
+                if (this.restrictionType === 'stop') {
+                    return ['stop'];
+                } else {
+                    // in OJP2 - POI queries are done with <PersonalMode>, see below
+                    return [];
+                }
+            } else {
+                return [this.restrictionType];
+            }
+        })();
 
-        const request = OJP_Legacy.LocationInformationRequest.initWithBBOXAndType(
-            this.userTripService.getStageConfig(),
-            this.language,
-            xmlConfig,
-            REQUESTOR_REF,
+        const ojpSDK_Next = this.userTripService.createOJP_SDK_Instance(this.language);
+        const request = ojpSDK_Next.requests.LocationInformationRequest.initWithBBOX(bboxData, restrictionTypes, featuresLimit);
 
-            mapBounds.getWest(),
-            mapBounds.getNorth(),
-            mapBounds.getEast(),
-            mapBounds.getSouth(),
-            [this.restrictionType],
-            featuresLimit,
-            this.restrictionPOI,
-        );
-        request.enableExtensions = this.userTripService.currentAppStage !== 'OJP-SI';
+        if (request.payload.restrictions) {
+            if (this.restrictionType === 'poi') {
+                if (isOJPv2) {
+                    // in OJP2 - POI queries are done with <PersonalMode>
+                    const personalMode: OJP_Types.PersonalModesEnum | null = (() => {
+                        const poiRestrictionTags = this.restrictionPOI?.tags ?? [];
+
+                        if (poiRestrictionTags.includes('car_sharing')) {
+                            return 'car';
+                        }
+                        if (poiRestrictionTags.includes('bicycle_rental')) {
+                            return 'bicycle';
+                        }
+                        if (poiRestrictionTags.includes('escooter_rental')) {
+                            return 'scooter';
+                        }
+
+                        return null;
+                    })();
+
+                    if (personalMode !== null) {
+                        request.payload.restrictions.modes = {
+                            ptMode: [],
+                            personalMode: [personalMode],
+                        };
+                    }
+                } else {
+                    const poiTags = this.restrictionPOI?.tags ?? [];
+                    if (poiTags.length > 0) {
+                        request.payload.restrictions.pointOfInterestFilter = {
+                            pointOfInterestCategory: [
+                                {
+                                    osmTag: [],
+                                    pointOfInterestClassification: [],
+                                }
+                            ],
+                        };
+
+                        const isSharedMobility = this.restrictionPOI?.poiType === 'shared_mobility';
+                        const poiOsmTagKey = isSharedMobility ? 'amenity' : 'POI';
+
+                        const firstCategoryFilter = request.payload.restrictions.pointOfInterestFilter.pointOfInterestCategory[0];
+
+                        poiTags.forEach(poiTagValue => {
+                            firstCategoryFilter.osmTag.push({
+                                tag: poiOsmTagKey,
+                                value: poiTagValue,
+                            })
+                        });
+                    }
+                }
+            }
+        }
+        
+        const response = await request.fetchResponse(ojpSDK_Next);
 
         this.lastOJPRequest = request;
 
         const layerConfig = MAP_APP_MAP_LAYERS[this.layerKey];
-        const response = await request.fetchResponse();
 
-        if (response.message === 'ERROR') {
-            console.log('AppMapLayer: ' + this.layerKey + ' backend ERROR');
+        if (!response.ok) {
+            console.log('ERROR - failed to bbox lookup locations for "' + bboxData.join(', ') + '"');
             console.log(response);
             return;
         }
 
-        const locationsDiscarded: OJP_Legacy.Location[] = [];
+        this.mapCurrentPlaces = {};
+        const placesDiscarded: AnyPlace[] = [];
         const mapFeatures: Record<string, GeoJSON.Feature> = {};
 
-        response.locations.forEach((location, idx) => {
-            if (location.geoPosition === null) {
+        const placeResults = OJPHelpers.parseAnyPlaceResult(OJP_VERSION, response);
+
+        placeResults.forEach((placeResult, idx) => {
+            const place = PlaceBuilder.initWithPlaceResultSchema(OJP_VERSION, placeResult);
+            if (place === null) {
                 return;
             }
 
@@ -158,34 +223,32 @@ export class AppMapLayer {
             if (isSharedMobility) {
                 const layerPoiType = layerConfig.LIR_POI_Type ?? null;
                 if (layerPoiType === null) {
-                    locationsDiscarded.push(location);
-                    return;
-                }
-                
-                const poiCategory = location.poi?.category ?? null;
-                if (poiCategory === null) {
-                    locationsDiscarded.push(location);
+                    placesDiscarded.push(place);
                     return;
                 }
 
-                if (!layerPoiType.tags.includes(poiCategory)) {
-                    locationsDiscarded.push(location);
-                    return;
+                if (place.type === 'poi') {
+                    const poi = place as Poi;
+                    if (!layerPoiType.tags.includes(poi.category)) {
+                        placesDiscarded.push(place);
+                        return;
+                    }
                 }
             }
 
-            const locationKey = location.geoPosition.asLatLngString();
+            const locationKey = place.geoPosition.asLatLngString();
             if (!(locationKey in mapFeatures)) {
                 const feature: GeoJSON.Feature = {
                     type: 'Feature',
                     properties: {
+                        // TODO - rename locations_idx to places_idx
                         locations_idx: [],
                     },
                     geometry: {
                         type: 'Point',
-                        coordinates: location.geoPosition.asPosition(),
+                        coordinates: place.geoPosition.asLngLat(),
                     }
-                }
+                };
 
                 mapFeatures[locationKey] = feature;
             }
@@ -197,19 +260,19 @@ export class AppMapLayer {
 
             const locationsIdx: number[] = feature.properties['locations_idx'];
             locationsIdx.push(idx);
+
+            this.mapCurrentPlaces[idx] = place;
         });
 
         if (DEBUG_LEVEL === 'DEBUG') {
-            if (locationsDiscarded.length > 0) {
+            if (placesDiscarded.length > 0) {
                 console.log('AppMapLayer.refreshFeatures -- discarded locations');
-                console.log(locationsDiscarded);
+                console.log(placesDiscarded);
                 console.log('layer config');
                 console.log(layerConfig);
             }
         }
 
-        this.currentLocations = response.locations;
-        
         const features = Object.values(mapFeatures);
         features.forEach(feature => {
             if (feature.properties === null) {
@@ -217,17 +280,17 @@ export class AppMapLayer {
             }
 
             const locations_idx = feature.properties['locations_idx'] as number[];
-            const featureLocations: OJP_Legacy.Location[] = []
+            const featurePlaces: AnyPlace[] = [];
             locations_idx.forEach(idx => {
-                const location = response.locations[idx] ?? null;
-                if (location) {
-                    featureLocations.push(location);
+                const place = this.mapCurrentPlaces[idx] ?? null;
+                if (place) {
+                    featurePlaces.push(place);
                 }
             })
 
             feature.properties['locations_idx'] = locations_idx.join(',');
 
-            this.annotateFeatureFromLocations(feature, featureLocations);
+            this.annotateFeatureFromLocations(feature, featurePlaces);
         });
 
         this.setSourceFeatures(features);
@@ -243,18 +306,18 @@ export class AppMapLayer {
     }
 
     private setSourceFeatures(features: GeoJSON.Feature[]) {
-        this.features = features
+        this.features = features;
     
-        const source = this.map.getSource(this.mapSourceID) as mapboxgl.GeoJSONSource
-        const featureCollection = <GeoJSON.FeatureCollection>{
+        const source = this.map.getSource(this.mapSourceID) as mapboxgl.GeoJSONSource;
+        const featureCollection: GeoJSON.FeatureCollection = {
             'type': 'FeatureCollection',
             'features': features
-        }
+        };
         
-        source.setData(featureCollection)
+        source.setData(featureCollection);
     }
 
-    protected annotateFeatureFromLocations(feature: GeoJSON.Feature, locations: OJP_Legacy.Location[]) {
+    protected annotateFeatureFromLocations(feature: GeoJSON.Feature, places: AnyPlace[]) {
         // extend / override
     }
 
@@ -289,18 +352,18 @@ export class AppMapLayer {
         }
 
         // Use a map because the mapbox nearbyFeatures might be duplicated
-        const mapLocations: Record<number, OJP_Legacy.Location> = [];
+        const mapPlaces: Record<number, AnyPlace> = [];
         
         const locationsIdx = locationsIdxS.split(',');
         locationsIdx.forEach(idxS => {
             const idx = parseInt(idxS, 10);
-            const location = this.currentLocations[idx] ?? null;
-            if (location && !(idx in mapLocations)) {
-                mapLocations[idx] = location;
+            const location = this.mapCurrentPlaces[idx] ?? null;
+            if (location && !(idx in mapPlaces)) {
+                mapPlaces[idx] = location;
             }
         });
 
-        const locations = Object.values(mapLocations);
+        const locations = Object.values(mapPlaces);
         if (locations.length === 0) {
             return false;
         }
@@ -309,12 +372,11 @@ export class AppMapLayer {
         return true;
     }
 
-    private showPopup(locations: OJP_Legacy.Location[]) {
-        const location = locations[0];
-        const locationLngLat = location.geoPosition?.asLngLat() ?? null;
-        if (locationLngLat === null) { return }
+    private showPopup(places: AnyPlace[]) {
+        const place = places[0];
+        const locationLngLat = place.geoPosition.asLngLat();
     
-        const popupHTML = this.computePopupHTML(locations);
+        const popupHTML = this.computePopupHTML(places);
         if (popupHTML === null) {
             return;
         }
@@ -334,7 +396,7 @@ export class AppMapLayer {
                 return;
             }
 
-            this.userTripService.updateTripEndpoint(location, endpointType, 'MapPopupClick');
+            this.userTripService.updateTripEndpoint(place, endpointType, 'MapPopupClick');
     
             popup.remove();
         });
@@ -344,12 +406,12 @@ export class AppMapLayer {
             .addTo(this.map);
     }
 
-    protected computePopupHTML(locations: OJP_Legacy.Location[]): string | null {
-        if (locations.length === 0) {
+    protected computePopupHTML(places: AnyPlace[]): string | null {
+        if (places.length === 0) {
             return null;
         }
 
-        const firstLocation = locations[0];
+        const firstPlace = places[0];
 
         const popupWrapperDIV = document.getElementById('map-endpoint-picker-popup') as HTMLElement;
         if (popupWrapperDIV === null) {
@@ -359,13 +421,9 @@ export class AppMapLayer {
         let popupHTML = popupWrapperDIV.innerHTML;
         popupHTML = popupHTML.replace('[GEO_RESTRICTION_TYPE]', this.restrictionType);
     
-        const featureProperties = firstLocation.geoPosition?.properties ?? firstLocation.asGeoJSONFeature()?.properties ?? null
-        if (featureProperties == null) {
-            popupHTML = popupHTML.replace('[GEOJSON_PROPERTIES_TABLE]', 'ERROR: cant read GeoJSON properties');
-            return popupHTML;
-        }
+        const featureProperties = firstPlace.computeGeoJSON_Properties();
         
-        const tableTRs: string[] = []
+        const tableTRs: string[] = [];
         for (let key in featureProperties) {
             let value = featureProperties[key];
             if (typeof value === 'string') {
@@ -376,12 +434,12 @@ export class AppMapLayer {
             }
             
             const tableTR = '<tr><td>' + key + '</td><td>' + value + '</td></tr>';
-            tableTRs.push(tableTR)
+            tableTRs.push(tableTR);
         }
     
-        const tableHTML = '<table class="table">' + tableTRs.join('') + '</table>'
+        const tableHTML = '<table class="table">' + tableTRs.join('') + '</table>';
         popupHTML = popupHTML.replace('[GEOJSON_PROPERTIES_TABLE]', tableHTML);
     
-        return popupHTML
+        return popupHTML;
     }
 }

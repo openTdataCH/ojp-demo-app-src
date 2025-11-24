@@ -3,17 +3,14 @@ import { SbbDialog } from '@sbb-esta/angular/dialog';
 
 import mapboxgl from 'mapbox-gl'
 
-import OJP_Legacy from '../../config/ojp-legacy';
-
-import { MapDebugControl } from '../../map/controls/map-debug-control'
-import { MapLayersLegendControl } from '../../map/controls/map-layers-legend-control';
 import { MapService } from '../../shared/services/map.service';
 import { UserTripService } from '../../shared/services/user-trip.service';
 import { TripInfoService } from '../trip-info.service';
 
 import { StopEventServiceRenderer as JourneyServiceRenderer } from '../../station-board/map/stop-event-service-renderer/stop-event-service-renderer';
 import { MapHelpers } from '../../map/helpers/map.helpers';
-import { LanguageService } from 'src/app/shared/services/language.service';
+import { LanguageService } from '../../shared/services/language.service';
+import { GeoPositionBBOX } from '../../shared/models/geo/geoposition-bbox';
 
 @Component({
   selector: 'trip-info-map',
@@ -94,14 +91,14 @@ export class TripInfoMapComponent implements OnInit {
       return;
     }
 
-    const bbox = OJP_Legacy.GeoPositionBBOX.initFromGeoJSONFeatures(geojsonFeatures);
+    const bbox = GeoPositionBBOX.initFromGeoJSONFeatures(geojsonFeatures);
     if (!bbox.isValid()) {
       console.error('Invalid BBOX for features');
       console.log(geojsonFeatures);
-      return
+      return;
     }
 
-    const bounds = new mapboxgl.LngLatBounds(bbox.asFeatureBBOX())
+    const bounds = new mapboxgl.LngLatBounds(bbox.asFeatureBBOX());
     const mapData = {
       bounds: bounds,
     }

@@ -1,5 +1,9 @@
 import { RasterLayerType } from '../shared/types/_all';
-import OJP_Legacy from './ojp-legacy';
+
+import * as OJP_Types from 'ojp-shared-types';
+import * as OJP_Next from 'ojp-sdk-next';
+
+import { POI_Restriction } from '../shared/models/place/poi';
 
 type DEBUG_LEVEL_Type = 'DEBUG' | 'PROD'
 export const DEBUG_LEVEL: DEBUG_LEVEL_Type = (() => {
@@ -15,7 +19,7 @@ export const DEBUG_LEVEL: DEBUG_LEVEL_Type = (() => {
   return 'DEBUG';
 })();
 
-export const OJP_VERSION: OJP_Legacy.OJP_VERSION_Type = (() => {
+export const OJP_VERSION: OJP_Next.OJP_VERSION = (() => {
   const queryParams = new URLSearchParams(document.location.search);
   const userVersion = queryParams.get('v');
   if (userVersion === '1') {
@@ -38,14 +42,14 @@ export const OJP_VERSION: OJP_Legacy.OJP_VERSION_Type = (() => {
     return '1.0';
   }
 
-  return '2.0' as OJP_Legacy.OJP_VERSION_Type;
+  return '2.0';
 })();
 
 export type APP_STAGE = 'PROD' | 'INT' | 'TEST' | 'LA Beta' 
   | 'V2-PROD' | 'V2-INT' | 'V2-TEST'
   | 'GR TEST'| 'PROD-LB' | 'OJP-SI' | 'NOVA-INT';
 
-const isOJPv2 = ((OJP_VERSION as any) as OJP_Legacy.OJP_VERSION_Type) === '2.0';
+const isOJPv2 = OJP_VERSION === '2.0';
 export const DEFAULT_APP_STAGE: APP_STAGE = isOJPv2 ? 'V2-PROD' : 'PROD';
 
 export const APP_STAGEs: APP_STAGE[] = (() => {
@@ -66,12 +70,12 @@ export const APP_STAGEs: APP_STAGE[] = (() => {
 export const REQUESTOR_REF = 'OJP_DemoApp_Beta_OJP' + OJP_VERSION;
 
 export interface AppMapLayerOptions {
-  LIR_Restriction_Type: OJP_Legacy.RestrictionType
-  LIR_POI_Type?: OJP_Legacy.POI_Restriction | null
+  LIR_Restriction_Type: OJP_Types.PlaceTypeEnum
+  LIR_POI_Type?: POI_Restriction | null
   minZoom: number
   layer_ids?: string[] | null,
   click_layer_ids?: string[] | 'SAME_AS_LAYER_IDS' | null
-}
+};
 
 export const MAP_APP_MAP_LAYERS: Record<string, AppMapLayerOptions> = {
   'stops': {

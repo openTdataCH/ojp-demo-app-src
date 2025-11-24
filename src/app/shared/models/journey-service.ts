@@ -1,5 +1,6 @@
 import * as OJP_Types from 'ojp-shared-types';
 import OJP_Legacy from '../../config/ojp-legacy';
+
 import { TripLegLineType } from '../types/map-geometry-types';
 
 export class JourneyService implements OJP_Types.DatedJourneySchema  {
@@ -14,14 +15,22 @@ export class JourneyService implements OJP_Types.DatedJourneySchema  {
   public publishedServiceName: OJP_Types.InternationalTextSchema;
   public trainNumber?: string;
   public attribute: OJP_Types.GeneralAttributeSchema[];
+  public originText: OJP_Types.InternationalTextSchema;
   public operatorRef?: string;
   public destinationStopPointRef?: string;
   public destinationText?: OJP_Types.InternationalTextSchema;
   public unplanned?: boolean;
   public cancelled?: boolean;
   public deviation?: boolean;
+
+  public situationFullRefs?: {
+    situationFullRef: {
+      participantRef: string;
+      situationNumber: string;
+    }[]
+  }
  
-  private constructor(operatingDayRef: string, journeyRef: string, lineRef: string, mode: OJP_Types.ModeStructureSchema, publishedServiceName: OJP_Types.InternationalTextSchema, attribute: OJP_Types.GeneralAttributeSchema[]) {
+  private constructor(operatingDayRef: string, journeyRef: string, lineRef: string, mode: OJP_Types.ModeStructureSchema, publishedServiceName: OJP_Types.InternationalTextSchema, attribute: OJP_Types.GeneralAttributeSchema[], originText: OJP_Types.InternationalTextSchema) {
     this.conventionalModeOfOperation = undefined;
     this.operatingDayRef = operatingDayRef;
     this.journeyRef = journeyRef;
@@ -33,17 +42,20 @@ export class JourneyService implements OJP_Types.DatedJourneySchema  {
     this.publishedServiceName = publishedServiceName;
     this.trainNumber = undefined;
     this.attribute = attribute;
+    this.originText = originText;
     this.operatorRef = undefined;
     this.destinationStopPointRef = undefined;
     this.destinationText = undefined;
     this.unplanned = undefined;
     this.cancelled = undefined;
     this.deviation = undefined;
+    
+    this.situationFullRefs = undefined;
   }
 
   // Init with OJP 2.0 XML schema
   public static initWithDatedJourneySchema(schema: OJP_Types.DatedJourneySchema): JourneyService {
-    const service = new JourneyService(schema.operatingDayRef, schema.journeyRef, schema.lineRef, schema.mode, schema.publishedServiceName, schema.attribute);
+    const service = new JourneyService(schema.operatingDayRef, schema.journeyRef, schema.lineRef, schema.mode, schema.publishedServiceName, schema.attribute, schema.originText);
     
     service.conventionalModeOfOperation = schema.conventionalModeOfOperation;
     service.publicCode = schema.publicCode;
@@ -56,30 +68,67 @@ export class JourneyService implements OJP_Types.DatedJourneySchema  {
     service.unplanned = schema.unplanned;
     service.cancelled = schema.cancelled;
     service.deviation = schema.deviation;
+    service.situationFullRefs = schema.situationFullRefs;
     
+    return service;
+  }
+
+  private static initWithLegacyDatedJourneySchema(schema: OJP_Types.OJPv1_DatedJourneySchema): JourneyService {
+    const publishedServiceName = schema.publishedLineName;
+    const attributesV2 = JourneyService.convertAttributesV2Schema(schema.attribute);
+    
+    const originText: OJP_Types.InternationalTextSchema = {
+      text: ''
+    };
+
+    const service = new JourneyService(schema.operatingDayRef, schema.journeyRef, schema.lineRef, schema.mode, publishedServiceName, attributesV2, originText);
+
+    service.conventionalModeOfOperation = schema.conventionalModeOfOperation;
+    service.publicCode = schema.publicCode;
+    service.directionRef = schema.directionRef;
+    service.productCategory = schema.productCategory;
+    service.trainNumber = undefined; // this comes from TimedLeg
+    service.operatorRef = schema.operatorRef;
+    service.destinationStopPointRef = schema.destinationStopPointRef;
+    service.destinationText = schema.destinationText;
+    service.unplanned = schema.unplanned;
+    service.cancelled = schema.cancelled;
+    service.deviation = schema.deviation;
+
+    service.situationFullRefs = undefined; // is set in the other constructors
+
     return service;
   }
 
   // Init with OJP 1.0 XML schema - TripRequest
   // - it needs the TimedLeg because there we have the the 'publishedJourneyNumber' stored
   public static initWithLegacyTripTimedLegSchema(legacyTripLegSchema: OJP_Types.OJPv1_TimedLegSchema): JourneyService {
-    const legacyServiceSchema = legacyTripLegSchema.service;
-    const publishedServiceName = legacyServiceSchema.publishedLineName;
-    const attributesV2 = JourneyService.convertAttributesV2Schema(legacyServiceSchema.attribute);
-
-    const service = new JourneyService(legacyServiceSchema.operatingDayRef, legacyServiceSchema.journeyRef, legacyServiceSchema.lineRef, legacyServiceSchema.mode, publishedServiceName, attributesV2);
-
-    service.conventionalModeOfOperation = legacyServiceSchema.conventionalModeOfOperation;
-    service.publicCode = legacyServiceSchema.publicCode;
-    service.directionRef = legacyServiceSchema.directionRef;
-    service.productCategory = legacyServiceSchema.productCategory;
+    const schema = legacyTripLegSchema.service;
+    
+    const service = JourneyService.initWithLegacyDatedJourneySchema(schema);
     service.trainNumber = legacyTripLegSchema.extension?.publishedJourneyNumber?.text ?? undefined;
-    service.operatorRef = legacyServiceSchema.operatorRef;
-    service.destinationStopPointRef = legacyServiceSchema.destinationStopPointRef;
-    service.destinationText = legacyServiceSchema.destinationText;
-    service.unplanned = legacyServiceSchema.unplanned;
-    service.cancelled = legacyServiceSchema.cancelled;
-    service.deviation = legacyServiceSchema.deviation;
+
+
+    return service;
+  }
+
+  // Init with OJP 1.0 XML schema - TripRequest
+  // - it needs the TimedLeg because there we have the the 'publishedJourneyNumber' stored
+  public static initWithLegacyStopEventResultSchema(legacyStopEventResultSchema: OJP_Types.OJPv1_StopEventResultSchema): JourneyService {
+    const schema = legacyStopEventResultSchema.stopEvent.service;
+    
+    const service = JourneyService.initWithLegacyDatedJourneySchema(schema);
+    service.trainNumber = legacyStopEventResultSchema.stopEvent.extension?.publishedJourneyNumber?.text ?? undefined;
+
+    service.situationFullRefs = {
+      situationFullRef: []
+    };
+    const situationFullRefItems = legacyStopEventResultSchema.stopEvent.thisCall.callAtStop.situationFullRef ?? [];
+    situationFullRefItems.forEach(item => {
+      if (service.situationFullRefs) {
+        service.situationFullRefs.situationFullRef.push(item);
+      }
+    });
 
     return service;
   }
@@ -109,7 +158,11 @@ export class JourneyService implements OJP_Types.DatedJourneySchema  {
     const publishedServiceName = legacyServiceSchema.publishedLineName;
     const attributesV2 = JourneyService.convertAttributesV2Schema(legacyServiceSchema.attribute);
 
-    const service = new JourneyService(legacyServiceSchema.operatingDayRef, legacyServiceSchema.journeyRef, legacyServiceSchema.lineRef, legacyServiceSchema.mode, publishedServiceName, attributesV2);
+    const originText: OJP_Types.InternationalTextSchema = {
+      text: ''
+    };
+
+    const service = new JourneyService(legacyServiceSchema.operatingDayRef, legacyServiceSchema.journeyRef, legacyServiceSchema.lineRef, legacyServiceSchema.mode, publishedServiceName, attributesV2, originText);
 
     service.conventionalModeOfOperation = legacyServiceSchema.conventionalModeOfOperation;
     service.publicCode = legacyServiceSchema.publicCode;
@@ -154,7 +207,11 @@ export class JourneyService implements OJP_Types.DatedJourneySchema  {
       return journeyAttribute;
     });
 
-    const service = new JourneyService(operatingDayRef, journeyRef, lineRef, mode, publishedServiceName, journeyAttributes);
+    const originText: OJP_Types.InternationalTextSchema = {
+      text: ''
+    };
+
+    const service = new JourneyService(operatingDayRef, journeyRef, lineRef, mode, publishedServiceName, journeyAttributes, originText);
 
     if (legacyJourneyService.productCategory) {
       service.productCategory = {

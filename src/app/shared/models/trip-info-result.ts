@@ -1,12 +1,15 @@
 import * as OJP_Types from 'ojp-shared-types';
 import * as OJP_Next from 'ojp-sdk-next';
+
 import OJP_Legacy from '../../config/ojp-legacy';
 
 import { OJP_VERSION } from '../../config/constants';
 
-import { StopEventType, StopPointCall, StopPointCallType } from '../types/_all';
+import { AnyTripInfoRequestResponse, StopEventType, StopPointCall } from '../types/_all';
 import { OJPHelpers } from '../../helpers/ojp-helpers';
 import { JourneyService } from './journey-service';
+import { StopPlace } from './place/stop-place';
+import { PlaceBuilder } from './place/place-builder';
 
 const stopEventTypes: StopEventType[] = ['arrival', 'departure'];
 
@@ -21,10 +24,12 @@ export class TripInfoResult {
     this.trackSectionsGeoPositions = [];
   }
 
-  public static initWithTripInfoDeliverySchema(ojpVersion: OJP_Legacy.OJP_VERSION_Type, tripInfoDeliverySchema: OJP_Types.TripInfoDeliverySchema | OJP_Types.OJPv1_TripInfoDeliverySchema | null): TripInfoResult | null {
-    if (tripInfoDeliverySchema === null) {
+  public static initWithTripInfoResponse(ojpVersion: OJP_Legacy.OJP_VERSION_Type, response: AnyTripInfoRequestResponse | null): TripInfoResult | null {
+    if (response === null || !response.ok) {
       return null;
     }
+
+    const tripInfoDeliverySchema = response.value;
 
     if (tripInfoDeliverySchema.tripInfoResult.length === 0) {
       console.error('ERROR: TripInfoResult.initWithTripInfoDeliverySchema: empty tripInfoResult');
@@ -45,110 +50,14 @@ export class TripInfoResult {
       return null;
     }
 
-    const places: OJP_Next.Place[] = [];
-    if (ojpVersion === '2.0') {
-      const tripInfoDeliverySchemaOJPv2 = tripInfoDeliverySchema as OJP_Types.TripInfoDeliverySchema;
-
-      const placesSchema = tripInfoDeliverySchemaOJPv2.tripInfoResponseContext?.places?.place ?? [];
-      placesSchema.forEach(placeSchema => {
-        const place = OJP_Next.Place.initWithXMLSchema(placeSchema);
-        places.push(place);
-      });
-    } else {
-      const tripInfoDeliverySchemaOJPv1 = tripInfoDeliverySchema as OJP_Types.OJPv1_TripInfoDeliverySchema;
-
-      const placesSchema = tripInfoDeliverySchemaOJPv1.tripInfoResponseContext?.places?.location ?? [];
-      placesSchema.forEach(placeSchema => {
-        const place = OJP_Next.Place.initWithOJPv1XMLSchema(placeSchema);
-        places.push(place);
-      });
-    }
-
-    const mapPlaces: Record<string, OJP_Next.Place> = {};
-    places.forEach(place => {
-      const stopPlaceRef = place.stopPlace?.stopPlaceRef ?? null;
-      if (stopPlaceRef) {
-        mapPlaces[stopPlaceRef] = place;
-      }
-      const stopPointRef = place.stopPoint?.stopPointRef ?? null;
-      if (stopPointRef) {
-        mapPlaces[stopPointRef] = place;
-      }
-    });
+    const mapPlaces = OJPHelpers.parseAnyTripInfoPlaceContext(ojpVersion, response);
 
     const calls: StopPointCall[] = [];
-
     const callsSchema = firstTripInfoResultSchema.previousCall.concat(firstTripInfoResultSchema.onwardCall);
     callsSchema.forEach((callSchema, idx) => {
       const place = mapPlaces[callSchema.stopPointRef] ?? null;
 
-      const stopPointCallType: StopPointCallType = (() => {
-        const isFirst = idx === 0;
-        if (isFirst) {
-          return 'From';
-        }
-
-        const isLast = idx === (callsSchema.length - 1);
-        if (isLast) {
-          return 'To';
-        }
-
-        return 'Intermediate';
-      })();
-
-      const vehicleAccessTypeS = callSchema.nameSuffix?.text ?? null;
-      const vehicleAccessType = OJPHelpers.computePlatformAssistance(vehicleAccessTypeS);
-
-      const stopCall: StopPointCall = {
-        type: stopPointCallType,
-        place: place,
-        stopPointRef: callSchema.stopPointRef,
-        stopPointName: callSchema.stopPointName.text,
-        platform: {
-          timetable: callSchema.plannedQuay?.text ?? null,
-          realtime: callSchema.plannedQuay?.text ?? null,
-        },
-        arrival: {
-          timetable: null,
-          realtime: null,
-          timetableF: '',
-          realtimeF: '',
-        },
-        departure: {
-          timetable: null,
-          realtime: null,
-          timetableF: '',  
-          realtimeF: '',
-        },
-        vehicleAccessType: vehicleAccessType,
-        mapFareClassOccupancy: null,
-        isNotServicedStop: (callSchema.notServicedStop === undefined) ? null : callSchema.notServicedStop,
-      };
-
-      stopEventTypes.forEach(stopEventType => {
-        const isArrival = stopEventType === 'arrival';
-        const sourceStopEvent = (isArrival ? callSchema.serviceArrival : callSchema.serviceDeparture) ?? null;
-
-        const timetableDateSrc = sourceStopEvent?.timetabledTime ?? null;
-        const timetableDate = timetableDateSrc ? new Date(Date.parse(timetableDateSrc)) : null;
-        const timetableDateF = timetableDate ? OJP_Legacy.DateHelpers.formatTimeHHMM(timetableDate) : '';
-
-        const realtimeDateSrc = sourceStopEvent?.estimatedTime ?? null;
-        const realtimeDate = realtimeDateSrc ? new Date(Date.parse(realtimeDateSrc)) : null;
-        const realtimeDateF = realtimeDate ? OJP_Legacy.DateHelpers.formatTimeHHMM(realtimeDate) : '';
-
-        if (isArrival) {
-          stopCall.arrival.timetable = timetableDate;
-          stopCall.arrival.timetableF = timetableDateF;
-          stopCall.arrival.realtime = realtimeDate;
-          stopCall.arrival.realtimeF = realtimeDateF;
-        } else {
-          stopCall.departure.timetable = timetableDate;
-          stopCall.departure.timetableF = timetableDateF;
-          stopCall.departure.realtime = realtimeDate;
-          stopCall.departure.realtimeF = realtimeDateF;
-        }
-      });
+      const stopCall = OJPHelpers.createStopPointCall(callSchema, place);
 
       calls.push(stopCall);
     });

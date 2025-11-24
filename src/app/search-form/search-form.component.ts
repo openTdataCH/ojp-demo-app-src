@@ -9,6 +9,8 @@ import { SbbExpansionPanel } from '@sbb-esta/angular/accordion';
 import { SbbNotificationToast } from '@sbb-esta/angular/notification-toast';
 import { SbbRadioChange } from '@sbb-esta/angular/radio-button';
 
+import * as OJP_Next from 'ojp-sdk-next';
+
 import OJP_Legacy from '../config/ojp-legacy';
 
 import { APP_STAGE, APP_STAGEs, DEBUG_LEVEL, REQUESTOR_REF, OJP_VERSION } from '../config/constants';
@@ -24,6 +26,7 @@ import { DebugXmlPopoverComponent } from './debug-xml-popover/debug-xml-popover.
 import { ReportIssueComponent } from '../shared/components/report-issue.component';
 
 import { OJPHelpers } from '../helpers/ojp-helpers';
+import { AnyPlace } from '../shared/models/place/place-builder';
 
 @Component({
   selector: 'app-search-form',
@@ -70,13 +73,13 @@ export class SearchFormComponent implements OnInit {
     public userTripService: UserTripService,
     private breakpointObserver: BreakpointObserver,
   ) {
-    const searchDate = this.userTripService.departureDate
-    this.searchDate = searchDate
-    this.searchTime = OJP_Legacy.DateHelpers.formatTimeHHMM(searchDate);
+    const searchDate = this.userTripService.departureDate;
+    this.searchDate = searchDate;
+    this.searchTime = OJP_Next.DateHelpers.formatTimeHHMM(searchDate);
 
-    this.fromLocationText = ''
-    this.toLocationText = ''
-    this.viaText = ''
+    this.fromLocationText = '';
+    this.toLocationText = '';
+    this.viaText = '';
 
     this.appStageOptions = APP_STAGEs;
 
@@ -85,11 +88,11 @@ export class SearchFormComponent implements OnInit {
     this.requestDurationF = null;
     this.currentRequestInfo = null;
 
-    this.lastCustomTripRequestXML = null
+    this.lastCustomTripRequestXML = null;
 
-    this.useMocks = false
+    this.useMocks = false;
 
-    this.headerText = 'Search'
+    this.headerText = 'Search';
 
     this.tripRequestBoardingTypes = ['Dep', 'Arr'];
 
@@ -101,7 +104,7 @@ export class SearchFormComponent implements OnInit {
     this.gistURL = null;
   }
 
-  ngOnInit() {
+  async ngOnInit(): Promise<void> {
     if (this.useMocks) {
       this.initLocationsFromMocks()
       return;
@@ -143,7 +146,7 @@ export class SearchFormComponent implements OnInit {
       this.updateViaDwellTime();
     });
 
-    this.userTripService.initDefaults(this.languageService.language);
+    await this.userTripService.initDefaults(this.languageService.language);
 
     this.breakpointObserver.observe([Breakpoints.Small, Breakpoints.XSmall])
       .subscribe(result => {
@@ -233,7 +236,7 @@ export class SearchFormComponent implements OnInit {
 
   private async initFromMockXML(mockText: string) {
     const isOJPv2 = OJP_VERSION === '2.0';
-    const xmlConfig = isOJPv2 ? OJP_Legacy.XML_ConfigOJPv2 : OJP_Legacy.XML_BuilderConfigOJPv1;
+    const xmlConfig = isOJPv2 ? OJP_Next.DefaultXML_Config : OJP_Next.XML_BuilderConfigOJPv1;
 
     const request = OJP_Legacy.TripRequest.initWithResponseMock(mockText, xmlConfig, REQUESTOR_REF);
     request.fetchResponseWithCallback((response) => {
@@ -271,15 +274,15 @@ export class SearchFormComponent implements OnInit {
     this.initFromMockXML(mockText);
   }
 
-  onLocationSelected(location: OJP_Legacy.Location, originType: OJP_Legacy.JourneyPointType) {
-    this.userTripService.updateTripEndpoint(location, originType, 'SearchForm');
+  onPlaceSelected(place: AnyPlace, originType: OJP_Legacy.JourneyPointType) {
+    this.userTripService.updateTripEndpoint(place, originType, 'SearchForm');
   }
 
-  onChangeStageAPI(ev: SbbRadioChange) {
-    const newAppStage = ev.value as APP_STAGE
-    this.userTripService.updateAppStage(newAppStage)
+  public async onChangeStageAPI(ev: SbbRadioChange) {
+    const newAppStage = ev.value as APP_STAGE;
+    this.userTripService.updateAppStage(newAppStage);
 
-    this.userTripService.refetchEndpointsByName(this.languageService.language);
+    await this.userTripService.refetchEndpointsByName(this.languageService.language);
   }
 
   onChangeDateTime() {
@@ -462,7 +465,7 @@ export class SearchFormComponent implements OnInit {
         this.lastCustomTripRequestXML = popover.inputTripRequestXML;
 
         const isOJPv2 = OJP_VERSION === '2.0';
-        const xmlConfig = isOJPv2 ? OJP_Legacy.XML_ConfigOJPv2 : OJP_Legacy.XML_BuilderConfigOJPv1;
+        const xmlConfig = isOJPv2 ? OJP_Next.DefaultXML_Config : OJP_Next.XML_BuilderConfigOJPv1;
 
         const request = OJP_Legacy.TripRequest.initWithResponseMock(tripsResponseXML, xmlConfig, REQUESTOR_REF);
         request.fetchResponse().then((response) => {
@@ -522,7 +525,7 @@ export class SearchFormComponent implements OnInit {
   public resetDateTime() {
     const nowDateTime = new Date();
     this.searchDate = nowDateTime;
-    this.searchTime = OJP_Legacy.DateHelpers.formatTimeHHMM(nowDateTime);
+    this.searchTime = OJP_Next.DateHelpers.formatTimeHHMM(nowDateTime);
     this.userTripService.updateDepartureDateTime(this.computeFormDepartureDate());
   }
 
@@ -573,7 +576,7 @@ export class SearchFormComponent implements OnInit {
 
   private computeTripRequest(includeLegProjection: boolean = false) {
     const isOJPv2 = OJP_VERSION === '2.0';
-    const xmlConfig = isOJPv2 ? OJP_Legacy.XML_ConfigOJPv2 : OJP_Legacy.XML_BuilderConfigOJPv1;
+    const xmlConfig = isOJPv2 ? OJP_Next.DefaultXML_Config : OJP_Next.XML_BuilderConfigOJPv1;
 
     const stageConfig = this.userTripService.getStageConfig();
     const viaTripLocations = this.userTripService.isViaEnabled ? this.userTripService.viaTripLocations : [];

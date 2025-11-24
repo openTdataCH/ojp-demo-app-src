@@ -1,6 +1,6 @@
 import { AfterViewInit, ChangeDetectorRef, Component, OnInit } from '@angular/core';
 
-import OJP_Legacy from '../../config/ojp-legacy';
+import * as OJP_Next from 'ojp-sdk-next';
 
 import { TripInfoService } from '../trip-info.service';
 import { OJPHelpers } from '../../helpers/ojp-helpers';
@@ -142,7 +142,7 @@ export class TripInfoResultComponent implements OnInit, AfterViewInit {
 
     const timetableDate = fromStopPoint.departure.timetable;
     if (timetableDate) {
-      const dateTimeS = OJP_Legacy.DateHelpers.formatDate(timetableDate);
+      const dateTimeS = OJP_Next.DateHelpers.formatDate(timetableDate);
       queryParams.append('trip_datetime', dateTimeS.substring(0, 16));
     }
 

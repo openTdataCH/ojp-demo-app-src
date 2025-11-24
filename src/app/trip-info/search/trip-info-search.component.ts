@@ -4,10 +4,9 @@ import { SbbExpansionPanel } from '@sbb-esta/angular/accordion';
 import { SbbDialog } from '@sbb-esta/angular/dialog';
 import { SbbNotificationToast } from '@sbb-esta/angular/notification-toast';
 
-import OJP_Legacy from '../../config/ojp-legacy';
 import * as OJP_Next from 'ojp-sdk-next';
 
-import { APP_STAGE, APP_STAGEs, REQUESTOR_REF, OJP_VERSION } from '../../config/constants';
+import { APP_STAGE, APP_STAGEs, DEFAULT_APP_STAGE, OJP_VERSION } from '../../config/constants';
 
 import { UserTripService } from '../../shared/services/user-trip.service';
 import { TripInfoService } from '../trip-info.service';
@@ -15,13 +14,18 @@ import { DebugXmlPopoverComponent } from '../../search-form/debug-xml-popover/de
 import { CustomTripInfoXMLPopoverComponent } from './custom-trip-info-xml-popover/custom-trip-info-xml-popover.component';
 import { LanguageService } from '../../shared/services/language.service';
 import { TripInfoResult } from '../../shared/models/trip-info-result';
+import { OJPHelpers } from '../../helpers/ojp-helpers';
 
 interface PagelModel {
+  currentAppStage: APP_STAGE,
+
   journeyRef: string
   journeyDateTime: Date,
   appStageOptions: APP_STAGE[],
   isSearching: boolean,
-  permalinkURLAddress: string
+  
+  otherVersionURL: string | null,
+  permalinkURLAddress: string,
 }
 
 @Component({
@@ -32,13 +36,13 @@ interface PagelModel {
 export class TripInfoSearchComponent implements OnInit {
   @ViewChild(SbbExpansionPanel, { static: true }) searchPanel: SbbExpansionPanel | undefined;
 
-  private queryParams: URLSearchParams
+  private queryParams: URLSearchParams;
 
-  public model: PagelModel
+  public model: PagelModel;
 
   public currentRequestInfo: OJP_Next.RequestInfo | null;
 
-  public headerText: string = 'Search Trip Info'
+  public headerText: string = 'Search Trip Info';
 
   private useMocks = false;
 
@@ -53,14 +57,18 @@ export class TripInfoSearchComponent implements OnInit {
     this.queryParams = new URLSearchParams(document.location.search);
 
     this.model = {
+      currentAppStage: DEFAULT_APP_STAGE,
+
       journeyRef: '',
       journeyDateTime: new Date(),
       appStageOptions: APP_STAGEs,
       isSearching: false,
+
+      otherVersionURL: null,
       permalinkURLAddress: '',
     }
 
-    this.updatePermalinkURLAddress();
+    this.updateURLs();
 
     this.currentRequestInfo = null;
 
@@ -70,20 +78,19 @@ export class TripInfoSearchComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    const userStage = this.queryParams.get('stage');
-    if (userStage) {
-      const newAppStage = this.computeAppStageFromString(userStage);
-      if (newAppStage) {
-        setTimeout(() => {
-          // HACK 
-          // without the setTimeout , the parent src/app/trip-info/trip-info.component.html template 
-          // gives following errors core.mjs:9157 ERROR RuntimeError: NG0100: ExpressionChangedAfterItHasBeenCheckedError: 
-          // Expression has changed after it was checked. Previous value: 'PROD'. Current value: 'INT'. 
-          // Find more at https://angular.io/errors/NG0100
-          this.userTripService.updateAppStage(newAppStage);
-        });
-      }
-    }
+    const appStage = OJPHelpers.computeAppStage();
+
+    setTimeout(() => {
+      // HACK 
+      // without the setTimeout , the parent src/app/station-board/station-board.component.html template 
+      // gives following errors core.mjs:9157 ERROR RuntimeError: NG0100: ExpressionChangedAfterItHasBeenCheckedError: 
+      // Expression has changed after it was checked. Previous value: 'PROD'. Current value: 'INT'. 
+      // Find more at https://angular.io/errors/NG0100
+      this.userTripService.currentAppStage = appStage;
+    });
+
+    this.model.currentAppStage = appStage;
+    this.userTripService.updateAppStage(appStage);
 
     this.tripInfoService.tripInfoResultUpdated.subscribe(tripInfoResult => {
       if (tripInfoResult !== null) {
@@ -103,6 +110,8 @@ export class TripInfoSearchComponent implements OnInit {
       if (dayRef) {
         this.model.journeyDateTime = new Date(dayRef);
       }
+
+      this.updateURLs();
       
       this.fetchTripInfo();
     }
@@ -130,7 +139,7 @@ export class TripInfoSearchComponent implements OnInit {
   }
 
   public onDateTimeChanged() {
-    this.updatePermalinkURLAddress();
+    this.updateURLs();
   }
 
   public isSearchButtonDisabled(): boolean {
@@ -147,32 +156,52 @@ export class TripInfoSearchComponent implements OnInit {
     this.fetchTripInfo();
   }
 
-  private updatePermalinkURLAddress() {
+  private updateURLs() {
     const queryParams = new URLSearchParams();
     queryParams.set('ref', this.model.journeyRef);
     
-    const dayS =  OJP_Legacy.DateHelpers.formatDate(this.model.journeyDateTime).substring(0, 10);
+    const dayS = OJP_Next.DateHelpers.formatDate(this.model.journeyDateTime).substring(0, 10);
     queryParams.set('day', dayS);
+
+    if (this.model.currentAppStage !== DEFAULT_APP_STAGE) {
+      const stageS = this.model.currentAppStage.toLowerCase();
+      queryParams.append('stage', stageS);
+    }
 
     const urlAddress = document.location.pathname + '?' + queryParams.toString();
     
     this.model.permalinkURLAddress = urlAddress;
+    this.updateLinkedURLs(queryParams);
+  }
+
+  private updateLinkedURLs(queryParams: URLSearchParams) {
+    const isOJPv2 = OJP_VERSION === '2.0';
+
+    const otherVersionQueryParams = new URLSearchParams(queryParams);
+    this.userTripService.updateStageLinkedURL(otherVersionQueryParams, isOJPv2);
+    if (isOJPv2) {
+      // v1
+      this.model.otherVersionURL = 'https://tools.odpch.ch/beta-ojp-demo/trip?' + otherVersionQueryParams.toString();
+      this.userTripService.otherVersionURLText = 'BETA (OJP 1.0)';
+    } else {
+      // v2
+      this.model.otherVersionURL = 'https://opentdatach.github.io/ojp-demo-app/trip?' + otherVersionQueryParams.toString();
+      this.userTripService.otherVersionURLText = 'PROD (OJP 2.0)';
+    }
   }
 
   private async fetchTripInfo() {
-    const stageConfig = this.userTripService.getStageConfig();
+    const ojpSDK_Next = this.userTripService.createOJP_SDK_Instance(this.languageService.language);
 
-    const request = OJP_Next.TripInfoRequest.initWithJourneyRef(this.model.journeyRef, this.model.journeyDateTime);
+    const request = ojpSDK_Next.requests.TripInfoRequest.initWithJourneyRef(this.model.journeyRef, this.model.journeyDateTime);
     request.enableTrackProjection();
 
-    const ojpSDK_Next = this.createOJP_SDK_Instance();
-
     this.model.isSearching = true;
-    const response = await ojpSDK_Next.fetchTripInfoRequestResponse(request);
+    const response = await request.fetchResponse(ojpSDK_Next);
     this.model.isSearching = false;
 
     if (response.ok) {
-      const tripInfoResult = TripInfoResult.initWithTripInfoDeliverySchema(OJP_VERSION, response.value);
+      const tripInfoResult = TripInfoResult.initWithTripInfoResponse(OJP_VERSION, response);
       this.parseTripInfo(request.requestInfo, tripInfoResult);
     } else {
       this.notificationToast.open('Invalid TripInfoRequest result: ' + response.error.message, {
@@ -245,13 +274,14 @@ export class TripInfoSearchComponent implements OnInit {
   }
 
   private async handleCustomResponse(responseXML: string) {
-    const request = OJP_Next.TripInfoRequest.initWithResponseMock(responseXML);
-    request.enableTrackProjection();
+    const ojpSDK_Next = this.userTripService.createOJP_SDK_Instance(this.languageService.language);
 
-    const ojpSDK_Next = this.createOJP_SDK_Instance();
-    const response = await ojpSDK_Next.fetchTripInfoRequestResponse(request);
+    const request = ojpSDK_Next.requests.TripInfoRequest.initWithResponseMock(responseXML);
+    request.enableTrackProjection();
+    
+    const response = await request.fetchResponse(ojpSDK_Next);
     if (response.ok) {
-      const tripInfoResult = TripInfoResult.initWithTripInfoDeliverySchema(OJP_VERSION, response.value);
+      const tripInfoResult = TripInfoResult.initWithTripInfoResponse(OJP_VERSION, response);
       this.parseTripInfo(request.requestInfo, tripInfoResult);
     } else {
       this.notificationToast.open('Invalid TripInfoRequest result: ' + response.error.message, {
@@ -261,14 +291,5 @@ export class TripInfoSearchComponent implements OnInit {
       console.log(this.model);
       console.log(response);
     }
-  }
-
-  private createOJP_SDK_Instance(): OJP_Next.SDK {
-    const isOJPv2 = OJP_VERSION === '2.0';
-    const xmlConfig = isOJPv2 ? OJP_Legacy.XML_ConfigOJPv2 : OJP_Legacy.XML_BuilderConfigOJPv1;
-
-    const stageConfig = this.userTripService.getStageConfig();    
-    const sdk = new OJP_Next.SDK(REQUESTOR_REF, stageConfig, this.languageService.language, xmlConfig);
-    return sdk;
   }
 }

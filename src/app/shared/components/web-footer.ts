@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 
 import OJP_Legacy from '../../config/ojp-legacy';
 import * as OJP_Next from 'ojp-sdk-next';
-import * as OJP_SharedTypes from 'ojp-shared-types';
+import * as OJP_Types from 'ojp-shared-types';
 
 import { DEBUG_LEVEL, MAP_RASTER_LAYERS, OJP_VERSION } from '../../config/constants';
 import { RasterLayerType } from '../types/_all';
@@ -15,7 +15,7 @@ type PageModel = {
     ojpLegacy: string,
     ojpNext: string,
     ojpSharedTypes: string,
-    ojpAPI: OJP_Legacy.OJP_VERSION_Type,
+    ojpAPI: OJP_Next.OJP_VERSION,
   },
   mapChangelogURLs: {
     ojpDemoApp: string,
@@ -36,13 +36,13 @@ export class WebFooterComponent implements OnInit {
     const isTopograhicPlaceMapLayerEnabled = DEBUG_LEVEL === 'DEBUG';
 
     this.model = {
-      lastUpdate: '13.Nov 2025',
+      lastUpdate: '24.Nov 2025',
       isTopograhicPlaceMapLayerEnabled: isTopograhicPlaceMapLayerEnabled,
       rasterLayers: MAP_RASTER_LAYERS,
       mapSDK_Versions: {
         ojpLegacy: OJP_Legacy.SDK_VERSION,
         ojpNext: OJP_Next.SDK_VERSION,
-        ojpSharedTypes: OJP_SharedTypes.VERSION,
+        ojpSharedTypes: OJP_Types.VERSION,
         ojpAPI: OJP_VERSION,
       },
       mapChangelogURLs: {

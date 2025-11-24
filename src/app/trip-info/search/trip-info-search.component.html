@@ -11,14 +11,6 @@
               <input sbbInput placeholder="type a JourneyRef" value="" [(ngModel)]="this.model.journeyRef" />
             </sbb-form-field>
           </div>
-          
-          <div
-            *ngIf="this.currentRequestInfo?.requestXML"
-            class="xml-info"
-            (click)="showRequestXmlPopover()"
-          >
-            <span class="layer-xml-info badge bg-info text-dark">XML</span>
-          </div>
         </div>
 
         <div class="d-flex">
@@ -40,7 +32,7 @@
             <sbb-radio-group class="sbb-radio-group-horizontal">
               <sbb-radio-button *ngFor="let appStageOption of this.model.appStageOptions" 
                 [value]="appStageOption"
-                [checked]="this.userTripService.currentAppStage == appStageOption"
+                [checked]="this.model.currentAppStage == appStageOption"
                 (change)="onChangeStageAPI($event)">
                 {{ appStageOption }}
               </sbb-radio-button>
@@ -78,3 +70,25 @@
     </sbb-accordion>
   </div>
 </div>
+
+<ng-container *ngIf="this.currentRequestInfo?.requestXML">
+  <div class="row mb-2">
+    <div class="col">
+      <div class="d-flex flex-row-reverse gap-1">
+        <div class="xml-info" (click)="showRequestXmlPopover()">
+          <span class="layer-xml-info badge bg-info text-dark">XML</span>
+        </div>
+        <div>|</div>
+
+        <div>
+          <a href="{{ this.model.otherVersionURL }}" target="_blank">{{ this.userTripService.otherVersionURLText }}</a>
+        </div>
+        <div>|</div>
+        
+        <div>
+          <a href="{{ this.model.permalinkURLAddress }}" target="_blank">Permalink</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</ng-container>
