@@ -279,8 +279,8 @@ export class SearchFormComponent implements OnInit {
   }
 
   public async onChangeStageAPI(ev: SbbRadioChange) {
-    const newAppStage = ev.value as APP_STAGE
-    this.userTripService.updateAppStage(newAppStage)
+    const newAppStage = ev.value as APP_STAGE;
+    this.userTripService.updateAppStage(newAppStage);
 
     await this.userTripService.refetchEndpointsByName(this.languageService.language);
   }
