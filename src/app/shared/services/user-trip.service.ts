@@ -665,6 +665,29 @@ export class UserTripService {
     return queryParams;
   }
 
+  public computeBBOX(): GeoPositionBBOX {
+    const tripLocations: OJP_Legacy.TripLocationPoint[] = [];
+    if (this.fromTripLocation) {
+      tripLocations.push(this.fromTripLocation);
+    }
+    this.viaTripLocations.forEach(viaTripLocation => {
+      tripLocations.push(viaTripLocation);
+    });
+    if (this.toTripLocation) {
+      tripLocations.push(this.toTripLocation);
+    }
+
+    const bbox = new GeoPositionBBOX([]);
+    tripLocations.forEach(tripLocation => {
+      const place = PlaceBuilder.initWithLegacyLocation(tripLocation.location);
+      if (place) {
+        bbox.extend(place.geoPosition);
+      }
+    });
+
+    return bbox;
+  }
+
   private computeInitialDate(): Date {
     const defaultDate = new Date();
 
