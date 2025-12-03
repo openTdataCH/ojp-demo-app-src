@@ -29,6 +29,7 @@ import { StopPlace } from '../../shared/models/place/stop-place';
 import { StopEventResult } from '../../shared/models/stop-event-result';
 import { AnyStopEventRequestResponse } from '../../shared/types/_all';
 import { JourneyService } from '../../shared/models/journey-service';
+import { DataHelpers } from '../../helpers/data-helpers';
 
 @Component({
   selector: 'station-board-search',
@@ -420,6 +421,8 @@ export class StationBoardSearchComponent implements OnInit {
 
   private computeStopEventRequest(stopPlaceRef: string) {
     const sdk = this.userTripService.createOJP_SDK_Instance(this.languageService.language);
+
+    stopPlaceRef = DataHelpers.convertStopPointToStopPlace(stopPlaceRef);
 
     const stopEventDate = this.computeStopBoardDate();
     const request = sdk.requests.StopEventRequest.initWithPlaceRefAndDate(stopPlaceRef, stopEventDate);
