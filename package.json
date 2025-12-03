@@ -28,9 +28,9 @@
     "tslib": "^2.3.0",
     "zone.js": "~0.11.4",
 
-    "ojp-sdk-legacy": "0.18.18",
-    "ojp-shared-types": "github:openTdataCH/ojp-shared-types#feature/updates-api",
-    "ojp-sdk-next": "github:openTdataCH/ojp-js#feature/ojp-sdk-next-refactor-ojp-versions",
+    "ojp-sdk-legacy": "0.18.19",
+    "ojp-shared-types": "0.1.1",
+    "ojp-sdk-next": "0.21.1",
 
     "cross-fetch": "3.1.5",
     "sax": "1.3.0",
