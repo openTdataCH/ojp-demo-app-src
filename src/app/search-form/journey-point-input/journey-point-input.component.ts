@@ -101,7 +101,7 @@ export class JourneyPointInputComponent implements OnInit, OnChanges {
   }
 
   onOptionSelected(ev: SbbAutocompleteSelectedEvent) {
-    this.shouldFetchNewData = false
+    this.shouldFetchNewData = false;
 
     const optionIdParts = ev.option.value.split('.');
     if (optionIdParts.length !== 2) {

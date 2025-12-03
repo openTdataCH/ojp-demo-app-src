@@ -26,11 +26,11 @@ export class MapComponent implements OnInit, AfterViewInit {
 
   private fromMarker: mapboxgl.Marker;
   private toMarker: mapboxgl.Marker;
-  private viaMarkers: mapboxgl.Marker[]
+  private viaMarkers: mapboxgl.Marker[];
 
-  private popupContextMenu: mapboxgl.Popup
+  private popupContextMenu: mapboxgl.Popup;
 
-  private tripRenderController: TripRenderController | null
+  private tripRenderController: TripRenderController | null;
 
   constructor(
     private userTripService: UserTripService,
@@ -58,10 +58,10 @@ export class MapComponent implements OnInit, AfterViewInit {
       })
 
       if (endpointType === 'From') {
-        this.fromMarker = marker
+        this.fromMarker = marker;
       }
       if (endpointType === 'To') {
-        this.toMarker = marker
+        this.toMarker = marker;
       }
     })
 
@@ -70,7 +70,7 @@ export class MapComponent implements OnInit, AfterViewInit {
     this.mapLoadingPromise = null;
 
     this.popupContextMenu = new mapboxgl.Popup({
-      focusAfterOpen: false
+      focusAfterOpen: false,
     });
 
     this.tripRenderController = null;

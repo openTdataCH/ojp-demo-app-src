@@ -35,8 +35,8 @@ export class MapService {
   public initialMapZoom: number | null
 
   constructor() {
-    this.initialMapCenter = null
-    this.initialMapZoom = null
+    this.initialMapCenter = null;
+    this.initialMapZoom = null;
   }
 
   public createMap(elementID: string): mapboxgl.Map {
@@ -50,9 +50,9 @@ export class MapService {
     });
 
     if (this.initialMapCenter) {
-      map.setCenter(this.initialMapCenter)
+      map.setCenter(this.initialMapCenter);
       if (this.initialMapZoom) {
-        map.setZoom(this.initialMapZoom)
+        map.setZoom(this.initialMapZoom);
       }
     } else {
       map.fitBounds(mapBounds, {

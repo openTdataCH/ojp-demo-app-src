@@ -43,25 +43,25 @@ export class SearchFormComponent implements OnInit {
   public viaText: string
   public viaDwellTime = new FormControl('');
 
-  public appStageOptions: APP_STAGE[] = []
+  public appStageOptions: APP_STAGE[] = [];
 
-  public isSearching: boolean
+  public isSearching: boolean;
 
-  public requestDurationF: string | null
-  public currentRequestInfo: OJP_Legacy.RequestInfo | null
+  public requestDurationF: string | null;
+  public currentRequestInfo: OJP_Legacy.RequestInfo | null;
 
-  private lastCustomTripRequestXML: string | null
+  private lastCustomTripRequestXML: string | null;
 
-  public isEmbed: boolean
+  public isEmbed: boolean;
 
-  public searchDate: Date
-  public searchTime: string
+  public searchDate: Date;
+  public searchTime: string;
 
-  public headerText: string
+  public headerText: string;
 
-  public tripRequestBoardingTypes: OJP_Legacy.TripRequestBoardingType[]
+  public tripRequestBoardingTypes: OJP_Legacy.TripRequestBoardingType[];
 
-  private useMocks: boolean
+  private useMocks: boolean;
 
   public gistURL: string | null;
 

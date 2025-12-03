@@ -71,11 +71,11 @@ export class UserTripService {
   public stageChanged = new EventEmitter<APP_STAGE>();
 
   constructor(private mapService: MapService) {
-    this.queryParams = new URLSearchParams(document.location.search)
+    this.queryParams = new URLSearchParams(document.location.search);
 
-    this.fromTripLocation = null
-    this.toTripLocation = null
-    this.viaTripLocations = []
+    this.fromTripLocation = null;
+    this.toTripLocation = null;
+    this.viaTripLocations = [];
     
     this.numberOfResults = TRIP_REQUEST_DEFAULT_NUMBER_OF_RESULTS;
     this.numberOfResultsBefore = null;
@@ -495,7 +495,7 @@ export class UserTripService {
           queryParams.append(queryParamKey, geoPositionLngLatS);
         }
       }
-    })
+    });
 
     const viaParamParts: string[] = []
     this.viaTripLocations.forEach(viaTripLocation => {
@@ -785,7 +785,7 @@ export class UserTripService {
     this.tripTransportMode = 'public_transport';
 
     this.geoLocationsUpdated.emit()
-    this.updateURLs()
+    this.updateURLs();
   }
 
   public massageTrips(trips: OJP_Legacy.Trip[]): TripData[] {
