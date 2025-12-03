@@ -11,7 +11,7 @@ import OJP_Legacy from '../../config/ojp-legacy';
 import { APP_CONFIG } from '../../config/app-config';
 import { APP_STAGE, DEBUG_LEVEL, DEFAULT_APP_STAGE, REQUESTOR_REF, TRIP_REQUEST_DEFAULT_NUMBER_OF_RESULTS, OJP_VERSION } from '../../config/constants';
 
-import { IMapBoundsData, MapService } from './map.service';
+import { MapService } from './map.service';
 import { MapTrip } from '../types/map-geometry-types';
 import { TripData, TripLegData } from '../types/trip';
 import { AnyPlace, PlaceBuilder, sortPlaces } from '../models/place/place-builder';
