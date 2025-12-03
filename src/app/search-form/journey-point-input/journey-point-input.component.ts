@@ -6,7 +6,6 @@ import { SbbAutocompleteSelectedEvent } from '@sbb-esta/angular/autocomplete';
 import { SbbErrorStateMatcher } from '@sbb-esta/angular/core';
 
 import * as OJP_Types from 'ojp-shared-types';
-import OJP_Legacy from '../../config/ojp-legacy';
 
 import { OJP_VERSION } from '../../config/constants';
 
@@ -41,8 +40,6 @@ export class JourneyPointInputComponent implements OnInit, OnChanges {
   public optionLocationTypes: OptionLocationType[];
 
   @Input() placeholder: string = '';
-  @Input() endpointType: OJP_Legacy.JourneyPointType = 'From';
-  @Input() inputValue: string = '';
   @Output() selectedPlace = new EventEmitter<AnyPlace>();
   @Input() currentPlace: AnyPlace | null;
 
