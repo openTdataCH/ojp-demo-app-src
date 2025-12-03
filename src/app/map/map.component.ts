@@ -1,4 +1,6 @@
 import { Component, OnInit, AfterViewInit } from '@angular/core';
+import { Subject, takeUntil } from 'rxjs';
+
 import { SbbDialog } from "@sbb-esta/angular/dialog";
 
 import mapboxgl from 'mapbox-gl'
@@ -31,6 +33,8 @@ export class MapComponent implements OnInit, AfterViewInit {
   private popupContextMenu: mapboxgl.Popup;
 
   private tripRenderController: TripRenderController | null;
+
+  private destroyed$ = new Subject<void>();
 
   constructor(
     private userTripService: UserTripService,
@@ -110,7 +114,17 @@ export class MapComponent implements OnInit, AfterViewInit {
   ngAfterViewInit(): void {
     this.mapLoadingPromise?.then(map => {
       map.resize();
+
+      this.userTripService.locationChanges$.pipe(takeUntil(this.destroyed$)).subscribe(change => {
+        this.updateMarkers();
+        this.updateMapBounds();
+      });
     });
+  }
+
+  ngOnDestroy(): void {
+    this.destroyed$.next();
+    this.destroyed$.complete();
   }
 
   private initMap() {
