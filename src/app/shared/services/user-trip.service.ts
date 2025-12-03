@@ -108,7 +108,7 @@ export class UserTripService {
     this.sbbURL = null;
   }
 
-  public async initDefaults(language: OJP_Legacy.Language) {
+  public async initDefaults(language: OJP_Legacy.Language): Promise<void> {
     const appStage = OJPHelpers.computeAppStage();
 
     setTimeout(() => {
