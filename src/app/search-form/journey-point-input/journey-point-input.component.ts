@@ -40,8 +40,9 @@ export class JourneyPointInputComponent implements OnInit, OnChanges {
   public optionLocationTypes: OptionLocationType[];
 
   @Input() placeholder: string = '';
-  @Output() selectedPlace = new EventEmitter<AnyPlace>();
+  
   @Input() currentPlace: AnyPlace | null;
+  @Output() selectedNewPlace = new EventEmitter<AnyPlace>();
 
   constructor(private mapService: MapService, private userTripService: UserTripService, private languageService: LanguageService) {
     this.mapLookupPlaces = {} as MapLocations;
@@ -148,8 +149,8 @@ export class JourneyPointInputComponent implements OnInit, OnChanges {
     const inputValue = place.computeName();
     this.inputControl.setValue(inputValue);
 
-    this.selectedPlace.emit(place);
     this.currentPlace = place;
+    this.selectedNewPlace.emit(place);
   }
 
   private resetMapPlaces() {
