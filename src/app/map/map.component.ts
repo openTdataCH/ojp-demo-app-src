@@ -181,10 +181,58 @@ export class MapComponent implements OnInit, AfterViewInit {
     let place = new PlaceLocation(lngLat.lng, lngLat.lat);
 
     this.mapLoadingPromise?.then(async map => {
+      const nearbyPlace = await this.tryToFindNearbyPlace(map, lngLat);
+      if (nearbyPlace) {
+        place = nearbyPlace;
+      }
 
-    // Try to snap to the nearest stop
       this.userTripService.updateTripEndpoint(place, endpointType, 'MapDragend');  
     });
+  }
+
+  private async tryToFindNearbyPlace(map: mapboxgl.Map, lngLat: mapboxgl.LngLat): Promise<AnyPlace | null> {
+    const centerPlace = new PlaceLocation(lngLat.lng, lngLat.lat);
+    
+    const boxWidth: number = (() => {
+      const zoom = map.getZoom();
+      if (zoom < 10) {
+        return 5 * 1000;
+      }
+
+      if (zoom < 13) {
+        return 1000;
+      }
+
+      return 50;
+    })();
+    
+    const bbox = GeoPositionBBOX.initFromGeoPosition(centerPlace.geoPosition, boxWidth, boxWidth);
+    const bboxData = bbox.asFeatureBBOX();
+
+    const ojpSDK_Next = this.userTripService.createOJP_SDK_Instance(this.languageService.language);
+    const request = ojpSDK_Next.requests.LocationInformationRequest.initWithBBOX(bboxData, ['stop'], 300);
+    const response = await request.fetchResponse(ojpSDK_Next);
+
+    const lngLatBounds = new mapboxgl.LngLatBounds(bbox.asFeatureBBOX());
+    MapHelpers.highlightBBOXOnMap(lngLatBounds, map);
+
+    if (!response.ok) {
+      return null;
+    }
+
+    const placeResults = OJPHelpers.parseAnyPlaceResult(OJP_VERSION, response);
+    const places = placeResults.map(placeResult => {
+      const place = PlaceBuilder.initWithPlaceResultSchema(OJP_VERSION, placeResult);
+      return place;
+    }).filter(Boolean) as AnyPlace[];
+
+    if (places.length === 0) {
+      return null;
+    }
+
+    const sortedPlaces = sortPlaces(places, centerPlace);
+    
+    return sortedPlaces[0];
   }
 
   private onMapLoad(map: mapboxgl.Map) {
