@@ -4,6 +4,9 @@ OJP-Demo URL: https://opentdatach.github.io/ojp-demo-app/
 
 ----
 
+03.December 2025
+- Use latest OJP SDKS - [PR #311](https://github.com/openTdataCH/ojp-demo-app-src/pull/311)
+
 24.November 2025
 - Migrate LIR/SER to use ojp-sdk-next - [PR #303](https://github.com/openTdataCH/ojp-demo-app-src/pull/305)
   - migrate `LocationInformationRequest`, `StopEventRequest` requests / parsers to use `ojp-sdk-next` SDK
