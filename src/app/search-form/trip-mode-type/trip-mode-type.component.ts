@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { FormControl } from '@angular/forms';
-import { debounceTime } from 'rxjs';
+import { debounceTime, Subject, takeUntil } from 'rxjs';
 
 import * as OJP_Types from 'ojp-shared-types';
 import OJP_Legacy from '../../config/ojp-legacy';
@@ -108,6 +108,8 @@ export class TripModeTypeComponent implements OnInit {
   public useRealTimeDataTypes: OJP_Types.UseRealtimeDataEnum[];
   public selectedUseRealTimeDataType: OJP_Types.UseRealtimeDataEnum;
 
+  private destroyed$ = new Subject<void>();
+
   constructor(public userTripService: UserTripService, private languageService: LanguageService) {
     const queryParams = new URLSearchParams(document.location.search);
 
@@ -184,7 +186,8 @@ export class TripModeTypeComponent implements OnInit {
     this.tripTransportModes = JSON.parse(JSON.stringify(tripTransportModeData.transportModes));
     this.prevTransportMode = this.userTripService.tripTransportMode;
 
-    this.userTripService.defaultsInited.subscribe(nothing => {
+
+    this.userTripService.locationChanges$.pipe(takeUntil(this.destroyed$)).subscribe(change => {
       this.initAfterTripService();
     });
 
@@ -202,6 +205,11 @@ export class TripModeTypeComponent implements OnInit {
     });
 
     this.settingsCollapseID = 'mode_custom_mode_settings_0';
+  }
+
+  ngOnDestroy(): void {
+    this.destroyed$.next();
+    this.destroyed$.complete();
   }
 
   private initAfterTripService() {
