@@ -8,7 +8,7 @@ import mapboxgl from 'mapbox-gl'
 import * as OJP_Next from 'ojp-sdk-next';
 import OJP_Legacy from '../config/ojp-legacy';
 
-import { MapService } from '../shared/services/map.service';
+import { IMapBoundsData, MapService } from '../shared/services/map.service';
 import { UserTripService } from '../shared/services/user-trip.service';
 
 import { MapHelpers } from './helpers/map.helpers';
@@ -16,7 +16,10 @@ import { MapHelpers } from './helpers/map.helpers';
 import { TripRenderController } from './controllers/trip-render-controller';
 import { LanguageService } from '../shared/services/language.service';
 import { PlaceLocation } from '../shared/models/place/location';
-import { AnyPlace, PlaceBuilder } from '../shared/models/place/place-builder';
+import { AnyPlace, PlaceBuilder, sortPlaces } from '../shared/models/place/place-builder';
+import { GeoPositionBBOX } from '../shared/models/geo/geoposition-bbox';
+import { OJPHelpers } from '../helpers/ojp-helpers';
+import { OJP_VERSION } from '../config/constants';
 
 @Component({
   selector: 'app-map',
