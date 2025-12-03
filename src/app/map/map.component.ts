@@ -77,7 +77,7 @@ export class MapComponent implements OnInit, AfterViewInit {
   }
 
   ngOnInit() {
-    this.userTripService.geoLocationsUpdated.subscribe(nothing => {
+    this.userTripService.locationsUpdated.subscribe(nothing => {
       this.updateMarkers();
     });
 

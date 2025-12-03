@@ -275,7 +275,6 @@ export class UserTripService {
     })();
 
     this.locationsUpdated.emit();
-    this.geoLocationsUpdated.emit();
     this.updateURLs();
 
     if (bbox.isValid()) {
@@ -379,7 +378,6 @@ export class UserTripService {
 
     this.updateURLs();
     this.locationsUpdated.emit();
-    this.geoLocationsUpdated.emit();
   }
 
   public switchEndpoints() {
@@ -388,7 +386,6 @@ export class UserTripService {
     this.toTripLocation = Object.assign({}, locationAux);
 
     this.locationsUpdated.emit();
-    this.geoLocationsUpdated.emit();
     this.activeTripSelected.emit(null);
 
     this.searchParamsReset.emit();
@@ -399,7 +396,6 @@ export class UserTripService {
     this.isViaEnabled = !this.isViaEnabled;
 
     this.locationsUpdated.emit();
-    this.geoLocationsUpdated.emit();
     this.activeTripSelected.emit(null);
 
     this.searchParamsReset.emit();
@@ -427,7 +423,6 @@ export class UserTripService {
     }
 
     this.locationsUpdated.emit();
-    this.geoLocationsUpdated.emit();
     this.activeTripSelected.emit(null);
 
     this.searchParamsReset.emit();
@@ -456,7 +451,6 @@ export class UserTripService {
     this.viaTripLocations[viaIDx].location = place.asOJP_LegacyLocation();
 
     this.locationsUpdated.emit();
-    this.geoLocationsUpdated.emit();
     this.activeTripSelected.emit(null);
 
     this.searchParamsReset.emit();
@@ -812,7 +806,7 @@ export class UserTripService {
     this.tripModeType = 'monomodal';
     this.tripTransportMode = 'public_transport';
 
-    this.geoLocationsUpdated.emit()
+    this.locationsUpdated.emit();
     this.updateURLs();
   }
 
