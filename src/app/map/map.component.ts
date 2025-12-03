@@ -53,8 +53,8 @@ export class MapComponent implements OnInit, AfterViewInit {
         anchor: 'bottom'
       });
 
-      marker.on('dragend', ev => {
-        this.handleMarkerDrag(marker, endpointType);
+      marker.on('dragend', async ev => {
+        await this.handleMarkerDrag(marker, endpointType);
       })
 
       if (endpointType === 'From') {
@@ -158,13 +158,16 @@ export class MapComponent implements OnInit, AfterViewInit {
     }
   }
 
-  private handleMarkerDrag(marker: mapboxgl.Marker, endpointType: OJP_Legacy.JourneyPointType) {
+  private async handleMarkerDrag(marker: mapboxgl.Marker, endpointType: OJP_Legacy.JourneyPointType) {
     const lngLat = marker.getLngLat();
 
-    const location = new PlaceLocation(lngLat.lng, lngLat.lat);
+    let place = new PlaceLocation(lngLat.lng, lngLat.lat);
+
+    this.mapLoadingPromise?.then(async map => {
 
     // Try to snap to the nearest stop
-    this.userTripService.updateTripEndpoint(location, endpointType, 'MapDragend');
+      this.userTripService.updateTripEndpoint(place, endpointType, 'MapDragend');  
+    });
   }
 
   private onMapLoad(map: mapboxgl.Map) {
