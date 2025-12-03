@@ -261,4 +261,24 @@ export class MapComponent implements OnInit, AfterViewInit {
     return marker;
   }
 
+  private updateMapBounds() {
+    const bbox = this.userTripService.computeBBOX();
+
+    if (!bbox.isValid()) {
+      console.log('Invalid bbox - cant zoom');
+      return;
+    }
+
+    const queryParams = new URLSearchParams(document.location.search);
+    const shouldZoomToBounds = queryParams.has('from') || queryParams.has('to');
+    if (shouldZoomToBounds) {
+      const bounds = new mapboxgl.LngLatBounds(bbox.asFeatureBBOX());
+      const mapData: IMapBoundsData = {
+        bounds: bounds,
+        disableEase: true,
+      };
+      
+      this.mapService.newMapBoundsRequested.emit(mapData);
+    }
+  }
 }
