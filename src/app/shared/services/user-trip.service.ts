@@ -57,6 +57,8 @@ export class UserTripService {
   public embedQueryParams = new URLSearchParams();
 
   public searchFormAfterDefaultsInited = new EventEmitter<void>();
+  
+  // TODO - migrate to use this.userTripService.locationChanges
   public locationsUpdated = new EventEmitter<void>();
   
   public tripsDataUpdated = new EventEmitter<TripData[]>();
