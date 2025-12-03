@@ -6,6 +6,7 @@ OJP-Demo URL: https://opentdatach.github.io/ojp-demo-app/
 
 03.December 2025
 - Use latest OJP SDKS - [PR #311](https://github.com/openTdataCH/ojp-demo-app-src/pull/311)
+- Allow SLOIDs lookup in Station Board - [PR #312](https://github.com/openTdataCH/ojp-demo-app-src/pull/312)
 
 24.November 2025
 - Migrate LIR/SER to use ojp-sdk-next - [PR #303](https://github.com/openTdataCH/ojp-demo-app-src/pull/305)
