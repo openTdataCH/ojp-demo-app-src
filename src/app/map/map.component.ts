@@ -5,7 +5,6 @@ import { SbbDialog } from "@sbb-esta/angular/dialog";
 
 import mapboxgl from 'mapbox-gl'
 
-import * as OJP_Next from 'ojp-sdk-next';
 import OJP_Legacy from '../config/ojp-legacy';
 
 import { IMapBoundsData, MapService } from '../shared/services/map.service';
