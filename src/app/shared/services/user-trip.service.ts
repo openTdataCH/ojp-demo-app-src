@@ -56,10 +56,9 @@ export class UserTripService {
   public sbbURL: string | null;
   public embedQueryParams = new URLSearchParams();
 
-  public defaultsInited = new EventEmitter<void>();
   public searchFormAfterDefaultsInited = new EventEmitter<void>();
   public locationsUpdated = new EventEmitter<void>();
-  public geoLocationsUpdated = new EventEmitter<void>();
+  
   public tripsDataUpdated = new EventEmitter<TripData[]>();
   
   public tripFaresUpdated = new EventEmitter<OJP_Types.FareResultSchema[]>();
@@ -140,8 +139,6 @@ export class UserTripService {
 
     const ojpSDK_Next = this.createOJP_SDK_Instance(language, appStage);
 
-    const bbox = new GeoPositionBBOX([]);
-
     const endpointTypes: OJP_Legacy.JourneyPointType[] = ['From', 'To'];
     for (const endpointType of endpointTypes) {
       const isFrom = endpointType === 'From';
@@ -189,10 +186,6 @@ export class UserTripService {
       } else {
         this.toTripLocation = new OJP_Legacy.TripLocationPoint(location);
       }
-
-      if (location.geoPosition) {
-        bbox.extend(place.geoPosition);
-      }
     };
 
     this.viaTripLocations = [];
@@ -220,10 +213,6 @@ export class UserTripService {
       const location = place.asOJP_LegacyLocation();
       const viaTripLocation = new OJP_Legacy.TripLocationPoint(location);
       this.viaTripLocations.push(viaTripLocation);
-
-      if (location.geoPosition) {
-        bbox.extend(place.geoPosition);
-      }
     };
     
     this.tripModeType = 'monomodal';
@@ -277,19 +266,6 @@ export class UserTripService {
     this.locationsUpdated.emit();
     this.updateURLs();
 
-    if (bbox.isValid()) {
-      const shouldZoomToBounds = this.queryParams.has('from') || this.queryParams.has('to');
-      if (shouldZoomToBounds && !this.mapService.initialMapCenter) {
-        const bounds = new mapboxgl.LngLatBounds(bbox.asFeatureBBOX());
-        const mapData: IMapBoundsData = {
-          bounds: bounds,
-          disableEase: true,
-        };
-        
-        this.mapService.newMapBoundsRequested.emit(mapData);
-      }
-    }
-
     this.isAdditionalRestrictionsEnabled = ['yes', 'true', '1'].includes(this.queryParams.get('advanced') ?? 'n/a');
 
     this.currentBoardingType = (() => {
@@ -305,7 +281,6 @@ export class UserTripService {
       return 'Dep' as OJP_Legacy.TripRequestBoardingType;
     })();
 
-    this.defaultsInited.emit();
     this._locationChanges.next();
   }
 
