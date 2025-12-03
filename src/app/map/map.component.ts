@@ -316,10 +316,8 @@ export class MapComponent implements OnInit, AfterViewInit {
       draggable: isDraggable,
     });
 
-    marker.on('dragend', ev => {
-      const lngLat = marker.getLngLat();
-      const place = new PlaceLocation(lngLat.lng, lngLat.lat);
-      this.userTripService.updateViaPoint(place, markerIDx)
+    marker.on('dragend', async ev => {
+      await this.handleMarkerDrag(marker, 'Via');
     });
 
     return marker;
