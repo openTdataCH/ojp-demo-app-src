@@ -1,4 +1,5 @@
 import { EventEmitter, Injectable } from '@angular/core'
+import { BehaviorSubject, Observable } from 'rxjs';
 
 import mapboxgl from 'mapbox-gl'
 
@@ -69,6 +70,9 @@ export class UserTripService {
   public searchParamsReset = new EventEmitter<void>();
 
   public stageChanged = new EventEmitter<APP_STAGE>();
+
+  private readonly _locationChanges = new BehaviorSubject<void | null>(null);
+  readonly locationChanges$: Observable<void | null> = this._locationChanges.asObservable();
 
   constructor(private mapService: MapService) {
     this.queryParams = new URLSearchParams(document.location.search);
@@ -303,6 +307,7 @@ export class UserTripService {
     })();
 
     this.defaultsInited.emit();
+    this._locationChanges.next();
   }
 
   private parsePlace(response: AnyLocationInformationRequestResponse): AnyPlace | null {
