@@ -96,11 +96,25 @@ export class JourneyPointInputComponent implements OnInit, OnChanges {
   }
 
   ngOnChanges(changes: SimpleChanges) {
-    if ('currentPlace' in changes) {
-      const place = changes['currentPlace'].currentValue as AnyPlace;
-      if (place) {
-        this.inputControl.setValue(place.computeName(), { emitEvent: false });
-      }
+    const change = changes['currentPlace'] ?? null;
+    this.handleCurrentPlaceChange(change);
+  }
+
+  private handleCurrentPlaceChange(change: SimpleChange | null) {
+    if (!change) {
+      return;
+    }
+
+    if (change.firstChange) {
+      return;
+    }
+    if (change.previousValue === change.currentValue) {
+      return;
+    }
+
+    const place = change.currentValue as AnyPlace;
+    if (place) {
+      this.inputControl.setValue(place.computeName(), { emitEvent: false });
     }
   }
 
