@@ -95,6 +95,9 @@ export class JourneyPointInputComponent implements OnInit, OnChanges {
       
       this.resetMapPlaces();
 
+      return;
+    }
+
     this.useSingleSearchPool = this.filterPlaceType !== undefined;
 
     const coordsPlace = PlaceLocation.initFromLiteralCoords(searchTerm);
