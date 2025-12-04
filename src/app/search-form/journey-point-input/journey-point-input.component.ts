@@ -178,10 +178,9 @@ export class JourneyPointInputComponent implements OnInit, OnChanges {
   }
 
   private handleSelectedPlace(place: AnyPlace) {
-    const inputValue = place.computeName();
-    this.inputControl.setValue(inputValue);
-
     this.considerInputControlChanges = false;
+    
+    this.inputControl.setValue(place.computeName(), { emitEvent: false });
     this.currentPlace = place;
     this.selectedNewPlace.emit(place);
   }
