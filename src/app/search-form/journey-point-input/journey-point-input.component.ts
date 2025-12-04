@@ -23,8 +23,7 @@ interface RenderPlaceResult {
   distance?: number,
 };
 
-
-type MapLocations = Record<OJP_Types.PlaceTypeEnum, AnyPlace[]>;
+type MapPlaces = Record<OJP_Types.PlaceTypeEnum, RenderPlaceResult[]>;
 type OptionLocationType = [OJP_Types.PlaceTypeEnum, string];
 
 export class ErrorStateMatcher implements SbbErrorStateMatcher {
@@ -44,7 +43,7 @@ export class JourneyPointInputComponent implements OnInit, OnChanges {
 
   public inputControl = new FormControl('', [Validators.required]);
 
-  public mapLookupPlaces: MapLocations;
+  public mapLookupPlaces: MapPlaces;
   public optionLocationTypes: OptionLocationType[];
 
   @Input() placeholder: string = '';
@@ -53,8 +52,9 @@ export class JourneyPointInputComponent implements OnInit, OnChanges {
   @Output() selectedNewPlace = new EventEmitter<AnyPlace>();
 
   constructor(private mapService: MapService, private userTripService: UserTripService, private languageService: LanguageService) {
-    this.mapLookupPlaces = {} as MapLocations;
     this.considerInputControlChanges = true;
+
+    this.mapLookupPlaces = {} as MapPlaces;
     this.resetMapPlaces();
 
     this.optionLocationTypes = [
@@ -143,7 +143,13 @@ export class JourneyPointInputComponent implements OnInit, OnChanges {
           return;
       }
 
-      this.mapLookupPlaces[place.type].push(place);
+      const renderPlaceResult: RenderPlaceResult = {
+        place: place,
+        type: 'place',
+        caption: place.computeName(),
+      };
+
+      this.mapLookupPlaces[place.type].push(renderPlaceResult);
     });
   }
 
