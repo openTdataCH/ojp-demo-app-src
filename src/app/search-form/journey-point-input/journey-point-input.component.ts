@@ -40,7 +40,7 @@ export class ErrorStateMatcher implements SbbErrorStateMatcher {
   styleUrls: ['./journey-point-input.component.scss']
 })
 export class JourneyPointInputComponent implements OnInit, OnChanges {
-  private shouldFetchNewData = true;
+  private considerInputControlChanges: boolean;
 
   public inputControl = new FormControl('', [Validators.required]);
 
@@ -54,6 +54,7 @@ export class JourneyPointInputComponent implements OnInit, OnChanges {
 
   constructor(private mapService: MapService, private userTripService: UserTripService, private languageService: LanguageService) {
     this.mapLookupPlaces = {} as MapLocations;
+    this.considerInputControlChanges = true;
     this.resetMapPlaces();
 
     this.optionLocationTypes = [
@@ -104,11 +105,10 @@ export class JourneyPointInputComponent implements OnInit, OnChanges {
   }
 
   onOpenAutocomplete() {
-    this.shouldFetchNewData = true
+    this.considerInputControlChanges = true;
   }
 
   onOptionSelected(ev: SbbAutocompleteSelectedEvent) {
-    this.shouldFetchNewData = false;
 
     const optionIdParts = ev.option.value.split('.');
     if (optionIdParts.length !== 2) {
@@ -157,6 +157,7 @@ export class JourneyPointInputComponent implements OnInit, OnChanges {
     const inputValue = place.computeName();
     this.inputControl.setValue(inputValue);
 
+    this.considerInputControlChanges = false;
     this.currentPlace = place;
     this.selectedNewPlace.emit(place);
   }
