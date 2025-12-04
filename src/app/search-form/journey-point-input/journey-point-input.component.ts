@@ -131,9 +131,13 @@ export class JourneyPointInputComponent implements OnInit, OnChanges {
     
     const placeType = optionIdParts[0] as OJP_Types.PlaceTypeEnum;
     const itemIdx = parseInt(optionIdParts[1], 10);
+    const placeResult = this.mapLookupPlaces[placeType][itemIdx];
 
-    const place = this.mapLookupPlaces[placeType][itemIdx];
-    this.handleSelectedPlace(place);
+    if (placeResult.type === 'around_me') {
+    } else {
+      const place = placeResult.place;
+      this.handleSelectedPlace(place);
+    }
   }
 
   private async fetchJourneyPoints(searchTerm: string) {
