@@ -47,6 +47,17 @@ export class PlaceBuilder {
       return placePoi;
     }
 
+    let placeTopographicPlace: TopographicPlace | null = null;
+    try {
+      placeTopographicPlace = TopographicPlace.initWithPlaceResultSchema(version, placeResultSchema);
+    } catch (error) {
+      console.error('TopographicPlace.initWithPlaceResultSchema:', error);
+      console.log(placeResultSchema);
+    }
+    if (placeTopographicPlace) {
+      return placeTopographicPlace;
+    }
+
     return null;
   }
 
