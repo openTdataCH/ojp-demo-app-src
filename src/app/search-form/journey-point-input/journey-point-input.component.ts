@@ -79,6 +79,10 @@ export class JourneyPointInputComponent implements OnInit, OnChanges {
       debounceTime(500),
       distinctUntilChanged()
     ).subscribe((searchTerm: string | null) => {
+      if (!this.considerInputControlChanges) {
+        return;
+      }
+      
       this.onInputChangeAfterIdle();
     });
   }
