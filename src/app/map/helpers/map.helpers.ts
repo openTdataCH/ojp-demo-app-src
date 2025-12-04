@@ -109,8 +109,8 @@ export class MapHelpers {
     nearbyFeatures.sort((a,b) => a.distance - b.distance);
 
     // Highlight area clicked
-    MapHelpers.highlightBBOXPxOnMap(bboxPx, map)
-    MapHelpers.highlightLngLatOnMap(lngLat, map)
+    MapHelpers.highlightBBOXPxOnMap(bboxPx, map);
+    MapHelpers.highlightLngLatOnMap(lngLat, map);
 
     return nearbyFeatures;
   }

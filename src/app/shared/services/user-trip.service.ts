@@ -1,4 +1,5 @@
 import { EventEmitter, Injectable } from '@angular/core'
+import { BehaviorSubject, Observable } from 'rxjs';
 
 import mapboxgl from 'mapbox-gl'
 
@@ -10,7 +11,7 @@ import OJP_Legacy from '../../config/ojp-legacy';
 import { APP_CONFIG } from '../../config/app-config';
 import { APP_STAGE, DEBUG_LEVEL, DEFAULT_APP_STAGE, REQUESTOR_REF, TRIP_REQUEST_DEFAULT_NUMBER_OF_RESULTS, OJP_VERSION } from '../../config/constants';
 
-import { IMapBoundsData, MapService } from './map.service';
+import { MapService } from './map.service';
 import { MapTrip } from '../types/map-geometry-types';
 import { TripData, TripLegData } from '../types/trip';
 import { AnyPlace, PlaceBuilder, sortPlaces } from '../models/place/place-builder';
@@ -55,10 +56,11 @@ export class UserTripService {
   public sbbURL: string | null;
   public embedQueryParams = new URLSearchParams();
 
-  public defaultsInited = new EventEmitter<void>();
   public searchFormAfterDefaultsInited = new EventEmitter<void>();
+  
+  // TODO - migrate to use this.userTripService.locationChanges
   public locationsUpdated = new EventEmitter<void>();
-  public geoLocationsUpdated = new EventEmitter<void>();
+  
   public tripsDataUpdated = new EventEmitter<TripData[]>();
   
   public tripFaresUpdated = new EventEmitter<OJP_Types.FareResultSchema[]>();
@@ -70,12 +72,15 @@ export class UserTripService {
 
   public stageChanged = new EventEmitter<APP_STAGE>();
 
-  constructor(private mapService: MapService) {
-    this.queryParams = new URLSearchParams(document.location.search)
+  private readonly _locationChanges = new BehaviorSubject<void | null>(null);
+  readonly locationChanges$: Observable<void | null> = this._locationChanges.asObservable();
 
-    this.fromTripLocation = null
-    this.toTripLocation = null
-    this.viaTripLocations = []
+  constructor(private mapService: MapService) {
+    this.queryParams = new URLSearchParams(document.location.search);
+
+    this.fromTripLocation = null;
+    this.toTripLocation = null;
+    this.viaTripLocations = [];
     
     this.numberOfResults = TRIP_REQUEST_DEFAULT_NUMBER_OF_RESULTS;
     this.numberOfResultsBefore = null;
@@ -104,7 +109,7 @@ export class UserTripService {
     this.sbbURL = null;
   }
 
-  public async initDefaults(language: OJP_Legacy.Language) {
+  public async initDefaults(language: OJP_Legacy.Language): Promise<void> {
     const appStage = OJPHelpers.computeAppStage();
 
     setTimeout(() => {
@@ -135,8 +140,6 @@ export class UserTripService {
     const toPlaceRef = this.queryParams.get('to') ?? defaultLocationsPlaceRef[toPlaceName];
 
     const ojpSDK_Next = this.createOJP_SDK_Instance(language, appStage);
-
-    const bbox = new GeoPositionBBOX([]);
 
     const endpointTypes: OJP_Legacy.JourneyPointType[] = ['From', 'To'];
     for (const endpointType of endpointTypes) {
@@ -185,10 +188,6 @@ export class UserTripService {
       } else {
         this.toTripLocation = new OJP_Legacy.TripLocationPoint(location);
       }
-
-      if (location.geoPosition) {
-        bbox.extend(place.geoPosition);
-      }
     };
 
     this.viaTripLocations = [];
@@ -216,10 +215,6 @@ export class UserTripService {
       const location = place.asOJP_LegacyLocation();
       const viaTripLocation = new OJP_Legacy.TripLocationPoint(location);
       this.viaTripLocations.push(viaTripLocation);
-
-      if (location.geoPosition) {
-        bbox.extend(place.geoPosition);
-      }
     };
     
     this.tripModeType = 'monomodal';
@@ -271,21 +266,7 @@ export class UserTripService {
     })();
 
     this.locationsUpdated.emit();
-    this.geoLocationsUpdated.emit();
     this.updateURLs();
-
-    if (bbox.isValid()) {
-      const shouldZoomToBounds = this.queryParams.has('from') || this.queryParams.has('to');
-      if (shouldZoomToBounds && !this.mapService.initialMapCenter) {
-        const bounds = new mapboxgl.LngLatBounds(bbox.asFeatureBBOX());
-        const mapData: IMapBoundsData = {
-          bounds: bounds,
-          disableEase: true,
-        };
-        
-        this.mapService.newMapBoundsRequested.emit(mapData);
-      }
-    }
 
     this.isAdditionalRestrictionsEnabled = ['yes', 'true', '1'].includes(this.queryParams.get('advanced') ?? 'n/a');
 
@@ -302,7 +283,7 @@ export class UserTripService {
       return 'Dep' as OJP_Legacy.TripRequestBoardingType;
     })();
 
-    this.defaultsInited.emit();
+    this._locationChanges.next();
   }
 
   private parsePlace(response: AnyLocationInformationRequestResponse): AnyPlace | null {
@@ -374,7 +355,6 @@ export class UserTripService {
 
     this.updateURLs();
     this.locationsUpdated.emit();
-    this.geoLocationsUpdated.emit();
   }
 
   public switchEndpoints() {
@@ -383,7 +363,6 @@ export class UserTripService {
     this.toTripLocation = Object.assign({}, locationAux);
 
     this.locationsUpdated.emit();
-    this.geoLocationsUpdated.emit();
     this.activeTripSelected.emit(null);
 
     this.searchParamsReset.emit();
@@ -394,7 +373,6 @@ export class UserTripService {
     this.isViaEnabled = !this.isViaEnabled;
 
     this.locationsUpdated.emit();
-    this.geoLocationsUpdated.emit();
     this.activeTripSelected.emit(null);
 
     this.searchParamsReset.emit();
@@ -422,7 +400,6 @@ export class UserTripService {
     }
 
     this.locationsUpdated.emit();
-    this.geoLocationsUpdated.emit();
     this.activeTripSelected.emit(null);
 
     this.searchParamsReset.emit();
@@ -451,7 +428,6 @@ export class UserTripService {
     this.viaTripLocations[viaIDx].location = place.asOJP_LegacyLocation();
 
     this.locationsUpdated.emit();
-    this.geoLocationsUpdated.emit();
     this.activeTripSelected.emit(null);
 
     this.searchParamsReset.emit();
@@ -495,7 +471,7 @@ export class UserTripService {
           queryParams.append(queryParamKey, geoPositionLngLatS);
         }
       }
-    })
+    });
 
     const viaParamParts: string[] = []
     this.viaTripLocations.forEach(viaTripLocation => {
@@ -660,6 +636,29 @@ export class UserTripService {
     return queryParams;
   }
 
+  public computeBBOX(): GeoPositionBBOX {
+    const tripLocations: OJP_Legacy.TripLocationPoint[] = [];
+    if (this.fromTripLocation) {
+      tripLocations.push(this.fromTripLocation);
+    }
+    this.viaTripLocations.forEach(viaTripLocation => {
+      tripLocations.push(viaTripLocation);
+    });
+    if (this.toTripLocation) {
+      tripLocations.push(this.toTripLocation);
+    }
+
+    const bbox = new GeoPositionBBOX([]);
+    tripLocations.forEach(tripLocation => {
+      const place = PlaceBuilder.initWithLegacyLocation(tripLocation.location);
+      if (place) {
+        bbox.extend(place.geoPosition);
+      }
+    });
+
+    return bbox;
+  }
+
   private computeInitialDate(): Date {
     const defaultDate = new Date();
 
@@ -784,8 +783,8 @@ export class UserTripService {
     this.tripModeType = 'monomodal';
     this.tripTransportMode = 'public_transport';
 
-    this.geoLocationsUpdated.emit()
-    this.updateURLs()
+    this.locationsUpdated.emit();
+    this.updateURLs();
   }
 
   public massageTrips(trips: OJP_Legacy.Trip[]): TripData[] {

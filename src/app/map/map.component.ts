@@ -1,12 +1,13 @@
 import { Component, OnInit, AfterViewInit } from '@angular/core';
+import { Subject, takeUntil } from 'rxjs';
+
 import { SbbDialog } from "@sbb-esta/angular/dialog";
 
 import mapboxgl from 'mapbox-gl'
 
-import * as OJP_Next from 'ojp-sdk-next';
 import OJP_Legacy from '../config/ojp-legacy';
 
-import { MapService } from '../shared/services/map.service';
+import { IMapBoundsData, MapService } from '../shared/services/map.service';
 import { UserTripService } from '../shared/services/user-trip.service';
 
 import { MapHelpers } from './helpers/map.helpers';
@@ -14,7 +15,10 @@ import { MapHelpers } from './helpers/map.helpers';
 import { TripRenderController } from './controllers/trip-render-controller';
 import { LanguageService } from '../shared/services/language.service';
 import { PlaceLocation } from '../shared/models/place/location';
-import { AnyPlace, PlaceBuilder } from '../shared/models/place/place-builder';
+import { AnyPlace, PlaceBuilder, sortPlaces } from '../shared/models/place/place-builder';
+import { GeoPositionBBOX } from '../shared/models/geo/geoposition-bbox';
+import { OJPHelpers } from '../helpers/ojp-helpers';
+import { OJP_VERSION } from '../config/constants';
 
 @Component({
   selector: 'app-map',
@@ -26,11 +30,13 @@ export class MapComponent implements OnInit, AfterViewInit {
 
   private fromMarker: mapboxgl.Marker;
   private toMarker: mapboxgl.Marker;
-  private viaMarkers: mapboxgl.Marker[]
+  private viaMarkers: mapboxgl.Marker[];
 
-  private popupContextMenu: mapboxgl.Popup
+  private popupContextMenu: mapboxgl.Popup;
 
-  private tripRenderController: TripRenderController | null
+  private tripRenderController: TripRenderController | null;
+
+  private destroyed$ = new Subject<void>();
 
   constructor(
     private userTripService: UserTripService,
@@ -53,15 +59,15 @@ export class MapComponent implements OnInit, AfterViewInit {
         anchor: 'bottom'
       });
 
-      marker.on('dragend', ev => {
-        this.handleMarkerDrag(marker, endpointType);
+      marker.on('dragend', async ev => {
+        await this.handleMarkerDrag(marker, endpointType);
       })
 
       if (endpointType === 'From') {
-        this.fromMarker = marker
+        this.fromMarker = marker;
       }
       if (endpointType === 'To') {
-        this.toMarker = marker
+        this.toMarker = marker;
       }
     })
 
@@ -70,14 +76,14 @@ export class MapComponent implements OnInit, AfterViewInit {
     this.mapLoadingPromise = null;
 
     this.popupContextMenu = new mapboxgl.Popup({
-      focusAfterOpen: false
+      focusAfterOpen: false,
     });
 
     this.tripRenderController = null;
   }
 
   ngOnInit() {
-    this.userTripService.geoLocationsUpdated.subscribe(nothing => {
+    this.userTripService.locationsUpdated.subscribe(nothing => {
       this.updateMarkers();
     });
 
@@ -110,7 +116,17 @@ export class MapComponent implements OnInit, AfterViewInit {
   ngAfterViewInit(): void {
     this.mapLoadingPromise?.then(map => {
       map.resize();
+
+      this.userTripService.locationChanges$.pipe(takeUntil(this.destroyed$)).subscribe(change => {
+        this.updateMarkers();
+        this.updateMapBounds();
+      });
     });
+  }
+
+  ngOnDestroy(): void {
+    this.destroyed$.next();
+    this.destroyed$.complete();
   }
 
   private initMap() {
@@ -158,13 +174,64 @@ export class MapComponent implements OnInit, AfterViewInit {
     }
   }
 
-  private handleMarkerDrag(marker: mapboxgl.Marker, endpointType: OJP_Legacy.JourneyPointType) {
+  private async handleMarkerDrag(marker: mapboxgl.Marker, endpointType: OJP_Legacy.JourneyPointType) {
     const lngLat = marker.getLngLat();
 
-    const location = new PlaceLocation(lngLat.lng, lngLat.lat);
+    let place = new PlaceLocation(lngLat.lng, lngLat.lat);
 
-    // Try to snap to the nearest stop
-    this.userTripService.updateTripEndpoint(location, endpointType, 'MapDragend');
+    this.mapLoadingPromise?.then(async map => {
+      const nearbyPlace = await this.tryToFindNearbyPlace(map, lngLat);
+      if (nearbyPlace) {
+        place = nearbyPlace;
+      }
+
+      this.userTripService.updateTripEndpoint(place, endpointType, 'MapDragend');  
+    });
+  }
+
+  private async tryToFindNearbyPlace(map: mapboxgl.Map, lngLat: mapboxgl.LngLat): Promise<AnyPlace | null> {
+    const centerPlace = new PlaceLocation(lngLat.lng, lngLat.lat);
+    
+    const boxWidth: number = (() => {
+      const zoom = map.getZoom();
+      if (zoom < 10) {
+        return 5 * 1000;
+      }
+
+      if (zoom < 13) {
+        return 1000;
+      }
+
+      return 50;
+    })();
+    
+    const bbox = GeoPositionBBOX.initFromGeoPosition(centerPlace.geoPosition, boxWidth, boxWidth);
+    const bboxData = bbox.asFeatureBBOX();
+
+    const ojpSDK_Next = this.userTripService.createOJP_SDK_Instance(this.languageService.language);
+    const request = ojpSDK_Next.requests.LocationInformationRequest.initWithBBOX(bboxData, ['stop'], 300);
+    const response = await request.fetchResponse(ojpSDK_Next);
+
+    const lngLatBounds = new mapboxgl.LngLatBounds(bbox.asFeatureBBOX());
+    MapHelpers.highlightBBOXOnMap(lngLatBounds, map);
+
+    if (!response.ok) {
+      return null;
+    }
+
+    const placeResults = OJPHelpers.parseAnyPlaceResult(OJP_VERSION, response);
+    const places = placeResults.map(placeResult => {
+      const place = PlaceBuilder.initWithPlaceResultSchema(OJP_VERSION, placeResult);
+      return place;
+    }).filter(Boolean) as AnyPlace[];
+
+    if (places.length === 0) {
+      return null;
+    }
+
+    const sortedPlaces = sortPlaces(places, centerPlace);
+    
+    return sortedPlaces[0];
   }
 
   private onMapLoad(map: mapboxgl.Map) {
@@ -249,13 +316,31 @@ export class MapComponent implements OnInit, AfterViewInit {
       draggable: isDraggable,
     });
 
-    marker.on('dragend', ev => {
-      const lngLat = marker.getLngLat();
-      const place = new PlaceLocation(lngLat.lng, lngLat.lat);
-      this.userTripService.updateViaPoint(place, markerIDx)
+    marker.on('dragend', async ev => {
+      await this.handleMarkerDrag(marker, 'Via');
     });
 
     return marker;
   }
 
+  private updateMapBounds() {
+    const bbox = this.userTripService.computeBBOX();
+
+    if (!bbox.isValid()) {
+      console.log('Invalid bbox - cant zoom');
+      return;
+    }
+
+    const queryParams = new URLSearchParams(document.location.search);
+    const shouldZoomToBounds = queryParams.has('from') || queryParams.has('to');
+    if (shouldZoomToBounds) {
+      const bounds = new mapboxgl.LngLatBounds(bbox.asFeatureBBOX());
+      const mapData: IMapBoundsData = {
+        bounds: bounds,
+        disableEase: true,
+      };
+      
+      this.mapService.newMapBoundsRequested.emit(mapData);
+    }
+  }
 }

@@ -6,7 +6,6 @@ import { SbbAutocompleteSelectedEvent } from '@sbb-esta/angular/autocomplete';
 import { SbbErrorStateMatcher } from '@sbb-esta/angular/core';
 
 import * as OJP_Types from 'ojp-shared-types';
-import OJP_Legacy from '../../config/ojp-legacy';
 
 import { OJP_VERSION } from '../../config/constants';
 
@@ -41,9 +40,9 @@ export class JourneyPointInputComponent implements OnInit, OnChanges {
   public optionLocationTypes: OptionLocationType[];
 
   @Input() placeholder: string = '';
-  @Input() endpointType: OJP_Legacy.JourneyPointType = 'From';
-  @Input() inputValue: string = '';
-  @Output() selectedPlace = new EventEmitter<AnyPlace>();
+  
+  @Input() currentPlace: AnyPlace | null;
+  @Output() selectedNewPlace = new EventEmitter<AnyPlace>();
 
   constructor(private mapService: MapService, private userTripService: UserTripService, private languageService: LanguageService) {
     this.mapLookupPlaces = {} as MapLocations;
@@ -55,6 +54,8 @@ export class JourneyPointInputComponent implements OnInit, OnChanges {
       ['topographicPlace', 'Topographic Places'],
       ['address', 'Addresses'],
     ];
+
+    this.currentPlace = null;
   }
 
   ngOnInit() {
@@ -77,8 +78,7 @@ export class JourneyPointInputComponent implements OnInit, OnChanges {
       const coordsPlace = PlaceLocation.initFromLiteralCoords(searchTerm);
       if (coordsPlace) {
         this.resetMapPlaces();
-        
-        this.handleCoordsPick(coordsPlace);
+        this.handleSelectedPlace(coordsPlace);
         return;
       }
 
@@ -87,12 +87,11 @@ export class JourneyPointInputComponent implements OnInit, OnChanges {
   }
 
   ngOnChanges(changes: SimpleChanges) {
-    if ('inputValue' in changes) {
-      const newInputValue = changes['inputValue'].currentValue;
-      if (newInputValue === '') {
-        return;
-      }  
-      this.inputControl.setValue(newInputValue, { emitEvent: false });
+    if ('currentPlace' in changes) {
+      const place = changes['currentPlace'].currentValue as AnyPlace;
+      if (place) {
+        this.inputControl.setValue(place.computeName(), { emitEvent: false });
+      }
     }
   }
 
@@ -101,7 +100,7 @@ export class JourneyPointInputComponent implements OnInit, OnChanges {
   }
 
   onOptionSelected(ev: SbbAutocompleteSelectedEvent) {
-    this.shouldFetchNewData = false
+    this.shouldFetchNewData = false;
 
     const optionIdParts = ev.option.value.split('.');
     if (optionIdParts.length !== 2) {
@@ -112,16 +111,12 @@ export class JourneyPointInputComponent implements OnInit, OnChanges {
     const itemIdx = parseInt(optionIdParts[1], 10);
 
     const place = this.mapLookupPlaces[placeType][itemIdx];
-
-    const inputValue = place.computeName();
-    this.inputControl.setValue(inputValue);
-
-    this.selectedPlace.emit(place);
+    this.handleSelectedPlace(place);
   }
 
   private async fetchJourneyPoints(searchTerm: string) {
     const ojpSDK_Next = this.userTripService.createOJP_SDK_Instance(this.languageService.language);
-    const request = ojpSDK_Next.requests.LocationInformationRequest.initWithLocationName(searchTerm, []);
+    const request = ojpSDK_Next.requests.LocationInformationRequest.initWithLocationName(searchTerm);
     
     const response = await request.fetchResponse(ojpSDK_Next);
 
@@ -145,41 +140,17 @@ export class JourneyPointInputComponent implements OnInit, OnChanges {
   }
 
   public handleTapOnMapButton() {
-    const location = (() => {
-      if (this.endpointType === 'From') {
-        return this.userTripService.fromTripLocation?.location ?? null;
-      }
-
-      if (this.endpointType === 'To') {
-        return this.userTripService.toTripLocation?.location ?? null;
-      }
-
-      if (this.endpointType === 'Via') {
-        const viaTripLocations = this.userTripService.viaTripLocations;
-        if (viaTripLocations.length > 0) {
-          const viaTripLocation = viaTripLocations[0];
-          return viaTripLocation.location;
-        }
-      }
-
-      return null;
-    })();
-
-    if ((location === null) || (location.geoPosition === null)) {
-      return;
-    }
-
-    const placeLocation = PlaceBuilder.initWithLegacyLocation(location);
-    if (placeLocation) {
-      this.mapService.tryToCenterAndZoomToPlace(placeLocation);
+    if (this.currentPlace) {
+      this.mapService.tryToCenterAndZoomToPlace(this.currentPlace);
     }
   }
 
-  private handleCoordsPick(place: AnyPlace) {
-    const inputValue = place.geoPosition.asLatLngString();
+  private handleSelectedPlace(place: AnyPlace) {
+    const inputValue = place.computeName();
     this.inputControl.setValue(inputValue);
 
-    this.selectedPlace.emit(place);
+    this.currentPlace = place;
+    this.selectedNewPlace.emit(place);
   }
 
   private resetMapPlaces() {

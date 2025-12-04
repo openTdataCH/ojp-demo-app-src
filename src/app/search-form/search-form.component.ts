@@ -26,7 +26,7 @@ import { DebugXmlPopoverComponent } from './debug-xml-popover/debug-xml-popover.
 import { ReportIssueComponent } from '../shared/components/report-issue.component';
 
 import { OJPHelpers } from '../helpers/ojp-helpers';
-import { AnyPlace } from '../shared/models/place/place-builder';
+import { AnyPlace, PlaceBuilder } from '../shared/models/place/place-builder';
 
 @Component({
   selector: 'app-search-form',
@@ -38,30 +38,30 @@ export class SearchFormComponent implements OnInit {
 
   private isSmallScreen = false;
 
-  public fromLocationText: string
-  public toLocationText: string
-  public viaText: string
+  public fromPlace: AnyPlace | null;
+  public toPlace: AnyPlace | null;
+  public viaPlaces: AnyPlace[];
   public viaDwellTime = new FormControl('');
 
-  public appStageOptions: APP_STAGE[] = []
+  public appStageOptions: APP_STAGE[] = [];
 
-  public isSearching: boolean
+  public isSearching: boolean;
 
-  public requestDurationF: string | null
-  public currentRequestInfo: OJP_Legacy.RequestInfo | null
+  public requestDurationF: string | null;
+  public currentRequestInfo: OJP_Legacy.RequestInfo | null;
 
-  private lastCustomTripRequestXML: string | null
+  private lastCustomTripRequestXML: string | null;
 
-  public isEmbed: boolean
+  public isEmbed: boolean;
 
-  public searchDate: Date
-  public searchTime: string
+  public searchDate: Date;
+  public searchTime: string;
 
-  public headerText: string
+  public headerText: string;
 
-  public tripRequestBoardingTypes: OJP_Legacy.TripRequestBoardingType[]
+  public tripRequestBoardingTypes: OJP_Legacy.TripRequestBoardingType[];
 
-  private useMocks: boolean
+  private useMocks: boolean;
 
   public gistURL: string | null;
 
@@ -77,9 +77,9 @@ export class SearchFormComponent implements OnInit {
     this.searchDate = searchDate;
     this.searchTime = OJP_Next.DateHelpers.formatTimeHHMM(searchDate);
 
-    this.fromLocationText = '';
-    this.toLocationText = '';
-    this.viaText = '';
+    this.fromPlace = null;
+    this.toPlace = null;
+    this.viaPlaces = [];
 
     this.appStageOptions = APP_STAGEs;
 
@@ -186,42 +186,41 @@ export class SearchFormComponent implements OnInit {
     const endpointTypes: OJP_Legacy.JourneyPointType[] = ['From', 'To'];
     const fromToTextParts: string[] = [];
     endpointTypes.forEach(endpointType => {
-      const tripLocationPoint = endpointType === 'From' ? this.userTripService.fromTripLocation : this.userTripService.toTripLocation
-      const location = tripLocationPoint?.location ?? null
-
-      if (location === null) {
-        return
-      }
-
-      let locationText = location.computeLocationName() ?? '';
+      const tripLocationPoint = endpointType === 'From' ? this.userTripService.fromTripLocation : this.userTripService.toTripLocation;
+      const place = PlaceBuilder.initWithLegacyLocation(tripLocationPoint?.location ?? null);
 
       if (endpointType === 'From') {
-        this.fromLocationText = locationText.trim()
+        this.fromPlace = place;
       } else {
-        this.toLocationText = locationText.trim()
+        this.toPlace = place;
       }
 
-      fromToTextParts.push(locationText);
+      fromToTextParts.push(place?.computeName() ?? '')
     });
 
     if (this.userTripService.viaTripLocations.length > 0) {
-      const firstViaLocation = this.userTripService.viaTripLocations[0].location;
-      this.viaText = firstViaLocation.computeLocationName() ?? 'Name n/a';
+      this.viaPlaces = [];
+      this.userTripService.viaTripLocations.forEach(viaTripLocation => {
+        const place = PlaceBuilder.initWithLegacyLocation(viaTripLocation.location);
+        if (place) {
+          this.viaPlaces.push(place);
+        }
+      });
     }
 
     const textParts: string[] = [];
-    if (this.fromLocationText === '') {
+    if (this.fromPlace === null) {
       textParts.push('From Location');
     } else {
-      textParts.push(this.fromLocationText);
+      textParts.push(this.fromPlace.computeName());
     }
 
     textParts.push('-');
 
-    if (this.toLocationText === '') {
+    if (this.toPlace === null) {
       textParts.push('To Location');
     } else {
-      textParts.push(this.toLocationText);
+      textParts.push(this.toPlace.computeName());
     }
 
     this.headerText = textParts.join(' ');
@@ -274,8 +273,8 @@ export class SearchFormComponent implements OnInit {
     this.initFromMockXML(mockText);
   }
 
-  onPlaceSelected(place: AnyPlace, originType: OJP_Legacy.JourneyPointType) {
-    this.userTripService.updateTripEndpoint(place, originType, 'SearchForm');
+  onPlaceSelected(newPlace: AnyPlace, originType: OJP_Legacy.JourneyPointType) {
+    this.userTripService.updateTripEndpoint(newPlace, originType, 'SearchForm');
   }
 
   public async onChangeStageAPI(ev: SbbRadioChange) {

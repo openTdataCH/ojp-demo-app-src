@@ -59,7 +59,7 @@ export class PlaceBuilder {
       const place = StopPlace.initWithCoordsRefAndName(
         location.geoPosition.longitude, 
         location.geoPosition.latitude,
-        location.locationName ?? 'n/a location.locationName',
+        location.locationName ?? location.stopPlace.stopPlaceName ?? 'n/a location.locationName',
         location.stopPlace.stopPlaceName ?? 'n/a location.stopPlace.stopPlaceName',
         location.stopPlace.stopPlaceRef,
       );

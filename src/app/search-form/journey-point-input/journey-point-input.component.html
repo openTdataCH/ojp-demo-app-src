@@ -22,14 +22,14 @@
   (opened)="onOpenAutocomplete()"
   #journeyPoint="sbbAutocomplete">
   <ng-container *ngFor="let optionLocationType of optionLocationTypes">  
-    <sbb-optgroup 
-      *ngIf="mapLookupPlaces[optionLocationType[0]].length > 0"
-      [label]="optionLocationType[1]">
-      <sbb-option
-        *ngFor="let place of mapLookupPlaces[optionLocationType[0]]; index as idx"
-        [value]="optionLocationType[0] + '.' + idx">
-        {{ place.computeName() }}
-      </sbb-option>
-    </sbb-optgroup>
+    <ng-container *ngIf="mapLookupPlaces[optionLocationType[0]].length > 0">
+      <sbb-optgroup [label]="optionLocationType[1]">
+        <ng-container *ngFor="let place of mapLookupPlaces[optionLocationType[0]]; index as idx">
+          <sbb-option [value]="optionLocationType[0] + '.' + idx">
+            {{ place.computeName() }}
+          </sbb-option>
+        </ng-container>
+      </sbb-optgroup>
+    </ng-container>
   </ng-container>
 </sbb-autocomplete>
