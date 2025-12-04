@@ -74,27 +74,25 @@ export class JourneyPointInputComponent implements OnInit, OnChanges {
       debounceTime(500),
       distinctUntilChanged()
     ).subscribe((searchTerm: string | null) => {
-      if (searchTerm === null) {
-        return;
-      }
-
-      if (!this.shouldFetchNewData) {
-        return;
-      }
-
-      if (searchTerm.trim().length < 1) {
-        return;
-      }
-
-      const coordsPlace = PlaceLocation.initFromLiteralCoords(searchTerm);
-      if (coordsPlace) {
-        this.resetMapPlaces();
-        this.handleSelectedPlace(coordsPlace);
-        return;
-      }
-
-      this.fetchJourneyPoints(searchTerm);
+      this.onInputChangeAfterIdle();
     });
+  }
+
+  private onInputChangeAfterIdle() {
+    const searchTerm = this.inputControl.value.trim();
+
+    if (searchTerm.trim().length < 1) {
+      
+      this.resetMapPlaces();
+
+    const coordsPlace = PlaceLocation.initFromLiteralCoords(searchTerm);
+    if (coordsPlace) {
+      this.resetMapPlaces();
+      this.handleSelectedPlace(coordsPlace);
+      return;
+    }
+
+    this.fetchJourneyPoints(searchTerm);
   }
 
   ngOnChanges(changes: SimpleChanges) {
