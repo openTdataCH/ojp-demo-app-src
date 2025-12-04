@@ -78,17 +78,17 @@ export class JourneyPointInputComponent implements OnInit, OnChanges {
     this.inputControl.valueChanges.pipe(
       debounceTime(500),
       distinctUntilChanged()
-    ).subscribe((searchTerm: string | null) => {
-      if (!this.considerInputControlChanges) {
-        return;
-      }
-      
+    ).subscribe((_) => {
       this.onInputChangeAfterIdle();
     });
   }
 
   private onInputChangeAfterIdle() {
     const searchTerm = this.inputControl.value.trim();
+
+    if (!this.considerInputControlChanges) {
+      return;
+    }
 
     if (searchTerm.trim().length < 1) {
       this.useSingleSearchPool = true;
