@@ -41,7 +41,7 @@ export class ErrorStateMatcher implements SbbErrorStateMatcher {
 export class JourneyPointInputComponent implements OnInit, OnChanges {
   private considerInputControlChanges: boolean;
 
-  public inputControl = new FormControl('', [Validators.required]);
+  public inputControl: FormControl;
 
   public mapLookupPlaces: MapPlaces;
   public optionLocationTypes: OptionLocationType[];
@@ -53,6 +53,8 @@ export class JourneyPointInputComponent implements OnInit, OnChanges {
 
   constructor(private mapService: MapService, private userTripService: UserTripService, private languageService: LanguageService) {
     this.considerInputControlChanges = true;
+    
+    this.inputControl = new FormControl('', [Validators.required]);
 
     this.mapLookupPlaces = {} as MapPlaces;
     this.resetMapPlaces();
