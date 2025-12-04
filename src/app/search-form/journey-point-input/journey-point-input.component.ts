@@ -47,9 +47,12 @@ export class JourneyPointInputComponent implements OnInit, OnChanges {
   public optionLocationTypes: OptionLocationType[];
 
   @Input() placeholder: string = '';
+  @Input() filterPlaceType: OJP_Types.PlaceTypeEnum | undefined;
   
   @Input() currentPlace: AnyPlace | null;
   @Output() selectedNewPlace = new EventEmitter<AnyPlace>();
+
+  public useSingleSearchPool: boolean;
 
   constructor(private mapService: MapService, private userTripService: UserTripService, private languageService: LanguageService) {
     this.considerInputControlChanges = true;
@@ -67,6 +70,8 @@ export class JourneyPointInputComponent implements OnInit, OnChanges {
     ];
 
     this.currentPlace = null;
+
+    this.useSingleSearchPool = this.filterPlaceType !== undefined;
   }
 
   ngOnInit() {
@@ -82,8 +87,11 @@ export class JourneyPointInputComponent implements OnInit, OnChanges {
     const searchTerm = this.inputControl.value.trim();
 
     if (searchTerm.trim().length < 1) {
+      this.useSingleSearchPool = true;
       
       this.resetMapPlaces();
+
+    this.useSingleSearchPool = this.filterPlaceType !== undefined;
 
     const coordsPlace = PlaceLocation.initFromLiteralCoords(searchTerm);
     if (coordsPlace) {
@@ -142,7 +150,8 @@ export class JourneyPointInputComponent implements OnInit, OnChanges {
 
   private async fetchJourneyPoints(searchTerm: string) {
     const ojpSDK_Next = this.userTripService.createOJP_SDK_Instance(this.languageService.language);
-    const request = ojpSDK_Next.requests.LocationInformationRequest.initWithLocationName(searchTerm);
+    const placeTypes = this.filterPlaceType === undefined ? undefined : [this.filterPlaceType];
+    const request = ojpSDK_Next.requests.LocationInformationRequest.initWithLocationName(searchTerm, placeTypes, 10);
     
     const response = await request.fetchResponse(ojpSDK_Next);
 
