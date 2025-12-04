@@ -1,5 +1,5 @@
 import { debounceTime, distinctUntilChanged } from 'rxjs/operators'
-import { Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges } from '@angular/core';
+import { Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChange, SimpleChanges } from '@angular/core';
 import { FormControl, FormGroupDirective, NgForm, Validators } from '@angular/forms';
 
 import { SbbAutocompleteSelectedEvent } from '@sbb-esta/angular/autocomplete';
