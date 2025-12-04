@@ -16,6 +16,14 @@ import { AnyPlace, PlaceBuilder } from '../../shared/models/place/place-builder'
 import { PlaceLocation } from '../../shared/models/place/location';
 import { OJPHelpers } from '../../helpers/ojp-helpers';
 
+interface RenderPlaceResult {
+  place: AnyPlace,
+  type: 'around_me' | 'place',
+  caption: string,
+  distance?: number,
+};
+
+
 type MapLocations = Record<OJP_Types.PlaceTypeEnum, AnyPlace[]>;
 type OptionLocationType = [OJP_Types.PlaceTypeEnum, string];
 
