@@ -39,7 +39,8 @@ export class ErrorStateMatcher implements SbbErrorStateMatcher {
   styleUrls: ['./journey-point-input.component.scss']
 })
 export class JourneyPointInputComponent implements OnInit, OnChanges {
-  private considerInputControlChanges: boolean;
+
+  private ignoreInputChanges: boolean;
 
   public inputControl: FormControl;
 
@@ -55,7 +56,7 @@ export class JourneyPointInputComponent implements OnInit, OnChanges {
   public useSingleSearchPool: boolean;
 
   constructor(private mapService: MapService, private userTripService: UserTripService, private languageService: LanguageService) {
-    this.considerInputControlChanges = true;
+    this.ignoreInputChanges = false;
     
     this.inputControl = new FormControl('', [Validators.required]);
 
@@ -86,7 +87,7 @@ export class JourneyPointInputComponent implements OnInit, OnChanges {
   private onInputChangeAfterIdle() {
     const searchTerm = this.inputControl.value.trim();
 
-    if (!this.considerInputControlChanges) {
+    if (this.ignoreInputChanges) {
       return;
     }
 
@@ -134,7 +135,7 @@ export class JourneyPointInputComponent implements OnInit, OnChanges {
   }
 
   onOpenAutocomplete() {
-    this.considerInputControlChanges = true;
+    this.ignoreInputChanges = false;
   }
 
   onOptionSelected(ev: SbbAutocompleteSelectedEvent) {
@@ -194,8 +195,8 @@ export class JourneyPointInputComponent implements OnInit, OnChanges {
   }
 
   private handleSelectedPlace(place: AnyPlace) {
-    this.considerInputControlChanges = false;
-    
+    // use ignoreInputChanges, otherwise emitEvent: false will not work with debounceTime()
+    this.ignoreInputChanges = true;
     this.inputControl.setValue(place.computeName(), { emitEvent: false });
     this.currentPlace = place;
     this.selectedNewPlace.emit(place);
