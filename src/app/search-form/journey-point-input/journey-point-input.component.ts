@@ -307,4 +307,14 @@ export class JourneyPointInputComponent implements OnInit {
 
     this.mapLookupPlaces['stop'] = stopPlaces.slice(0, 10);
   }
+
+  public clearInputText() {
+    // use ignoreInputChanges, otherwise emitEvent: false will not work with debounceTime()
+    this.ignoreInputChanges = true;
+    this.inputControl.setValue('', { emitEvent: false });
+
+    this.mapLookupPlaces['stop'] = [AroundMePlaceResult];    
+    
+    this.autocompleteInputTrigger?.openPanel();
+  }
 }
