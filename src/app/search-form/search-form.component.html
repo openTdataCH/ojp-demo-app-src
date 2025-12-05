@@ -14,7 +14,7 @@
     <div class="flex-grow-1 journey-endpoint">
       <journey-point-input
         (selectedNewPlace)="onPlaceSelected($event, 'From')"
-        [currentPlace]="this.fromPlace"
+        [place]="this.fromPlace"
         [placeholder]="'From'">
       </journey-point-input>
     </div>
@@ -39,7 +39,7 @@
       <div class="flex-grow-1 journey-endpoint">
         <journey-point-input
           (selectedNewPlace)="onPlaceSelected($event, 'Via')"
-          [currentPlace]="this.viaPlaces[0]"
+          [place]="this.viaPlaces[0]"
           [placeholder]="'Via'">
         </journey-point-input>
       </div>
@@ -60,7 +60,7 @@
     <div class="flex-grow-1 journey-endpoint">
       <journey-point-input
         (selectedNewPlace)="onPlaceSelected($event, 'To')"
-        [currentPlace]="this.toPlace"
+        [place]="this.toPlace"
         [placeholder]="'To'">
       </journey-point-input>
     </div>

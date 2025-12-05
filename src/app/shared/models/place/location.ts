@@ -12,6 +12,11 @@ export class PlaceLocation extends BasePlace {
     }
   }
 
+  public static Empty(placeName: string = 'n/a') {
+    const stopPlace = new PlaceLocation(0, 0, placeName);
+    return stopPlace;
+  }
+
   public static initFromLiteralCoords(inputS: string): PlaceLocation | null {
     let inputLiteralCoords = inputS.trim();
     // strip: parantheses (groups)
