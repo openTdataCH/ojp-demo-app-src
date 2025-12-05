@@ -23,7 +23,7 @@ export class MapHelpers {
     return featureLngLat;
   }
 
-  public static bboxPxFromLngLatWidthPx(map: mapboxgl.Map, lngLat: mapboxgl.LngLat, width: number, height: number | null = null): [mapboxgl.PointLike, mapboxgl.PointLike] {
+  private static bboxPxFromLngLatWidthPx(map: mapboxgl.Map, lngLat: mapboxgl.LngLat, width: number, height: number | null = null): [mapboxgl.PointLike, mapboxgl.PointLike] {
     if (height === null) {
       height = width;
     }
@@ -43,7 +43,7 @@ export class MapHelpers {
     return bboxPx;
   }
 
-  private static bboxPxToBbox(map: mapboxgl.Map, bboxPx: [mapboxgl.PointLike, mapboxgl.PointLike]): mapboxgl.LngLatBounds {
+  private static bboxPxToLngLatBounds(map: mapboxgl.Map, bboxPx: [mapboxgl.PointLike, mapboxgl.PointLike]): mapboxgl.LngLatBounds {
     const coordSW = map.unproject(bboxPx[0]);
     const coordNE = map.unproject(bboxPx[1]);
     const bbox = new mapboxgl.LngLatBounds(coordSW, coordNE);
@@ -115,10 +115,10 @@ export class MapHelpers {
     return nearbyFeatures;
   }
 
-  public static highlightBBOXPxOnMap(bboxPx: [mapboxgl.PointLike, mapboxgl.PointLike], map: mapboxgl.Map) {
-    const bbox = MapHelpers.bboxPxToBbox(map, bboxPx);
-    MapHelpers.highlightBBOXOnMap(bbox, map);
-  }  
+  private static highlightBBOXPxOnMap(bboxPx: [mapboxgl.PointLike, mapboxgl.PointLike], map: mapboxgl.Map) {
+    const bbox = MapHelpers.bboxPxToLngLatBounds(map, bboxPx);
+    MapHelpers.highlightLngLatBoundsOnMap(bbox, map);
+  }
   
   public static highlightBBOXOnMap(bbox: mapboxgl.LngLatBounds, map: mapboxgl.Map) {
     const featureCoords: GeoJSON.Position[] = [
