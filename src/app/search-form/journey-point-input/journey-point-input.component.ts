@@ -6,6 +6,7 @@ import { SbbAutocompleteSelectedEvent } from '@sbb-esta/angular/autocomplete';
 import { SbbErrorStateMatcher } from '@sbb-esta/angular/core';
 
 import * as OJP_Types from 'ojp-shared-types';
+import * as OJP_Next from 'ojp-sdk-next';
 
 import { OJP_VERSION } from '../../config/constants';
 
@@ -70,6 +71,8 @@ export class JourneyPointInputComponent implements OnInit, OnChanges {
 
   public useSingleSearchPool: boolean;
 
+  private sdk: OJP_Next.AnySDK; 
+
   constructor(private mapService: MapService, private userTripService: UserTripService, private languageService: LanguageService) {
     this.ignoreInputChanges = false;
     
@@ -88,6 +91,8 @@ export class JourneyPointInputComponent implements OnInit, OnChanges {
     this.place = null;
 
     this.useSingleSearchPool = this.filterPlaceType !== undefined;
+
+    this.sdk = this.userTripService.createOJP_SDK_Instance(this.languageService.language);
   }
 
   ngOnInit() {
@@ -180,9 +185,13 @@ export class JourneyPointInputComponent implements OnInit, OnChanges {
   private async fetchJourneyPoints(searchTerm: string) {
     const ojpSDK_Next = this.userTripService.createOJP_SDK_Instance(this.languageService.language);
     const placeTypes = this.filterPlaceType === undefined ? undefined : [this.filterPlaceType];
-    const request = ojpSDK_Next.requests.LocationInformationRequest.initWithLocationName(searchTerm, placeTypes, 10);
-    
-    const response = await request.fetchResponse(ojpSDK_Next);
+    const request = this.sdk.requests.LocationInformationRequest.initWithLocationName(searchTerm, placeTypes, 10);
+
+    await this.fetchRequest(request);
+  }
+
+  private async fetchRequest(request: AnyLocationInformationRequest) {
+    const response = await request.fetchResponse(this.sdk);
 
     if (!response.ok) {
       console.log('ERROR - failed to lookup locations for "' + searchTerm + '"');
