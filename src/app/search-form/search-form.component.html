@@ -15,7 +15,7 @@
       <journey-point-input
         (selectedNewPlace)="onPlaceSelected($event, 'From')"
         [place]="this.fromPlace"
-        [placeholder]="'From'">
+        [label]="'From'"
       </journey-point-input>
     </div>
 
@@ -40,7 +40,7 @@
         <journey-point-input
           (selectedNewPlace)="onPlaceSelected($event, 'Via')"
           [place]="this.viaPlaces[0]"
-          [placeholder]="'Via'">
+          [label]="'Via'"
         </journey-point-input>
       </div>
       <div class="via-dwell-time">
@@ -61,7 +61,7 @@
       <journey-point-input
         (selectedNewPlace)="onPlaceSelected($event, 'To')"
         [place]="this.toPlace"
-        [placeholder]="'To'">
+        [label]="'To'"
       </journey-point-input>
     </div>
 
