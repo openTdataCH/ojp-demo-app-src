@@ -218,8 +218,8 @@ export class JourneyPointInputComponent implements OnInit {
   }
 
   public handleTapOnMapButton() {
-    if (this.place) {
-      this.mapService.tryToCenterAndZoomToPlace(this.place);
+    if (this._currentRenderPlaceResult) {
+      this.mapService.tryToCenterAndZoomToPlace(this._currentRenderPlaceResult.place);
     }
   }
 
