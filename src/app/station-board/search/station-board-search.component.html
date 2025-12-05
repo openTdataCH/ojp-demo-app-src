@@ -8,8 +8,8 @@
           <div class="flex-grow-1">
             <journey-point-input
               [place]="this.stopPlace"
+              [label]="'Station'"
               [filterPlaceType]="'stop'"
-              [placeholder]="'Type to search for stations'"
               (selectedNewPlace)="onStopPlaceSelected($event)">
             </journey-point-input>
           </div>

@@ -11,9 +11,11 @@ OJP-Demo URL: https://opentdatach.github.io/ojp-demo-app/
   - adds `TopographicPlace`
   - easy clear text in input boxes
   - improves map helpers and bbox stops snapping
+- Fix Location Autocomplete - [PR #316](https://github.com/openTdataCH/ojp-demo-app-src/pull/316)
+  - fixed bug that occurred when geolocation was denied and user cant lookup places anymore
 
 04.December 2025
-- Fix map bounds/events handling - [PR #313](https://github.com/openTdataCH/ojp-demo-app-src/pull/312)
+- Fix map bounds/events handling - [PR #313](https://github.com/openTdataCH/ojp-demo-app-src/pull/313)
   - fix coords-coords map zoom + markers which weren't show 
   - optimize the location handling to location picker in TR
   - perform reverse geocoding lookup when dragging markers and try to snap to nearest stop

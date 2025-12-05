@@ -63,7 +63,8 @@ export class JourneyPointInputComponent implements OnInit {
   public mapLookupPlaces: MapPlaces;
   public optionLocationTypes: OptionLocationType[];
 
-  @Input() placeholder: string = '';
+  @Input() label: string = '';
+  @Input() placeholder: string = '... type to search';
   @Input() filterPlaceType: OJP_Types.PlaceTypeEnum | undefined;
   
   private _currentRenderPlaceResult: RenderPlaceResult | null = null;
@@ -131,10 +132,6 @@ export class JourneyPointInputComponent implements OnInit {
 
     const searchTerm = this.inputControl.value.trim();
 
-    if (this.ignoreInputChanges) {
-      return;
-    }
-
     if (searchTerm.trim().length < 1) {
       this.autocompleteInputTrigger?.openPanel();
 
@@ -143,6 +140,12 @@ export class JourneyPointInputComponent implements OnInit {
       this.resetMapPlaces();
       this.mapLookupPlaces['stop'] = [AroundMePlaceResult];
 
+      this.ignoreInputChanges = false;
+
+      return;
+    }
+
+    if (this.ignoreInputChanges) {
       return;
     }
 
@@ -224,11 +227,15 @@ export class JourneyPointInputComponent implements OnInit {
   }
 
   private handleSelectedPlace(place: AnyPlace) {
-    // use ignoreInputChanges, otherwise emitEvent: false will not work with debounceTime()
-    this.ignoreInputChanges = true;
-    this.inputControl.setValue(place.computeName(), { emitEvent: false });
+    this.setInputControlValue(place.computeName());
     
     this.selectedNewPlace.emit(place);
+  }
+
+  private setInputControlValue(value: string) {
+    // use ignoreInputChanges, otherwise emitEvent: false will not work with debounceTime()
+    this.ignoreInputChanges = true;
+    this.inputControl.setValue(value, { emitEvent: false });
   }
 
   private resetMapPlaces() {
@@ -242,27 +249,25 @@ export class JourneyPointInputComponent implements OnInit {
   }
 
   private handleGeolocationLookup() {
+    this._currentRenderPlaceResult = null;
+
     if (!navigator.geolocation) {
       console.error('no navigator.geolocation enabled')
       return;
     }
     
-    // use ignoreInputChanges, otherwise emitEvent: false will not work with debounceTime()
-    this.ignoreInputChanges = true;
-    this.inputControl.setValue('... looking up location', { emitEvent: false });
+    this.setInputControlValue('... looking up location');
 
     navigator.geolocation.getCurrentPosition(
       async position => {
         await this.handleNewGeoPosition(position);
 
-        this.ignoreInputChanges = false;
-        this.inputControl.setValue('... choose nearby stop', { emitEvent: false });
+        this.setInputControlValue('... choose nearby stop');
 
         this.autocompleteInputTrigger?.openPanel();
       },
       error => {
-        this.ignoreInputChanges = false;
-        this.inputControl.setValue('... Geolocation ERROR: ' + error.message, { emitEvent: false });
+        this.setInputControlValue('... Geolocation ERROR: ' + error.message);
 
         console.error('GeoLocation ERROR');
         console.log(error);
@@ -309,9 +314,7 @@ export class JourneyPointInputComponent implements OnInit {
   }
 
   public clearInputText() {
-    // use ignoreInputChanges, otherwise emitEvent: false will not work with debounceTime()
-    this.ignoreInputChanges = true;
-    this.inputControl.setValue('', { emitEvent: false });
+    this.setInputControlValue('');
 
     this.resetMapPlaces();
     this.mapLookupPlaces['stop'] = [AroundMePlaceResult];    
