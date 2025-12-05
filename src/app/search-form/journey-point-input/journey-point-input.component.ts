@@ -50,7 +50,22 @@ export class JourneyPointInputComponent implements OnInit, OnChanges {
   @Input() placeholder: string = '';
   @Input() filterPlaceType: OJP_Types.PlaceTypeEnum | undefined;
   
-  @Input() currentPlace: AnyPlace | null;
+  private _currentRenderPlaceResult: RenderPlaceResult | null = null;
+  @Input() set place(place: AnyPlace | null) {
+    if (place) {
+      const placeName = place.computeName();
+      this.inputControl.setValue(placeName, { emitEvent: false });
+
+      this._currentRenderPlaceResult = {
+        place: place,
+        type: 'place',
+        caption: placeName,
+      };
+    } else {
+      this._currentRenderPlaceResult = null;
+    }
+  }
+
   @Output() selectedNewPlace = new EventEmitter<AnyPlace>();
 
   public useSingleSearchPool: boolean;
@@ -70,7 +85,7 @@ export class JourneyPointInputComponent implements OnInit, OnChanges {
       ['address', 'Addresses'],
     ];
 
-    this.currentPlace = null;
+    this.place = null;
 
     this.useSingleSearchPool = this.filterPlaceType !== undefined;
   }
@@ -85,6 +100,10 @@ export class JourneyPointInputComponent implements OnInit, OnChanges {
   }
 
   private onInputChangeAfterIdle() {
+    if (this._currentRenderPlaceResult?.type === 'around_me') {
+      return;
+    }
+
     const searchTerm = this.inputControl.value.trim();
 
     if (this.ignoreInputChanges) {
@@ -149,6 +168,8 @@ export class JourneyPointInputComponent implements OnInit, OnChanges {
     const itemIdx = parseInt(optionIdParts[1], 10);
     const placeResult = this.mapLookupPlaces[placeType][itemIdx];
 
+    this._currentRenderPlaceResult = placeResult;
+
     if (placeResult.type === 'around_me') {
     } else {
       const place = placeResult.place;
@@ -189,8 +210,8 @@ export class JourneyPointInputComponent implements OnInit, OnChanges {
   }
 
   public handleTapOnMapButton() {
-    if (this.currentPlace) {
-      this.mapService.tryToCenterAndZoomToPlace(this.currentPlace);
+    if (this.place) {
+      this.mapService.tryToCenterAndZoomToPlace(this.place);
     }
   }
 
@@ -198,7 +219,7 @@ export class JourneyPointInputComponent implements OnInit, OnChanges {
     // use ignoreInputChanges, otherwise emitEvent: false will not work with debounceTime()
     this.ignoreInputChanges = true;
     this.inputControl.setValue(place.computeName(), { emitEvent: false });
-    this.currentPlace = place;
+    
     this.selectedNewPlace.emit(place);
   }
 
