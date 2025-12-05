@@ -6,8 +6,12 @@
         
         <div class="d-flex align-items-center">
           <div class="flex-grow-1">
-            <station-board-input (stopPlaceSelected)="onStopPlaceSelected($event)">
-            </station-board-input>
+            <journey-point-input
+              [place]="this.stopPlace"
+              [filterPlaceType]="'stop'"
+              [placeholder]="'Type to search for stations'"
+              (selectedNewPlace)="onStopPlaceSelected($event)">
+            </journey-point-input>
           </div>
         </div>
 
