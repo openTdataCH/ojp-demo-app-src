@@ -51,9 +51,15 @@ export class MapHelpers {
     return bbox;
   }
 
-  public static bboxFromLngLatWidthPx(map: mapboxgl.Map, lngLat: mapboxgl.LngLat, width: number, height: number | null = null): mapboxgl.LngLatBounds {
+  public static bboxFromLngLatWidthPx(map: mapboxgl.Map, lngLat: mapboxgl.LngLat, width: number, height: number | null = null): number[] {
     const bboxPx = MapHelpers.bboxPxFromLngLatWidthPx(map, lngLat, width, height);
-    const bbox = MapHelpers.bboxPxToBbox(map, bboxPx);
+    const bboxLngLatBounds = MapHelpers.bboxPxToLngLatBounds(map, bboxPx);
+    const bbox: number[] = [
+      bboxLngLatBounds.getWest(),
+      bboxLngLatBounds.getSouth(),
+      bboxLngLatBounds.getEast(),
+      bboxLngLatBounds.getNorth(),
+    ];
     
     return bbox;
   }
