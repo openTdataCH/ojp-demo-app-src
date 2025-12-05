@@ -251,9 +251,8 @@ export class JourneyPointInputComponent implements OnInit {
   }
 
   private handleGeolocationLookup() {
-    this._currentRenderPlaceResult = null;
-
     if (!navigator.geolocation) {
+      this._currentRenderPlaceResult = null;
       console.error('no navigator.geolocation enabled')
       return;
     }
@@ -269,6 +268,7 @@ export class JourneyPointInputComponent implements OnInit {
         this.autocompleteInputTrigger?.openPanel();
       },
       error => {
+        this._currentRenderPlaceResult = null;
         this.setInputControlValue('... Geolocation ERROR: ' + error.message);
 
         console.error('GeoLocation ERROR');
@@ -318,6 +318,8 @@ export class JourneyPointInputComponent implements OnInit {
   public clearInputText() {
     const ignoreInputChanges = false;
     this.setInputControlValue('', ignoreInputChanges);
+
+    this._currentRenderPlaceResult = null;
 
     this.resetMapPlaces();
     this.mapLookupPlaces['stop'] = [AroundMePlaceResult];    
