@@ -232,9 +232,9 @@ export class JourneyPointInputComponent implements OnInit {
     this.selectedNewPlace.emit(place);
   }
 
-  private setInputControlValue(value: string) {
+  private setInputControlValue(value: string, ignoreInputChanges = true) {
     // use ignoreInputChanges, otherwise emitEvent: false will not work with debounceTime()
-    this.ignoreInputChanges = true;
+    this.ignoreInputChanges = ignoreInputChanges;
     this.inputControl.setValue(value, { emitEvent: false });
   }
 
