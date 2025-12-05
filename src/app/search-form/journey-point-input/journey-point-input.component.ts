@@ -140,6 +140,7 @@ export class JourneyPointInputComponent implements OnInit {
       this.resetMapPlaces();
       this.mapLookupPlaces['stop'] = [AroundMePlaceResult];
 
+      this.ignoreInputChanges = false;
 
       return;
     }
