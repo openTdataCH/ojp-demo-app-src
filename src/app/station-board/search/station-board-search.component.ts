@@ -30,6 +30,7 @@ import { StopEventResult } from '../../shared/models/stop-event-result';
 import { AnyStopEventRequestResponse } from '../../shared/types/_all';
 import { JourneyService } from '../../shared/models/journey-service';
 import { DataHelpers } from '../../helpers/data-helpers';
+import { AnyPlace } from 'src/app/shared/models/place/place-builder';
 
 @Component({
   selector: 'station-board-search',
@@ -174,7 +175,13 @@ export class StationBoardSearchComponent implements OnInit {
     await this.initFromMockXML(mockText);
   }
 
-  public onStopPlaceSelected(stopPlace: StopPlace) {
+  public onStopPlaceSelected(place: AnyPlace) {
+    if (place.type !== 'stop') {
+      return;
+    }
+
+    const stopPlace = place as StopPlace;
+
     this.updateCurrentRequestData(stopPlace.stopRef);
 
     this.stopPlace = stopPlace;
