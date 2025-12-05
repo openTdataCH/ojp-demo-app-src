@@ -105,12 +105,14 @@ export class JourneyPointInputComponent implements OnInit {
 
     this.place = null;
 
-    this.useSingleSearchPool = this.filterPlaceType !== undefined;
+    this.useSingleSearchPool = false;
 
     this.sdk = this.userTripService.createOJP_SDK_Instance(this.languageService.language);
   }
 
   ngOnInit() {
+    this.useSingleSearchPool = this.filterPlaceType !== undefined;
+
     this.inputControl.valueChanges.pipe(
       debounceTime(500),
       distinctUntilChanged()
@@ -118,7 +120,7 @@ export class JourneyPointInputComponent implements OnInit {
       this.onInputChangeAfterIdle();
     });
   }
-
+  
   private onInputChangeAfterIdle() {
     if (this._currentRenderPlaceResult?.type === 'around_me') {
       return;
