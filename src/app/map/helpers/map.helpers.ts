@@ -120,13 +120,13 @@ export class MapHelpers {
     MapHelpers.highlightLngLatBoundsOnMap(bbox, map);
   }
   
-  public static highlightBBOXOnMap(bbox: mapboxgl.LngLatBounds, map: mapboxgl.Map) {
+  private static highlightLngLatBoundsOnMap(bboxLngLatBounds: mapboxgl.LngLatBounds, map: mapboxgl.Map) {
     const featureCoords: GeoJSON.Position[] = [
-      bbox.getSouthWest().toArray(),
-      bbox.getSouthEast().toArray(),
-      bbox.getNorthEast().toArray(),
-      bbox.getNorthWest().toArray(),
-      bbox.getSouthWest().toArray(),
+      bboxLngLatBounds.getSouthWest().toArray(),
+      bboxLngLatBounds.getSouthEast().toArray(),
+      bboxLngLatBounds.getNorthEast().toArray(),
+      bboxLngLatBounds.getNorthWest().toArray(),
+      bboxLngLatBounds.getSouthWest().toArray(),
     ];
     
     const feature = <GeoJSON.Feature>{
