@@ -39,7 +39,7 @@ export class ErrorStateMatcher implements SbbErrorStateMatcher {
   templateUrl: './journey-point-input.component.html',
   styleUrls: ['./journey-point-input.component.scss']
 })
-export class JourneyPointInputComponent implements OnInit, OnChanges {
+export class JourneyPointInputComponent implements OnInit {
 
   private ignoreInputChanges: boolean;
 
@@ -131,31 +131,8 @@ export class JourneyPointInputComponent implements OnInit, OnChanges {
       this.handleSelectedPlace(coordsPlace);
       return;
     }
-
+    
     this.fetchJourneyPoints(searchTerm);
-  }
-
-  ngOnChanges(changes: SimpleChanges) {
-    const change = changes['currentPlace'] ?? null;
-    this.handleCurrentPlaceChange(change);
-  }
-
-  private handleCurrentPlaceChange(change: SimpleChange | null) {
-    if (!change) {
-      return;
-    }
-
-    if (change.firstChange) {
-      return;
-    }
-    if (change.previousValue === change.currentValue) {
-      return;
-    }
-
-    const place = change.currentValue as AnyPlace;
-    if (place) {
-      this.inputControl.setValue(place.computeName(), { emitEvent: false });
-    }
   }
 
   onOpenAutocomplete() {
@@ -163,7 +140,6 @@ export class JourneyPointInputComponent implements OnInit, OnChanges {
   }
 
   onOptionSelected(ev: SbbAutocompleteSelectedEvent) {
-
     const optionIdParts = ev.option.value.split('.');
     if (optionIdParts.length !== 2) {
       return;
