@@ -63,8 +63,8 @@ export class JourneyPointInputComponent implements OnInit {
   public mapLookupPlaces: MapPlaces;
   public optionLocationTypes: OptionLocationType[];
 
-  @Input() placeholder: string = '';
   @Input() label: string = '';
+  @Input() placeholder: string = '... type to search';
   @Input() filterPlaceType: OJP_Types.PlaceTypeEnum | undefined;
   
   private _currentRenderPlaceResult: RenderPlaceResult | null = null;
