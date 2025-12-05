@@ -313,6 +313,7 @@ export class JourneyPointInputComponent implements OnInit {
     this.ignoreInputChanges = true;
     this.inputControl.setValue('', { emitEvent: false });
 
+    this.resetMapPlaces();
     this.mapLookupPlaces['stop'] = [AroundMePlaceResult];    
     
     this.autocompleteInputTrigger?.openPanel();
