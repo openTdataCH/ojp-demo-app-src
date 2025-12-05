@@ -77,8 +77,11 @@ export class JourneyPointInputComponent implements OnInit {
         type: 'place',
         caption: placeName,
       };
+
+      this.mapLookupPlaces[place.type] = [this._currentRenderPlaceResult];
     } else {
       this._currentRenderPlaceResult = null;
+      this.mapLookupPlaces['stop'] = [AroundMePlaceResult];
     }
   }
 
