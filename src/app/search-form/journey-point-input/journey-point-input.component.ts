@@ -167,6 +167,7 @@ export class JourneyPointInputComponent implements OnInit {
     this._currentRenderPlaceResult = placeResult;
 
     if (placeResult.type === 'around_me') {
+      this.handleGeolocationLookup();
     } else {
       const place = placeResult.place;
       this.handleSelectedPlace(place);
@@ -231,5 +232,35 @@ export class JourneyPointInputComponent implements OnInit {
       topographicPlace: [],
       location: [],
     };
+  }
+
+  private handleGeolocationLookup() {
+    if (!navigator.geolocation) {
+      console.error('no navigator.geolocation enabled')
+      return;
+    }
+    
+    // use ignoreInputChanges, otherwise emitEvent: false will not work with debounceTime()
+    this.ignoreInputChanges = true;
+    this.inputControl.setValue('... looking up location', { emitEvent: false });
+
+    navigator.geolocation.getCurrentPosition(
+      async position => {
+        this.ignoreInputChanges = false;
+        this.inputControl.setValue('... choose nearby stop', { emitEvent: false });
+      },
+      error => {
+        this.ignoreInputChanges = false;
+        this.inputControl.setValue('... Geolocation ERROR: ' + error.message, { emitEvent: false });
+
+        console.error('GeoLocation ERROR');
+        console.log(error);
+      },
+      {
+        enableHighAccuracy: false,
+        timeout: 15 * 1000,
+        maximumAge: 60 * 60 * 1000,
+      }
+    );
   }
 }
