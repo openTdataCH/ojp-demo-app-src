@@ -9,7 +9,8 @@ OJP-Demo URL: https://opentdatach.github.io/ojp-demo-app/
   - adds GeoLocation support to `JourneyPointInputComponent`
   - re-use `JourneyPointInputComponent` also in StationBoard
   - adds `TopographicPlace`
-  - improve map helpers and bbox stops snapping
+  - easy clear text in input boxes
+  - improves map helpers and bbox stops snapping
 
 04.December 2025
 - Fix map bounds/events handling - [PR #313](https://github.com/openTdataCH/ojp-demo-app-src/pull/312)
