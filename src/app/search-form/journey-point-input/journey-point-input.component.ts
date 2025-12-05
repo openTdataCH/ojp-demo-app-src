@@ -16,6 +16,8 @@ import { UserTripService } from '../../shared/services/user-trip.service';
 import { AnyPlace, PlaceBuilder } from '../../shared/models/place/place-builder';
 import { PlaceLocation } from '../../shared/models/place/location';
 import { OJPHelpers } from '../../helpers/ojp-helpers';
+import { AnyLocationInformationRequest } from '../../shared/types/_all';
+import { GeoPositionBBOX } from '../../shared/models/geo/geoposition-bbox';
 
 interface RenderPlaceResult {
   place: AnyPlace,
@@ -23,6 +25,18 @@ interface RenderPlaceResult {
   caption: string,
   distance?: number,
 };
+
+const AroundMePlaceResult: RenderPlaceResult = (() => {
+  const place = PlaceLocation.Empty('Current Location');
+
+  const placeResult: RenderPlaceResult = {
+    place: place,
+    type: 'around_me',
+    caption: place.placeName,
+  };
+
+  return placeResult;
+})();
 
 type MapPlaces = Record<OJP_Types.PlaceTypeEnum, RenderPlaceResult[]>;
 type OptionLocationType = [OJP_Types.PlaceTypeEnum, string];
@@ -119,6 +133,7 @@ export class JourneyPointInputComponent implements OnInit {
       this.useSingleSearchPool = true;
       
       this.resetMapPlaces();
+      this.mapLookupPlaces['stop'] = [AroundMePlaceResult];
 
       return;
     }
