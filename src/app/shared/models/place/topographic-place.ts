@@ -7,22 +7,6 @@ import OJP_Legacy from '../../../config/ojp-legacy';
 import { BasePlace } from '../place';
 import { AnyPlaceResultSchema } from '../../types/_all';
 
-type POI_OSM_TagSharedMobility = 'escooter_rental' | 'car_sharing' | 'bicycle_rental' | 'charging_station'
-type POI_OSM_TagPOI = 'service' | 'shopping' | 'leisure' | 'catering' | 'public' | 'parkride' | 'accommodation' | 'sbb_services' | 'other'
-export type RestrictionPoiOSMTag = POI_OSM_TagSharedMobility | POI_OSM_TagPOI | 'none'
-
-export type POI_Restriction = {
-  poiType: 'shared_mobility' | 'poi'
-  tags: RestrictionPoiOSMTag[]
-}
-
-const mapPoiSubCategoryIcons = <Record<RestrictionPoiOSMTag, string[]>>{
-  service: ['atm', 'hairdresser'],
-  shopping: ['all', 'clothes', 'optician'],
-  catering: ['all'],
-  accommodation: ['all'],
-}
-
 export class TopographicPlace extends BasePlace {
   public topographicPlaceCode: string;
   public topographicPlaceName: string;
