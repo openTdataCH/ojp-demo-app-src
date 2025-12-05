@@ -146,6 +146,8 @@ export class JourneyPointInputComponent implements OnInit {
     }
 
     if (this.ignoreInputChanges) {
+      // avoid lock-in indefinitely
+      this.ignoreInputChanges = false;
       return;
     }
 
