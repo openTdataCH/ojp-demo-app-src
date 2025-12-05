@@ -132,10 +132,6 @@ export class JourneyPointInputComponent implements OnInit {
 
     const searchTerm = this.inputControl.value.trim();
 
-    if (this.ignoreInputChanges) {
-      return;
-    }
-
     if (searchTerm.trim().length < 1) {
       this.autocompleteInputTrigger?.openPanel();
 
@@ -144,6 +140,11 @@ export class JourneyPointInputComponent implements OnInit {
       this.resetMapPlaces();
       this.mapLookupPlaces['stop'] = [AroundMePlaceResult];
 
+
+      return;
+    }
+
+    if (this.ignoreInputChanges) {
       return;
     }
 
