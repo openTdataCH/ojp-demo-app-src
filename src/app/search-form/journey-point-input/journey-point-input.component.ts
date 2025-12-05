@@ -246,6 +246,8 @@ export class JourneyPointInputComponent implements OnInit {
 
     navigator.geolocation.getCurrentPosition(
       async position => {
+        await this.handleNewGeoPosition(position);
+
         this.ignoreInputChanges = false;
         this.inputControl.setValue('... choose nearby stop', { emitEvent: false });
       },
@@ -262,5 +264,38 @@ export class JourneyPointInputComponent implements OnInit {
         maximumAge: 60 * 60 * 1000,
       }
     );
+  }
+
+  private async handleNewGeoPosition(position: GeolocationPosition) {
+    const nearbyGeoPosition = new OJP_Next.GeoPosition(position.coords.longitude, position.coords.latitude);
+    const bbox = GeoPositionBBOX.initFromGeoPosition(nearbyGeoPosition, 5000, 5000);
+    const bboxData = bbox.asFeatureBBOX();
+
+    const request = this.sdk.requests.LocationInformationRequest.initWithBBOX(bboxData, ['stop'], 300);
+
+    await this.fetchRequest(request);
+
+    const stopPlaces = this.mapLookupPlaces['stop'];
+    if (stopPlaces.length === 0) {
+      return;
+    }
+
+    stopPlaces.forEach(placeResult => {
+      placeResult.distance = placeResult.place.geoPosition.distanceFrom(nearbyGeoPosition);
+      placeResult.caption = placeResult.caption + ' (' + placeResult.distance + ' m)';
+    });
+
+    // Sort by distance if needed
+    stopPlaces.sort((a, b) => {
+      if (a.distance === null || a.distance === undefined) {
+        return 0;
+      }
+      if (b.distance === null || b.distance === undefined) {
+        return 0;
+      }
+      return a.distance - b.distance;
+    });
+
+    this.mapLookupPlaces['stop'] = stopPlaces.slice(0, 10);
   }
 }
