@@ -1,8 +1,8 @@
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
 import { FormControl, FormGroupDirective, NgForm, Validators } from '@angular/forms';
 import { debounceTime, distinctUntilChanged } from 'rxjs/operators'
 
-import { SbbAutocompleteSelectedEvent } from '@sbb-esta/angular/autocomplete';
+import { SbbAutocompleteSelectedEvent, SbbAutocompleteTrigger } from '@sbb-esta/angular/autocomplete';
 import { SbbErrorStateMatcher } from '@sbb-esta/angular/core';
 
 import * as OJP_Types from 'ojp-shared-types';
@@ -54,6 +54,7 @@ export class ErrorStateMatcher implements SbbErrorStateMatcher {
   styleUrls: ['./journey-point-input.component.scss']
 })
 export class JourneyPointInputComponent implements OnInit {
+  @ViewChild(SbbAutocompleteTrigger, { static: true }) autocompleteInputTrigger: SbbAutocompleteTrigger | undefined;
 
   private ignoreInputChanges: boolean;
 
@@ -249,6 +250,8 @@ export class JourneyPointInputComponent implements OnInit {
 
         this.ignoreInputChanges = false;
         this.inputControl.setValue('... choose nearby stop', { emitEvent: false });
+
+        this.autocompleteInputTrigger?.openPanel();
       },
       error => {
         this.ignoreInputChanges = false;
