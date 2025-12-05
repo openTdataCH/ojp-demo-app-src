@@ -249,6 +249,8 @@ export class JourneyPointInputComponent implements OnInit {
   }
 
   private handleGeolocationLookup() {
+    this._currentRenderPlaceResult = null;
+
     if (!navigator.geolocation) {
       console.error('no navigator.geolocation enabled')
       return;
