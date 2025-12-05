@@ -28,7 +28,6 @@ import { SearchFormComponent } from './search-form/search-form.component';
 import { TripInfoResultPopoverComponent } from './journey/journey-result-row/result-trip-leg/trip-info-result-popover/trip-info-result-popover.component';
 
 import { StationBoardComponent } from './station-board/station-board.component';
-import { StationBoardInputComponent } from './station-board/input/station-board-input.component';
 import { StationBoardMapComponent } from './station-board/map/station-board-map.component';
 import { StationBoardResultComponent } from './station-board/result/station-board-result.component';
 import { StationBoardSearchComponent } from './station-board/search/station-board-search.component';
@@ -66,7 +65,6 @@ import { StopClickPropagationDirective } from './shared/components/stop-click-pr
     TripInfoResultPopoverComponent,
 
     StationBoardComponent,
-    StationBoardInputComponent,
     StationBoardMapComponent,
     StationBoardResultComponent,
     StationBoardSearchComponent,
