@@ -175,7 +175,6 @@ export class JourneyPointInputComponent implements OnInit {
   }
 
   private async fetchJourneyPoints(searchTerm: string) {
-    const ojpSDK_Next = this.userTripService.createOJP_SDK_Instance(this.languageService.language);
     const placeTypes = this.filterPlaceType === undefined ? undefined : [this.filterPlaceType];
     const request = this.sdk.requests.LocationInformationRequest.initWithLocationName(searchTerm, placeTypes, 10);
 
