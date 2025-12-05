@@ -185,7 +185,7 @@ export class JourneyPointInputComponent implements OnInit {
     const response = await request.fetchResponse(this.sdk);
 
     if (!response.ok) {
-      console.log('ERROR - failed to lookup locations for "' + searchTerm + '"');
+      console.log('ERROR - failed to lookup locations');
       console.log(response);
       return;
     }
