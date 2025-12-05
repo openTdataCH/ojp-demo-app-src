@@ -136,6 +136,8 @@ export class JourneyPointInputComponent implements OnInit {
     }
 
     if (searchTerm.trim().length < 1) {
+      this.autocompleteInputTrigger?.openPanel();
+
       this.useSingleSearchPool = true;
       
       this.resetMapPlaces();
