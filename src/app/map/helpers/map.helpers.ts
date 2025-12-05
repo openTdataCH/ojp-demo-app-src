@@ -125,6 +125,11 @@ export class MapHelpers {
     const bbox = MapHelpers.bboxPxToLngLatBounds(map, bboxPx);
     MapHelpers.highlightLngLatBoundsOnMap(bbox, map);
   }
+
+  public static highlightBBOXOnMap(bbox: number[], map: mapboxgl.Map) {
+    const bboxLngLatBounds = new mapboxgl.LngLatBounds(bbox as [number, number, number, number]);
+    MapHelpers.highlightLngLatBoundsOnMap(bboxLngLatBounds, map);
+  }
   
   private static highlightLngLatBoundsOnMap(bboxLngLatBounds: mapboxgl.LngLatBounds, map: mapboxgl.Map) {
     const featureCoords: GeoJSON.Position[] = [
