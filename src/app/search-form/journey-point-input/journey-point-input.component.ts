@@ -314,7 +314,8 @@ export class JourneyPointInputComponent implements OnInit {
   }
 
   public clearInputText() {
-    this.setInputControlValue('');
+    const ignoreInputChanges = false;
+    this.setInputControlValue('', ignoreInputChanges);
 
     this.resetMapPlaces();
     this.mapLookupPlaces['stop'] = [AroundMePlaceResult];    
