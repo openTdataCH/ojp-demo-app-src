@@ -20,7 +20,6 @@ import { MapService } from '../../shared/services/map.service';
 import { LanguageService } from '../../shared/services/language.service';
 
 import { StationBoardData, StationBoardService } from '../station-board.service';
-import { StationBoardInputComponent } from '../input/station-board-input.component';
 import { DebugXmlPopoverComponent } from '../../search-form/debug-xml-popover/debug-xml-popover.component';
 import { CustomStopEventXMLPopoverComponent } from './custom-stop-event-xml-popover/custom-stop-event-xml-popover.component';
 import { EmbedStationBoardPopoverComponent } from './embed-station-board-popover/embed-station-board-popover.component';
@@ -39,7 +38,6 @@ import { AnyPlace } from 'src/app/shared/models/place/place-builder';
 })
 export class StationBoardSearchComponent implements OnInit {
   @ViewChild(SbbExpansionPanel, { static: true }) searchPanel: SbbExpansionPanel | undefined;
-  @ViewChild(StationBoardInputComponent) autocompleteInputComponent: StationBoardInputComponent | undefined;
 
   public currentAppStage: APP_STAGE;
 
@@ -493,10 +491,6 @@ export class StationBoardSearchComponent implements OnInit {
 
     this.updateURLs();
     this.updateHeaderText();
-
-    if (this.autocompleteInputComponent) {
-      this.autocompleteInputComponent.updateLocationText(stopPlace.stopName);
-    }
   }
 
   private updateHeaderText() {
@@ -531,10 +525,6 @@ export class StationBoardSearchComponent implements OnInit {
 
     const stopPlace = StopPlace.initWithCoordsRefAndName(coords[0], coords[1], stopPlaceName, stopPlaceName, stopPlaceRef);
     this.stopPlace = stopPlace;
-
-    if (this.autocompleteInputComponent) {
-      this.autocompleteInputComponent.updateLocationText(stopPlace.stopName);
-    }
 
     this.resetResultList();
     this.updateURLs();
