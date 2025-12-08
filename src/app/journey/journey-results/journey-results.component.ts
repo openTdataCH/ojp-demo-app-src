@@ -102,7 +102,12 @@ export class JourneyResultsComponent implements OnInit {
       return;
     }
 
-    const lastTripData = this.model.tripsData[this.model.tripsData.length - 1];
+    const tripsWithTimedLegs = this.model.tripsData.filter(tripData => (tripData.legsData.filter(legData => legData.leg.legType === 'TimedLeg')).length > 0);
+    if (tripsWithTimedLegs.length === 0) {
+      return;
+    }
+
+    const lastTripData = tripsWithTimedLegs[tripsWithTimedLegs.length - 1];
     const depArrDate = lastTripData.trip.computeDepartureTime();
     if (depArrDate === null) {
       return;
