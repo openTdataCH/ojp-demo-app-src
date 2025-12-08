@@ -1,5 +1,3 @@
-import OJP_Legacy from '../../../../config/ojp-legacy';
-
 import { OJP_VERSION } from '../../../../config/constants';
 import { AnyPlace } from '../../../../shared/models/place/place-builder';
 import { Poi, RestrictionPoiOSMTag } from '../../../../shared/models/place/poi';
@@ -113,15 +111,7 @@ export class SharedMobility {
       }
 
       if (code.startsWith('2em_cars_e')) {
-        return ['2EM Car Sharing', 'E-Car']
-      }
-
-      if (code.startsWith('bird-')) {
-        return ['Bird', 'E-Scooter']
-      }
-
-      if (code.startsWith('bolt_')) {
-        return ['Bolt', 'E-Scooter']
+        return ['2EM Car Sharing', 'E-Car'];
       }
 
       if (code.startsWith('carvelo2go')) {
@@ -137,23 +127,11 @@ export class SharedMobility {
       }
 
       if (code.startsWith('edrivecarsharing')) {
-        return ['E-drive Car Sharing', 'E-Car']
-      }
-
-      if (code.startsWith('bird-platform-partner-jmfleetswl-')) {
-        return ['JM Fleets', 'E-Scooter']
+        return ['E-drive Car Sharing', 'E-Car'];
       }
 
       if (code.startsWith('liemobil_liechtenstein_ebike')) {
-        return ['LIEmobil', 'E-Bike']
-      }
-
-      if (code.startsWith('lime_')) {
-        if (code.includes('_escooter')) {
-          return ['Lime', 'E-Scooter']
-        } else {
-          return ['Lime', 'E-Bike']
-        }
+        return ['LIEmobil', 'E-Bike'];
       }
 
       if (code.startsWith('mobility')) {
@@ -181,19 +159,11 @@ export class SharedMobility {
       }
 
       if (code.startsWith('sponticar')) {
-        return ['Sponti-Car', 'E-Car']
-      }
-
-      if (code.startsWith('tier')) {
-        return ['TIER', 'E-Scooter']
+        return ['Sponti-Car', 'E-Car'];
       }
 
       if (code.startsWith('tier_ebike')) {
-        return ['TIER', 'E-Bike']
-      }
-
-      if (code.startsWith('voiscooters.com')) {
-        return ['VOI', 'E-Scooter']
+        return ['TIER', 'E-Bike'];
       }
 
       return [null, 'E-Scooter'];
