@@ -5,7 +5,7 @@ OJP-Demo URL: https://opentdatach.github.io/ojp-demo-app/
 ----
 
 05.December 2025
-- Support TR searches with AroundMe - [PR #314](https://github.com/openTdataCH/ojp-demo-app-src/pull/312)
+- Support TR searches with AroundMe - [PR #314](https://github.com/openTdataCH/ojp-demo-app-src/pull/314)
   - adds GeoLocation support to `JourneyPointInputComponent`
   - re-use `JourneyPointInputComponent` also in StationBoard
   - adds `TopographicPlace`
