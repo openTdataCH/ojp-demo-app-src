@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { UserTripService } from 'src/app/shared/services/user-trip.service';
 
 import * as OJP_Next from 'ojp-sdk-next';
+import * as OJP_Types from 'ojp-shared-types';
 import OJP_Legacy from '../../config/ojp-legacy';
 
 import { REQUESTOR_REF, OJP_VERSION } from '../../config/constants';
@@ -14,6 +15,7 @@ type NumberOfResultsType = 'NumberOfResults' | 'NumberOfResultsBefore' | 'Number
 
 interface PageModel {
   tripsData: TripData[]
+  mapFareResult: Record<string, OJP_Types.FareResultSchema | null>
   hasPagination: boolean
   isFetchingPrevTrips: boolean
   isFetchingNextTrips: boolean
@@ -30,6 +32,7 @@ export class JourneyResultsComponent implements OnInit {
   constructor(private userTripService: UserTripService, private mapService: MapService, private languageService: LanguageService) {
     this.model = {
       tripsData: [],
+      mapFareResult: {},
       hasPagination: false,
       isFetchingPrevTrips: false,
       isFetchingNextTrips: false,
@@ -59,9 +62,8 @@ export class JourneyResultsComponent implements OnInit {
     });
 
     this.userTripService.tripFaresUpdated.subscribe(fareResults => {
-      this.model.tripsData.forEach(tripData => {
-        tripData.fareResult = null;
-      });
+
+      this.model.mapFareResult = {};
 
       fareResults.forEach(fareResult => {
         const foundTripData = this.model.tripsData.find(tripData => {
@@ -75,7 +77,7 @@ export class JourneyResultsComponent implements OnInit {
           return;
         }
 
-        foundTripData.fareResult = fareResult;
+        this.model.mapFareResult[foundTripData.trip.id] = fareResult;
       });
     })
   }

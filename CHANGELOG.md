@@ -5,6 +5,7 @@ OJP-Demo URL: https://opentdatach.github.io/ojp-demo-app/
 ----
 
 08.December 2025
+- catch race conditions when fares response were discarded after 2nd TR - [PR #321](https://github.com/openTdataCH/ojp-demo-app-src/pull/321)
 - catch `fpl:sa-hl` icon which isnt available in [SBB angular v14](https://angular-v14.app.sbb.ch/angular/icon-overview) lib - [PR #320](https://github.com/openTdataCH/ojp-demo-app-src/pull/320)
 - re-adds Shared Mobility Scooters - [PR #319](https://github.com/openTdataCH/ojp-demo-app-src/pull/319)
 

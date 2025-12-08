@@ -803,7 +803,6 @@ export class UserTripService {
 
       const tripData: TripData = {
         trip: trip,
-        fareResult: null,
         legsData: legsData,
         info: {
           comments: null,
