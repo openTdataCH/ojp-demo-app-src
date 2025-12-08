@@ -4,6 +4,9 @@ OJP-Demo URL: https://opentdatach.github.io/ojp-demo-app/
 
 ----
 
+08.December 2025
+- re-adds Shared Mobility Scooters - [PR #319](https://github.com/openTdataCH/ojp-demo-app-src/pull/319)
+
 05.December 2025
 - Support TR searches with AroundMe - [PR #314](https://github.com/openTdataCH/ojp-demo-app-src/pull/314)
   - adds GeoLocation support to `JourneyPointInputComponent`
