@@ -65,20 +65,20 @@ export class SharedMobility {
     const providerData: [SharedMobilityProvider | null, VehicleType] = (() => {
       if (poiCategory === 'bicycle_rental') {
         if (poi.placeName === 'Publibike') {
-          return ['PubliBike', 'Bike']
+          return ['PubliBike', 'Bike'];
         }
 
         if (poi.placeName === 'Publiebike') {
-          return ['PubliBike', 'E-Bike']
+          return ['PubliBike', 'E-Bike'];
         }
 
         if (poi.placeName === 'Nextbike') {
-          return ['Nextbike', 'Bike']
+          return ['Nextbike', 'Bike'];
         }
       }
 
       if (code.startsWith('2em_cars')) {
-        return ['2EM Car Sharing', 'Car']
+        return ['2EM Car Sharing', 'Car'];
       }
 
       if (code.startsWith('2em_cars_e')) {
@@ -94,15 +94,15 @@ export class SharedMobility {
       }
 
       if (code.startsWith('carvelo2go')) {
-        return ['Carvelo2go', 'E-CargoBike']
+        return ['Carvelo2go', 'E-CargoBike'];
       }
 
       if (code.startsWith('donkey_kreuzlingen')) {
-        return ['Regivelo.ch', 'Bike']
+        return ['Regivelo.ch', 'Bike'];
       }
 
       if (code.startsWith('donkey_')) {
-        return ['Donkey Republic', 'Bike']
+        return ['Donkey Republic', 'Bike'];
       }
 
       if (code.startsWith('edrivecarsharing')) {
@@ -126,27 +126,27 @@ export class SharedMobility {
       }
 
       if (code.startsWith('mobility')) {
-        return ['Mobility', 'Car']
+        return ['Mobility', 'Car'];
       }
 
       if (code.startsWith('emobility')) {
-        return ['Mobility', 'E-Car']
+        return ['Mobility', 'E-Car'];
       }
 
       if (code.startsWith('nextbike_ch')) {
-        return ['Nextbike', 'Bike']
+        return ['Nextbike', 'Bike'];
       }
 
       if (code.startsWith('pickebike_')) {
         if (code.includes('_emoped')) {
-          return ['Pick-e-Bike', 'E-Moped']
+          return ['Pick-e-Bike', 'E-Moped'];
         } else {
-          return ['Pick-e-Bike', 'E-Bike']
+          return ['Pick-e-Bike', 'E-Bike'];
         }
       }
 
       if (code.startsWith('share_birrer_ch')) {
-        return ['Share Birrer', 'E-Car']
+        return ['Share Birrer', 'E-Car'];
       }
 
       if (code.startsWith('sponticar')) {
@@ -165,10 +165,10 @@ export class SharedMobility {
         return ['VOI', 'E-Scooter']
       }
 
-      return [null, 'E-Scooter']
+      return [null, 'E-Scooter'];
     })()
-    const provider = providerData[0]
-    const vehicleType = providerData[1]
+    const provider = providerData[0];
+    const vehicleType = providerData[1];
 
     if (provider === null) {
       console.error('CANT DETECT provider');
