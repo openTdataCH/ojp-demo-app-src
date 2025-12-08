@@ -2,6 +2,7 @@ import { Component, Input, OnInit, ViewChild } from '@angular/core';
 import { SbbExpansionPanel } from '@sbb-esta/angular/accordion';
 
 import * as OJP_Next from 'ojp-sdk-next';
+import * as OJP_Types from 'ojp-shared-types';
 
 import OJP_Legacy from '../../config/ojp-legacy';
 
@@ -35,6 +36,7 @@ interface TripHeaderStats {
 })
 export class JourneyResultRowComponent implements OnInit {
   @Input() tripData: TripData | undefined
+  @Input() fareResult: OJP_Types.FareResultSchema | undefined
   @Input() idx: number | undefined
 
   @ViewChild(SbbExpansionPanel, { static: true }) tripPanel: SbbExpansionPanel | undefined;
@@ -201,7 +203,7 @@ export class JourneyResultRowComponent implements OnInit {
 
     const fareResults = await this.userTripService.fetchFaresForTrips(this.languageService.language, [updatedTrip]);
     if (fareResults.length === 1) {
-      this.tripData.fareResult = fareResults[0];
+      this.fareResult = fareResults[0];
     } else {
       // if curreny NOVA fails, rely on older version of fares
       console.log('error: nova failed to return new fares, use old ones');
