@@ -62,7 +62,6 @@ export class JourneyResultsComponent implements OnInit {
     });
 
     this.userTripService.tripFaresUpdated.subscribe(fareResults => {
-
       this.model.mapFareResult = {};
 
       fareResults.forEach(fareResult => {

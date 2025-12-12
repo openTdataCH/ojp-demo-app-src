@@ -116,11 +116,11 @@ export class SearchFormComponent implements OnInit {
     })
 
     this.userTripService.tripsDataUpdated.subscribe(tripsData => {
-      const hasTrips = tripsData.length > 0
+      const hasTrips = tripsData.length > 0;
       if (hasTrips) {
-        this.collapseSearchPanel()
+        this.collapseSearchPanel();
       } else {
-        this.expandSearchPanel()
+        this.expandSearchPanel();
       }
     });
 

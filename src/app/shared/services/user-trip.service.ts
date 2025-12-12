@@ -1,7 +1,7 @@
 import { EventEmitter, Injectable } from '@angular/core'
 import { BehaviorSubject, Observable } from 'rxjs';
 
-import mapboxgl from 'mapbox-gl'
+import mapboxgl from 'mapbox-gl';
 
 import * as OJP_Types from 'ojp-shared-types';
 import * as OJP_Next from 'ojp-sdk-next';

@@ -58,22 +58,22 @@ interface LegInfoDataModel {
   isTimed: boolean,
   fromLocationData: LegStopPointData,
   toLocationData: LegStopPointData,
-  intermediaryLocationsData: LegStopPointData[]
+  intermediaryLocationsData: LegStopPointData[],
 
-  hasSituations: boolean
-  situations: SituationContent[]
+  hasSituations: boolean,
+  situations: SituationContent[],
 
-  legTemplate: LegTemplate
+  legTemplate: LegTemplate,
 
-  serviceAttributes: ServiceAttributeRenderModel[]
+  serviceAttributes: ServiceAttributeRenderModel[],
 
-  serviceDestinationText: string | null
-  serviceInfo: string | null
-  serviceIntermediaryStopsText: string | null
-  serviceJourneyRef: string | null
-  debugServicePtMode: boolean
-  servicePtMode: OJP_Legacy.PublicTransportMode | null
-  serviceFormationURL: string | null
+  serviceDestinationText: string | null,
+  serviceInfo: string | null,
+  serviceIntermediaryStopsText: string | null,
+  serviceJourneyRef: string | null,
+  debugServicePtMode: boolean,
+  servicePtMode: OJP_Legacy.PublicTransportMode | null,
+  serviceFormationURL: string | null,
 
   isCancelled: boolean
   hasDeviation: boolean
@@ -102,7 +102,13 @@ export class ResultTripLegComponent implements OnInit {
 
   public enableTRR: boolean;
 
-  constructor(private mapService: MapService, private router: Router, private popover: SbbDialog, private userTripService: UserTripService, private sanitizer: DomSanitizer) {
+  constructor(
+    private mapService: MapService, 
+    private router: Router, 
+    private popover: SbbDialog, 
+    private userTripService: UserTripService, 
+    private sanitizer: DomSanitizer,
+  ) {
     this.legInfoDataModel = <LegInfoDataModel>{}
     this.isEmbed = this.router.url.indexOf('/embed/') !== -1;
 
@@ -116,10 +122,9 @@ export class ResultTripLegComponent implements OnInit {
     }
 
     this.legElementId = 'leg_' + this.legData.leg.legID;
-
     this.initLegInfo();
   }
-
+  
   private computeLegLeadingText(): string {
     if (this.legData === undefined) {
       return 'n/a';

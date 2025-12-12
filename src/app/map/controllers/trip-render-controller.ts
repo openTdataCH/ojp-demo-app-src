@@ -12,13 +12,13 @@ import tripLegTrackWithoutWalkLayerJSON from './map-layers-def/ojp-trip-timed-le
 import tripContinousLegWalkingLineLayerJSON from './map-layers-def/ojp-trip-walking-leg-line.json'
 
 export class TripRenderController {
-  private map: mapboxgl.Map
-  private mapSourceId = 'trip-data'
   private features: GeoJSON.Feature[] = []
+  private map: mapboxgl.Map;
+  private mapSourceId = 'trip-data';
 
   constructor(map: mapboxgl.Map) {
-    this.map = map
-    this.addMapSourceAndLayers()
+    this.map = map;
+    this.addMapSourceAndLayers();
   }
 
   public renderTrip(mapTripLegs: MapTripLeg[]) {
