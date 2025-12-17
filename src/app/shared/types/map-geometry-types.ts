@@ -10,10 +10,13 @@ export enum TripLegPropertiesEnum {
 type TripTimedLegLineType =
   | 'LongDistanceRail'
   | 'SBahn'
+  | 'Subway'
+  | 'CogRailway'
   | 'Bus'
   | 'PostAuto'
   | 'OnDemand'
-  | 'Funicular';
+  | 'Funicular'
+  | 'Tram';
 type TripContinousLegLineType =
   | 'Walk'
   | 'Self-Drive Car'
