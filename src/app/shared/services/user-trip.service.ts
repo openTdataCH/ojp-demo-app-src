@@ -12,7 +12,6 @@ import { APP_CONFIG } from '../../config/app-config';
 import { APP_STAGE, DEBUG_LEVEL, DEFAULT_APP_STAGE, REQUESTOR_REF, TRIP_REQUEST_DEFAULT_NUMBER_OF_RESULTS, OJP_VERSION } from '../../config/constants';
 
 import { MapService } from './map.service';
-import { MapTrip } from '../types/map-geometry-types';
 import { TripData, TripLegData } from '../types/trip';
 import { AnyPlace, PlaceBuilder, sortPlaces } from '../models/place/place-builder';
 import { PlaceLocation } from '../models/place/location';
@@ -65,7 +64,7 @@ export class UserTripService {
   
   public tripFaresUpdated = new EventEmitter<OJP_Types.FareResultSchema[]>();
   
-  public activeTripSelected = new EventEmitter<MapTrip | null>();
+  public mapActiveTripSelected = new EventEmitter<TripData | null>();
   public tripRequestFinished = new EventEmitter<OJP_Legacy.RequestInfo>();
 
   public searchParamsReset = new EventEmitter<void>();
@@ -363,7 +362,7 @@ export class UserTripService {
     this.toTripLocation = Object.assign({}, locationAux);
 
     this.locationsUpdated.emit();
-    this.activeTripSelected.emit(null);
+    this.mapActiveTripSelected.emit(null);
 
     this.searchParamsReset.emit();
     this.updateURLs();
@@ -373,7 +372,7 @@ export class UserTripService {
     this.isViaEnabled = !this.isViaEnabled;
 
     this.locationsUpdated.emit();
-    this.activeTripSelected.emit(null);
+    this.mapActiveTripSelected.emit(null);
 
     this.searchParamsReset.emit();
     this.updateURLs();
@@ -400,7 +399,7 @@ export class UserTripService {
     }
 
     this.locationsUpdated.emit();
-    this.activeTripSelected.emit(null);
+    this.mapActiveTripSelected.emit(null);
 
     this.searchParamsReset.emit();
     this.updateURLs();
@@ -428,7 +427,7 @@ export class UserTripService {
     this.viaTripLocations[viaIDx].location = place.asOJP_LegacyLocation();
 
     this.locationsUpdated.emit();
-    this.activeTripSelected.emit(null);
+    this.mapActiveTripSelected.emit(null);
 
     this.searchParamsReset.emit();
     this.updateURLs();

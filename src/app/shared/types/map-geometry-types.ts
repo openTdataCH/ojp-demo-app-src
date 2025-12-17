@@ -1,5 +1,3 @@
-import OJP_Legacy from '../../config/ojp-legacy';
-
 export enum TripLegPropertiesEnum {
   LegType = 'leg.type',           // Continous, Transfer, Timed
   DrawType = 'draw.type',         // see below TripLegDrawType
@@ -32,12 +30,4 @@ export type TripLegLineType =
   | TripTimedLegLineType
   | TripContinousLegLineType;
 
-export interface MapTripLeg {
-  leg: OJP_Legacy.TripLeg,
-  forceLinkProjection: boolean,
-}
-
-export interface MapTrip {
-  legs: MapTripLeg[],
-}
 export type TripLegDrawType = 'Beeline' | 'WalkLine' | 'LegLine';

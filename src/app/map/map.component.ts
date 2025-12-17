@@ -16,7 +16,6 @@ import { TripRenderController } from './controllers/trip-render-controller';
 import { LanguageService } from '../shared/services/language.service';
 import { PlaceLocation } from '../shared/models/place/location';
 import { AnyPlace, PlaceBuilder, sortPlaces } from '../shared/models/place/place-builder';
-import { GeoPositionBBOX } from '../shared/models/geo/geoposition-bbox';
 import { OJPHelpers } from '../helpers/ojp-helpers';
 import { OJP_VERSION } from '../config/constants';
 
@@ -87,9 +86,9 @@ export class MapComponent implements OnInit, AfterViewInit {
       this.updateMarkers();
     });
 
-    this.userTripService.activeTripSelected.subscribe(mapTrip => {
+    this.userTripService.mapActiveTripSelected.subscribe(tripData => {
       this.mapLoadingPromise?.then(map => {
-        this.tripRenderController?.renderTrip(mapTrip?.legs ?? []);
+        this.tripRenderController?.renderTrip(tripData?.legsData ?? []);
       });
     });
 

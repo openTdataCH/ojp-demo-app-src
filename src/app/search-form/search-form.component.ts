@@ -346,7 +346,7 @@ export class SearchFormComponent implements OnInit {
       this.requestDurationF = null;
 
       this.userTripService.updateTrips([]);
-      this.userTripService.selectActiveTrip(null);
+      this.userTripService.mapActiveTripSelected.emit(null);
 
       return;
     }
@@ -364,7 +364,8 @@ export class SearchFormComponent implements OnInit {
         verticalPosition: 'top',
       });
 
-      this.userTripService.selectActiveTrip(null);
+      this.userTripService.mapActiveTripSelected.emit(null);
+      this.userTripService.tripsDataUpdated.emit([]);
       return;
     }
 

@@ -32,7 +32,7 @@ export class InputXmlPopoverComponent {
     const isOJPv2 = OJP_VERSION === '2.0';
     const xmlConfig = isOJPv2 ? OJP_Next.DefaultXML_Config : OJP_Next.XML_BuilderConfigOJPv1;
 
-    this.userTripService.selectActiveTrip(null);
+    this.userTripService.mapActiveTripSelected.emit(null);
     
     const stageConfig = this.userTripService.getStageConfig();
     const request = OJP_Legacy.TripRequest.initWithRequestMock(stageConfig, this.inputTripRequestXML, xmlConfig, REQUESTOR_REF);

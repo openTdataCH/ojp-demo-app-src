@@ -10,6 +10,7 @@ import tripLegBeelineLayerJSON from './map-layers-def/ojp-trip-leg-beeline.json'
 import tripTimedLegEndpointCircleLayerJSON from './map-layers-def/ojp-trip-timed-leg-endpoint-circle.json'
 import tripLegTrackWithoutWalkLayerJSON from './map-layers-def/ojp-trip-timed-leg-track.json'
 import tripContinousLegWalkingLineLayerJSON from './map-layers-def/ojp-trip-walking-leg-line.json'
+import { TripLegData } from '../../shared/types/trip';
 
 export class TripRenderController {
   private features: GeoJSON.Feature[] = []
@@ -21,7 +22,7 @@ export class TripRenderController {
     this.addMapSourceAndLayers();
   }
 
-  public renderTrip(mapTripLegs: MapTripLeg[]) {
+  public renderTrip(mapTripLegs: TripLegData[]) {
     const geojson = this.computeGeoJSON(mapTripLegs);
     this.setSourceFeatures(geojson.features);
   }
