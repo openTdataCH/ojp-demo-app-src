@@ -91,7 +91,7 @@ export class JourneyResultRowComponent implements OnInit {
       return;
     }
 
-    this.userTripService.selectActiveTrip(this.mapTrip);
+    this.userTripService.mapActiveTripSelected.emit(this.tripData);
     this.mapService.zoomToTrip(this.tripData.trip);
   }
 
