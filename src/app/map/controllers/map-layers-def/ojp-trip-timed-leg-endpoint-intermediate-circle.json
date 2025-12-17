@@ -1,0 +1,13 @@
+{
+  "id": "ojp-trip-timed-leg-intermediate-point-circle",
+  "type": "circle",
+  "source": "[SOURCE]",
+  "filter": ["==", ["get", "point.type"], "Intermediate"],
+  "layout": {},
+  "paint": {
+    "circle-radius": 2.0,
+    "circle-color": "#FFF",
+    "circle-stroke-color": ["get", "leg-type.color"],
+    "circle-stroke-width": 3.0
+  }
+}

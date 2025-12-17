@@ -3,11 +3,14 @@ import * as GeoJSON from 'geojson';
 import { MapboxLayerHelpers } from '../../helpers/mapbox-layer-helpers';
 import { MapLegLineTypeColor } from '../../config/map-colors';
 
+import tripTimedLegEndpointFromCircleLayerJSON from './map-layers-def/ojp-trip-timed-leg-endpoint-from-circle.json';
+import tripTimedLegEndpointIntermediateCircleLayerJSON from './map-layers-def/ojp-trip-timed-leg-endpoint-intermediate-circle.json';
+import tripTimedLegEndpointToCircleLayerJSON from './map-layers-def/ojp-trip-timed-leg-endpoint-to-circle.json';
+
 import { TripLegGeoController } from '../../shared/controllers/trip-geo-controller';
 import { MapTripLeg, TripLegLineType } from '../../shared/types/map-geometry-types';
 
 import tripLegBeelineLayerJSON from './map-layers-def/ojp-trip-leg-beeline.json'
-import tripTimedLegEndpointCircleLayerJSON from './map-layers-def/ojp-trip-timed-leg-endpoint-circle.json'
 import tripLegTrackWithoutWalkLayerJSON from './map-layers-def/ojp-trip-timed-leg-track.json'
 import tripContinousLegWalkingLineLayerJSON from './map-layers-def/ojp-trip-walking-leg-line.json'
 import { TripLegData } from '../../shared/types/trip';

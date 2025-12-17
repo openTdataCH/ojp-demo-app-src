@@ -1,0 +1,13 @@
+{
+  "id": "ojp-trip-timed-leg-to-point-circle",
+  "type": "circle",
+  "source": "[SOURCE]",
+  "filter": ["==", ["get", "point.type"], "To"],
+  "layout": {},
+  "paint": {
+    "circle-radius": 8.0,
+    "circle-color": ["get", "leg-type.color"],
+    "circle-stroke-color": "#FFF",
+    "circle-stroke-width": 1.0
+  }
+}
