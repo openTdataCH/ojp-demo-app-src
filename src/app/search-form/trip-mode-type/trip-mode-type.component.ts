@@ -187,7 +187,11 @@ export class TripModeTypeComponent implements OnInit {
     this.prevTransportMode = this.userTripService.tripTransportMode;
 
 
-    this.userTripService.locationChanges$.pipe(takeUntil(this.destroyed$)).subscribe(change => {
+    this.userTripService.initialLocationsChanges$.pipe(takeUntil(this.destroyed$)).subscribe(change => {
+      if (change === null) {
+        return;
+      }
+
       this.initAfterTripService();
     });
 

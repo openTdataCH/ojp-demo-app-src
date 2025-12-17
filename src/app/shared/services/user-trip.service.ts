@@ -71,8 +71,8 @@ export class UserTripService {
 
   public stageChanged = new EventEmitter<APP_STAGE>();
 
-  private readonly _locationChanges = new BehaviorSubject<void | null>(null);
-  readonly locationChanges$: Observable<void | null> = this._locationChanges.asObservable();
+  private readonly _initialLocationsChanges = new BehaviorSubject<boolean | null>(null);
+  readonly initialLocationsChanges$: Observable<boolean | null> = this._initialLocationsChanges.asObservable();
 
   constructor(private mapService: MapService) {
     this.queryParams = new URLSearchParams(document.location.search);
@@ -282,7 +282,7 @@ export class UserTripService {
       return 'Dep' as OJP_Legacy.TripRequestBoardingType;
     })();
 
-    this._locationChanges.next();
+    this._initialLocationsChanges.next(true);
   }
 
   private parsePlace(response: AnyLocationInformationRequestResponse): AnyPlace | null {

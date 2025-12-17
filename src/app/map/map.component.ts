@@ -116,7 +116,11 @@ export class MapComponent implements OnInit, AfterViewInit {
     this.mapLoadingPromise?.then(map => {
       map.resize();
 
-      this.userTripService.locationChanges$.pipe(takeUntil(this.destroyed$)).subscribe(change => {
+      this.userTripService.initialLocationsChanges$.pipe(takeUntil(this.destroyed$)).subscribe(change => {
+        if (change === null) {
+          return;
+        }
+
         this.updateMarkers();
         this.updateMapBounds();
       });
