@@ -10,6 +10,6 @@
   "paint": {
     "line-color": "#009933",
     "line-width": 4.0,
-    "line-dasharray": [0.2, 2]
+    "line-dasharray": [0.5, 2]
   }
 }

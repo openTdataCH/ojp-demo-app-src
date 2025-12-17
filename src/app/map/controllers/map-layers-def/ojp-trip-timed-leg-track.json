@@ -9,7 +9,7 @@
     "visibility": "visible"
   },
   "paint": {
-    "line-width": 4,
+    "line-width": 5,
     "line-opacity": 1.0,
     "line-color": ["get", "leg-type.color"]
   }
