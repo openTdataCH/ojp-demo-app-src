@@ -1,3 +1,5 @@
+import * as OJP_Next from 'ojp-sdk-next';
+
 import * as GeoJSON from 'geojson'
 import mapboxgl from "mapbox-gl";
 
@@ -5,6 +7,8 @@ interface NearbyFeature {
   distance: number
   feature: mapboxgl.GeoJSONFeature
 }
+
+type WebMercatorPoint = { x: number; y: number };
 
 export class MapHelpers {
   public static formatMapboxLngLatAsLatLng(lnglat: mapboxgl.LngLat): string {
@@ -237,5 +241,32 @@ export class MapHelpers {
         features: [],
       })
     }, 500);
+  }
+
+  public static computeGeoPositionsDistance(positions: OJP_Next.GeoPosition[]): number | null {
+    if (positions.length < 2) {
+      return null;
+    }
+
+    let dAB = 0;
+    positions.forEach((position, idx) => {
+      const isFirst = idx === 0;
+      if (isFirst) {
+        return;
+      }
+
+      const prevPosition = positions[idx - 1];
+      dAB += position.distanceFrom(prevPosition);
+    });
+
+    return dAB;
+  } 
+
+  public static lngLatToWebMercator(longitude: number, latitude: number): WebMercatorPoint {
+    const R = 6378137;
+    const x = R * longitude * Math.PI / 180;
+    const y = R * Math.log(Math.tan(Math.PI / 4 + (latitude * Math.PI) / 360));
+    
+    return { x, y };
   }
 }

@@ -9,7 +9,7 @@ import { SbbDialog } from "@sbb-esta/angular/dialog";
 import OJP_Legacy from '../../../config/ojp-legacy';
 import * as OJP_Next from 'ojp-sdk-next';
 
-import { DEBUG_LEVEL, OJP_VERSION } from '../../../config/constants';
+import { DEBUG_LEVEL, FLAG_USE_2nd_SHAPE_PROVIDER, OJP_VERSION } from '../../../config/constants';
 
 import { MapLegLineTypeColor } from '../../../config/map-colors';
 import { OJPHelpers } from '../../../helpers/ojp-helpers';
@@ -58,27 +58,36 @@ interface LegInfoDataModel {
   isTimed: boolean,
   fromLocationData: LegStopPointData,
   toLocationData: LegStopPointData,
-  intermediaryLocationsData: LegStopPointData[]
+  intermediaryLocationsData: LegStopPointData[],
 
-  hasSituations: boolean
-  situations: SituationContent[]
+  hasSituations: boolean,
+  situations: SituationContent[],
 
-  legTemplate: LegTemplate
+  legTemplate: LegTemplate,
 
-  serviceAttributes: ServiceAttributeRenderModel[]
+  serviceAttributes: ServiceAttributeRenderModel[],
 
-  serviceDestinationText: string | null
-  serviceInfo: string | null
-  serviceIntermediaryStopsText: string | null
-  serviceJourneyRef: string | null
-  debugServicePtMode: boolean
-  servicePtMode: OJP_Legacy.PublicTransportMode | null
-  serviceFormationURL: string | null
+  serviceDestinationText: string | null,
+  serviceInfo: string | null,
+  serviceIntermediaryStopsText: string | null,
+  serviceJourneyRef: string | null,
+  debugServicePtMode: boolean,
+  servicePtMode: OJP_Legacy.PublicTransportMode | null,
+  serviceFormationURL: string | null,
 
-  isCancelled: boolean
-  hasDeviation: boolean
-  isUnplanned: boolean
-}
+  isCancelled: boolean,
+  hasDeviation: boolean,
+  isUnplanned: boolean,
+
+  gui: {
+    showLineLabelId: string,
+    showPreciseLineLabelId: string,
+    showLinkProjectionToggle: boolean,
+    
+    useOtherProvider: boolean,
+    showOtherProviderLineLabelId: string,
+  }
+};
 
 @Component({
   selector: 'result-trip-leg',
@@ -87,12 +96,10 @@ interface LegInfoDataModel {
 })
 export class ResultTripLegComponent implements OnInit {
   @Input() legData: TripLegData | undefined;
-  @Input() legIdx: number | undefined;
-  @Input() isForceLinkProjection: boolean | undefined;
   @Input() trrRequestInfo: OJP_Next.RequestInfo | undefined;
 
   @Output() legReloadRequest = new EventEmitter<void>();
-  @Output() legMapRedrawRequest = new EventEmitter<{ legIdx: number, checked: boolean }>();
+  @Output() legMapRedrawRequest = new EventEmitter<void>();
 
   public legElementId: string = 'n/a';
 
@@ -102,7 +109,13 @@ export class ResultTripLegComponent implements OnInit {
 
   public enableTRR: boolean;
 
-  constructor(private mapService: MapService, private router: Router, private popover: SbbDialog, private userTripService: UserTripService, private sanitizer: DomSanitizer) {
+  constructor(
+    private mapService: MapService, 
+    private router: Router, 
+    private popover: SbbDialog, 
+    private userTripService: UserTripService, 
+    private sanitizer: DomSanitizer,
+  ) {
     this.legInfoDataModel = <LegInfoDataModel>{}
     this.isEmbed = this.router.url.indexOf('/embed/') !== -1;
 
@@ -110,16 +123,15 @@ export class ResultTripLegComponent implements OnInit {
     this.enableTRR = isOJPv2;
   }
 
-  ngOnInit() {
+  async ngOnInit() {
     if (this.legData === undefined) {
       return;
     }
 
     this.legElementId = 'leg_' + this.legData.leg.legID;
-
     this.initLegInfo();
   }
-
+  
   private computeLegLeadingText(): string {
     if (this.legData === undefined) {
       return 'n/a';
@@ -258,21 +270,32 @@ export class ResultTripLegComponent implements OnInit {
     this.legReloadRequest.emit();
   }
 
-  public get checkboxId() {
-    return 'lp_checkbox_' + (this.legData?.leg.legID ?? 'n/a');
+  private redrawTripLeg() {
+    this.legMapRedrawRequest.emit();
   }
 
-  public redrawTripLeg(event: Event) {
-    if (!this.legData || (this.legIdx === undefined)) {
-      return;
+  public onClickShowMapLeg(checked: boolean) {
+    if (this.legData?.map) {
+      this.legData.map.show = checked;
     }
 
-    const isChecked = (event.target as HTMLInputElement).checked;
+    this.redrawTripLeg();
+  }
 
-    this.legMapRedrawRequest.emit({
-      legIdx: this.legIdx,
-      checked: isChecked,
-    });
+  public onClickShowPreciseMapLeg(checked: boolean) {
+    if (this.legData?.map) {
+      this.legData.map.showPreciseLine = checked;
+    }
+
+    this.redrawTripLeg();
+  }
+
+  public onClickShowOtherProviderMapLeg(checked: boolean) {
+    if (this.legData?.map) {
+      this.legData.map.showOtherProvider = checked;
+    }
+
+    this.redrawTripLeg();
   }
 
   private computeLegColor(): string {
@@ -589,6 +612,16 @@ export class ResultTripLegComponent implements OnInit {
 
       return timedLeg.service.isUnplanned === true;
     })();
+
+    const legIdKey = this.legData.tripId + '_' + this.legData.leg.legID;
+    this.legInfoDataModel.gui = {
+      showLineLabelId: 'show_line_' + legIdKey,
+      showPreciseLineLabelId: 'show_precise_line_' + legIdKey,
+      showLinkProjectionToggle: !FLAG_USE_2nd_SHAPE_PROVIDER,
+
+      useOtherProvider: FLAG_USE_2nd_SHAPE_PROVIDER,
+      showOtherProviderLineLabelId: 'show_provider2_line_' + legIdKey,
+    };
   }
 
   private computeServiceAttributeModel(leg: OJP_Legacy.TripLeg): ServiceAttributeRenderModel[] {

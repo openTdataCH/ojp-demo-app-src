@@ -6,15 +6,16 @@ import * as OJP_Types from 'ojp-shared-types';
 
 import OJP_Legacy from '../../config/ojp-legacy';
 
-import { DEBUG_LEVEL, REQUESTOR_REF, OJP_VERSION } from '../../config/constants';
+import { DEBUG_LEVEL, REQUESTOR_REF, OJP_VERSION, FLAG_USE_2nd_SHAPE_PROVIDER } from '../../config/constants';
 
 import { UserTripService } from '../../shared/services/user-trip.service';
 import { MapService } from '../../shared/services/map.service';
 import { LanguageService } from '../../shared/services/language.service';
-import { MapTrip, MapTripLeg } from '../../shared/types/map-geometry-types';
 import { TripLegGeoController } from '../../shared/controllers/trip-geo-controller';
 import { TripData } from '../../shared/types/trip';
 import { OJPHelpers } from '../../helpers/ojp-helpers';
+import { ShapeProviderService } from '../../shared/services/shape-provider.service';
+import { DateHelpers } from '../../helpers/date-helpers';
 
 interface TripHeaderStats {
   title: string,
@@ -43,34 +44,36 @@ export class JourneyResultRowComponent implements OnInit {
 
   public tripHeaderStats: TripHeaderStats;
 
-  public mapTrip: MapTrip | null;
   public trrRequestInfo: OJP_Next.RequestInfo | null;
 
-  constructor(private userTripService: UserTripService, private mapService: MapService, private languageService: LanguageService) {
-    this.tripHeaderStats = <TripHeaderStats>{}
-    this.mapTrip = null;
+  constructor(private userTripService: UserTripService, private mapService: MapService, private languageService: LanguageService, private shapeProviderService: ShapeProviderService) {
+    this.tripHeaderStats = <TripHeaderStats>{};
     this.trrRequestInfo = null;
   }
 
-  ngOnInit() {
+  async ngOnInit() {
     if (!this.tripData) {
       return;
     }
 
     this.initTripHeaderStats(this.tripData.trip);
 
-    this.mapTrip = {
-      legs: [],
-    };
-
     this.tripData.legsData.forEach(legData => {
-      const forceLinkProjection = !TripLegGeoController.shouldUseBeeline(legData.leg);
+      const showPreciseLine: boolean = (() => {
+        if (FLAG_USE_2nd_SHAPE_PROVIDER) {
+          return true;
+        }
+        
+        return !TripLegGeoController.shouldUseBeeline(legData.leg);
+      })();
 
-      const mapTripLeg: MapTripLeg = {
-        leg: legData.leg,
-        forceLinkProjection: forceLinkProjection,
+      legData.map = {
+        show: true,
+        showPreciseLine: showPreciseLine,
+        showOtherProvider: false,
+        legShapeResult: null,
+        legShapeError: null,
       };
-      this.mapTrip?.legs.push(mapTripLeg);
     });
 
     const isFirstTrip = this.idx === 0;
@@ -78,11 +81,35 @@ export class JourneyResultRowComponent implements OnInit {
       this.tripPanel.open();
     }
 
-    this.tripPanel?.afterExpand.subscribe(ev => {
+    this.tripPanel?.afterExpand.subscribe(async ev => {
       this.drawAndZoomToMapTrip();
+      await this.loadShapeProvider();
     });
     if (isFirstTrip) {
       this.drawAndZoomToMapTrip();
+      await this.loadShapeProvider();
+    }
+  }
+
+  private async loadShapeProvider() {
+    if (!this.tripData) {
+      return;
+    }
+
+    if (!FLAG_USE_2nd_SHAPE_PROVIDER) {
+      return;
+    }
+
+    for (const legData of this.tripData.legsData) {
+      try {
+        const legShapeResult = await this.shapeProviderService.fetchLegShape(legData.leg);
+        legData.map.legShapeResult = legShapeResult;
+        if (legShapeResult.source === 'fetch') {
+          await DateHelpers.sleep(200);
+        }
+      } catch (error) {
+        legData.map.legShapeError = (error as Error).message;
+      }
     }
   }
 
@@ -91,7 +118,7 @@ export class JourneyResultRowComponent implements OnInit {
       return;
     }
 
-    this.userTripService.selectActiveTrip(this.mapTrip);
+    this.userTripService.mapActiveTripSelected.emit(this.tripData);
     this.mapService.zoomToTrip(this.tripData.trip);
   }
 
@@ -212,12 +239,12 @@ export class JourneyResultRowComponent implements OnInit {
     this.tripData.trip = updatedTrip;
   }
 
-  public redrawTripOnMap(legData: { legIdx: number, checked: boolean }) {
-    if (!this.mapTrip) {
+  public redrawTripOnMap() {
+    if (!this.tripData) {
       return;
     }
 
-    this.mapTrip.legs[legData.legIdx].forceLinkProjection = legData.checked;
-    this.userTripService.selectActiveTrip(this.mapTrip);
+
+    this.userTripService.mapActiveTripSelected.emit(this.tripData);
   }
 }

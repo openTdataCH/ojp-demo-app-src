@@ -1,7 +1,7 @@
 import { EventEmitter, Injectable } from '@angular/core'
 import { BehaviorSubject, Observable } from 'rxjs';
 
-import mapboxgl from 'mapbox-gl'
+import mapboxgl from 'mapbox-gl';
 
 import * as OJP_Types from 'ojp-shared-types';
 import * as OJP_Next from 'ojp-sdk-next';
@@ -12,13 +12,13 @@ import { APP_CONFIG } from '../../config/app-config';
 import { APP_STAGE, DEBUG_LEVEL, DEFAULT_APP_STAGE, REQUESTOR_REF, TRIP_REQUEST_DEFAULT_NUMBER_OF_RESULTS, OJP_VERSION } from '../../config/constants';
 
 import { MapService } from './map.service';
-import { MapTrip } from '../types/map-geometry-types';
 import { TripData, TripLegData } from '../types/trip';
 import { AnyPlace, PlaceBuilder, sortPlaces } from '../models/place/place-builder';
 import { PlaceLocation } from '../models/place/location';
 import { GeoPositionBBOX } from '../models/geo/geoposition-bbox';
 import { OJPHelpers } from '../../helpers/ojp-helpers';
 import { AnyLocationInformationRequestResponse } from '../types/_all';
+import { TripLegGeoController } from '../controllers/trip-geo-controller';
 
 type LocationUpdateSource = 'SearchForm' | 'MapDragend' | 'MapPopupClick';
 
@@ -65,15 +65,15 @@ export class UserTripService {
   
   public tripFaresUpdated = new EventEmitter<OJP_Types.FareResultSchema[]>();
   
-  public activeTripSelected = new EventEmitter<MapTrip | null>();
+  public mapActiveTripSelected = new EventEmitter<TripData | null>();
   public tripRequestFinished = new EventEmitter<OJP_Legacy.RequestInfo>();
 
   public searchParamsReset = new EventEmitter<void>();
 
   public stageChanged = new EventEmitter<APP_STAGE>();
 
-  private readonly _locationChanges = new BehaviorSubject<void | null>(null);
-  readonly locationChanges$: Observable<void | null> = this._locationChanges.asObservable();
+  private readonly _initialLocationsChanges = new BehaviorSubject<boolean | null>(null);
+  readonly initialLocationsChanges$: Observable<boolean | null> = this._initialLocationsChanges.asObservable();
 
   constructor(private mapService: MapService) {
     this.queryParams = new URLSearchParams(document.location.search);
@@ -283,7 +283,7 @@ export class UserTripService {
       return 'Dep' as OJP_Legacy.TripRequestBoardingType;
     })();
 
-    this._locationChanges.next();
+    this._initialLocationsChanges.next(true);
   }
 
   private parsePlace(response: AnyLocationInformationRequestResponse): AnyPlace | null {
@@ -363,7 +363,7 @@ export class UserTripService {
     this.toTripLocation = Object.assign({}, locationAux);
 
     this.locationsUpdated.emit();
-    this.activeTripSelected.emit(null);
+    this.mapActiveTripSelected.emit(null);
 
     this.searchParamsReset.emit();
     this.updateURLs();
@@ -373,7 +373,7 @@ export class UserTripService {
     this.isViaEnabled = !this.isViaEnabled;
 
     this.locationsUpdated.emit();
-    this.activeTripSelected.emit(null);
+    this.mapActiveTripSelected.emit(null);
 
     this.searchParamsReset.emit();
     this.updateURLs();
@@ -400,7 +400,7 @@ export class UserTripService {
     }
 
     this.locationsUpdated.emit();
-    this.activeTripSelected.emit(null);
+    this.mapActiveTripSelected.emit(null);
 
     this.searchParamsReset.emit();
     this.updateURLs();
@@ -428,7 +428,7 @@ export class UserTripService {
     this.viaTripLocations[viaIDx].location = place.asOJP_LegacyLocation();
 
     this.locationsUpdated.emit();
-    this.activeTripSelected.emit(null);
+    this.mapActiveTripSelected.emit(null);
 
     this.searchParamsReset.emit();
     this.updateURLs();
@@ -437,10 +437,6 @@ export class UserTripService {
   updateTrips(trips: OJP_Legacy.Trip[]) {
     const tripsData = this.massageTrips(trips);
     this.tripsDataUpdated.emit(tripsData);
-  }
-
-  selectActiveTrip(mapTrip: MapTrip | null) {
-    this.activeTripSelected.emit(mapTrip);
   }
 
   private updateFares(fareResults: OJP_Types.FareResultSchema[]) {
@@ -787,17 +783,24 @@ export class UserTripService {
     this.updateURLs();
   }
 
-  public massageTrips(trips: OJP_Legacy.Trip[]): TripData[] {
-    const tripsData = trips.map(trip => {
+  private massageTrips(trips: OJP_Legacy.Trip[]): TripData[] {
+    const tripsData = trips.map((trip, tripIdx) => {
       const legsData = trip.legs.map(leg => {
         const legData: TripLegData = {
+          tripId: trip.id,
           leg: leg,
           info: {
             id: '' + leg.legID,
             comments: null,
           },
+          map: {
+            show: true,
+            showPreciseLine: !TripLegGeoController.shouldUseBeeline(leg),
+            showOtherProvider: false,
+            legShapeResult: null,
+            legShapeError: null,
+          }
         };
-
         return legData;
       });
 
@@ -821,17 +824,19 @@ export class UserTripService {
   // ex1: trains with multiple desitinaion units
   // - check for remainInVehicle https://github.com/openTdataCH/ojp-demo-app-src/issues/125  
   private mergeTripLegs(tripsData: TripData[]) {
-    tripsData.forEach(tripData => {
+    tripsData.forEach((tripData, tripIdx) => {
       const newLegsData: TripLegData[] = [];
       let skipIdx: number = -1;
       
       tripData.trip.legs.forEach((leg, legIdx) => {
         const legData: TripLegData = {
+          tripId: tripData.trip.id,
           leg: leg,
           info: {
             id: '' + leg.legID,
             comments: null,
           },
+          map: tripData.legsData[legIdx].map,
         };
 
         if (legIdx <= skipIdx) {

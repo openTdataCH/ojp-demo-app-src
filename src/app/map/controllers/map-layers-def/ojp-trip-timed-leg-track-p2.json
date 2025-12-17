@@ -1,16 +1,17 @@
 {
-  "id": "ojp-trip-timed-leg-track",
+  "id": "ojp-trip-timed-leg-track-p2",
   "type": "line",
   "source": "[SOURCE]",
-  "filter": ["==", ["get", "draw.type"], "LegLine"],
+  "filter": ["==", ["get", "draw.type"], "LegLineP2"],
   "layout": {
     "line-join": "round",
     "line-cap": "round",
     "visibility": "visible"
   },
   "paint": {
+    "line-color": "#000",
     "line-width": 5,
-    "line-opacity": 1.0,
-    "line-color": ["get", "leg-type.color"]
+    "line-opacity": 0.7,
+    "line-dasharray": [0.5, 2]
   }
 }

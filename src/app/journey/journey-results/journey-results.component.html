@@ -8,12 +8,13 @@
 </div>
 
 <sbb-accordion>
-  <journey-result-row
-    *ngFor="let tripData of this.model.tripsData; index as idx"
-    [tripData]="tripData"
-    [fareResult]="this.model.mapFareResult[tripData.trip.id] ?? undefined"
-    [idx]="idx"
-  ></journey-result-row>
+  <ng-container *ngFor="let tripData of this.model.tripsData; index as idx">
+    <journey-result-row
+      [tripData]="tripData"
+      [fareResult]="this.model.mapFareResult[tripData.trip.id] ?? undefined"
+      [idx]="idx"
+    ></journey-result-row>
+  </ng-container>
 </sbb-accordion>
 
 <div class="row" *ngIf="this.model.hasPagination">

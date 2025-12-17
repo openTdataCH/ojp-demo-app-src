@@ -1,0 +1,16 @@
+{
+  "id": "ojp-trip-timed-leg-track-p2-outer",
+  "type": "line",
+  "source": "[SOURCE]",
+  "filter": ["==", ["get", "draw.type"], "LegLineP2"],
+  "layout": {
+    "line-join": "round",
+    "line-cap": "round",
+    "visibility": "visible"
+  },
+  "paint": {
+    "line-color": ["get", "leg-type.color"],
+    "line-width": 7.0,
+    "line-opacity": 0.7
+  }
+}

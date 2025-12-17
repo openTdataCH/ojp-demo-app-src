@@ -1,109 +1,52 @@
 import * as GeoJSON from 'geojson';
 
-import { MapboxLayerHelpers } from '../../helpers/mapbox-layer-helpers';
-import { MapLegLineTypeColor } from '../../config/map-colors';
+import tripLegBeelineLayerJSON from './map-layers-def/ojp-trip-leg-beeline.json';
+
+import tripTimedLegEndpointFromCircleLayerJSON from './map-layers-def/ojp-trip-timed-leg-endpoint-from-circle.json';
+import tripTimedLegEndpointIntermediateCircleLayerJSON from './map-layers-def/ojp-trip-timed-leg-endpoint-intermediate-circle.json';
+import tripTimedLegEndpointToCircleLayerJSON from './map-layers-def/ojp-trip-timed-leg-endpoint-to-circle.json';
+
+import tripLegLineLayerJSON from './map-layers-def/ojp-trip-timed-leg-track.json';
+import tripLegLineLayerP2JSON from './map-layers-def/ojp-trip-timed-leg-track-p2.json';
+import tripLegLineLayerP2OuterJSON from './map-layers-def/ojp-trip-timed-leg-track-p2-outer.json';
+
+import tripLegWalkingLineLayerJSON from './map-layers-def/ojp-trip-walking-leg-line.json';
+import tripLegWalkingLineLayerP2JSON from './map-layers-def/ojp-trip-walking-leg-line-p2.json';
+import tripLegWalkingLineLayerP2OuterJSON from './map-layers-def/ojp-trip-walking-leg-line-p2-outer.json';
 
 import { TripLegGeoController } from '../../shared/controllers/trip-geo-controller';
-import { MapTripLeg, TripLegLineType } from '../../shared/types/map-geometry-types';
 
-import tripLegBeelineLayerJSON from './map-layers-def/ojp-trip-leg-beeline.json'
-import tripTimedLegEndpointCircleLayerJSON from './map-layers-def/ojp-trip-timed-leg-endpoint-circle.json'
-import tripLegTrackWithoutWalkLayerJSON from './map-layers-def/ojp-trip-timed-leg-track.json'
-import tripContinousLegWalkingLineLayerJSON from './map-layers-def/ojp-trip-walking-leg-line.json'
+import { TripLegData } from '../../shared/types/trip';
+import { TripLegDrawType, TripLegPropertiesEnum } from '../../shared/types/map-geometry-types';
 
 export class TripRenderController {
-  private map: mapboxgl.Map
-  private mapSourceId = 'trip-data'
-  private features: GeoJSON.Feature[] = []
+  private map: mapboxgl.Map;
+  private mapSourceId = 'trip-data';
 
   constructor(map: mapboxgl.Map) {
-    this.map = map
-    this.addMapSourceAndLayers()
+    this.map = map;
+    this.addMapSourceAndLayers();
   }
 
-  public renderTrip(mapTripLegs: MapTripLeg[]) {
+  public renderTrip(mapTripLegs: TripLegData[]) {
     const geojson = this.computeGeoJSON(mapTripLegs);
-    this.setSourceFeatures(geojson.features);
+
+    this.setSourceFeatures(geojson.features, this.mapSourceId);
   }
 
   private addMapSourceAndLayers() {
-    this.map.addSource(this.mapSourceId, <mapboxgl.GeoJSONSourceSpecification>{
+    const source: mapboxgl.GeoJSONSourceSpecification = {
       type: 'geojson',
-      data: <GeoJSON.FeatureCollection>{
-        'type': 'FeatureCollection',
-        'features': []
-      }
-    });
+      data: {
+        type: 'FeatureCollection',
+        features: [],
+      },
+    };
 
-    const tripLegBeelineLayer = tripLegBeelineLayerJSON as mapboxgl.LineLayerSpecification;
-    tripLegBeelineLayer.filter = MapboxLayerHelpers.FilterBeelines();
-    if (tripLegBeelineLayer.paint) {
-      tripLegBeelineLayer.paint["line-color"] = MapboxLayerHelpers.ColorCaseByLegLineType();
-    }
+    this.map.addSource(this.mapSourceId, source);
 
-    const caseTimedLegColors = MapboxLayerHelpers.ColorCaseByLegLineType();
+    const mapLayers = this.computeMapLayers();
 
-    const tripTimedLegEndpointCircleLayer = tripTimedLegEndpointCircleLayerJSON as mapboxgl.CircleLayerSpecification;
-    tripTimedLegEndpointCircleLayer.filter = MapboxLayerHelpers.FilterLegPoints();
-    if (tripTimedLegEndpointCircleLayer.paint) {
-      const caseCircleRadius: mapboxgl.ExpressionSpecification = [
-        'case',
-        MapboxLayerHelpers.FilterByPointType('From'),
-        4.0,
-        MapboxLayerHelpers.FilterByPointType('To'),
-        8.0,
-        2.0
-      ];
-      tripTimedLegEndpointCircleLayer.paint["circle-radius"] = caseCircleRadius;
-
-      const caseCircleColor: mapboxgl.ExpressionSpecification = [
-        'case',
-        MapboxLayerHelpers.FilterByPointType('To'),
-        caseTimedLegColors,
-        '#FFF'
-      ];
-      tripTimedLegEndpointCircleLayer.paint["circle-color"] = caseCircleColor;
-
-      const caseCircleStrokeColor: mapboxgl.ExpressionSpecification = [
-        'case',
-        MapboxLayerHelpers.FilterByPointType('To'),
-        '#FFF',
-        caseTimedLegColors,
-      ];
-      tripTimedLegEndpointCircleLayer.paint["circle-stroke-color"] = caseCircleStrokeColor;
-
-      const caseCircleStrokeWidth: mapboxgl.ExpressionSpecification = [
-        'case',
-        MapboxLayerHelpers.FilterByPointType('From'),
-        4.0,
-        MapboxLayerHelpers.FilterByPointType('To'),
-        1.0,
-        3.0
-      ];
-      tripTimedLegEndpointCircleLayer.paint["circle-stroke-width"] = caseCircleStrokeWidth;
-    }
-
-    // Layer 'line' for all line types - EXCEPT Walk / Guidance
-    const tripLegTrackWithoutWalkLayer = tripLegTrackWithoutWalkLayerJSON as mapboxgl.LineLayerSpecification;
-    const excludeLineTypes: TripLegLineType[] = ['Guidance', 'Walk'];
-    tripLegTrackWithoutWalkLayer.filter = MapboxLayerHelpers.FilterLegTracks(excludeLineTypes);
-    if (tripLegTrackWithoutWalkLayer.paint) {
-      tripLegTrackWithoutWalkLayer.paint["line-color"] = MapboxLayerHelpers.ColorCaseByLegLineType();
-    }
-
-    // Layer 'line' for Walk / Guidance
-    const tripContinousLegWalkingLineLayer = tripContinousLegWalkingLineLayerJSON as mapboxgl.LineLayerSpecification;
-    tripContinousLegWalkingLineLayer.filter = MapboxLayerHelpers.FilterWalkingLegs();
-    if (tripContinousLegWalkingLineLayer.paint) {
-      tripContinousLegWalkingLineLayer.paint["line-color"] = MapLegLineTypeColor['Walk'];
-    }
-
-    const mapLayers = [                   // layers order matters:
-      tripLegBeelineLayer,                //    - line (beelines)
-      tripLegTrackWithoutWalkLayer,       //    - line
-      tripContinousLegWalkingLineLayer,   //    - line (beelines)
-      tripTimedLegEndpointCircleLayer,    //    - circle (endpoints, intermediary points)
-    ];
 
     mapLayers.forEach(mapLayerJSON => {
       const mapLayerDef = mapLayerJSON as mapboxgl.Layer;
@@ -112,46 +55,94 @@ export class TripRenderController {
     });
   }
 
-  private setSourceFeatures(features: GeoJSON.Feature[]) {
-    this.features = features;
+  private computeMapLayers(): mapboxgl.LayerSpecification[] {
+    const tripLegBeelineLayer = tripLegBeelineLayerJSON as mapboxgl.LineLayerSpecification;
+    
+    const tripTimedLegEndpointFromCircleLayer = tripTimedLegEndpointFromCircleLayerJSON as mapboxgl.CircleLayerSpecification;
+    const tripTimedLegEndpointIntermediateCircleLayer = tripTimedLegEndpointIntermediateCircleLayerJSON as mapboxgl.CircleLayerSpecification;
+    const tripTimedLegEndpointToCircleLayer = tripTimedLegEndpointToCircleLayerJSON as mapboxgl.CircleLayerSpecification;
+    
+    const tripLegLineLayer = tripLegLineLayerJSON as mapboxgl.LineLayerSpecification;
+    const tripLegLineP2Layer = tripLegLineLayerP2JSON as mapboxgl.LineLayerSpecification;
+    const tripLegLineP2OuterLayer = tripLegLineLayerP2OuterJSON as mapboxgl.LineLayerSpecification;
+    
+    const tripLegWalkingLineLayer = tripLegWalkingLineLayerJSON as mapboxgl.LineLayerSpecification;
+    const tripLegWalkingLineP2Layer = tripLegWalkingLineLayerP2JSON as mapboxgl.LineLayerSpecification;
+    const tripLegWalkingLineP2OuterLayer = tripLegWalkingLineLayerP2OuterJSON as mapboxgl.LineLayerSpecification;
 
-    const source = this.map.getSource(this.mapSourceId) as mapboxgl.GeoJSONSource
-    const featureCollection = <GeoJSON.FeatureCollection>{
-      'type': 'FeatureCollection',
-      'features': features
-    }
+    const mapLayers = [                             // layers order matters:
+      tripLegBeelineLayer,                          //    - line (beelines)
+      
+      tripLegWalkingLineP2OuterLayer,               //    - line (provider 2 - casing)
+      tripLegWalkingLineP2Layer,                    //    - line (provider 2)
+      tripLegWalkingLineLayer,                      //    - line
+
+      tripLegLineP2OuterLayer,                      //    - line provider 2 + casing
+      tripLegLineP2Layer,                           //    -  + casing
+      
+      tripLegLineLayer,                             //    - line
+      
+      tripTimedLegEndpointIntermediateCircleLayer,  //    - circle (endpoints, intermediary points)
+      tripTimedLegEndpointToCircleLayer,            //    - circle (endpoints, intermediary points)
+      tripTimedLegEndpointFromCircleLayer,          //    - circle (endpoints, intermediary points)
+    ];
+
+    return mapLayers;
+  }
+
+  private setSourceFeatures(features: GeoJSON.Feature[], sourceId: string) {
+    const source = this.map.getSource(sourceId) as mapboxgl.GeoJSONSource
+    const featureCollection: GeoJSON.FeatureCollection = {
+      type: 'FeatureCollection',
+      features: features
+    };
+    
     source.setData(featureCollection);
   }
 
-  private computeGeoJSON(mapTripLegs: MapTripLeg[]): GeoJSON.FeatureCollection {
-    let features: GeoJSON.Feature[] = [];
+  private computeGeoJSON(mapTripLegs: TripLegData[]): GeoJSON.FeatureCollection {
+    const features: GeoJSON.Feature[] = [];
     const legs = mapTripLegs.map(el => el.leg);
 
     legs.forEach((leg, idx) => {
-      const forceLinkProjection = mapTripLegs[idx].forceLinkProjection;
+      const forceLinkProjection = mapTripLegs[idx].map.showPreciseLine;
 
       const useBeeLine = !forceLinkProjection;
       const tripLegGeoController = new TripLegGeoController(leg, useBeeLine);
 
       const legFeatures = tripLegGeoController.computeGeoJSONFeatures();
-      
-      // Snap TransferLeg to prev / next legs
-      if ((leg.legType === 'TransferLeg') && (legFeatures.length === 1)) {
-        const featureProperties = legFeatures[0].properties;
-        if (featureProperties && featureProperties['draw.type'] === 'Beeline') {
-          const prevLeg = legs.at(idx - 1) ?? null;
-          const nextLeg = legs.at(idx + 1) ?? null;
-          if (prevLeg?.toLocation.geoPosition && nextLeg?.fromLocation.geoPosition) {
-            const geometry = legFeatures[0].geometry as GeoJSON.LineString;
-            geometry.coordinates = [
-              prevLeg?.toLocation.geoPosition.asPosition(),
-              nextLeg?.fromLocation.geoPosition.asPosition(),
-            ];
+
+      legFeatures.forEach(feature => {
+        if (feature.geometry.type === 'LineString') {
+          if (mapTripLegs[idx].map.show) {
+            features.push(feature);     
           }
+        } else {
+          features.push(feature);
+        }
+      });
+
+      if (mapTripLegs[idx].map.showOtherProvider) {
+        const legLinesFeature = legFeatures.find(el => el.geometry.type === 'LineString') ?? null;
+        if (legLinesFeature && legLinesFeature.properties) {
+          const legShapeResultFeatures = mapTripLegs[idx].map.legShapeResult?.fc.features ?? [];
+          legShapeResultFeatures.forEach(shapeProviderFeature => {
+            shapeProviderFeature.properties = Object.assign({}, legLinesFeature.properties);
+            const drawType: TripLegDrawType = shapeProviderFeature.properties[TripLegPropertiesEnum.DrawType];
+            
+            if (drawType === 'LegLine') {
+              const newDrawType: TripLegDrawType = 'LegLineP2';
+              shapeProviderFeature.properties[TripLegPropertiesEnum.DrawType] = newDrawType;
+            }
+            if (drawType === 'WalkLine') {
+              const newDrawType: TripLegDrawType = 'WalkLineP2';
+              shapeProviderFeature.properties[TripLegPropertiesEnum.DrawType] = newDrawType;
+            }
+
+            features.push(shapeProviderFeature);
+          });
         }
       }
-      
-      features = features.concat(legFeatures);
     });
 
     const geojson: GeoJSON.FeatureCollection = {

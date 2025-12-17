@@ -62,7 +62,6 @@ export class JourneyResultsComponent implements OnInit {
     });
 
     this.userTripService.tripFaresUpdated.subscribe(fareResults => {
-
       this.model.mapFareResult = {};
 
       fareResults.forEach(fareResult => {
@@ -184,7 +183,7 @@ export class JourneyResultsComponent implements OnInit {
       if (trips.length > 0) {
         this.userTripService.fetchFares(this.languageService.language);
       } else {
-        this.userTripService.selectActiveTrip(null);
+        this.userTripService.mapActiveTripSelected.emit(null);
       }
     });
   }

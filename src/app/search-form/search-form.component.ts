@@ -116,11 +116,11 @@ export class SearchFormComponent implements OnInit {
     })
 
     this.userTripService.tripsDataUpdated.subscribe(tripsData => {
-      const hasTrips = tripsData.length > 0
+      const hasTrips = tripsData.length > 0;
       if (hasTrips) {
-        this.collapseSearchPanel()
+        this.collapseSearchPanel();
       } else {
-        this.expandSearchPanel()
+        this.expandSearchPanel();
       }
     });
 
@@ -255,7 +255,6 @@ export class SearchFormComponent implements OnInit {
       }
       if (response.message === 'TripRequest.DONE') {
         this.collapseSearchPanel();
-        this.userTripService.massageTrips(response.trips);
         this.handleCustomTripResponse(response.trips, request, true);
       }
     });
@@ -346,7 +345,7 @@ export class SearchFormComponent implements OnInit {
       this.requestDurationF = null;
 
       this.userTripService.updateTrips([]);
-      this.userTripService.selectActiveTrip(null);
+      this.userTripService.mapActiveTripSelected.emit(null);
 
       return;
     }
@@ -364,10 +363,13 @@ export class SearchFormComponent implements OnInit {
         verticalPosition: 'top',
       });
 
-      this.userTripService.selectActiveTrip(null);
+      this.userTripService.mapActiveTripSelected.emit(null);
+      this.userTripService.tripsDataUpdated.emit([]);
       return;
     }
 
+    // no need for AWAIT, FareResult call is fire and forget
+    //    -> it will update the mapFareResult in JourneyResultsComponent component
     this.userTripService.fetchFares(this.languageService.language);
 
     // build a hash of trips so they can be looked up later, TripId is not consistent
@@ -471,7 +473,6 @@ export class SearchFormComponent implements OnInit {
           popover.inputTripRequestResponseXML = tripsResponseXML;
           dialogRef.close();
 
-          this.userTripService.massageTrips(response.trips);
           this.handleCustomTripResponse(response.trips, request, true);
         });
       };

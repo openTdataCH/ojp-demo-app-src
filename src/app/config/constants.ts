@@ -19,8 +19,9 @@ export const DEBUG_LEVEL: DEBUG_LEVEL_Type = (() => {
   return 'DEBUG';
 })();
 
+const queryParams = new URLSearchParams(document.location.search);
+
 export const OJP_VERSION: OJP_Next.OJP_VERSION = (() => {
-  const queryParams = new URLSearchParams(document.location.search);
   const userVersion = queryParams.get('v');
   if (userVersion === '1') {
     return '1.0';
@@ -43,6 +44,20 @@ export const OJP_VERSION: OJP_Next.OJP_VERSION = (() => {
   }
 
   return '2.0';
+})();
+
+export const FLAG_USE_2nd_SHAPE_PROVIDER = (() => {
+  const userShape2 = queryParams.get('shape2');
+  const userShape2Param2 = queryParams.get('shapes');
+  if ((userShape2 !== null) || (userShape2Param2 !== null)) {
+    return true;
+  }
+
+  if (window.location.pathname.includes('ojp-demo-shapes')) {
+    return true;
+  }
+
+  return false;
 })();
 
 export type APP_STAGE = 'PROD' | 'INT' | 'TEST' | 'LA Beta' 

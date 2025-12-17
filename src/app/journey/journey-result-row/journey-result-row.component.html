@@ -1,4 +1,4 @@
-<sbb-expansion-panel [hideToggle]="true" class="mb-1">
+<sbb-expansion-panel [hideToggle]="true" class="mb-2">
   <sbb-expansion-panel-header>
     <div class="d-flex justify-content-between w-100 trip-info">
       <div>
@@ -29,11 +29,9 @@
     <ng-container *ngFor="let legData of tripData?.legsData; index as legIdx">
       <result-trip-leg 
         [legData]="legData" 
-        [legIdx]="legIdx"
-        [isForceLinkProjection]="(this.mapTrip && this.mapTrip.legs[legIdx].forceLinkProjection) ?? false"
         [trrRequestInfo]="this.trrRequestInfo ?? undefined"
         (legReloadRequest)="this.reloadTripLegIdx()"
-        (legMapRedrawRequest)="this.redrawTripOnMap($event)">
+        (legMapRedrawRequest)="this.redrawTripOnMap()">
       </result-trip-leg>
     </ng-container>
   </div>
