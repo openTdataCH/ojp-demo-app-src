@@ -103,8 +103,6 @@ export class TripRenderController {
           features.push(feature);
         }
       });
-        }
-      }
     });
 
     const geojson: GeoJSON.FeatureCollection = {
