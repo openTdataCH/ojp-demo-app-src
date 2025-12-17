@@ -30,4 +30,4 @@ export type TripLegLineType =
   | TripTimedLegLineType
   | TripContinousLegLineType;
 
-export type TripLegDrawType = 'Beeline' | 'WalkLine' | 'LegLine';
+export type TripLegDrawType = 'Beeline' | 'WalkLine' | 'LegLine' | 'WalkLineP2' | 'LegLineP2';
