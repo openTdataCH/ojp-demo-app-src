@@ -6,6 +6,10 @@ export interface TripLegData {
   info: {
     id: string,
     comments: string | null,
+  },
+  map: {
+    show: boolean,
+    showPreciseLine: boolean,
   }
 }
 

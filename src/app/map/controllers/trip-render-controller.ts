@@ -87,7 +87,7 @@ export class TripRenderController {
     const legs = mapTripLegs.map(el => el.leg);
 
     legs.forEach((leg, idx) => {
-      const forceLinkProjection = mapTripLegs[idx].forceLinkProjection;
+      const forceLinkProjection = mapTripLegs[idx].map.showPreciseLine;
 
       const useBeeLine = !forceLinkProjection;
       const tripLegGeoController = new TripLegGeoController(leg, useBeeLine);
