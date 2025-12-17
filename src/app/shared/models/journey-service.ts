@@ -331,13 +331,22 @@ export class JourneyService implements OJP_Types.DatedJourneySchema  {
       return 'OnDemand';
     }
 
-    const isFunicular = (() => {
-      // cog-wheel
-      const isCC = this.mode.shortName?.text === 'CC';
-      if (isCC) {
-        return true;
-      }
+    if (this.mode.ptMode === 'tram') {
+      return 'Tram';
+    }
 
+    // TODO - add it to OJP SharedTypes ModeStructureSchema
+    if ((this.mode.ptMode as string) === 'underground') {
+      return 'Subway';
+    }
+
+    // cog-wheel
+    const isCC = this.mode.shortName?.text === 'CC';
+    if (isCC) {
+      return 'CogRailway';
+    }
+
+    const isFunicular = (() => {
       // all aerialway, funiculars
       const isTelecabinMode = this.mode.ptMode === 'telecabin';
       if (isTelecabinMode) {
