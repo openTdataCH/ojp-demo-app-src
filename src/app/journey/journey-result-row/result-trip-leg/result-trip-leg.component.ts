@@ -75,10 +75,15 @@ interface LegInfoDataModel {
   servicePtMode: OJP_Legacy.PublicTransportMode | null,
   serviceFormationURL: string | null,
 
-  isCancelled: boolean
-  hasDeviation: boolean
-  isUnplanned: boolean
-}
+  isCancelled: boolean,
+  hasDeviation: boolean,
+  isUnplanned: boolean,
+
+  gui: {
+    showLineLabelId: string,
+    showPreciseLineLabelId: string,
+  }
+};
 
 @Component({
   selector: 'result-trip-leg',
@@ -92,7 +97,7 @@ export class ResultTripLegComponent implements OnInit {
   @Input() trrRequestInfo: OJP_Next.RequestInfo | undefined;
 
   @Output() legReloadRequest = new EventEmitter<void>();
-  @Output() legMapRedrawRequest = new EventEmitter<{ legIdx: number, checked: boolean }>();
+  @Output() legMapRedrawRequest = new EventEmitter<void>();
 
   public legElementId: string = 'n/a';
 
@@ -116,7 +121,7 @@ export class ResultTripLegComponent implements OnInit {
     this.enableTRR = isOJPv2;
   }
 
-  ngOnInit() {
+  async ngOnInit() {
     if (this.legData === undefined) {
       return;
     }
@@ -263,21 +268,24 @@ export class ResultTripLegComponent implements OnInit {
     this.legReloadRequest.emit();
   }
 
-  public get checkboxId() {
-    return 'lp_checkbox_' + (this.legData?.leg.legID ?? 'n/a');
+  private redrawTripLeg() {
+    this.legMapRedrawRequest.emit();
   }
 
-  public redrawTripLeg(event: Event) {
-    if (!this.legData || (this.legIdx === undefined)) {
-      return;
+  public onClickShowMapLeg(checked: boolean) {
+    if (this.legData?.map) {
+      this.legData.map.show = checked;
     }
 
-    const isChecked = (event.target as HTMLInputElement).checked;
+    this.redrawTripLeg();
+  }
 
-    this.legMapRedrawRequest.emit({
-      legIdx: this.legIdx,
-      checked: isChecked,
-    });
+  public onClickShowPreciseMapLeg(checked: boolean) {
+    if (this.legData?.map) {
+      this.legData.map.showPreciseLine = checked;
+    }
+
+    this.redrawTripLeg();
   }
 
   private computeLegColor(): string {
@@ -594,6 +602,12 @@ export class ResultTripLegComponent implements OnInit {
 
       return timedLeg.service.isUnplanned === true;
     })();
+
+    const legIdKey = this.legData.tripId + '_' + this.legData.leg.legID;
+    this.legInfoDataModel.gui = {
+      showLineLabelId: 'show_line_' + legIdKey,
+      showPreciseLineLabelId: 'show_precise_line_' + legIdKey,
+    };
   }
 
   private computeServiceAttributeModel(leg: OJP_Legacy.TripLeg): ServiceAttributeRenderModel[] {
