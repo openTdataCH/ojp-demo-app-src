@@ -13,8 +13,6 @@
   "paint": {
     "line-width": 4,
     "line-opacity": 0.4,
-    "line-color": [
-      "[CASE_COLOR_BY_LEG_TYPE]"
-    ]
+    "line-color": ["get", "leg-type.color"]
   }
 }
