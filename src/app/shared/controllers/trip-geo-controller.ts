@@ -6,6 +6,7 @@ import OJP_Legacy from '../../config/ojp-legacy';
 import { JourneyService } from '../models/journey-service';
 import { TripLegDrawType, TripLegLineType, TripLegPropertiesEnum } from '../types/map-geometry-types';
 import { GeoPositionBBOX } from '../models/geo/geoposition-bbox';
+import { OJPHelpers } from 'src/app/helpers/ojp-helpers';
 
 interface LinePointData {
   type: OJP_Legacy.StopPointType,
@@ -199,8 +200,8 @@ export class TripLegGeoController {
     const drawType: TripLegDrawType = 'Beeline';
     beelineProperties[TripLegPropertiesEnum.DrawType] = drawType;
 
-    const lineType: TripLegLineType = this.computeLegLineType();
     beelineProperties[TripLegPropertiesEnum.LineType] = lineType;
+    const lineType = OJPHelpers.computeLegLineType(this.leg);
 
     const bbox = new GeoPositionBBOX(beelineGeoPositions);
 
@@ -243,49 +244,10 @@ export class TripLegGeoController {
     return geoPositions;
   }
 
-  private computeLegLineType(): TripLegLineType {
-    const defaultType: TripLegLineType = 'Unknown';
-
-    if (this.leg.legType === 'ContinuousLeg' || this.leg.legType === 'TransferLeg') {
-      const continuousLeg = this.leg as OJP_Legacy.TripContinuousLeg;
-
-      if (continuousLeg.isDriveCarLeg()) {
-        return 'Self-Drive Car';
-      }
-  
-      if (continuousLeg.isSharedMobility()) {
-        return 'Shared Mobility';
-      }
-  
-      if (continuousLeg.isTaxi()) {
-        return 'OnDemand';
-      }
-  
-      if (this.leg.legType === 'TransferLeg') {
-        return 'Transfer';
-      }
-  
-      if (continuousLeg.legTransportMode === 'car-ferry') {
-        return 'Water';
-      }
-
-      return 'Walk';
-    }
-    
-    if (this.leg.legType === 'TimedLeg') {
-      const timedLeg = this.leg as OJP_Legacy.TripTimedLeg;
-      const service = JourneyService.initWithOJP_LegacyJourneyService(timedLeg.service);
-      return service.computeLegColorType();
-    }
-
-    return defaultType;
-  }
-
   private computeLinePointFeatures(): GeoJSON.Feature[] {
     const features: GeoJSON.Feature[] = [];
 
-    const lineType: TripLegLineType = this.computeLegLineType();
-
+    const lineType = OJPHelpers.computeLegLineType(this.leg);
     const linePointsData = this.computeLinePointsData();
 
     // Add more attributes

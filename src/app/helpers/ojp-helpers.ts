@@ -14,6 +14,7 @@ import { APP_CONFIG } from '../config/app-config';
 import { StopPlace } from '../shared/models/place/stop-place';
 import { PlaceBuilder } from '../shared/models/place/place-builder';
 import { SituationContent } from '../shared/models/situation';
+import { TripLegLineType } from '../shared/types/map-geometry-types';
 
 type PublicTransportPictogram =  'picto-bus-fallback' | 'picto-bus'
   | 'picto-railway' | 'picto-tram' | 'picto-rack-railway'
@@ -770,5 +771,43 @@ export class OJPHelpers {
     });
 
     return stopCall;
+  }
+
+  public static computeLegLineType(leg: OJP_Legacy.TripLeg): TripLegLineType {
+    const defaultType: TripLegLineType = 'Unknown';
+
+    if (leg.legType === 'ContinuousLeg' || leg.legType === 'TransferLeg') {
+      const continuousLeg = leg as OJP_Legacy.TripContinuousLeg;
+
+      if (continuousLeg.isDriveCarLeg()) {
+        return 'Self-Drive Car';
+      }
+  
+      if (continuousLeg.isSharedMobility()) {
+        return 'Shared Mobility';
+      }
+  
+      if (continuousLeg.isTaxi()) {
+        return 'OnDemand';
+      }
+  
+      if (leg.legType === 'TransferLeg') {
+        return 'Transfer';
+      }
+  
+      if (continuousLeg.legTransportMode === 'car-ferry') {
+        return 'Water';
+      }
+
+      return 'Walk';
+    }
+    
+    if (leg.legType === 'TimedLeg') {
+      const timedLeg = leg as OJP_Legacy.TripTimedLeg;
+      const service = JourneyService.initWithOJP_LegacyJourneyService(timedLeg.service);
+      return service.computeLegColorType();
+    }
+
+    return defaultType;
   }
 }
