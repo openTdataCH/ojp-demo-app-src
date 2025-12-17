@@ -26,9 +26,6 @@
         <div class="d-flex gap-1">
 
           <ng-container *ngIf="this.legInfoDataModel.gui.showLinkProjectionToggle && this.legData?.leg?.legType === 'TimedLeg'">
-            <ng-container *ngIf="this.legInfoDataModel.gui.useOtherProvider">
-              <div>•</div>
-            </ng-container>
             <input class="form-check-input" type="checkbox" 
               [id]="this.legInfoDataModel.gui.showPreciseLineLabelId" [name]="this.legInfoDataModel.gui.showPreciseLineLabelId" 
               [disabled]="!(this.legData?.map?.show ?? false)"
