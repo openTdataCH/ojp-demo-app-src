@@ -424,9 +424,6 @@ export class TripLegGeoController {
         if (feature?.properties) {
           const drawType: TripLegDrawType = 'WalkLine';
           feature.properties[TripLegPropertiesEnum.DrawType] = drawType;
-
-          feature.properties[TripLegPropertiesEnum.LineType] = this.computeLegLineType();
-
           feature.properties[TripLegPropertiesEnum.LineColor] = MapLegLineTypeColor[lineType];
           
           features.push(feature);
@@ -461,8 +458,6 @@ export class TripLegGeoController {
       if (feature.properties) {
         const drawType: TripLegDrawType = 'LegLine';
         feature.properties[TripLegPropertiesEnum.DrawType] = drawType;
-
-        feature.properties[TripLegPropertiesEnum.LineType] = lineType;
         feature.properties[TripLegPropertiesEnum.LineColor] = MapLegLineTypeColor[lineType];
       }
     });
