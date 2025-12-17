@@ -124,7 +124,7 @@ export class TripRenderController {
     source.setData(featureCollection);
   }
 
-  private computeGeoJSON(mapTripLegs: MapTripLeg[]): GeoJSON.FeatureCollection {
+  private computeGeoJSON(mapTripLegs: TripLegData[]): GeoJSON.FeatureCollection {
     let features: GeoJSON.Feature[] = [];
     const legs = mapTripLegs.map(el => el.leg);
 
