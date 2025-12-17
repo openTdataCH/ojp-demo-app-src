@@ -23,17 +23,20 @@ export class TripRenderController {
 
   public renderTrip(mapTripLegs: TripLegData[]) {
     const geojson = this.computeGeoJSON(mapTripLegs);
-    this.setSourceFeatures(geojson.features);
+
+    this.setSourceFeatures(geojson.features, this.mapSourceId);
   }
 
   private addMapSourceAndLayers() {
-    this.map.addSource(this.mapSourceId, <mapboxgl.GeoJSONSourceSpecification>{
+    const source: mapboxgl.GeoJSONSourceSpecification = {
       type: 'geojson',
-      data: <GeoJSON.FeatureCollection>{
-        'type': 'FeatureCollection',
-        'features': []
-      }
-    });
+      data: {
+        type: 'FeatureCollection',
+        features: [],
+      },
+    };
+
+    this.map.addSource(this.mapSourceId, source);
 
     const tripLegBeelineLayer = tripLegBeelineLayerJSON as mapboxgl.LineLayerSpecification;
     tripLegBeelineLayer.filter = MapboxLayerHelpers.FilterBeelines();
@@ -114,7 +117,6 @@ export class TripRenderController {
     });
   }
 
-  private setSourceFeatures(features: GeoJSON.Feature[]) {
   private computeMapLayers(): mapboxgl.LayerSpecification[] {
     const tripLegBeelineLayer = tripLegBeelineLayerJSON as mapboxgl.LineLayerSpecification;
     
@@ -139,11 +141,13 @@ export class TripRenderController {
     return mapLayers;
   }
 
-    const source = this.map.getSource(this.mapSourceId) as mapboxgl.GeoJSONSource
-    const featureCollection = <GeoJSON.FeatureCollection>{
-      'type': 'FeatureCollection',
-      'features': features
-    }
+  private setSourceFeatures(features: GeoJSON.Feature[], sourceId: string) {
+    const source = this.map.getSource(sourceId) as mapboxgl.GeoJSONSource
+    const featureCollection: GeoJSON.FeatureCollection = {
+      type: 'FeatureCollection',
+      features: features
+    };
+    
     source.setData(featureCollection);
   }
 
