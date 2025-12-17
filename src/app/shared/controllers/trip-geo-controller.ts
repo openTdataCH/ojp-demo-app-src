@@ -6,6 +6,7 @@ import OJP_Legacy from '../../config/ojp-legacy';
 import { JourneyService } from '../models/journey-service';
 import { TripLegDrawType, TripLegLineType, TripLegPropertiesEnum } from '../types/map-geometry-types';
 import { GeoPositionBBOX } from '../models/geo/geoposition-bbox';
+import { MapLegLineTypeColor } from '../../config/map-colors';
 import { OJPHelpers } from 'src/app/helpers/ojp-helpers';
 
 interface LinePointData {
@@ -200,8 +201,8 @@ export class TripLegGeoController {
     const drawType: TripLegDrawType = 'Beeline';
     beelineProperties[TripLegPropertiesEnum.DrawType] = drawType;
 
-    beelineProperties[TripLegPropertiesEnum.LineType] = lineType;
     const lineType = OJPHelpers.computeLegLineType(this.leg);
+    beelineProperties[TripLegPropertiesEnum.LineColor] = MapLegLineTypeColor[lineType];
 
     const bbox = new GeoPositionBBOX(beelineGeoPositions);
 
@@ -261,10 +262,7 @@ export class TripLegGeoController {
 
       feature.properties[TripLegPropertiesEnum.PointType] = stopPointType;
 
-      const drawType: TripLegDrawType = 'LegPoint';
-      feature.properties[TripLegPropertiesEnum.DrawType] = drawType;
-
-      feature.properties[TripLegPropertiesEnum.LineType] = lineType;
+      feature.properties[TripLegPropertiesEnum.LineColor] = MapLegLineTypeColor[lineType];
 
       feature.bbox = [
         feature.geometry.coordinates[0],
@@ -401,6 +399,7 @@ export class TripLegGeoController {
       feature.properties[TripLegPropertiesEnum.DrawType] = drawType;
 
       feature.properties[TripLegPropertiesEnum.LineType] = lineType;
+      feature.properties[TripLegPropertiesEnum.LineColor] = MapLegLineTypeColor[lineType];
 
       feature.properties['PathGuidanceSection.idx'] = guidanceIDx;
       feature.properties['PathGuidanceSection.TrackSection.RoadName'] = pathGuidanceSection.trackSection?.roadName ?? '';
@@ -421,6 +420,8 @@ export class TripLegGeoController {
 
           feature.properties[TripLegPropertiesEnum.LineType] = this.computeLegLineType();
 
+          feature.properties[TripLegPropertiesEnum.LineColor] = MapLegLineTypeColor[lineType];
+          
           features.push(feature);
         }
       });
@@ -455,6 +456,7 @@ export class TripLegGeoController {
         feature.properties[TripLegPropertiesEnum.DrawType] = drawType;
 
         feature.properties[TripLegPropertiesEnum.LineType] = lineType;
+        feature.properties[TripLegPropertiesEnum.LineColor] = MapLegLineTypeColor[lineType];
       }
     });
 

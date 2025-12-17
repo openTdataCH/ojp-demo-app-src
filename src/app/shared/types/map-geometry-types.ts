@@ -5,6 +5,8 @@ export enum TripLegPropertiesEnum {
   DrawType = 'draw.type',
   PointType = 'point.type',
   LineType = 'line.type',
+  
+  LineColor = 'leg-type.color',   // color literal
 }
 
 type TripTimedLegLineType =
