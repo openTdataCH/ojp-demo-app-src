@@ -1,10 +1,11 @@
 import OJP_Legacy from '../../config/ojp-legacy';
 
 export enum TripLegPropertiesEnum {
-  LegType = 'leg.type',
-  DrawType = 'draw.type',
-  PointType = 'point.type',
-  LineType = 'line.type',
+  LegType = 'leg.type',           // Continous, Transfer, Timed
+  DrawType = 'draw.type',         // see below TripLegDrawType
+  
+  PointType = 'point.type',       // From, To, Intermediate
+  LineType = 'line.type',         // see below TripTimedLegLineType
   
   LineColor = 'leg-type.color',   // color literal
 }
