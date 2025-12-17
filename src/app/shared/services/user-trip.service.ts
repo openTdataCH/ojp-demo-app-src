@@ -18,6 +18,7 @@ import { PlaceLocation } from '../models/place/location';
 import { GeoPositionBBOX } from '../models/geo/geoposition-bbox';
 import { OJPHelpers } from '../../helpers/ojp-helpers';
 import { AnyLocationInformationRequestResponse } from '../types/_all';
+import { TripLegGeoController } from '../controllers/trip-geo-controller';
 
 type LocationUpdateSource = 'SearchForm' | 'MapDragend' | 'MapPopupClick';
 
@@ -792,8 +793,11 @@ export class UserTripService {
             id: '' + leg.legID,
             comments: null,
           },
+          map: {
+            show: true,
+            showPreciseLine: !TripLegGeoController.shouldUseBeeline(leg),
+          }
         };
-
         return legData;
       });
 
@@ -829,6 +833,7 @@ export class UserTripService {
             id: '' + leg.legID,
             comments: null,
           },
+          map: tripData.legsData[legIdx].map,
         };
 
         if (legIdx <= skipIdx) {
