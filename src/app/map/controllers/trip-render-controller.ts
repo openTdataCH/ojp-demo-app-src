@@ -108,6 +108,8 @@ export class TripRenderController {
       tripContinousLegWalkingLineLayer,   //    - line (beelines)
       tripTimedLegEndpointCircleLayer,    //    - circle (endpoints, intermediary points)
     ];
+    const mapLayers = this.computeMapLayers();
+
 
     mapLayers.forEach(mapLayerJSON => {
       const mapLayerDef = mapLayerJSON as mapboxgl.Layer;
@@ -118,6 +120,29 @@ export class TripRenderController {
 
   private setSourceFeatures(features: GeoJSON.Feature[]) {
     this.features = features;
+  private computeMapLayers(): mapboxgl.LayerSpecification[] {
+    const tripLegBeelineLayer = tripLegBeelineLayerJSON as mapboxgl.LineLayerSpecification;
+    
+    const tripTimedLegEndpointFromCircleLayer = tripTimedLegEndpointFromCircleLayerJSON as mapboxgl.CircleLayerSpecification;
+    const tripTimedLegEndpointIntermediateCircleLayer = tripTimedLegEndpointIntermediateCircleLayerJSON as mapboxgl.CircleLayerSpecification;
+    const tripTimedLegEndpointToCircleLayer = tripTimedLegEndpointToCircleLayerJSON as mapboxgl.CircleLayerSpecification;
+    
+    const tripLegLineLayer = tripLegLineLayerJSON as mapboxgl.LineLayerSpecification;
+    
+    const tripLegWalkingLineLayer = tripLegWalkingLineLayerJSON as mapboxgl.LineLayerSpecification;
+
+    const mapLayers = [                             // layers order matters:
+      tripLegBeelineLayer,                          //    - line (beelines)
+      
+      tripLegLineLayer,                             //    - line
+      
+      tripTimedLegEndpointIntermediateCircleLayer,  //    - circle (endpoints, intermediary points)
+      tripTimedLegEndpointToCircleLayer,            //    - circle (endpoints, intermediary points)
+      tripTimedLegEndpointFromCircleLayer,          //    - circle (endpoints, intermediary points)
+    ];
+
+    return mapLayers;
+  }
 
     const source = this.map.getSource(this.mapSourceId) as mapboxgl.GeoJSONSource
     const featureCollection = <GeoJSON.FeatureCollection>{
