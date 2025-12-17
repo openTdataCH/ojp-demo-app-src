@@ -32,8 +32,6 @@ export type TripLegLineType =
   | TripTimedLegLineType
   | TripContinousLegLineType;
 
-export type TripLegDrawType = 'Beeline' | 'LegPoint' | 'LegLine';
-
 export interface MapTripLeg {
   leg: OJP_Legacy.TripLeg,
   forceLinkProjection: boolean,
@@ -42,3 +40,4 @@ export interface MapTripLeg {
 export interface MapTrip {
   legs: MapTripLeg[],
 }
+export type TripLegDrawType = 'Beeline' | 'WalkLine' | 'LegLine';
