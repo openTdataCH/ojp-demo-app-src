@@ -438,10 +438,6 @@ export class UserTripService {
     this.tripsDataUpdated.emit(tripsData);
   }
 
-  selectActiveTrip(mapTrip: MapTrip | null) {
-    this.activeTripSelected.emit(mapTrip);
-  }
-
   private updateFares(fareResults: OJP_Types.FareResultSchema[]) {
     this.tripFaresUpdated.emit(fareResults);
   }
