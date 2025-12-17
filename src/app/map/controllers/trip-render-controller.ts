@@ -7,7 +7,13 @@ import tripTimedLegEndpointIntermediateCircleLayerJSON from './map-layers-def/oj
 import tripTimedLegEndpointToCircleLayerJSON from './map-layers-def/ojp-trip-timed-leg-endpoint-to-circle.json';
 
 import tripLegLineLayerJSON from './map-layers-def/ojp-trip-timed-leg-track.json';
+import tripLegLineLayerP2JSON from './map-layers-def/ojp-trip-timed-leg-track-p2.json';
+import tripLegLineLayerP2OuterJSON from './map-layers-def/ojp-trip-timed-leg-track-p2-outer.json';
+
 import tripLegWalkingLineLayerJSON from './map-layers-def/ojp-trip-walking-leg-line.json';
+import tripLegWalkingLineLayerP2JSON from './map-layers-def/ojp-trip-walking-leg-line-p2.json';
+import tripLegWalkingLineLayerP2OuterJSON from './map-layers-def/ojp-trip-walking-leg-line-p2-outer.json';
+
 import { TripLegGeoController } from '../../shared/controllers/trip-geo-controller';
 
 import { TripLegData } from '../../shared/types/trip';
@@ -56,11 +62,22 @@ export class TripRenderController {
     const tripTimedLegEndpointToCircleLayer = tripTimedLegEndpointToCircleLayerJSON as mapboxgl.CircleLayerSpecification;
     
     const tripLegLineLayer = tripLegLineLayerJSON as mapboxgl.LineLayerSpecification;
+    const tripLegLineP2Layer = tripLegLineLayerP2JSON as mapboxgl.LineLayerSpecification;
+    const tripLegLineP2OuterLayer = tripLegLineLayerP2OuterJSON as mapboxgl.LineLayerSpecification;
     
     const tripLegWalkingLineLayer = tripLegWalkingLineLayerJSON as mapboxgl.LineLayerSpecification;
+    const tripLegWalkingLineP2Layer = tripLegWalkingLineLayerP2JSON as mapboxgl.LineLayerSpecification;
+    const tripLegWalkingLineP2OuterLayer = tripLegWalkingLineLayerP2OuterJSON as mapboxgl.LineLayerSpecification;
 
     const mapLayers = [                             // layers order matters:
       tripLegBeelineLayer,                          //    - line (beelines)
+      
+      tripLegWalkingLineP2OuterLayer,               //    - line (provider 2 - casing)
+      tripLegWalkingLineP2Layer,                    //    - line (provider 2)
+      tripLegWalkingLineLayer,                      //    - line
+
+      tripLegLineP2OuterLayer,                      //    - line provider 2 + casing
+      tripLegLineP2Layer,                           //    -  + casing
       
       tripLegLineLayer,                             //    - line
       
