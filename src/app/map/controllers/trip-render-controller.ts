@@ -13,7 +13,6 @@ import { TripLegGeoController } from '../../shared/controllers/trip-geo-controll
 import { TripLegData } from '../../shared/types/trip';
 
 export class TripRenderController {
-  private features: GeoJSON.Feature[] = []
   private map: mapboxgl.Map;
   private mapSourceId = 'trip-data';
 
@@ -116,7 +115,6 @@ export class TripRenderController {
   }
 
   private setSourceFeatures(features: GeoJSON.Feature[]) {
-    this.features = features;
   private computeMapLayers(): mapboxgl.LayerSpecification[] {
     const tripLegBeelineLayer = tripLegBeelineLayerJSON as mapboxgl.LineLayerSpecification;
     
