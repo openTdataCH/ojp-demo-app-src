@@ -1,4 +1,5 @@
 import OJP_Legacy from '../../config/ojp-legacy';
+import { LegShapeResult } from '../services/shape-provider.service';
 
 export interface TripLegData {
   tripId: string,

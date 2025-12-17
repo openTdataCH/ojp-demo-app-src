@@ -68,6 +68,9 @@ export class JourneyResultRowComponent implements OnInit {
       legData.map = {
         show: true,
         showPreciseLine: showPreciseLine,
+        showOtherProvider: false,
+        legShapeResult: null,
+        legShapeError: null,
       };
     });
 

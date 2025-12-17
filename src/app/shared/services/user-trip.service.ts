@@ -796,6 +796,9 @@ export class UserTripService {
           map: {
             show: true,
             showPreciseLine: !TripLegGeoController.shouldUseBeeline(leg),
+            showOtherProvider: false,
+            legShapeResult: null,
+            legShapeError: null,
           }
         };
         return legData;
