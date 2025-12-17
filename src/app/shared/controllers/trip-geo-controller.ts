@@ -296,16 +296,23 @@ export class TripLegGeoController {
 
     const locations = [this.leg.fromLocation, this.leg.toLocation];
     locations.forEach(location => {
-      const locationFeature = location.asGeoJSONFeature();
-      if (locationFeature?.properties) {
-        const isFrom = location === this.leg.fromLocation;
-        const stopPointType: OJP_Legacy.StopPointType = isFrom ? 'From' : 'To';
-
-        linePointsData.push({
-          type: stopPointType,
-          feature: locationFeature
-        });
+      if (this.leg.legType !== 'TimedLeg') {
+        // Display From/To only for TimedLeg features
+        return;
       }
+
+      const locationFeature = location.asGeoJSONFeature();
+      if (!locationFeature?.properties) {
+        return;
+      }
+
+      const isFrom = location === this.leg.fromLocation;
+      const stopPointType: OJP_Legacy.StopPointType = isFrom ? 'From' : 'To';
+
+      linePointsData.push({
+        type: stopPointType,
+        feature: locationFeature
+      });
     });
 
     if (this.leg.legType === 'TimedLeg') {
