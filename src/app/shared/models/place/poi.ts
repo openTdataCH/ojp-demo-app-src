@@ -182,11 +182,18 @@ export class Poi extends BasePlace {
         poi.properties['text'] = attributeData.text.text;
         poi.properties['code'] = attributeData.code;
 
-        if ('hireFacility' in attributeData) {
-          poi.properties['hireFacility'] = attributeData['hireFacility'];
+        // Handle cases when the value from parser is a number
+        if (Number.isFinite(poi.properties['code'])) {
+          poi.properties['code'] = String(poi.properties['code']);
         }
-        if ('importance' in attributeData) {
-          poi.properties['importance'] = Number(attributeData['importance']);
+
+        const attributeDataAny = attributeData as Record<string, any>;
+        for (const key in attributeDataAny) {
+          if (['text', 'code'].includes(key)) {
+            continue;
+          }
+
+          poi.properties[key] = attributeDataAny[key];
         }
       });
     }
