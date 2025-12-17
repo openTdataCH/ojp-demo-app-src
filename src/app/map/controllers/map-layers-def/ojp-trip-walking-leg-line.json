@@ -2,11 +2,7 @@
   "id": "ojp-trip-walking-leg-line",
   "type": "line",
   "source": "[SOURCE]",
-  "filter": [
-    "all",
-    "[FILTER BY DRAW_TYPE == ContinousLegLine]",
-    "[FILTER BY LINE_TYPE == Walk]"
-  ],
+  "filter": ["==", ["get", "draw.type"], "WalkLine"],
   "layout": {
     "line-cap": "round",
     "line-join": "round"

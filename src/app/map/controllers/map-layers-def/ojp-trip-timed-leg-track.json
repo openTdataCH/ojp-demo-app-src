@@ -2,9 +2,7 @@
   "id": "ojp-trip-timed-leg-track",
   "type": "line",
   "source": "[SOURCE]",
-  "filter": [
-    "[FILTER BY DRAW_TYPE == TimedLegLine]"
-  ],
+  "filter": ["==", ["get", "draw.type"], "LegLine"],
   "layout": {
     "line-join": "round",
     "line-cap": "round",
