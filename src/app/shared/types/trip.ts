@@ -10,6 +10,9 @@ export interface TripLegData {
   map: {
     show: boolean,
     showPreciseLine: boolean,
+    showOtherProvider: boolean,
+    legShapeResult: LegShapeResult | null,
+    legShapeError: string | null,
   }
 }
 
