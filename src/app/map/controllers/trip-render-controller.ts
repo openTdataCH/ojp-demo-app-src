@@ -83,7 +83,7 @@ export class TripRenderController {
   }
 
   private computeGeoJSON(mapTripLegs: TripLegData[]): GeoJSON.FeatureCollection {
-    let features: GeoJSON.Feature[] = [];
+    const features: GeoJSON.Feature[] = [];
     const legs = mapTripLegs.map(el => el.leg);
 
     legs.forEach((leg, idx) => {
@@ -93,24 +93,18 @@ export class TripRenderController {
       const tripLegGeoController = new TripLegGeoController(leg, useBeeLine);
 
       const legFeatures = tripLegGeoController.computeGeoJSONFeatures();
-      
-      // Snap TransferLeg to prev / next legs
-      if ((leg.legType === 'TransferLeg') && (legFeatures.length === 1)) {
-        const featureProperties = legFeatures[0].properties;
-        if (featureProperties && featureProperties['draw.type'] === 'Beeline') {
-          const prevLeg = legs.at(idx - 1) ?? null;
-          const nextLeg = legs.at(idx + 1) ?? null;
-          if (prevLeg?.toLocation.geoPosition && nextLeg?.fromLocation.geoPosition) {
-            const geometry = legFeatures[0].geometry as GeoJSON.LineString;
-            geometry.coordinates = [
-              prevLeg?.toLocation.geoPosition.asPosition(),
-              nextLeg?.fromLocation.geoPosition.asPosition(),
-            ];
+
+      legFeatures.forEach(feature => {
+        if (feature.geometry.type === 'LineString') {
+          if (mapTripLegs[idx].map.show) {
+            features.push(feature);     
           }
+        } else {
+          features.push(feature);
+        }
+      });
         }
       }
-      
-      features = features.concat(legFeatures);
     });
 
     const geojson: GeoJSON.FeatureCollection = {
