@@ -786,10 +786,11 @@ export class UserTripService {
     this.updateURLs();
   }
 
-  public massageTrips(trips: OJP_Legacy.Trip[]): TripData[] {
-    const tripsData = trips.map(trip => {
+  private massageTrips(trips: OJP_Legacy.Trip[]): TripData[] {
+    const tripsData = trips.map((trip, tripIdx) => {
       const legsData = trip.legs.map(leg => {
         const legData: TripLegData = {
+          tripId: trip.id,
           leg: leg,
           info: {
             id: '' + leg.legID,
@@ -820,12 +821,13 @@ export class UserTripService {
   // ex1: trains with multiple desitinaion units
   // - check for remainInVehicle https://github.com/openTdataCH/ojp-demo-app-src/issues/125  
   private mergeTripLegs(tripsData: TripData[]) {
-    tripsData.forEach(tripData => {
+    tripsData.forEach((tripData, tripIdx) => {
       const newLegsData: TripLegData[] = [];
       let skipIdx: number = -1;
       
       tripData.trip.legs.forEach((leg, legIdx) => {
         const legData: TripLegData = {
+          tripId: tripData.trip.id,
           leg: leg,
           info: {
             id: '' + leg.legID,

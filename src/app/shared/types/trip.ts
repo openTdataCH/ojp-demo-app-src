@@ -1,6 +1,7 @@
 import OJP_Legacy from '../../config/ojp-legacy';
 
 export interface TripLegData {
+  tripId: string,
   leg: OJP_Legacy.TripLeg,
   info: {
     id: string,
