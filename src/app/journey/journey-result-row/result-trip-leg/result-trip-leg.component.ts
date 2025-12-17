@@ -290,6 +290,14 @@ export class ResultTripLegComponent implements OnInit {
     this.redrawTripLeg();
   }
 
+  public onClickShowOtherProviderMapLeg(checked: boolean) {
+    if (this.legData?.map) {
+      this.legData.map.showOtherProvider = checked;
+    }
+
+    this.redrawTripLeg();
+  }
+
   private computeLegColor(): string {
     const defaultColor = MapLegLineTypeColor.Unknown;
 
