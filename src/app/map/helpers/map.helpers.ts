@@ -1,3 +1,5 @@
+import * as OJP_Next from 'ojp-sdk-next';
+
 import * as GeoJSON from 'geojson'
 import mapboxgl from "mapbox-gl";
 
@@ -238,4 +240,23 @@ export class MapHelpers {
       })
     }, 500);
   }
+
+  public static computeGeoPositionsDistance(positions: OJP_Next.GeoPosition[]): number | null {
+    if (positions.length < 2) {
+      return null;
+    }
+
+    let dAB = 0;
+    positions.forEach((position, idx) => {
+      const isFirst = idx === 0;
+      if (isFirst) {
+        return;
+      }
+
+      const prevPosition = positions[idx - 1];
+      dAB += position.distanceFrom(prevPosition);
+    });
+
+    return dAB;
+  } 
 }
