@@ -21,7 +21,7 @@ export class SharedMobility {
   public vehiclesNo: number | null
   public vehicleName: string | null
 
-  constructor(
+  private constructor(
     poiType: RestrictionPoiOSMTag,
     vehicleType: VehicleType,
     provider: SharedMobilityProvider,
