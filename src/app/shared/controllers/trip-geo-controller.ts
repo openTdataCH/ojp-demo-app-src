@@ -386,7 +386,7 @@ export class TripLegGeoController {
         return 'Self-Drive Car';
       }
 
-      return 'Guidance';
+      return 'Walk';
     })();
 
     continuousLeg.pathGuidance?.sections.forEach((pathGuidanceSection, guidanceIDx) => {
