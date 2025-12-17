@@ -182,6 +182,11 @@ export class Poi extends BasePlace {
         poi.properties['text'] = attributeData.text.text;
         poi.properties['code'] = attributeData.code;
 
+        // Handle cases when the value from parser is a number
+        if (Number.isFinite(poi.properties['code'])) {
+          poi.properties['code'] = String(poi.properties['code']);
+        }
+
         if ('hireFacility' in attributeData) {
           poi.properties['hireFacility'] = attributeData['hireFacility'];
         }
