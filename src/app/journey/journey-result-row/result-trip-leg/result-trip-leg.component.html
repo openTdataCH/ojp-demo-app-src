@@ -1,7 +1,7 @@
 <div class="card card-trip-leg p-3 mb-2" (click)="zoomToLeg()">
   
   <!-- Leg Header -->
-  <div class="leg-header mb-2 d-flex">
+  <div class="leg-heade d-flex align-items-center">
     <div class="flex-grow-1 d-flex gap-2">
       <div>
         <button 
@@ -21,19 +21,24 @@
       </div>
     </div>
     
-    <div class="d-flex gap-1 align-items-center" *ngIf="this.isEmbed === false">
-      <ng-container *ngIf="this.legData?.leg?.legType === 'TimedLeg'">
+    <div class="d-flex gap-2 align-items-center" *ngIf="this.isEmbed === false">
+      <div class="align-items-center">
         <div class="d-flex gap-1">
-          <input class="form-check-input" type="checkbox" 
-            [id]="this.checkboxId" [name]="this.checkboxId" 
-            [checked]="this.isForceLinkProjection" 
-            (change)="this.redrawTripLeg($event)" stopClickPropagation />
-          <label class="form-check-label" [for]="this.checkboxId" stopClickPropagation>LinkProjection</label>
+
+          <ng-container *ngIf="this.legInfoDataModel.gui.showLinkProjectionToggle && this.legData?.leg?.legType === 'TimedLeg'">
+            <ng-container *ngIf="this.legInfoDataModel.gui.useOtherProvider">
+              <div>•</div>
+            </ng-container>
+            <input class="form-check-input" type="checkbox" 
+              [id]="this.legInfoDataModel.gui.showPreciseLineLabelId" [name]="this.legInfoDataModel.gui.showPreciseLineLabelId" 
+              [disabled]="!(this.legData?.map?.show ?? false)"
+              [ngModel]="this.legData?.map?.showPreciseLine" 
+              (ngModelChange)="this.onClickShowPreciseMapLeg($event)" stopClickPropagation />
+            <label class="form-check-label" [for]="this.legInfoDataModel.gui.showPreciseLineLabelId" stopClickPropagation>LinkProjection</label>
+          </ng-container>
         </div>
-        <ng-container *ngIf="this.enableTRR">
-          <div>•</div>
         </ng-container>
-      </ng-container>
+      </div>
       <ng-container *ngIf="this.enableTRR">
         <div class="d-flex gap-1 align-items-center">
           <div class="badge leg-pill pill-hover bg-primary" (click)="this.reloadTripLeg()">Refresh</div>
