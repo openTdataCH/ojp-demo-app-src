@@ -255,7 +255,6 @@ export class SearchFormComponent implements OnInit {
       }
       if (response.message === 'TripRequest.DONE') {
         this.collapseSearchPanel();
-        this.userTripService.massageTrips(response.trips);
         this.handleCustomTripResponse(response.trips, request, true);
       }
     });
@@ -472,7 +471,6 @@ export class SearchFormComponent implements OnInit {
           popover.inputTripRequestResponseXML = tripsResponseXML;
           dialogRef.close();
 
-          this.userTripService.massageTrips(response.trips);
           this.handleCustomTripResponse(response.trips, request, true);
         });
       };
