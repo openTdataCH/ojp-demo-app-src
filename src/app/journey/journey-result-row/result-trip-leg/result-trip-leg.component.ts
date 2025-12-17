@@ -93,8 +93,6 @@ interface LegInfoDataModel {
 })
 export class ResultTripLegComponent implements OnInit {
   @Input() legData: TripLegData | undefined;
-  @Input() legIdx: number | undefined;
-  @Input() isForceLinkProjection: boolean | undefined;
   @Input() trrRequestInfo: OJP_Next.RequestInfo | undefined;
 
   @Output() legReloadRequest = new EventEmitter<void>();
