@@ -10,4 +10,8 @@ export class DateHelpers {
     const durationSeconds = (date2.getTime() - date1.getTime()) / 1000;
     return durationSeconds;
   }
+
+  public static sleep(ms: number): Promise<void> {
+    return new Promise(resolve => setTimeout(resolve, ms));
+  }
 }
