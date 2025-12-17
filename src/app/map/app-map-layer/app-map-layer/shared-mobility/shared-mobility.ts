@@ -204,7 +204,7 @@ export class SharedMobility {
     }
     const vehiclesNoS = mapAdditionalInformation['numVehiclesAvailable'] ?? null;
     if (vehiclesNoS !== null) {
-      vehicle.isFixedStation = true
+      vehicle.isFixedStation = true;
       vehicle.vehiclesNo = parseInt(vehiclesNoS, 10);
     }
 
