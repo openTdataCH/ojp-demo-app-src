@@ -368,6 +368,8 @@ export class SearchFormComponent implements OnInit {
       return;
     }
 
+    // no need for AWAIT, FareResult call is fire and forget
+    //    -> it will update the mapFareResult in JourneyResultsComponent component
     this.userTripService.fetchFares(this.languageService.language);
 
     // build a hash of trips so they can be looked up later, TripId is not consistent
