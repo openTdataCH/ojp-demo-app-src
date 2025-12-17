@@ -14,6 +14,8 @@ import { LanguageService } from '../../shared/services/language.service';
 import { TripLegGeoController } from '../../shared/controllers/trip-geo-controller';
 import { TripData } from '../../shared/types/trip';
 import { OJPHelpers } from '../../helpers/ojp-helpers';
+import { ShapeProviderService } from '../../shared/services/shape-provider.service';
+import { DateHelpers } from '../../helpers/date-helpers';
 
 interface TripHeaderStats {
   title: string,
@@ -44,7 +46,7 @@ export class JourneyResultRowComponent implements OnInit {
 
   public trrRequestInfo: OJP_Next.RequestInfo | null;
 
-  constructor(private userTripService: UserTripService, private mapService: MapService, private languageService: LanguageService) {
+  constructor(private userTripService: UserTripService, private mapService: MapService, private languageService: LanguageService, private shapeProviderService: ShapeProviderService) {
     this.tripHeaderStats = <TripHeaderStats>{};
     this.trrRequestInfo = null;
   }
@@ -79,11 +81,35 @@ export class JourneyResultRowComponent implements OnInit {
       this.tripPanel.open();
     }
 
-    this.tripPanel?.afterExpand.subscribe(ev => {
+    this.tripPanel?.afterExpand.subscribe(async ev => {
       this.drawAndZoomToMapTrip();
+      await this.loadShapeProvider();
     });
     if (isFirstTrip) {
       this.drawAndZoomToMapTrip();
+      await this.loadShapeProvider();
+    }
+  }
+
+  private async loadShapeProvider() {
+    if (!this.tripData) {
+      return;
+    }
+
+    if (!FLAG_USE_2nd_SHAPE_PROVIDER) {
+      return;
+    }
+
+    for (const legData of this.tripData.legsData) {
+      try {
+        const legShapeResult = await this.shapeProviderService.fetchLegShape(legData.leg);
+        legData.map.legShapeResult = legShapeResult;
+        if (legShapeResult.source === 'fetch') {
+          await DateHelpers.sleep(200);
+        }
+      } catch (error) {
+        legData.map.legShapeError = (error as Error).message;
+      }
     }
   }
 
