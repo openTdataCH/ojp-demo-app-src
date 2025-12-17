@@ -83,6 +83,9 @@ interface LegInfoDataModel {
     showLineLabelId: string,
     showPreciseLineLabelId: string,
     showLinkProjectionToggle: boolean,
+    
+    useOtherProvider: boolean,
+    showOtherProviderLineLabelId: string,
   }
 };
 
@@ -607,6 +610,9 @@ export class ResultTripLegComponent implements OnInit {
       showLineLabelId: 'show_line_' + legIdKey,
       showPreciseLineLabelId: 'show_precise_line_' + legIdKey,
       showLinkProjectionToggle: !FLAG_USE_2nd_SHAPE_PROVIDER,
+
+      useOtherProvider: FLAG_USE_2nd_SHAPE_PROVIDER,
+      showOtherProviderLineLabelId: 'show_provider2_line_' + legIdKey,
     };
   }
 
