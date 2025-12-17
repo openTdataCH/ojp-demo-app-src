@@ -4,6 +4,11 @@ OJP-Demo URL: https://opentdatach.github.io/ojp-demo-app/
 
 ----
 
+17.December 2025
+- use additional route shapes providers - [PR #323](https://github.com/openTdataCH/ojp-demo-app-src/pull/323)
+  - allow to toggle display for different route shape providers
+  - simplify logic to display map layers
+
 08.December 2025
 - when paginating, use last trip that has a `TimedLeg` - [PR #322](https://github.com/openTdataCH/ojp-demo-app-src/pull/322)
 - catch race conditions when fares response were discarded after 2nd TR - [PR #321](https://github.com/openTdataCH/ojp-demo-app-src/pull/321)
