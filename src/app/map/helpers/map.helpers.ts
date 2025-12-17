@@ -8,6 +8,8 @@ interface NearbyFeature {
   feature: mapboxgl.GeoJSONFeature
 }
 
+type WebMercatorPoint = { x: number; y: number };
+
 export class MapHelpers {
   public static formatMapboxLngLatAsLatLng(lnglat: mapboxgl.LngLat): string {
     const lnglatS = lnglat.lat.toFixed(6) + ',' + lnglat.lng.toFixed(6);
@@ -259,4 +261,12 @@ export class MapHelpers {
 
     return dAB;
   } 
+
+  public static lngLatToWebMercator(longitude: number, latitude: number): WebMercatorPoint {
+    const R = 6378137;
+    const x = R * longitude * Math.PI / 180;
+    const y = R * Math.log(Math.tan(Math.PI / 4 + (latitude * Math.PI) / 360));
+    
+    return { x, y };
+  }
 }
