@@ -8,6 +8,8 @@ OJP-Demo URL: https://opentdatach.github.io/ojp-demo-app/
 - use additional route shapes providers - [PR #323](https://github.com/openTdataCH/ojp-demo-app-src/pull/323)
   - allow to toggle display for different route shape providers
   - simplify logic to display map layers
+- Updates SharedMobility - [PR #324](https://github.com/openTdataCH/ojp-demo-app-src/pull/324)
+  - re-adds shared bicycles
 
 08.December 2025
 - when paginating, use last trip that has a `TimedLeg` - [PR #322](https://github.com/openTdataCH/ojp-demo-app-src/pull/322)
