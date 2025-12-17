@@ -17,6 +17,7 @@ import tripLegWalkingLineLayerP2OuterJSON from './map-layers-def/ojp-trip-walkin
 import { TripLegGeoController } from '../../shared/controllers/trip-geo-controller';
 
 import { TripLegData } from '../../shared/types/trip';
+import { TripLegDrawType, TripLegPropertiesEnum } from '../../shared/types/map-geometry-types';
 
 export class TripRenderController {
   private map: mapboxgl.Map;
@@ -120,6 +121,28 @@ export class TripRenderController {
           features.push(feature);
         }
       });
+
+      if (mapTripLegs[idx].map.showOtherProvider) {
+        const legLinesFeature = legFeatures.find(el => el.geometry.type === 'LineString') ?? null;
+        if (legLinesFeature && legLinesFeature.properties) {
+          const legShapeResultFeatures = mapTripLegs[idx].map.legShapeResult?.fc.features ?? [];
+          legShapeResultFeatures.forEach(shapeProviderFeature => {
+            shapeProviderFeature.properties = Object.assign({}, legLinesFeature.properties);
+            const drawType: TripLegDrawType = shapeProviderFeature.properties[TripLegPropertiesEnum.DrawType];
+            
+            if (drawType === 'LegLine') {
+              const newDrawType: TripLegDrawType = 'LegLineP2';
+              shapeProviderFeature.properties[TripLegPropertiesEnum.DrawType] = newDrawType;
+            }
+            if (drawType === 'WalkLine') {
+              const newDrawType: TripLegDrawType = 'WalkLineP2';
+              shapeProviderFeature.properties[TripLegPropertiesEnum.DrawType] = newDrawType;
+            }
+
+            features.push(shapeProviderFeature);
+          });
+        }
+      }
     });
 
     const geojson: GeoJSON.FeatureCollection = {
