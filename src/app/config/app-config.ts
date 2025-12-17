@@ -54,5 +54,11 @@ export const APP_CONFIG: AppConfig = {
       url: 'https://api.opentransportdata.swiss/ojpfare',
       authToken: "PLACEHOLDER_REPLACE__FARE_INT",
     },
+
+    // 2nd shape provider - / at the end is important
+    'SHAPE_PROVIDER': {
+      url: 'https://api.geops.io/routing/v1/',
+      authToken: 'PLACEHOLDER_REPLACE__SHAPE_PROVIDER',
+    },
   }
 }
