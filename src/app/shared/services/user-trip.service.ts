@@ -936,16 +936,21 @@ export class UserTripService {
     });
 
     const fareRequest = ojpSDK_Next.requests.FareRequest.initWithOJPv2Trips(tripsV2);
-    const response = await fareRequest.fetchResponse(ojpSDK_Next);
 
-    if (!response.ok) {
-      console.log('ERROR: fetchFareRequestResponse');
-      console.log(response);
-      
+    try {
+      const response = await fareRequest.fetchResponse(ojpSDK_Next);
+      if (!response.ok) {
+        console.log('ERROR: fetchFareRequestResponse');
+        console.log(response);
+        
+        return [];
+      }
+
+      return response.value.fareResult;
+    } catch (error) {
+      console.error('Fetch Fare Error: ', error);
       return [];
     }
-
-    return response.value.fareResult;
   }
 
   public hasPublicTransport(): boolean {
