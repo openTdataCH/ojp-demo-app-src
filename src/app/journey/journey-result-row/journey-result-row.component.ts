@@ -12,7 +12,7 @@ import { UserTripService } from '../../shared/services/user-trip.service';
 import { MapService } from '../../shared/services/map.service';
 import { LanguageService } from '../../shared/services/language.service';
 import { TripLegGeoController } from '../../shared/controllers/trip-geo-controller';
-import { TripData } from '../../shared/types/trip';
+import { TripData, TripLegData } from '../../shared/types/trip';
 import { OJPHelpers } from '../../helpers/ojp-helpers';
 import { ShapeProviderService } from '../../shared/services/shape-provider.service';
 import { DateHelpers } from '../../helpers/date-helpers';
@@ -237,6 +237,22 @@ export class JourneyResultRowComponent implements OnInit {
     }
 
     this.tripData.trip = updatedTrip;
+    
+    const tripData = this.tripData;
+    if (this.tripData) {
+      const newLegsData: TripLegData[] = [];
+      tripData.legsData.forEach((legData, idx) => {
+        const newLegData: TripLegData = {
+          tripId: tripData.trip.id,
+          leg: updatedTrip.legs[idx],
+          info: legData.info,
+          map: legData.map,
+        };
+        newLegsData.push(newLegData);
+      });
+
+      this.tripData.legsData = newLegsData;
+    }
   }
 
   public redrawTripOnMap() {
