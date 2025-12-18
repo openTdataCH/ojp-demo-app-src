@@ -5,7 +5,7 @@ OJP-Demo URL: https://opentdatach.github.io/ojp-demo-app/
 ----
 
 18.December 2025
-- fix TRR - [PR #327](https://github.com/openTdataCH/ojp-demo-app-src/pull/327)
+- fix TripRefineRequest legs update - [PR #327](https://github.com/openTdataCH/ojp-demo-app-src/pull/327)
 
 17.December 2025
 - use additional route shapes providers - [PR #323](https://github.com/openTdataCH/ojp-demo-app-src/pull/323)
