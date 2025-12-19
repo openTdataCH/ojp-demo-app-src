@@ -86,43 +86,43 @@ export class SharedMobility {
     const provider: SharedMobilityProvider | null = (() => {
       const providerName: SharedMobilityProvider | null = (() => {
         if (isOJPv2) {
-          const operatorName = (place.properties['OPERATOR_NAME'] ?? 'n/a').toLowerCase();
-          if (operatorName.startsWith('bird')) {
+          const operatorNameLC: string = (place.properties['OPERATOR_NAME'] ?? 'n/a').toLowerCase();
+          if (operatorNameLC.startsWith('bird')) {
             return 'Bird';
           }
-          if (operatorName.startsWith('bolt')) {
+          if (operatorNameLC.startsWith('bolt')) {
             return 'Bolt';
           }
-          if (operatorName.startsWith('lime')) {
+          if (operatorNameLC.startsWith('lime')) {
             return 'Lime';
           }
-          if (operatorName.startsWith('voi')) {
+          if (operatorNameLC.startsWith('voi')) {
             return 'VOI';
           }
-          if (operatorName === 'donkey republic') {
+          if (operatorNameLC === 'donkey republic') {
             return 'Donkey Republic';
           }
-          if (operatorName === 'nextbike') {
+          if (operatorNameLC === 'nextbike') {
             return 'Nextbike';
           }
-          if (operatorName === 'velospot') {
+          if (operatorNameLC === 'velospot') {
             return 'Velospot';
           }
-          if (operatorName === 'pick-e-bike') {
+          if (operatorNameLC === 'pick-e-bike') {
             return 'Pick-e-Bike';
           }
         } else {
-          const placeName = (poi.placeName ?? 'n/a').toLowerCase();
-          if (placeName.startsWith('bolt')) {
+          const placeNameLC = (poi.placeName ?? 'n/a').toLowerCase();
+          if (placeNameLC.startsWith('bolt')) {
             return 'Bolt';
           }
-          if (placeName.startsWith('lime')) {
+          if (placeNameLC.startsWith('lime')) {
             return 'Lime';
           }
-          if (placeName.startsWith('voi')) {
+          if (placeNameLC.startsWith('voi')) {
             return 'VOI';
           }
-          if (placeName.startsWith('bird')) {
+          if (placeNameLC.startsWith('bird')) {
             return 'Bird';
           }
 
