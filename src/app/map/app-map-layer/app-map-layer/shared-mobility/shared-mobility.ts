@@ -62,23 +62,25 @@ export class SharedMobility {
       return poiCode;
     })();
 
-    // see https://github.com/SFOE/sharedmobility/blob/main/providers.csv
-    const providerData: [SharedMobilityProvider | null, VehicleType] = (() => {
-      const vehicleType: VehicleType | null = (() => {
-        if (poi.category === 'escooter_rental') {
-          return 'E-Scooter';
-        }
-        if (poi.category === 'bicycle_rental') {
-          return 'E-Bike';
-        }
-
-        return null;
-      })();
-
-      if (vehicleType === null) {
-        return [null, 'E-Scooter'];
+    const vehicleType: VehicleType | null = (() => {
+      if (poi.category === 'escooter_rental') {
+        return 'E-Scooter';
+      }
+      if (poi.category === 'bicycle_rental') {
+        return 'E-Bike';
       }
 
+      return null;
+    })();
+
+    if (vehicleType === null) {
+      console.error('CANT DETECT vehicleType');
+      console.log(place);
+      return null;
+    }
+
+    // see https://github.com/SFOE/sharedmobility/blob/main/providers.csv
+    const provider: SharedMobilityProvider | null = (() => {
       const providerName: SharedMobilityProvider | null = (() => {
         if (isOJPv2) {
           const operatorName = (place.properties['OPERATOR_NAME'] ?? 'n/a').toLowerCase();
@@ -221,10 +223,8 @@ export class SharedMobility {
         return ['TIER', 'E-Bike'];
       }
 
-      return [null, 'E-Scooter'];
-    })()
-    const provider = providerData[0];
-    const vehicleType = providerData[1];
+      return providerName;
+    })();
 
     if (provider === null) {
       console.error('CANT DETECT provider');
@@ -234,7 +234,7 @@ export class SharedMobility {
 
     const name: string | null = (() => {
       if (provider === '2EM Car Sharing') {
-        return provider
+        return provider;
       }
       
       if (poiCategory === 'bicycle_rental' || poiCategory === 'car_sharing' || poiCategory === 'escooter_rental') {
