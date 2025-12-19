@@ -46,6 +46,8 @@ export class SharedMobility {
       return null;
     }
 
+    const isOJPv2 = OJP_VERSION === '2.0';
+
     const poi = place as Poi;
 
     const poiCategory = poi.category;
@@ -78,7 +80,33 @@ export class SharedMobility {
       }
 
       const providerName: SharedMobilityProvider | null = (() => {
-        if (OJP_VERSION === '1.0') {
+        if (isOJPv2) {
+          const operatorName = (place.properties['OPERATOR_NAME'] ?? 'n/a').toLowerCase();
+          if (operatorName.startsWith('bird')) {
+            return 'Bird';
+          }
+          if (operatorName.startsWith('bolt')) {
+            return 'Bolt';
+          }
+          if (operatorName.startsWith('lime')) {
+            return 'Lime';
+          }
+          if (operatorName.startsWith('voi')) {
+            return 'VOI';
+          }
+          if (operatorName === 'donkey republic') {
+            return 'Donkey Republic';
+          }
+          if (operatorName === 'nextbike') {
+            return 'Nextbike';
+          }
+          if (operatorName === 'velospot') {
+            return 'Velospot';
+          }
+          if (operatorName === 'pick-e-bike') {
+            return 'Pick-e-Bike';
+          }
+        } else {
           const placeName = (poi.placeName ?? 'n/a').toLowerCase();
           if (placeName.startsWith('bolt')) {
             return 'Bolt';
@@ -110,34 +138,8 @@ export class SharedMobility {
           if (poi.placeName.includes('invia')) {
             return 'invia BikeShare';
           }
-        } else {
-          const operatorName = (place.properties['OPERATOR_NAME'] ?? 'n/a').toLowerCase();
-          if (operatorName.startsWith('bird')) {
-            return 'Bird';
-          }
-          if (operatorName.startsWith('bolt')) {
-            return 'Bolt';
-          }
-          if (operatorName.startsWith('lime')) {
-            return 'Lime';
-          }
-          if (operatorName.startsWith('voi')) {
-            return 'VOI';
-          }
-          if (operatorName === 'donkey republic') {
-            return 'Donkey Republic';
-          }
-          if (operatorName === 'nextbike') {
-            return 'Nextbike';
-          }
-          if (operatorName === 'velospot') {
-            return 'Velospot';
-          }
-          if (operatorName === 'pick-e-bike') {
-            return 'Pick-e-Bike';
-          }
         }
-
+        
         return null;
       })();
 
