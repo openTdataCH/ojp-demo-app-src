@@ -69,6 +69,9 @@ export class SharedMobility {
       if (poi.category === 'bicycle_rental') {
         return 'E-Bike';
       }
+      if (poi.category === 'car_sharing') {
+        return 'Car';
+      }
 
       return null;
     })();
