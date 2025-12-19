@@ -30,7 +30,7 @@ export const APP_CONFIG: AppConfig = {
       authToken: "PLACEHOLDER_REPLACE__V2_INT",
     },
     'V2-DEV': {
-      url: 'https://odpch-api.clients.liip.ch/ojp-dev',
+      url: 'https://odpch-api.clients.liip.ch/ojp20-dev',
       authToken: "PLACEHOLDER_REPLACE__V2_INT",
     },
 
