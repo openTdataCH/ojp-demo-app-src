@@ -125,6 +125,12 @@ export class SharedMobility {
           if (placeNameLC.startsWith('bird')) {
             return 'Bird';
           }
+          if (placeNameLC.includes('nextbike')) {
+            return 'Nextbike';
+          }
+          if (placeNameLC.includes('invia')) {
+            return 'invia BikeShare';
+          }
 
           const infoURL: string = poi.properties['infoURL'] ?? 'n/a';
           if (infoURL.includes('dnky.bike')) {
@@ -135,13 +141,6 @@ export class SharedMobility {
           }
           if (infoURL.includes('pickebike')) {
             return 'Pick-e-Bike';
-          }
-
-          if (poi.placeName.includes('nextbike')) {
-            return 'Nextbike';
-          }
-          if (poi.placeName.includes('invia')) {
-            return 'invia BikeShare';
           }
         }
         
