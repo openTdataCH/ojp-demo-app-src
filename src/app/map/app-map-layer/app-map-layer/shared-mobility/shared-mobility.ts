@@ -111,6 +111,21 @@ export class SharedMobility {
           if (operatorNameLC === 'pick-e-bike') {
             return 'Pick-e-Bike';
           }
+          if (operatorNameLC.startsWith('share birrer')) {
+            return 'Share Birrer';
+          }
+          if (operatorNameLC.startsWith('mobility')) {
+            return 'Mobility';
+          }
+          if (operatorNameLC.startsWith('edrive carsharing')) {
+            return 'E-drive Car Sharing';
+          }
+          if (operatorNameLC.startsWith('2em')) {
+            return '2EM Car Sharing';
+          }
+          if (operatorNameLC.startsWith('mybuxi')) {
+            return 'MyBuxi';
+          }
         } else {
           const placeNameLC = (poi.placeName ?? 'n/a').toLowerCase();
           if (placeNameLC.startsWith('bolt')) {
@@ -130,6 +145,15 @@ export class SharedMobility {
           }
           if (placeNameLC.includes('invia')) {
             return 'invia BikeShare';
+          }
+          if (placeNameLC.includes('mobility')) {
+            return 'Mobility';
+          }
+          if (placeNameLC.includes('edrive carsharing')) {
+            return 'E-drive Car Sharing';
+          }
+          if (placeNameLC.includes('2em')) {
+            return '2EM Car Sharing';
           }
 
           const infoURL: string = poi.properties['infoURL'] ?? 'n/a';
