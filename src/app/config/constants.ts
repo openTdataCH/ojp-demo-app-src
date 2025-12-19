@@ -60,7 +60,7 @@ export const FLAG_USE_2nd_SHAPE_PROVIDER = (() => {
   return false;
 })();
 
-export type APP_STAGE = 'PROD' | 'INT' | 'TEST' | 'LA Beta' 
+export type APP_STAGE = 'PROD' | 'INT' | 'TEST' | 'LA Beta' | 'DEV'
   | 'V2-PROD' | 'V2-INT' | 'V2-TEST' | 'V2-DEV'
   | 'GR TEST'| 'PROD-LB' | 'OJP-SI' | 'NOVA-INT';
 
@@ -73,7 +73,7 @@ export const APP_STAGEs: APP_STAGE[] = (() => {
   if (isOJPv2) {
     stages = ['V2-PROD', 'V2-INT', 'V2-DEV', 'V2-TEST'];
   } else {
-    stages = ['PROD', 'INT', 'TEST', 'LA Beta'];
+    stages = ['PROD', 'INT', 'DEV', 'TEST', 'LA Beta'];
     if (DEBUG_LEVEL === 'DEBUG') {
       stages.push('OJP-SI');
     }
