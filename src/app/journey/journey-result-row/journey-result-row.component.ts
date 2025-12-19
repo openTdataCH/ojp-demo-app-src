@@ -264,7 +264,6 @@ export class JourneyResultRowComponent implements OnInit {
       return;
     }
 
-
     this.userTripService.mapActiveTripSelected.emit(this.tripData);
   }
 }
