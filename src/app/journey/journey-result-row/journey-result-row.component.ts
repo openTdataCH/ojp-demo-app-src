@@ -242,23 +242,14 @@ export class JourneyResultRowComponent implements OnInit {
       console.log('error: nova failed to return new fares, use old ones');
     }
 
-    this.tripData.trip = updatedTrip;
-    
-    const tripData = this.tripData;
-    if (this.tripData) {
-      const newLegsData: TripLegData[] = [];
-      tripData.legsData.forEach((legData, idx) => {
-        const newLegData: TripLegData = {
-          tripId: tripData.trip.id,
-          leg: updatedTrip.legs[idx],
-          info: legData.info,
-          map: legData.map,
-        };
-        newLegsData.push(newLegData);
-      });
+    const newTripsData = this.userTripService.massageTrips([updatedTrip]);
+    this.tripData = newTripsData[0];
 
-      this.tripData.legsData = newLegsData;
-    }
+    this.updateTripModel(this.tripData);
+
+    const zoomToTrip = false;
+    this.drawAndZoomToMapTrip(zoomToTrip);
+    await this.loadShapeProvider();
   }
 
   public redrawTripOnMap() {
