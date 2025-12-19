@@ -7,7 +7,7 @@ import OJP_Legacy from '../config/ojp-legacy';
 
 import { LegStopPointData } from '../shared/components/service-stops.component';
 import { APP_STAGE, DEBUG_LEVEL, DEFAULT_APP_STAGE } from '../config/constants';
-import { AnyLocationInformationRequestResponse, AnyPlaceResultSchema, AnyPlaceSchema, AnyStopEventRequestResponse, AnyTripInfoRequestResponse, StopEventType, StopPointCall, VehicleAccessType } from '../shared/types/_all';
+import { AnyLocationInformationRequestResponse, AnyPlaceResultSchema, AnyStopEventRequestResponse, AnyTripInfoRequestResponse, StopEventType, StopPointCall, VehicleAccessType } from '../shared/types/_all';
 import { JourneyService } from '../shared/models/journey-service';
 import { PlaceLocation } from '../shared/models/place/location';
 import { APP_CONFIG } from '../config/app-config';
