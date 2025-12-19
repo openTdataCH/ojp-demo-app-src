@@ -5,8 +5,9 @@ OJP-Demo URL: https://opentdatach.github.io/ojp-demo-app/
 ----
 
 19.December 2025
-- fix TripRefineRequest #2 - [PR #327](https://github.com/openTdataCH/ojp-demo-app-src/pull/329)
+- fix TripRefineRequest #2 - [PR #329](https://github.com/openTdataCH/ojp-demo-app-src/pull/329)
   - re-render the legs even if they are different than the original trip
+- adds new stage - [PR #330](https://github.com/openTdataCH/ojp-demo-app-src/pull/330)
 
 18.December 2025
 - fix TripRefineRequest legs update - [PR #327](https://github.com/openTdataCH/ojp-demo-app-src/pull/327)

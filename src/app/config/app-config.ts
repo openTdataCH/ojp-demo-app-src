@@ -29,6 +29,10 @@ export const APP_CONFIG: AppConfig = {
       url: 'https://odpch-api.clients.liip.ch/ojp20-test',
       authToken: "PLACEHOLDER_REPLACE__V2_INT",
     },
+    'V2-DEV': {
+      url: 'https://odpch-api.clients.liip.ch/ojp-dev',
+      authToken: "PLACEHOLDER_REPLACE__V2_INT",
+    },
 
     // POCs
     'PROD-LB': {
