@@ -783,7 +783,7 @@ export class UserTripService {
     this.updateURLs();
   }
 
-  private massageTrips(trips: OJP_Legacy.Trip[]): TripData[] {
+  public massageTrips(trips: OJP_Legacy.Trip[]): TripData[] {
     const tripsData = trips.map((trip, tripIdx) => {
       const legsData = trip.legs.map(leg => {
         const legData: TripLegData = {
