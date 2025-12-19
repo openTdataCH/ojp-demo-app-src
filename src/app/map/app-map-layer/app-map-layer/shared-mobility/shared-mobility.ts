@@ -5,7 +5,8 @@ import { Poi, RestrictionPoiOSMTag } from '../../../../shared/models/place/poi';
 // https://github.com/SFOE/sharedmobility/blob/main/providers.csv
 type SharedMobilityProvider = '2EM Car Sharing' | 'Bird' | 'Bolt' | 'Carvelo2go' | 'Donkey Republic'
   | 'E-drive Car Sharing' | 'JM Fleets' | 'LIEmobil' | 'Lime' | 'Mobility' | 'Nextbike'
-  | 'Pick-e-Bike' | 'PubliBike' | 'Regivelo.ch' | 'Share Birrer' | 'Sponti-Car' | 'TIER' | 'VOI' | 'invia BikeShare' | 'Velospot';
+  | 'Pick-e-Bike' | 'PubliBike' | 'Regivelo.ch' | 'Share Birrer' | 'Sponti-Car' | 'TIER' | 'VOI' | 'invia BikeShare' | 'Velospot'
+  | 'Share Birrer' | 'MyBuxi';
 
 type VehicleType = 'Car' | 'E-Car' | 'Bike' | 'E-Bike' | 'E-CargoBike' | 'E-Scooter' | 'E-Moped'
 
@@ -46,6 +47,8 @@ export class SharedMobility {
       return null;
     }
 
+    const isOJPv2 = OJP_VERSION === '2.0';
+
     const poi = place as Poi;
 
     const poiCategory = poi.category;
@@ -60,37 +63,98 @@ export class SharedMobility {
       return poiCode;
     })();
 
-    // see https://github.com/SFOE/sharedmobility/blob/main/providers.csv
-    const providerData: [SharedMobilityProvider | null, VehicleType] = (() => {
-      const vehicleType: VehicleType | null = (() => {
-        if (poi.category === 'escooter_rental') {
-          return 'E-Scooter';
-        }
-        if (poi.category === 'bicycle_rental') {
-          return 'E-Bike';
-        }
-
-        return null;
-      })();
-
-      if (vehicleType === null) {
-        return [null, 'E-Scooter'];
+    const vehicleType: VehicleType | null = (() => {
+      if (poi.category === 'escooter_rental') {
+        return 'E-Scooter';
+      }
+      if (poi.category === 'bicycle_rental') {
+        return 'E-Bike';
+      }
+      if (poi.category === 'car_sharing') {
+        return 'Car';
       }
 
+      return null;
+    })();
+
+    if (vehicleType === null) {
+      console.error('CANT DETECT vehicleType');
+      console.log(place);
+      return null;
+    }
+
+    // see https://github.com/SFOE/sharedmobility/blob/main/providers.csv
+    const provider: SharedMobilityProvider | null = (() => {
       const providerName: SharedMobilityProvider | null = (() => {
-        if (OJP_VERSION === '1.0') {
-          const placeName = (poi.placeName ?? 'n/a').toLowerCase();
-          if (placeName.startsWith('bolt')) {
+        if (isOJPv2) {
+          const operatorNameLC: string = (place.properties['OPERATOR_NAME'] ?? 'n/a').toLowerCase();
+          if (operatorNameLC.startsWith('bird')) {
+            return 'Bird';
+          }
+          if (operatorNameLC.startsWith('bolt')) {
             return 'Bolt';
           }
-          if (placeName.startsWith('lime')) {
+          if (operatorNameLC.startsWith('lime')) {
             return 'Lime';
           }
-          if (placeName.startsWith('voi')) {
+          if (operatorNameLC.startsWith('voi')) {
             return 'VOI';
           }
-          if (placeName.startsWith('bird')) {
+          if (operatorNameLC === 'donkey republic') {
+            return 'Donkey Republic';
+          }
+          if (operatorNameLC === 'nextbike') {
+            return 'Nextbike';
+          }
+          if (operatorNameLC === 'velospot') {
+            return 'Velospot';
+          }
+          if (operatorNameLC === 'pick-e-bike') {
+            return 'Pick-e-Bike';
+          }
+          if (operatorNameLC.startsWith('share birrer')) {
+            return 'Share Birrer';
+          }
+          if (operatorNameLC.startsWith('mobility')) {
+            return 'Mobility';
+          }
+          if (operatorNameLC.startsWith('edrive carsharing')) {
+            return 'E-drive Car Sharing';
+          }
+          if (operatorNameLC.startsWith('2em')) {
+            return '2EM Car Sharing';
+          }
+          if (operatorNameLC.startsWith('mybuxi')) {
+            return 'MyBuxi';
+          }
+        } else {
+          const placeNameLC = (poi.placeName ?? 'n/a').toLowerCase();
+          if (placeNameLC.startsWith('bolt')) {
+            return 'Bolt';
+          }
+          if (placeNameLC.startsWith('lime')) {
+            return 'Lime';
+          }
+          if (placeNameLC.startsWith('voi')) {
+            return 'VOI';
+          }
+          if (placeNameLC.startsWith('bird')) {
             return 'Bird';
+          }
+          if (placeNameLC.includes('nextbike')) {
+            return 'Nextbike';
+          }
+          if (placeNameLC.includes('invia')) {
+            return 'invia BikeShare';
+          }
+          if (placeNameLC.includes('mobility')) {
+            return 'Mobility';
+          }
+          if (placeNameLC.includes('edrive carsharing')) {
+            return 'E-drive Car Sharing';
+          }
+          if (placeNameLC.includes('2em')) {
+            return '2EM Car Sharing';
           }
 
           const infoURL: string = poi.properties['infoURL'] ?? 'n/a';
@@ -103,126 +167,13 @@ export class SharedMobility {
           if (infoURL.includes('pickebike')) {
             return 'Pick-e-Bike';
           }
-
-          if (poi.placeName.includes('nextbike')) {
-            return 'Nextbike';
-          }
-          if (poi.placeName.includes('invia')) {
-            return 'invia BikeShare';
-          }
-        } else {
-          const operatorName = (place.properties['OPERATOR_NAME'] ?? 'n/a').toLowerCase();
-          if (operatorName.startsWith('bird')) {
-            return 'Bird';
-          }
-          if (operatorName.startsWith('bolt')) {
-            return 'Bolt';
-          }
-          if (operatorName.startsWith('lime')) {
-            return 'Lime';
-          }
-          if (operatorName.startsWith('voi')) {
-            return 'VOI';
-          }
-          if (operatorName === 'donkey republic') {
-            return 'Donkey Republic';
-          }
-          if (operatorName === 'nextbike') {
-            return 'Nextbike';
-          }
-          if (operatorName === 'velospot') {
-            return 'Velospot';
-          }
-          if (operatorName === 'pick-e-bike') {
-            return 'Pick-e-Bike';
-          }
         }
-
+        
         return null;
       })();
 
-      if (providerName !== null) {
-        return [providerName, vehicleType];
-      }
-
-      if (poiCategory === 'bicycle_rental') {
-        if (poi.placeName === 'Publibike') {
-          return ['PubliBike', 'Bike'];
-        }
-
-        if (poi.placeName === 'Publiebike') {
-          return ['PubliBike', 'E-Bike'];
-        }
-
-        if (poi.placeName === 'Nextbike') {
-          return ['Nextbike', 'Bike'];
-        }
-      }
-
-      if (code.startsWith('2em_cars')) {
-        return ['2EM Car Sharing', 'Car'];
-      }
-
-      if (code.startsWith('2em_cars_e')) {
-        return ['2EM Car Sharing', 'E-Car'];
-      }
-
-      if (code.startsWith('carvelo2go')) {
-        return ['Carvelo2go', 'E-CargoBike'];
-      }
-
-      if (code.startsWith('donkey_kreuzlingen')) {
-        return ['Regivelo.ch', 'Bike'];
-      }
-
-      if (code.startsWith('donkey_')) {
-        return ['Donkey Republic', 'Bike'];
-      }
-
-      if (code.startsWith('edrivecarsharing')) {
-        return ['E-drive Car Sharing', 'E-Car'];
-      }
-
-      if (code.startsWith('liemobil_liechtenstein_ebike')) {
-        return ['LIEmobil', 'E-Bike'];
-      }
-
-      if (code.startsWith('mobility')) {
-        return ['Mobility', 'Car'];
-      }
-
-      if (code.startsWith('emobility')) {
-        return ['Mobility', 'E-Car'];
-      }
-
-      if (code.startsWith('nextbike_ch')) {
-        return ['Nextbike', 'Bike'];
-      }
-
-      if (code.startsWith('pickebike_')) {
-        if (code.includes('_emoped')) {
-          return ['Pick-e-Bike', 'E-Moped'];
-        } else {
-          return ['Pick-e-Bike', 'E-Bike'];
-        }
-      }
-
-      if (code.startsWith('share_birrer_ch')) {
-        return ['Share Birrer', 'E-Car'];
-      }
-
-      if (code.startsWith('sponticar')) {
-        return ['Sponti-Car', 'E-Car'];
-      }
-
-      if (code.startsWith('tier_ebike')) {
-        return ['TIER', 'E-Bike'];
-      }
-
-      return [null, 'E-Scooter'];
-    })()
-    const provider = providerData[0];
-    const vehicleType = providerData[1];
+      return providerName;
+    })();
 
     if (provider === null) {
       console.error('CANT DETECT provider');
@@ -232,7 +183,7 @@ export class SharedMobility {
 
     const name: string | null = (() => {
       if (provider === '2EM Car Sharing') {
-        return provider
+        return provider;
       }
       
       if (poiCategory === 'bicycle_rental' || poiCategory === 'car_sharing' || poiCategory === 'escooter_rental') {
