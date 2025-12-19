@@ -56,9 +56,27 @@ export class JourneyResultRowComponent implements OnInit {
       return;
     }
 
-    this.initTripHeaderStats(this.tripData.trip);
+    this.updateTripModel(this.tripData);
 
-    this.tripData.legsData.forEach(legData => {
+    const isFirstTrip = this.idx === 0;
+    if (this.tripPanel && isFirstTrip) {
+      this.tripPanel.open();
+    }
+
+    this.tripPanel?.afterExpand.subscribe(async ev => {
+      this.drawAndZoomToMapTrip();
+      await this.loadShapeProvider();
+    });
+    if (isFirstTrip) {
+      this.drawAndZoomToMapTrip();
+      await this.loadShapeProvider();
+    }
+  }
+
+  private updateTripModel(tripData: TripData) {
+     this.initTripHeaderStats(tripData.trip);
+
+    tripData.legsData.forEach(legData => {
       const showPreciseLine: boolean = (() => {
         if (FLAG_USE_2nd_SHAPE_PROVIDER) {
           return true;
@@ -75,20 +93,6 @@ export class JourneyResultRowComponent implements OnInit {
         legShapeError: null,
       };
     });
-
-    const isFirstTrip = this.idx === 0;
-    if (this.tripPanel && isFirstTrip) {
-      this.tripPanel.open();
-    }
-
-    this.tripPanel?.afterExpand.subscribe(async ev => {
-      this.drawAndZoomToMapTrip();
-      await this.loadShapeProvider();
-    });
-    if (isFirstTrip) {
-      this.drawAndZoomToMapTrip();
-      await this.loadShapeProvider();
-    }
   }
 
   private async loadShapeProvider() {
