@@ -242,7 +242,7 @@ export class JourneyResultRowComponent implements OnInit {
       console.log('error: nova failed to return new fares, use old ones');
     }
 
-    const newTripsData = this.userTripService.massageTrips([updatedTrip]);
+    const newTripsData = OJPHelpers.convertTripsToTripData([updatedTrip]);
     this.tripData = newTripsData[0];
 
     this.updateTripModel(this.tripData);

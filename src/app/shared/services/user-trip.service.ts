@@ -435,7 +435,7 @@ export class UserTripService {
   }
 
   updateTrips(trips: OJP_Legacy.Trip[]) {
-    const tripsData = this.massageTrips(trips);
+    const tripsData = OJPHelpers.convertTripsToTripData(trips);
     this.tripsDataUpdated.emit(tripsData);
   }
 
