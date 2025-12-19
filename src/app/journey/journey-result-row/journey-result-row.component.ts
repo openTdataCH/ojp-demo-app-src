@@ -117,13 +117,15 @@ export class JourneyResultRowComponent implements OnInit {
     }
   }
 
-  private drawAndZoomToMapTrip() {
+  private drawAndZoomToMapTrip(zoomToTrip: boolean = true) {
     if (!this.tripData) {
       return;
     }
 
     this.userTripService.mapActiveTripSelected.emit(this.tripData);
-    this.mapService.zoomToTrip(this.tripData.trip);
+    if (zoomToTrip) {
+      this.mapService.zoomToTrip(this.tripData.trip);
+    }
   }
 
   private initTripHeaderStats(trip: OJP_Legacy.Trip) {
