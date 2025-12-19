@@ -15,6 +15,10 @@ export const APP_CONFIG: AppConfig = {
       url: 'https://odpch-api.clients.liip.ch/ojp-test',
       authToken: "PLACEHOLDER_REPLACE__TEST",
     },
+    'DEV': {
+      url: 'https://odpch-api.clients.liip.ch/ojp-dev',
+      authToken: "PLACEHOLDER_REPLACE__TEST",
+    },
 
     // OJP 2.0
     'V2-PROD': {
