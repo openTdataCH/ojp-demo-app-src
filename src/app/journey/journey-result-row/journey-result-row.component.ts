@@ -56,9 +56,27 @@ export class JourneyResultRowComponent implements OnInit {
       return;
     }
 
-    this.initTripHeaderStats(this.tripData.trip);
+    this.updateTripModel(this.tripData);
 
-    this.tripData.legsData.forEach(legData => {
+    const isFirstTrip = this.idx === 0;
+    if (this.tripPanel && isFirstTrip) {
+      this.tripPanel.open();
+    }
+
+    this.tripPanel?.afterExpand.subscribe(async ev => {
+      this.drawAndZoomToMapTrip();
+      await this.loadShapeProvider();
+    });
+    if (isFirstTrip) {
+      this.drawAndZoomToMapTrip();
+      await this.loadShapeProvider();
+    }
+  }
+
+  private updateTripModel(tripData: TripData) {
+     this.initTripHeaderStats(tripData.trip);
+
+    tripData.legsData.forEach(legData => {
       const showPreciseLine: boolean = (() => {
         if (FLAG_USE_2nd_SHAPE_PROVIDER) {
           return true;
@@ -75,20 +93,6 @@ export class JourneyResultRowComponent implements OnInit {
         legShapeError: null,
       };
     });
-
-    const isFirstTrip = this.idx === 0;
-    if (this.tripPanel && isFirstTrip) {
-      this.tripPanel.open();
-    }
-
-    this.tripPanel?.afterExpand.subscribe(async ev => {
-      this.drawAndZoomToMapTrip();
-      await this.loadShapeProvider();
-    });
-    if (isFirstTrip) {
-      this.drawAndZoomToMapTrip();
-      await this.loadShapeProvider();
-    }
   }
 
   private async loadShapeProvider() {
@@ -113,13 +117,15 @@ export class JourneyResultRowComponent implements OnInit {
     }
   }
 
-  private drawAndZoomToMapTrip() {
+  private drawAndZoomToMapTrip(zoomToTrip: boolean = true) {
     if (!this.tripData) {
       return;
     }
 
     this.userTripService.mapActiveTripSelected.emit(this.tripData);
-    this.mapService.zoomToTrip(this.tripData.trip);
+    if (zoomToTrip) {
+      this.mapService.zoomToTrip(this.tripData.trip);
+    }
   }
 
   private initTripHeaderStats(trip: OJP_Legacy.Trip) {
@@ -236,30 +242,20 @@ export class JourneyResultRowComponent implements OnInit {
       console.log('error: nova failed to return new fares, use old ones');
     }
 
-    this.tripData.trip = updatedTrip;
-    
-    const tripData = this.tripData;
-    if (this.tripData) {
-      const newLegsData: TripLegData[] = [];
-      tripData.legsData.forEach((legData, idx) => {
-        const newLegData: TripLegData = {
-          tripId: tripData.trip.id,
-          leg: updatedTrip.legs[idx],
-          info: legData.info,
-          map: legData.map,
-        };
-        newLegsData.push(newLegData);
-      });
+    const newTripsData = OJPHelpers.convertTripsToTripData([updatedTrip]);
+    this.tripData = newTripsData[0];
 
-      this.tripData.legsData = newLegsData;
-    }
+    this.updateTripModel(this.tripData);
+
+    const zoomToTrip = false;
+    this.drawAndZoomToMapTrip(zoomToTrip);
+    await this.loadShapeProvider();
   }
 
   public redrawTripOnMap() {
     if (!this.tripData) {
       return;
     }
-
 
     this.userTripService.mapActiveTripSelected.emit(this.tripData);
   }

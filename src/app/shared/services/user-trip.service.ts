@@ -435,7 +435,7 @@ export class UserTripService {
   }
 
   updateTrips(trips: OJP_Legacy.Trip[]) {
-    const tripsData = this.massageTrips(trips);
+    const tripsData = OJPHelpers.convertTripsToTripData(trips);
     this.tripsDataUpdated.emit(tripsData);
   }
 
@@ -781,127 +781,6 @@ export class UserTripService {
 
     this.locationsUpdated.emit();
     this.updateURLs();
-  }
-
-  private massageTrips(trips: OJP_Legacy.Trip[]): TripData[] {
-    const tripsData = trips.map((trip, tripIdx) => {
-      const legsData = trip.legs.map(leg => {
-        const legData: TripLegData = {
-          tripId: trip.id,
-          leg: leg,
-          info: {
-            id: '' + leg.legID,
-            comments: null,
-          },
-          map: {
-            show: true,
-            showPreciseLine: !TripLegGeoController.shouldUseBeeline(leg),
-            showOtherProvider: false,
-            legShapeResult: null,
-            legShapeError: null,
-          }
-        };
-        return legData;
-      });
-
-      const tripData: TripData = {
-        trip: trip,
-        legsData: legsData,
-        info: {
-          comments: null,
-        }
-      };
-
-      return tripData;
-    });
-    
-    this.mergeTripLegs(tripsData);
-
-    return tripsData;
-  }
-
-  // Some of the legs can be merged
-  // ex1: trains with multiple desitinaion units
-  // - check for remainInVehicle https://github.com/openTdataCH/ojp-demo-app-src/issues/125  
-  private mergeTripLegs(tripsData: TripData[]) {
-    tripsData.forEach((tripData, tripIdx) => {
-      const newLegsData: TripLegData[] = [];
-      let skipIdx: number = -1;
-      
-      tripData.trip.legs.forEach((leg, legIdx) => {
-        const legData: TripLegData = {
-          tripId: tripData.trip.id,
-          leg: leg,
-          info: {
-            id: '' + leg.legID,
-            comments: null,
-          },
-          map: tripData.legsData[legIdx].map,
-        };
-
-        if (legIdx <= skipIdx) {
-          return;
-        }
-
-        const leg2Idx = legIdx + 1;
-        const leg3Idx = legIdx + 2;
-        if (leg3Idx >= tripData.trip.legs.length) {
-          newLegsData.push(legData);
-          return;
-        }
-
-        // If TransferLeg of type 'remainInVehicle'
-        // => merge prev / next TimedLeg legs
-        let shouldMergeLegs = false;
-        const leg2 = tripData.trip.legs[leg2Idx];
-        const leg3 = tripData.trip.legs[leg3Idx];
-        if (leg.legType === 'TimedLeg' && leg2.legType === 'TransferLeg' && leg3.legType === 'TimedLeg') {
-          const continousLeg = leg2 as OJP_Legacy.TripContinuousLeg;
-          if ((continousLeg.transferMode === 'remainInVehicle') || (continousLeg.transferMode === 'changeWithinVehicle')) {
-            shouldMergeLegs = true;
-            skipIdx = leg3Idx;
-          }
-        }
-
-        if (shouldMergeLegs) {
-          const newLeg = this.mergeTimedLegs(leg as OJP_Legacy.TripTimedLeg, leg3 as OJP_Legacy.TripTimedLeg);
-          legData.leg = newLeg;
-          legData.info.id = (legIdx + 1) + '-' + (leg3Idx + 1);
-          legData.info.comments = 'Timed legs were merged: ' +  legData.info.id;
-        }
-
-        newLegsData.push(legData);
-      });
-
-      if (tripData.trip.legs.length > 0 && (tripData.trip.legs.length !== newLegsData.length)) {
-        tripData.info.comments = 'APP-HACK - mergeTripLegs - remainInVehicle usecase, before: ' + tripData.trip.legs.length + ', after: ' + newLegsData.length + ' legs';
-
-        if (DEBUG_LEVEL === 'DEBUG') {
-          console.log(tripData.info.comments);
-        }
-
-        tripData.legsData = newLegsData;
-      }
-    });
-  }
-
-  private mergeTimedLegs(leg1: OJP_Legacy.TripTimedLeg, leg2: OJP_Legacy.TripTimedLeg) {
-    let newLegIntermediatePoints = leg1.intermediateStopPoints.slice();
-    leg1.toStopPoint.stopPointType = 'Intermediate';
-    newLegIntermediatePoints.push(leg1.toStopPoint);
-    newLegIntermediatePoints = newLegIntermediatePoints.concat(leg2.intermediateStopPoints.slice());
-
-    const newLeg = new OJP_Legacy.TripTimedLeg(leg1.legID, leg1.service, leg1.fromStopPoint, leg2.toStopPoint, newLegIntermediatePoints);
-
-    if (leg1.legDuration !== null && leg2.legDuration !== null) {
-      newLeg.legDuration = leg1.legDuration.plus(leg2.legDuration);
-    }
-
-    if (leg1.legTrack !== null && leg2.legTrack !== null) {
-      newLeg.legTrack = leg1.legTrack.plus(leg2.legTrack);
-    }
-    
-    return newLeg;
   }
 
   public async fetchFares(language: OJP_Legacy.Language) {
