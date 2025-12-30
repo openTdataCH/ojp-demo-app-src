@@ -4,6 +4,9 @@ OJP-Demo URL: https://opentdatach.github.io/ojp-demo-app/
 
 ----
 
+30.December 2025
+- fix LIR autocomplete stage - [PR #334](https://github.com/openTdataCH/ojp-demo-app-src/pull/334)
+
 19.December 2025
 - fix TripRefineRequest #2 - [PR #329](https://github.com/openTdataCH/ojp-demo-app-src/pull/329)
   - re-render the legs even if they are different than the original trip

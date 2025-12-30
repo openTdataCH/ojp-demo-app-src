@@ -90,8 +90,6 @@ export class JourneyPointInputComponent implements OnInit {
 
   public useSingleSearchPool: boolean;
 
-  private sdk: OJP_Next.AnySDK; 
-
   constructor(private mapService: MapService, private userTripService: UserTripService, private languageService: LanguageService) {
     this.ignoreInputChanges = false;
     
@@ -110,8 +108,6 @@ export class JourneyPointInputComponent implements OnInit {
     this.place = null;
 
     this.useSingleSearchPool = false;
-
-    this.sdk = this.userTripService.createOJP_SDK_Instance(this.languageService.language);
   }
 
   ngOnInit() {
@@ -189,13 +185,14 @@ export class JourneyPointInputComponent implements OnInit {
 
   private async fetchJourneyPoints(searchTerm: string) {
     const placeTypes = this.filterPlaceType === undefined ? undefined : [this.filterPlaceType];
-    const request = this.sdk.requests.LocationInformationRequest.initWithLocationName(searchTerm, placeTypes, 10);
+    const sdk = this.userTripService.createOJP_SDK_Instance(this.languageService.language);
+    const request = sdk.requests.LocationInformationRequest.initWithLocationName(searchTerm, placeTypes, 10);
 
-    await this.fetchRequest(request);
+    await this.fetchRequest(sdk, request);
   }
 
-  private async fetchRequest(request: AnyLocationInformationRequest) {
-    const response = await request.fetchResponse(this.sdk);
+  private async fetchRequest(sdk: OJP_Next.AnySDK, request: AnyLocationInformationRequest) {
+    const response = await request.fetchResponse(sdk);
 
     if (!response.ok) {
       console.log('ERROR - failed to lookup locations');
@@ -287,9 +284,10 @@ export class JourneyPointInputComponent implements OnInit {
     const bbox = GeoPositionBBOX.initFromGeoPosition(nearbyGeoPosition, 5000, 5000);
     const bboxData = bbox.asFeatureBBOX();
 
-    const request = this.sdk.requests.LocationInformationRequest.initWithBBOX(bboxData, ['stop'], 300);
+    const sdk = this.userTripService.createOJP_SDK_Instance(this.languageService.language);
+    const request = sdk.requests.LocationInformationRequest.initWithBBOX(bboxData, ['stop'], 300);
 
-    await this.fetchRequest(request);
+    await this.fetchRequest(sdk, request);
 
     const stopPlaces = this.mapLookupPlaces['stop'];
     if (stopPlaces.length === 0) {
