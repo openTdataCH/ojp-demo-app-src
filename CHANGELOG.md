@@ -6,6 +6,10 @@ OJP-Demo URL: https://opentdatach.github.io/ojp-demo-app/
 
 30.December 2025
 - fix LIR autocomplete stage - [PR #334](https://github.com/openTdataCH/ojp-demo-app-src/pull/334)
+- fix Place handling - [PR #335](https://github.com/openTdataCH/ojp-demo-app-src/pull/335)
+  - handle cases when the poi.name is missing, then use placeName
+  - if placeName is missing then try to use the name from StopPlace or StopPoint
+  - handle POI cases when for OJP2.0 we can have osmTag array
 
 19.December 2025
 - fix TripRefineRequest #2 - [PR #329](https://github.com/openTdataCH/ojp-demo-app-src/pull/329)
