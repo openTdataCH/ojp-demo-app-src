@@ -9,7 +9,7 @@ import * as OJP_Next from 'ojp-sdk-next';
 import OJP_Legacy from '../../config/ojp-legacy';
 
 import { APP_CONFIG } from '../../config/app-config';
-import { APP_STAGE, DEBUG_LEVEL, DEFAULT_APP_STAGE, REQUESTOR_REF, TRIP_REQUEST_DEFAULT_NUMBER_OF_RESULTS, OJP_VERSION } from '../../config/constants';
+import { APP_STAGE, DEFAULT_APP_STAGE, REQUESTOR_REF, TRIP_REQUEST_DEFAULT_NUMBER_OF_RESULTS, OJP_VERSION } from '../../config/constants';
 
 import { MapService } from './map.service';
 import { TripData, TripLegData } from '../types/trip';
@@ -18,7 +18,6 @@ import { PlaceLocation } from '../models/place/location';
 import { GeoPositionBBOX } from '../models/geo/geoposition-bbox';
 import { OJPHelpers } from '../../helpers/ojp-helpers';
 import { AnyLocationInformationRequestResponse } from '../types/_all';
-import { TripLegGeoController } from '../controllers/trip-geo-controller';
 
 type LocationUpdateSource = 'SearchForm' | 'MapDragend' | 'MapPopupClick';
 
