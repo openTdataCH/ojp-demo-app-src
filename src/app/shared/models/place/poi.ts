@@ -85,7 +85,14 @@ export class Poi extends BasePlace {
     
     const name = (() => {
       if (isOJPv2) {
-        return (poiContainer as OJP_Types.PointOfInterestSchema).name.text;
+        const nodeName = (poiContainer as OJP_Types.PointOfInterestSchema).name ?? null;
+        if (nodeName === null) {
+          console.error('cant find poi.name, using place.name instead');
+          console.log(placeResultSchema);
+          return placeName + ' (see console.error)';
+        }
+
+        return nodeName.text;
       } else {
         return (poiContainer as OJP_Types.OJPv1_PointOfInterestSchema).pointOfInterestName.text;
       }
