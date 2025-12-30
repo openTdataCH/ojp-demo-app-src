@@ -102,10 +102,15 @@ export class Poi extends BasePlace {
 
     const categories: string[] = [];
     categoryNodes.forEach(categoryNode => {
-      // OJP v2
-      categoryNode.pointOfInterestClassification.forEach(poiClassification => {
-        categories.push(poiClassification);
-      });
+      if (isOJPv2) {
+        categoryNode.osmTag.forEach(osmTagNode => {
+          categories.push(osmTagNode.tag);
+        });
+
+        categoryNode.pointOfInterestClassification.forEach(poiClassification => {
+          categories.push(poiClassification);
+        });
+      }
     });
 
     const category: RestrictionPoiOSMTag | null = (() => {
