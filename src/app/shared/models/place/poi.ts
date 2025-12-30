@@ -85,7 +85,14 @@ export class Poi extends BasePlace {
     
     const name = (() => {
       if (isOJPv2) {
-        return (poiContainer as OJP_Types.PointOfInterestSchema).name.text;
+        const nodeName = (poiContainer as OJP_Types.PointOfInterestSchema).name ?? null;
+        if (nodeName === null) {
+          console.error('cant find poi.name, using place.name instead');
+          console.log(placeResultSchema);
+          return placeName + ' (see console.error)';
+        }
+
+        return nodeName.text;
       } else {
         return (poiContainer as OJP_Types.OJPv1_PointOfInterestSchema).pointOfInterestName.text;
       }
@@ -95,10 +102,15 @@ export class Poi extends BasePlace {
 
     const categories: string[] = [];
     categoryNodes.forEach(categoryNode => {
-      // OJP v2
-      categoryNode.pointOfInterestClassification.forEach(poiClassification => {
-        categories.push(poiClassification);
-      });
+      if (isOJPv2) {
+        categoryNode.osmTag.forEach(osmTagNode => {
+          categories.push(osmTagNode.tag);
+        });
+
+        categoryNode.pointOfInterestClassification.forEach(poiClassification => {
+          categories.push(poiClassification);
+        });
+      }
     });
 
     const category: RestrictionPoiOSMTag | null = (() => {

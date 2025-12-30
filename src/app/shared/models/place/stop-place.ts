@@ -79,14 +79,6 @@ export class StopPlace extends BasePlace {
       return null;
     }
 
-    const placeName = (() => {
-      if (isOJPv2) {
-        return (placeResultSchema as OJP_Types.PlaceResultSchema).place.name.text;
-      } else {
-        return (placeResultSchema as OJP_Types.OJPv1_LocationResultSchema).location.locationName.text;
-      }
-    })();
-
     const stopPlaceName = (() => {
       if (stopPlaceSchema && stopPlaceSchema.stopPlaceName) {
         return stopPlaceSchema.stopPlaceName.text;
@@ -96,7 +88,26 @@ export class StopPlace extends BasePlace {
         return stopPointSchema.stopPointName.text;
       }
 
-      return placeName;
+      return null;
+    })();
+
+    if (stopPlaceName === null) {
+      console.error('cant compute stopPlaceName / stopPointName');
+      return null;
+    }
+
+    const placeName = (() => {
+      if (isOJPv2) {
+        const nodeName = (placeResultSchema as OJP_Types.PlaceResultSchema).place.name ?? null;
+        if (nodeName === null) {
+          console.error('cant find place.name, using place.stopPlaceName instead');
+          return stopPlaceName + ' (see console.error)';
+        }
+
+        return nodeName.text;
+      } else {
+        return (placeResultSchema as OJP_Types.OJPv1_LocationResultSchema).location.locationName.text;
+      }
     })();
 
     const geoPositioSchema = (() => {
