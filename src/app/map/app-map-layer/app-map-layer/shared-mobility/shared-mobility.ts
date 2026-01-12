@@ -100,18 +100,6 @@ export class SharedMobility {
           if (operatorNameLC.startsWith('voi')) {
             return 'VOI';
           }
-          if (operatorNameLC === 'donkey republic') {
-            return 'Donkey Republic';
-          }
-          if (operatorNameLC === 'nextbike') {
-            return 'Nextbike';
-          }
-          if (operatorNameLC === 'velospot') {
-            return 'Velospot';
-          }
-          if (operatorNameLC === 'pick-e-bike') {
-            return 'Pick-e-Bike';
-          }
           if (operatorNameLC.startsWith('share birrer')) {
             return 'Share Birrer';
           }
@@ -126,6 +114,18 @@ export class SharedMobility {
           }
           if (operatorNameLC.startsWith('mybuxi')) {
             return 'MyBuxi';
+          }
+          if (operatorNameLC === 'donkey republic') {
+            return 'Donkey Republic';
+          }
+          if (operatorNameLC === 'nextbike') {
+            return 'Nextbike';
+          }
+          if (operatorNameLC === 'velospot') {
+            return 'Velospot';
+          }
+          if (operatorNameLC === 'pick-e-bike') {
+            return 'Pick-e-Bike';
           }
         } else {
           const placeNameLC = (poi.placeName ?? 'n/a').toLowerCase();
