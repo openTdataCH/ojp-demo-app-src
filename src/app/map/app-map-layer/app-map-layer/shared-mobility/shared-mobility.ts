@@ -147,6 +147,12 @@ export class SharedMobility {
           if (placeNameLC.startsWith('bird')) {
             return 'Bird';
           }
+          if (placeNameLC.startsWith('carvelo')) {
+            return 'Carvelo2go';
+          }
+          if (placeNameLC.startsWith('publibike')) {
+            return 'PubliBike';
+          }
           if (placeNameLC.includes('nextbike')) {
             return 'Nextbike';
           }
