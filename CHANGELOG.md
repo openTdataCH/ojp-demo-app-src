@@ -5,7 +5,7 @@ OJP-Demo URL: https://opentdatach.github.io/ojp-demo-app/
 ----
 
 12.January 2025
-- updates Shared Mobility Bicyles
+- updates Shared Mobility Bicyles - [PR #336](https://github.com/openTdataCH/ojp-demo-app-src/pull/336)
 
 30.December 2025
 - fix LIR autocomplete stage - [PR #334](https://github.com/openTdataCH/ojp-demo-app-src/pull/334)
