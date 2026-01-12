@@ -127,6 +127,12 @@ export class SharedMobility {
           if (operatorNameLC === 'pick-e-bike') {
             return 'Pick-e-Bike';
           }
+          if (operatorNameLC === 'carvelo2go') {
+            return 'Carvelo2go';
+          }
+          if (operatorNameLC === 'publibike') {
+            return 'PubliBike';
+          }
         } else {
           const placeNameLC = (poi.placeName ?? 'n/a').toLowerCase();
           if (placeNameLC.startsWith('bolt')) {
