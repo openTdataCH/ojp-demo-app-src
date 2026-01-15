@@ -18,6 +18,7 @@ import { PlaceLocation } from '../models/place/location';
 import { GeoPositionBBOX } from '../models/geo/geoposition-bbox';
 import { OJPHelpers } from '../../helpers/ojp-helpers';
 import { AnyLocationInformationRequestResponse } from '../types/_all';
+import { IndividualTransportMode } from '../types/transport-mode';
 
 type LocationUpdateSource = 'SearchForm' | 'MapDragend' | 'MapPopupClick';
 
@@ -43,7 +44,7 @@ export class UserTripService {
   public currentBoardingType: OJP_Legacy.TripRequestBoardingType;
 
   public tripModeType: OJP_Legacy.TripModeType;
-  public tripTransportMode: OJP_Legacy.IndividualTransportMode;
+  public tripTransportMode: IndividualTransportMode;
 
   public journeyTripRequests: OJP_Legacy.TripRequest[];
   public departureDate: Date;
@@ -225,7 +226,7 @@ export class UserTripService {
     this.tripTransportMode = 'public_transport';
     const tripTransportModesS = this.queryParams.get('transport_modes') ?? null;
     if (tripTransportModesS !== null) {
-      this.tripTransportMode = tripTransportModesS.split(';')[0] as OJP_Legacy.IndividualTransportMode;
+      this.tripTransportMode = tripTransportModesS.split(';')[0] as IndividualTransportMode;
     }
 
     this.publicTransportModesFilter = (() => {

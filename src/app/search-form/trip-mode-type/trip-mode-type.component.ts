@@ -8,18 +8,19 @@ import OJP_Legacy from '../../config/ojp-legacy';
 import { UserTripService } from '../../shared/services/user-trip.service';
 import { LanguageService } from '../../shared/services/language.service';
 import { FormatHelpers } from '../../helpers/format-helpers';
+import { IndividualTransportMode } from '../../shared/types/transport-mode';
 
 import { TRIP_REQUEST_DEFAULT_NUMBER_OF_RESULTS, OJP_VERSION } from '../../config/constants';
 
 interface TripTransportModeData {
   modeType: OJP_Legacy.TripModeType,
-  transportModes: OJP_Legacy.IndividualTransportMode[],
+  transportModes: IndividualTransportMode[],
 };
 
 const isOJPv2 = OJP_VERSION === '2.0';
 
-const walkTransportMode: OJP_Legacy.IndividualTransportMode = isOJPv2 ? 'foot' : 'walk'; 
-const carTransportMode: OJP_Legacy.IndividualTransportMode = isOJPv2 ? 'car' : 'self-drive-car';
+const walkTransportMode: IndividualTransportMode = isOJPv2 ? 'foot' : 'walk'; 
+const carTransportMode: IndividualTransportMode = isOJPv2 ? 'car' : 'self-drive-car';
 
 const appTripTransportModeData: TripTransportModeData[] = [
   {
@@ -76,8 +77,8 @@ const appTripTransportModeData: TripTransportModeData[] = [
 export class TripModeTypeComponent implements OnInit {
   public tripTransportModeData: TripTransportModeData[];
 
-  public tripTransportModes: OJP_Legacy.IndividualTransportMode[];
-  private prevTransportMode: OJP_Legacy.IndividualTransportMode;
+  public tripTransportModes: IndividualTransportMode[];
+  private prevTransportMode: IndividualTransportMode;
 
   public settingsCollapseID: string;
 
@@ -407,8 +408,8 @@ export class TripModeTypeComponent implements OnInit {
     return text;
   }
 
-  public computeTripTransportModeText(transportMode: OJP_Legacy.IndividualTransportMode): string {
-    const MapIndividualTransportMode: Record<OJP_Legacy.IndividualTransportMode, string> = {
+  public computeTripTransportModeText(transportMode: IndividualTransportMode): string {
+    const MapIndividualTransportMode: Record<IndividualTransportMode, string> = {
       public_transport: 'Public Transport',
       walk: 'Walking',
       cycle: 'Own Bicycle',
