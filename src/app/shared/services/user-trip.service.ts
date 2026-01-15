@@ -19,6 +19,8 @@ import { GeoPositionBBOX } from '../models/geo/geoposition-bbox';
 import { OJPHelpers } from '../../helpers/ojp-helpers';
 import { AnyLocationInformationRequestResponse } from '../types/_all';
 import { IndividualTransportMode } from '../types/transport-mode';
+import { TripPlace } from '../models/trip-place';
+import { StopPlace } from '../models/place/stop-place';
 
 type LocationUpdateSource = 'SearchForm' | 'MapDragend' | 'MapPopupClick';
 
@@ -26,9 +28,9 @@ type LocationUpdateSource = 'SearchForm' | 'MapDragend' | 'MapPopupClick';
 export class UserTripService {
   private queryParams: URLSearchParams
 
-  public fromTripLocation: OJP_Legacy.TripLocationPoint | null;
-  public toTripLocation: OJP_Legacy.TripLocationPoint | null;
-  public viaTripLocations: OJP_Legacy.TripLocationPoint[];
+  public fromTripLocation: TripPlace | null;
+  public toTripLocation: TripPlace | null;
+  public viaTripLocations: TripPlace[];
   public isViaEnabled: boolean;
 
   public isAdditionalRestrictionsEnabled: boolean;
@@ -182,11 +184,10 @@ export class UserTripService {
         continue;
       }
 
-      const location = place.asOJP_LegacyLocation();
       if (isFrom) {
-        this.fromTripLocation = new OJP_Legacy.TripLocationPoint(location);
+        this.fromTripLocation = TripPlace.initWithPlace(place);
       } else {
-        this.toTripLocation = new OJP_Legacy.TripLocationPoint(location);
+        this.toTripLocation = TripPlace.initWithPlace(place);
       }
     };
 
@@ -212,8 +213,7 @@ export class UserTripService {
 
       this.isViaEnabled = true;
       
-      const location = place.asOJP_LegacyLocation();
-      const viaTripLocation = new OJP_Legacy.TripLocationPoint(location);
+      const viaTripLocation = TripPlace.initWithPlace(place);
       this.viaTripLocations.push(viaTripLocation);
     };
     
@@ -314,10 +314,7 @@ export class UserTripService {
         continue;
       }
 
-      const tripPlaceLocation = PlaceBuilder.initWithLegacyLocation(tripLocation.location);
-      if (tripPlaceLocation === null) {
-        continue;
-      }
+      const tripPlaceLocation = tripLocation.place;
 
       // Search nearby locations, in a bbox of 200x200m
       const bbox = GeoPositionBBOX.initFromGeoPosition(tripPlaceLocation.geoPosition, 200, 200);
@@ -344,12 +341,11 @@ export class UserTripService {
       }
 
       const sortedPlaces = sortPlaces(places, tripPlaceLocation);
-      const nearbyLocation = sortedPlaces[0].asOJP_LegacyLocation();
-
+      const nearbyPlace = sortedPlaces[0];
       if (isFrom) {
-        this.fromTripLocation = new OJP_Legacy.TripLocationPoint(nearbyLocation);
+        this.fromTripLocation = TripPlace.initWithPlace(nearbyPlace);
       } else {
-        this.toTripLocation = new OJP_Legacy.TripLocationPoint(nearbyLocation);
+        this.toTripLocation = TripPlace.initWithPlace(nearbyPlace);
       }
     };
 
@@ -392,8 +388,7 @@ export class UserTripService {
     }
 
     if (location && endpointType === 'Via') {
-      const location = place.asOJP_LegacyLocation();
-      const viaTripLocation = new OJP_Legacy.TripLocationPoint(location);
+      const viaTripLocation = TripPlace.initWithPlace(place);
       this.viaTripLocations = [viaTripLocation];
 
       this.isViaEnabled = true;
@@ -406,15 +401,14 @@ export class UserTripService {
     this.updateURLs();
   }
 
-  private patchTripLocationPoint(tripLocation: OJP_Legacy.TripLocationPoint, place: AnyPlace) {
+  private patchTripLocationPoint(tripLocation: TripPlace, place: AnyPlace) {
     const customTransportMode = tripLocation.customTransportMode ?? null;
     const minDistance = tripLocation.minDistance ?? null;
     const maxDistance = tripLocation.maxDistance ?? null;
     const minDuration = tripLocation.minDuration ?? null;
     const maxDuration = tripLocation.maxDuration ?? null;
 
-    const location = place.asOJP_LegacyLocation();
-    const newTripLocation = new OJP_Legacy.TripLocationPoint(location);
+    const newTripLocation = TripPlace.initWithPlace(place);
     newTripLocation.customTransportMode = customTransportMode;
     newTripLocation.minDistance = minDistance;
     newTripLocation.maxDistance = maxDistance;
@@ -425,7 +419,7 @@ export class UserTripService {
   }
 
   updateViaPoint(place: AnyPlace, viaIDx: number) {
-    this.viaTripLocations[viaIDx].location = place.asOJP_LegacyLocation();
+    this.viaTripLocations[viaIDx].place = place;
 
     this.locationsUpdated.emit();
     this.mapActiveTripSelected.emit(null);
@@ -449,36 +443,40 @@ export class UserTripService {
     const endpointTypes: OJP_Legacy.JourneyPointType[] = ['From', 'To'];
     endpointTypes.forEach(endpointType => {
       const tripLocationPoint = endpointType === 'From' ? this.fromTripLocation : this.toTripLocation;
+      const place = tripLocationPoint?.place ?? null;
+      if (place === null) {
+        return;
+      }
 
       const queryParamKey = endpointType.toLowerCase();
 
-      const stopPlaceRef = tripLocationPoint?.location.stopPlace?.stopPlaceRef ?? null;
+      const stopPlaceRef: string | null = (() => {
+        if (place.type === 'stop') {
+          const stopPlace = place as StopPlace;
+          return stopPlace.stopRef;
+        }
+
+        return null;
+      })();
+
       if (stopPlaceRef) {
         queryParams.append(queryParamKey, stopPlaceRef);
       } else {
-        let geoPositionLngLatS = tripLocationPoint?.location.geoPosition?.asLatLngString(true) ?? null;
-        if (geoPositionLngLatS) {
-          const includeLiteralCoords = false;
-          const locationName = tripLocationPoint?.location.computeLocationName(includeLiteralCoords);
-          if (locationName) {
-            geoPositionLngLatS = geoPositionLngLatS + '(' + locationName + ')';
-          }
-
-          queryParams.append(queryParamKey, geoPositionLngLatS);
-        }
+        const placeName = place.computeName();
+        const placeCoordsWithName = place.geoPosition.asLatLngString(true) + '(' + placeName + ')';
+        queryParams.append(queryParamKey, placeCoordsWithName);
       }
     });
 
     const viaParamParts: string[] = []
     this.viaTripLocations.forEach(viaTripLocation => {
-      const location = viaTripLocation.location;
-      if (location.stopPlace) {
-        viaParamParts.push(location.stopPlace.stopPlaceRef);
+      const place = viaTripLocation.place;
+      if (place.type === 'stop') {
+        const stopPlace = place as StopPlace;
+        viaParamParts.push(stopPlace.stopRef);
       } else {
-        const geoPositionLngLatS = location?.geoPosition?.asLatLngString(true) ?? null;
-        if (geoPositionLngLatS) {
-          viaParamParts.push(geoPositionLngLatS);
-        }
+        const geoPositionLngLatS = place.geoPosition.asLatLngString(true);
+        viaParamParts.push(geoPositionLngLatS);
       }
     });
     if (viaParamParts.length > 0) {
@@ -582,7 +580,7 @@ export class UserTripService {
         if (tripPoint === null) {
           return defaultLabel;
         }
-        const label = tripPoint.location.computeLocationName() ?? defaultLabel;
+        const label = tripPoint.place.computeName();
 
         return label + ' (OJP Demo)';
       })();
@@ -633,23 +631,20 @@ export class UserTripService {
   }
 
   public computeBBOX(): GeoPositionBBOX {
-    const tripLocations: OJP_Legacy.TripLocationPoint[] = [];
+    const tripPlaces: TripPlace[] = [];
     if (this.fromTripLocation) {
-      tripLocations.push(this.fromTripLocation);
+      tripPlaces.push(this.fromTripLocation);
     }
     this.viaTripLocations.forEach(viaTripLocation => {
-      tripLocations.push(viaTripLocation);
+      tripPlaces.push(viaTripLocation);
     });
     if (this.toTripLocation) {
-      tripLocations.push(this.toTripLocation);
+      tripPlaces.push(this.toTripLocation);
     }
 
     const bbox = new GeoPositionBBOX([]);
-    tripLocations.forEach(tripLocation => {
-      const place = PlaceBuilder.initWithLegacyLocation(tripLocation.location);
-      if (place) {
-        bbox.extend(place.geoPosition);
-      }
+    tripPlaces.forEach(tripPlace => {
+      bbox.extend(tripPlace.place.geoPosition);
     });
 
     return bbox;
@@ -705,14 +700,14 @@ export class UserTripService {
     this.updateURLs();
   }
 
-  private computeTripLocationsToUpdate(): OJP_Legacy.TripLocationPoint[] {
-    const tripLocationsToUpdate: OJP_Legacy.TripLocationPoint[] = [];
+  private computeTripPlacesToUpdate(): TripPlace[] {
+    const tripPlacesToUpdate: TripPlace[] = [];
 
     const endpointTypes: OJP_Legacy.JourneyPointType[] = ['From', 'To'];
     endpointTypes.forEach(endpointType => {
       const isFrom = endpointType === 'From';
-      const tripLocation = isFrom ? this.fromTripLocation : this.toTripLocation;
-      if (tripLocation === null) {
+      const tripPlace = isFrom ? this.fromTripLocation : this.toTripLocation;
+      if (tripPlace === null) {
         return;
       }
 
@@ -726,14 +721,14 @@ export class UserTripService {
         return;
       }
 
-      tripLocationsToUpdate.push(tripLocation);
+      tripPlacesToUpdate.push(tripPlace);
     });
 
-    return tripLocationsToUpdate;
+    return tripPlacesToUpdate;
   }
 
   public updateTripLocationRestrictions(minDuration: number | null, maxDuration: number | null, minDistance: number | null, maxDistance: number | null) {
-    const tripLocationsToUpdate = this.computeTripLocationsToUpdate();
+    const tripLocationsToUpdate = this.computeTripPlacesToUpdate();
 
     tripLocationsToUpdate.forEach(tripLocation => {
       tripLocation.minDuration = minDuration;
@@ -744,7 +739,7 @@ export class UserTripService {
   }
 
   public updateTripLocationCustomMode() {
-    const tripLocationsToUpdate = this.computeTripLocationsToUpdate();
+    const tripLocationsToUpdate = this.computeTripPlacesToUpdate();
 
     tripLocationsToUpdate.forEach(tripLocation => {
       if (this.tripTransportMode === 'public_transport') {
@@ -764,14 +759,14 @@ export class UserTripService {
     const firstLeg = trip.legs[0];
     const lastLeg = trip.legs[trip.legs.length - 1];
 
-    this.fromTripLocation = new OJP_Legacy.TripLocationPoint(firstLeg.fromLocation);
-    if (this.fromTripLocation.location.geoPosition === null) {
-      this.fromTripLocation.location.geoPosition = firstLeg.legTrack?.fromGeoPosition() ?? null;
+    const fromPlace = PlaceBuilder.initWithLegacyLocation(firstLeg.fromLocation);
+    if (fromPlace) {
+      this.fromTripLocation = TripPlace.initWithPlace(fromPlace);
     }
 
-    this.toTripLocation = new OJP_Legacy.TripLocationPoint(lastLeg.toLocation);
-    if (this.toTripLocation.location.geoPosition === null) {
-      this.toTripLocation.location.geoPosition = firstLeg.legTrack?.toGeoPosition() ?? null;
+    const toPlace = PlaceBuilder.initWithLegacyLocation(firstLeg.toLocation);
+    if (toPlace) {
+      this.toTripLocation = TripPlace.initWithPlace(toPlace);
     }
 
     this.viaTripLocations = [];

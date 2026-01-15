@@ -187,7 +187,10 @@ export class SearchFormComponent implements OnInit {
     const fromToTextParts: string[] = [];
     endpointTypes.forEach(endpointType => {
       const tripLocationPoint = endpointType === 'From' ? this.userTripService.fromTripLocation : this.userTripService.toTripLocation;
-      const place = PlaceBuilder.initWithLegacyLocation(tripLocationPoint?.location ?? null);
+      if (tripLocationPoint === null) {
+        return;
+      }
+      const place = tripLocationPoint.place;
 
       if (endpointType === 'From') {
         this.fromPlace = place;
@@ -201,10 +204,7 @@ export class SearchFormComponent implements OnInit {
     if (this.userTripService.viaTripLocations.length > 0) {
       this.viaPlaces = [];
       this.userTripService.viaTripLocations.forEach(viaTripLocation => {
-        const place = PlaceBuilder.initWithLegacyLocation(viaTripLocation.location);
-        if (place) {
-          this.viaPlaces.push(place);
-        }
+        this.viaPlaces.push(viaTripLocation.place);
       });
     }
 
@@ -579,7 +579,10 @@ export class SearchFormComponent implements OnInit {
     const xmlConfig = isOJPv2 ? OJP_Next.DefaultXML_Config : OJP_Next.XML_BuilderConfigOJPv1;
 
     const stageConfig = this.userTripService.getStageConfig();
-    const viaTripLocations = this.userTripService.isViaEnabled ? this.userTripService.viaTripLocations : [];
+    const viaTripLocations = this.userTripService.isViaEnabled ? this.userTripService.viaTripLocations.map(el => el.asOJP_TripLocationPoint()) : [];
+
+    const fromTripLocation = this.userTripService.fromTripLocation?.asOJP_TripLocationPoint() ?? null;
+    const toTripLocation = this.userTripService.toTripLocation?.asOJP_TripLocationPoint() ?? null;
 
     const tripRequest = OJP_Legacy.TripRequest.initWithTripLocationsAndDate(
       stageConfig, 
@@ -587,8 +590,8 @@ export class SearchFormComponent implements OnInit {
       xmlConfig,
       REQUESTOR_REF,
 
-      this.userTripService.fromTripLocation,
-      this.userTripService.toTripLocation,
+      fromTripLocation,
+      toTripLocation,
       this.userTripService.departureDate,
       this.userTripService.currentBoardingType,
       includeLegProjection,
