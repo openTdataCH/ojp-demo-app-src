@@ -147,19 +147,20 @@ export class MapComponent implements OnInit, AfterViewInit {
     const endpointTypes: OJP_Legacy.JourneyPointType[] = ['From', 'To'];
     endpointTypes.forEach(endpointType => {
       const isFrom = endpointType === 'From';
-      const tripLocationPoint = isFrom ? this.userTripService.fromTripLocation : this.userTripService.toTripLocation;
+      const tripLocationPoint = isFrom ? this.userTripService.fromTripPlace : this.userTripService.toTripPlace;
+      if (tripLocationPoint === null) {
+        return;
+      }
+
       const marker = isFrom ? this.fromMarker : this.toMarker;
-      const place = PlaceBuilder.initWithLegacyLocation(tripLocationPoint?.location ?? null);
+      const place = tripLocationPoint.place;
       this.updateMarkerLocation(marker, place);
     });
 
     if (this.userTripService.isViaEnabled) {
       this.userTripService.viaTripLocations.forEach((viaTripLocation, markerIDx) => {
         let marker = this.viaMarkers[markerIDx] ?? null;
-        const place = PlaceBuilder.initWithLegacyLocation(viaTripLocation.location);
-        if (place === null) {
-          return;
-        }
+        const place = viaTripLocation.place;
 
         if (marker === null) {
           marker = this.createViaMarker(place, markerIDx);

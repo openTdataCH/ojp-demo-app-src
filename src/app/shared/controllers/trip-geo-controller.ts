@@ -8,6 +8,7 @@ import { TripLegDrawType, TripLegLineType, TripLegPropertiesEnum } from '../type
 import { GeoPositionBBOX } from '../models/geo/geoposition-bbox';
 import { MapLegLineTypeColor } from '../../config/map-colors';
 import { OJPHelpers } from 'src/app/helpers/ojp-helpers';
+import { IndividualTransportMode } from '../types/transport-mode';
 
 interface LinePointData {
   type: OJP_Legacy.StopPointType,
@@ -383,12 +384,12 @@ export class TripLegGeoController {
         return 'Guidance';
       }
 
-      const sharedMobilityModes: OJP_Legacy.IndividualTransportMode[] = ['cycle', 'escooter_rental', 'bicycle_rental', 'charging_station'];
+      const sharedMobilityModes: IndividualTransportMode[] = ['cycle', 'escooter_rental', 'bicycle_rental', 'charging_station'];
       if (sharedMobilityModes.includes(continuousLeg.legTransportMode)) {
         return 'Shared Mobility';
       }
 
-      const autoModes: OJP_Legacy.IndividualTransportMode[] = ['car', 'car_sharing', 'self-drive-car', 'taxi', 'others-drive-car', 'car-shuttle-train', 'car-ferry'];
+      const autoModes: IndividualTransportMode[] = ['car', 'car_sharing', 'self-drive-car', 'taxi', 'others-drive-car', 'car-shuttle-train', 'car-ferry'];
       if (autoModes.includes(continuousLeg.legTransportMode)) {
         return 'Self-Drive Car';
       }

@@ -1,5 +1,3 @@
-import * as OJP_Next from 'ojp-sdk-next';
-
 import { BasePlace } from '../place';
 
 const literalCoordsRegexp = /^([0-9\.]+?),([0-9\.]+?)$/;
