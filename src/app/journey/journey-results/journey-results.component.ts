@@ -140,8 +140,8 @@ export class JourneyResultsComponent implements OnInit {
     const isOJPv2 = OJP_VERSION === '2.0';
     const xmlConfig = isOJPv2 ? OJP_Next.DefaultXML_Config : OJP_Next.XML_BuilderConfigOJPv1;
 
-    const fromTripLocation = this.userTripService.fromTripLocation?.asOJP_TripLocationPoint() ?? null;
-    const toTripLocation = this.userTripService.toTripLocation?.asOJP_TripLocationPoint() ?? null;
+    const fromTripLocation = this.userTripService.fromTripPlace?.asOJP_TripLocationPoint() ?? null;
+    const toTripLocation = this.userTripService.toTripPlace?.asOJP_TripLocationPoint() ?? null;
     
     const request = OJP_Legacy.TripRequest.initWithTripLocationsAndDate(
       stageConfig,

@@ -186,7 +186,7 @@ export class SearchFormComponent implements OnInit {
     const endpointTypes: OJP_Legacy.JourneyPointType[] = ['From', 'To'];
     const fromToTextParts: string[] = [];
     endpointTypes.forEach(endpointType => {
-      const tripLocationPoint = endpointType === 'From' ? this.userTripService.fromTripLocation : this.userTripService.toTripLocation;
+      const tripLocationPoint = endpointType === 'From' ? this.userTripService.fromTripPlace : this.userTripService.toTripPlace;
       if (tripLocationPoint === null) {
         return;
       }
@@ -581,8 +581,8 @@ export class SearchFormComponent implements OnInit {
     const stageConfig = this.userTripService.getStageConfig();
     const viaTripLocations = this.userTripService.isViaEnabled ? this.userTripService.viaTripLocations.map(el => el.asOJP_TripLocationPoint()) : [];
 
-    const fromTripLocation = this.userTripService.fromTripLocation?.asOJP_TripLocationPoint() ?? null;
-    const toTripLocation = this.userTripService.toTripLocation?.asOJP_TripLocationPoint() ?? null;
+    const fromTripLocation = this.userTripService.fromTripPlace?.asOJP_TripLocationPoint() ?? null;
+    const toTripLocation = this.userTripService.toTripPlace?.asOJP_TripLocationPoint() ?? null;
 
     const tripRequest = OJP_Legacy.TripRequest.initWithTripLocationsAndDate(
       stageConfig, 

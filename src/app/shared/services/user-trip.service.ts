@@ -26,8 +26,8 @@ type LocationUpdateSource = 'SearchForm' | 'MapDragend' | 'MapPopupClick';
 export class UserTripService {
   private queryParams: URLSearchParams
 
-  public fromTripLocation: TripPlace | null;
-  public toTripLocation: TripPlace | null;
+  public fromTripPlace: TripPlace | null;
+  public toTripPlace: TripPlace | null;
   public viaTripLocations: TripPlace[];
   public isViaEnabled: boolean;
 
@@ -78,8 +78,8 @@ export class UserTripService {
   constructor(private mapService: MapService) {
     this.queryParams = new URLSearchParams(document.location.search);
 
-    this.fromTripLocation = null;
-    this.toTripLocation = null;
+    this.fromTripPlace = null;
+    this.toTripPlace = null;
     this.viaTripLocations = [];
     
     this.numberOfResults = TRIP_REQUEST_DEFAULT_NUMBER_OF_RESULTS;
@@ -183,9 +183,9 @@ export class UserTripService {
       }
 
       if (isFrom) {
-        this.fromTripLocation = TripPlace.initWithPlace(place);
+        this.fromTripPlace = TripPlace.initWithPlace(place);
       } else {
-        this.toTripLocation = TripPlace.initWithPlace(place);
+        this.toTripPlace = TripPlace.initWithPlace(place);
       }
     };
 
@@ -307,7 +307,7 @@ export class UserTripService {
     for (const endpointType of endpointTypes) {
       const isFrom = endpointType === 'From';
 
-      const tripLocation = isFrom ? this.fromTripLocation : this.toTripLocation;
+      const tripLocation = isFrom ? this.fromTripPlace : this.toTripPlace;
       if (tripLocation === null) {
         continue;
       }
@@ -341,9 +341,9 @@ export class UserTripService {
       const sortedPlaces = sortPlaces(places, tripPlaceLocation);
       const nearbyPlace = sortedPlaces[0];
       if (isFrom) {
-        this.fromTripLocation = TripPlace.initWithPlace(nearbyPlace);
+        this.fromTripPlace = TripPlace.initWithPlace(nearbyPlace);
       } else {
-        this.toTripLocation = TripPlace.initWithPlace(nearbyPlace);
+        this.toTripPlace = TripPlace.initWithPlace(nearbyPlace);
       }
     };
 
@@ -352,9 +352,9 @@ export class UserTripService {
   }
 
   public switchEndpoints() {
-    const locationAux = Object.assign({}, this.fromTripLocation);
-    this.fromTripLocation = Object.assign({}, this.toTripLocation);
-    this.toTripLocation = Object.assign({}, locationAux);
+    const locationAux = Object.assign({}, this.fromTripPlace);
+    this.fromTripPlace = Object.assign({}, this.toTripPlace);
+    this.toTripPlace = Object.assign({}, locationAux);
 
     this.locationsUpdated.emit();
     this.mapActiveTripSelected.emit(null);
@@ -375,13 +375,13 @@ export class UserTripService {
 
   updateTripEndpoint(place: AnyPlace, endpointType: OJP_Legacy.JourneyPointType, updateSource: LocationUpdateSource) {
     if (endpointType === 'From') {
-      if (this.fromTripLocation) {
-        this.fromTripLocation = this.patchTripLocationPoint(this.fromTripLocation, place);
+      if (this.fromTripPlace) {
+        this.fromTripPlace = this.patchTripPlace(this.fromTripPlace, place);
       }
     }
     if (endpointType === 'To') {
-      if (this.toTripLocation) {
-        this.toTripLocation = this.patchTripLocationPoint(this.toTripLocation, place);
+      if (this.toTripPlace) {
+        this.toTripPlace = this.patchTripPlace(this.toTripPlace, place);
       }
     }
 
@@ -399,21 +399,21 @@ export class UserTripService {
     this.updateURLs();
   }
 
-  private patchTripLocationPoint(tripLocation: TripPlace, place: AnyPlace) {
-    const customTransportMode = tripLocation.customTransportMode ?? null;
-    const minDistance = tripLocation.minDistance ?? null;
-    const maxDistance = tripLocation.maxDistance ?? null;
-    const minDuration = tripLocation.minDuration ?? null;
-    const maxDuration = tripLocation.maxDuration ?? null;
+  private patchTripPlace(tripPlace: TripPlace, place: AnyPlace) {
+    const customTransportMode = tripPlace.customTransportMode ?? null;
+    const minDistance = tripPlace.minDistance ?? null;
+    const maxDistance = tripPlace.maxDistance ?? null;
+    const minDuration = tripPlace.minDuration ?? null;
+    const maxDuration = tripPlace.maxDuration ?? null;
 
-    const newTripLocation = TripPlace.initWithPlace(place);
-    newTripLocation.customTransportMode = customTransportMode;
-    newTripLocation.minDistance = minDistance;
-    newTripLocation.maxDistance = maxDistance;
-    newTripLocation.minDuration = minDuration;
-    newTripLocation.maxDuration = maxDuration;
+    const newTripPlace = TripPlace.initWithPlace(place);
+    newTripPlace.customTransportMode = customTransportMode;
+    newTripPlace.minDistance = minDistance;
+    newTripPlace.maxDistance = maxDistance;
+    newTripPlace.minDuration = minDuration;
+    newTripPlace.maxDuration = maxDuration;
 
-    return newTripLocation;
+    return newTripPlace;
   }
 
   updateViaPoint(place: AnyPlace, viaIDx: number) {
@@ -440,7 +440,7 @@ export class UserTripService {
 
     const endpointTypes: OJP_Legacy.JourneyPointType[] = ['From', 'To'];
     endpointTypes.forEach(endpointType => {
-      const tripLocationPoint = endpointType === 'From' ? this.fromTripLocation : this.toTripLocation;
+      const tripLocationPoint = endpointType === 'From' ? this.fromTripPlace : this.toTripPlace;
       const place = tripLocationPoint?.place ?? null;
       if (place === null) {
         return;
@@ -512,17 +512,17 @@ export class UserTripService {
     if (this.isAdditionalRestrictionsEnabled) {
       queryParams.append('advanced', 'yes');
 
-      if (this.fromTripLocation?.minDistance !== null) {
-        queryParams.append('minDistance', String(this.fromTripLocation?.minDistance));
+      if (this.fromTripPlace?.minDistance !== null) {
+        queryParams.append('minDistance', String(this.fromTripPlace?.minDistance));
       }
-      if (this.fromTripLocation?.maxDistance !== null) {
-        queryParams.append('maxDistance', String(this.fromTripLocation?.maxDistance));
+      if (this.fromTripPlace?.maxDistance !== null) {
+        queryParams.append('maxDistance', String(this.fromTripPlace?.maxDistance));
       }
-      if (this.fromTripLocation?.minDuration !== null) {
-        queryParams.append('minDuration', String(this.fromTripLocation?.minDuration));
+      if (this.fromTripPlace?.minDuration !== null) {
+        queryParams.append('minDuration', String(this.fromTripPlace?.minDuration));
       }
-      if (this.fromTripLocation?.maxDuration !== null) {
-        queryParams.append('maxDuration', String(this.fromTripLocation?.maxDuration));
+      if (this.fromTripPlace?.maxDuration !== null) {
+        queryParams.append('maxDuration', String(this.fromTripPlace?.maxDuration));
       }
     }
 
@@ -574,7 +574,7 @@ export class UserTripService {
         const defaultLabel = key.charAt(0).toUpperCase() + key.slice(1) + ' placeholder';
 
         const isFrom = key === 'from';
-        const tripPoint = isFrom ? this.fromTripLocation : this.toTripLocation;
+        const tripPoint = isFrom ? this.fromTripPlace : this.toTripPlace;
         if (tripPoint === null) {
           return defaultLabel;
         }
@@ -630,14 +630,14 @@ export class UserTripService {
 
   public computeBBOX(): GeoPositionBBOX {
     const tripPlaces: TripPlace[] = [];
-    if (this.fromTripLocation) {
-      tripPlaces.push(this.fromTripLocation);
+    if (this.fromTripPlace) {
+      tripPlaces.push(this.fromTripPlace);
     }
     this.viaTripLocations.forEach(viaTripLocation => {
       tripPlaces.push(viaTripLocation);
     });
-    if (this.toTripLocation) {
-      tripPlaces.push(this.toTripLocation);
+    if (this.toTripPlace) {
+      tripPlaces.push(this.toTripPlace);
     }
 
     const bbox = new GeoPositionBBOX([]);
@@ -704,7 +704,7 @@ export class UserTripService {
     const endpointTypes: OJP_Legacy.JourneyPointType[] = ['From', 'To'];
     endpointTypes.forEach(endpointType => {
       const isFrom = endpointType === 'From';
-      const tripPlace = isFrom ? this.fromTripLocation : this.toTripLocation;
+      const tripPlace = isFrom ? this.fromTripPlace : this.toTripPlace;
       if (tripPlace === null) {
         return;
       }
@@ -759,12 +759,12 @@ export class UserTripService {
 
     const fromPlace = PlaceBuilder.initWithLegacyLocation(firstLeg.fromLocation);
     if (fromPlace) {
-      this.fromTripLocation = TripPlace.initWithPlace(fromPlace);
+      this.fromTripPlace = TripPlace.initWithPlace(fromPlace);
     }
 
     const toPlace = PlaceBuilder.initWithLegacyLocation(firstLeg.toLocation);
     if (toPlace) {
-      this.toTripLocation = TripPlace.initWithPlace(toPlace);
+      this.toTripPlace = TripPlace.initWithPlace(toPlace);
     }
 
     this.viaTripLocations = [];

@@ -17,8 +17,8 @@ export class EmbedSearchPopoverComponent {
   public toLocationChecked = true
 
   constructor(private userTripService: UserTripService) {
-    this.fromLocationText = EmbedSearchPopoverComponent.computeLocationText(userTripService.fromTripLocation);
-    this.toLocationText = EmbedSearchPopoverComponent.computeLocationText(userTripService.toTripLocation);
+    this.fromLocationText = EmbedSearchPopoverComponent.computeLocationText(userTripService.fromTripPlace);
+    this.toLocationText = EmbedSearchPopoverComponent.computeLocationText(userTripService.toTripPlace);
 
     this.updateEmbedHTML();
   }

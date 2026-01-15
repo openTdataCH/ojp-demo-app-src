@@ -147,7 +147,7 @@ export class MapComponent implements OnInit, AfterViewInit {
     const endpointTypes: OJP_Legacy.JourneyPointType[] = ['From', 'To'];
     endpointTypes.forEach(endpointType => {
       const isFrom = endpointType === 'From';
-      const tripLocationPoint = isFrom ? this.userTripService.fromTripLocation : this.userTripService.toTripLocation;
+      const tripLocationPoint = isFrom ? this.userTripService.fromTripPlace : this.userTripService.toTripPlace;
       if (tripLocationPoint === null) {
         return;
       }
