@@ -1,7 +1,5 @@
 import * as GeoJSON from 'geojson'
 
-import OJP_Legacy from '../../../config/ojp-legacy';
-
 import { AppMapLayer } from "../app-map-layer";
 
 import { AnyPlace } from '../../../shared/models/place/place-builder';
