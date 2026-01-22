@@ -38,6 +38,7 @@ export class UserTripService {
   public publicTransportModesFilter: OJP_Legacy.ModeOfTransportType[];
   public railSubmodesFilter: string[];
   public useRealTimeDataType: OJP_Types.UseRealtimeDataEnum;
+  public trOptimisationMethod: OJP_Types.OptimisationMethodEnum | null;
   public walkSpeedDeviation: number | null;
 
   public currentBoardingType: OJP_Legacy.TripRequestBoardingType;
@@ -87,6 +88,7 @@ export class UserTripService {
     this.publicTransportModesFilter = [];
     this.railSubmodesFilter = [];
     this.useRealTimeDataType = 'explanatory';
+    this.trOptimisationMethod = null;
     this.walkSpeedDeviation = null;
     
     this.isViaEnabled = false;
@@ -281,6 +283,11 @@ export class UserTripService {
 
       return 'Dep' as OJP_Legacy.TripRequestBoardingType;
     })();
+
+    const userOptimisationMethod = this.queryParams.get('optimisation_method');
+    if (userOptimisationMethod) {
+      this.trOptimisationMethod = userOptimisationMethod as OJP_Types.OptimisationMethodEnum;
+    }
 
     this._initialLocationsChanges.next(true);
   }
@@ -527,6 +534,10 @@ export class UserTripService {
       if (this.fromTripLocation?.maxDuration !== null) {
         queryParams.append('maxDuration', String(this.fromTripLocation?.maxDuration));
       }
+    }
+
+    if (this.trOptimisationMethod) {
+      queryParams.append('optimisation_method', this.trOptimisationMethod);
     }
 
     const permalinkQueryParams = new URLSearchParams(queryParams);
