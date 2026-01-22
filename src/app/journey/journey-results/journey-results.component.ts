@@ -166,6 +166,7 @@ export class JourneyResultsComponent implements OnInit {
     
     request.enableExtensions = this.userTripService.currentAppStage !== 'OJP-SI';
     request.useRealTimeDataType = this.userTripService.useRealTimeDataType;
+    request.optimisationMethod = this.userTripService.trOptimisationMethod;
 
     if (isOJPv2) {
       request.walkSpeedDeviation = this.userTripService.walkSpeedDeviation;

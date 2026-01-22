@@ -4,7 +4,7 @@
     <div>
       <sbb-form-field>
         <sbb-label>Mono-/Multi-modal</sbb-label>
-          <sbb-select
+        <sbb-select
           [(ngModel)]="this.userTripService.tripModeType"
           (selectionChange)="onTripModeChange()">
           <sbb-option
@@ -17,7 +17,7 @@
     <div class="flex-grow-1">
       <sbb-form-field class="w-100">
         <sbb-label>Mode of Transport</sbb-label>
-          <sbb-select
+        <sbb-select
           [(ngModel)]="this.userTripService.tripTransportMode"
           (selectionChange)="onTransportModeChange()">
           <sbb-option
@@ -159,9 +159,24 @@
         </div>
       </div>
 
-      <hr />
-
       <ng-container *ngIf="!this.isV1;">
+        <hr />
+
+        <div class="d-flex align-items-center">
+          <div class="flex-grow-1">Optimisation Method</div>
+          <sbb-form-field>
+            <sbb-label>Method:</sbb-label>
+            <sbb-select [(ngModel)]="this.userTripService.trOptimisationMethod"
+                (selectionChange)="updateAdditionalRestrictions()">
+              <ng-container *ngFor="let optimisationMethod of this.optimisationMethods">
+                <sbb-option [value]="optimisationMethod">{{ optimisationMethod }}</sbb-option>
+              </ng-container>
+            </sbb-select>
+          </sbb-form-field>
+        </div>
+        
+        <hr />
+        
         <div class="mb-2">
           <div class="mb-1">Deviation from average walking speed in percent. (100% == average)</div>
           <div class="d-flex gap-2 align-items-center">
