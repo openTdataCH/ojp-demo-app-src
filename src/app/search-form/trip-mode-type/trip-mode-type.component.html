@@ -168,6 +168,7 @@
             <sbb-label>Method:</sbb-label>
             <sbb-select [(ngModel)]="this.userTripService.trOptimisationMethod"
                 (selectionChange)="updateAdditionalRestrictions()">
+              <sbb-option [value]="null">--</sbb-option>
               <ng-container *ngFor="let optimisationMethod of this.optimisationMethods">
                 <sbb-option [value]="optimisationMethod">{{ optimisationMethod }}</sbb-option>
               </ng-container>
