@@ -4,7 +4,7 @@
     <div>
       <sbb-form-field>
         <sbb-label>Mono-/Multi-modal</sbb-label>
-          <sbb-select
+        <sbb-select
           [(ngModel)]="this.userTripService.tripModeType"
           (selectionChange)="onTripModeChange()">
           <sbb-option
@@ -17,7 +17,7 @@
     <div class="flex-grow-1">
       <sbb-form-field class="w-100">
         <sbb-label>Mode of Transport</sbb-label>
-          <sbb-select
+        <sbb-select
           [(ngModel)]="this.userTripService.tripTransportMode"
           (selectionChange)="onTransportModeChange()">
           <sbb-option
@@ -159,9 +159,9 @@
         </div>
       </div>
 
-      <hr />
-
       <ng-container *ngIf="!this.isV1;">
+        <hr />
+
         <div class="mb-2">
           <div class="mb-1">Deviation from average walking speed in percent. (100% == average)</div>
           <div class="d-flex gap-2 align-items-center">
