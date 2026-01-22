@@ -202,6 +202,10 @@ export class JourneyResultRowComponent implements OnInit {
     const stageConfig = this.userTripService.getStageConfig();
     const ojpSDK_Next = OJP_Next.SDK.create(REQUESTOR_REF, stageConfig, this.languageService.language);
     const trrRequest = ojpSDK_Next.requests.TripRefineRequest.initWithTrip(tripV2);
+
+    if (trrRequest.payload.refineParams) {
+      trrRequest.payload.refineParams.includeLegProjection = true;
+    }
     
     const trrResponse = await trrRequest.fetchResponse(ojpSDK_Next);
     if (!trrResponse.ok) {
