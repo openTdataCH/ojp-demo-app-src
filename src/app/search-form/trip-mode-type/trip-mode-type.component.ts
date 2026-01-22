@@ -107,6 +107,8 @@ export class TripModeTypeComponent implements OnInit {
 
   public useRealTimeDataTypes: OJP_Types.UseRealtimeDataEnum[];
   public selectedUseRealTimeDataType: OJP_Types.UseRealtimeDataEnum;
+  
+  public optimisationMethods: OJP_Types.OptimisationMethodEnum[];
 
   private destroyed$ = new Subject<void>();
 
@@ -176,6 +178,8 @@ export class TripModeTypeComponent implements OnInit {
 
     this.useRealTimeDataTypes = ['full', 'explanatory', 'none'];
     this.selectedUseRealTimeDataType = this.userTripService.useRealTimeDataType;
+    
+    this.optimisationMethods = ['fastest', 'minChanges', 'leastWalking', 'leastCost'];
   }
 
   async ngOnInit(): Promise<void> {
