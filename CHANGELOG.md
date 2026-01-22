@@ -4,6 +4,10 @@ OJP-Demo URL: https://opentdatach.github.io/ojp-demo-app/
 
 ----
 
+22.January 2025
+- updates TRR - [PR #338](https://github.com/openTdataCH/ojp-demo-app-src/pull/338)
+  - includes LinkProjection for TRR calls
+
 12.January 2025
 - updates Shared Mobility Bicyles - [PR #336](https://github.com/openTdataCH/ojp-demo-app-src/pull/336)
 
