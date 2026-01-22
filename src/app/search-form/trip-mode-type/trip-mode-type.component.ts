@@ -179,7 +179,7 @@ export class TripModeTypeComponent implements OnInit {
     this.useRealTimeDataTypes = ['full', 'explanatory', 'none'];
     this.selectedUseRealTimeDataType = this.userTripService.useRealTimeDataType;
     
-    this.optimisationMethods = ['fastest', 'minChanges', 'leastWalking', 'leastCost'];
+    this.optimisationMethods = ['minChanges'];
   }
 
   async ngOnInit(): Promise<void> {
