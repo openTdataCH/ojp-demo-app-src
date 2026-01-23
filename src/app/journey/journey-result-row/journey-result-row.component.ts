@@ -196,9 +196,6 @@ export class JourneyResultRowComponent implements OnInit {
     // TODO - when migrating this code to next version we dont need to serialize/deserialize the obj anymore
     const tripV2 = OJP_Next.Trip.initWithTripXML(tripXML);
 
-    // HACK - keep for now only timedLegs
-    tripV2.leg = tripV2.leg.filter(el => (el.timedLeg || el.transferLeg));
-
     const stageConfig = this.userTripService.getStageConfig();
     const ojpSDK_Next = OJP_Next.SDK.create(REQUESTOR_REF, stageConfig, this.languageService.language);
     const trrRequest = ojpSDK_Next.requests.TripRefineRequest.initWithTrip(tripV2);
