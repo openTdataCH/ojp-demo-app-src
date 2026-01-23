@@ -4,6 +4,10 @@ OJP-Demo URL: https://opentdatach.github.io/ojp-demo-app/
 
 ----
 
+23.January 2025
+- updates TRR - [PR #342](https://github.com/openTdataCH/ojp-demo-app-src/pull/342)
+  - remove the initial hack that discarded nonTimedLegs
+
 22.January 2025
 - updates TRR - [PR #338](https://github.com/openTdataCH/ojp-demo-app-src/pull/338)
   - includes LinkProjection for TRR calls
