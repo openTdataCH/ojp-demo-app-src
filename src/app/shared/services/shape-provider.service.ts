@@ -180,10 +180,12 @@ export class ShapeProviderService {
       throw new Error("Endpoints are too close");
     }
 
+    // step1. from 
     const viaParts = [
       legEndpointViaParts[0],
     ];
 
+    // step2. intermediates
     if (leg.legType === 'TimedLeg') {
       const timedLeg = leg as OJP_Legacy.TripTimedLeg;
 
@@ -209,6 +211,7 @@ export class ShapeProviderService {
       });
     };
 
+    // step3. to
     viaParts.push(legEndpointViaParts[1]);
 
     return viaParts;
