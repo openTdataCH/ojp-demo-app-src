@@ -277,7 +277,13 @@ export class ShapeProviderService {
 
           if (viaPart.floor !== null) {
             viaKeyPart = viaKeyPart + '$' + viaPart.floor;
+          } else {
+            // TODO: platform works ONLY with !DIDOK
+            // if (viaPart.platform !== null) {
+            //   viaKeyPart = '@' + viaKeyPart + '$' + viaPart.platform;
+            // }
           }
+
           viaKeyParts.push(viaKeyPart);
         });
 
@@ -331,9 +337,11 @@ export class ShapeProviderService {
         viaParts.forEach(viaPart => {
           // in GUI the hops are in long,lat format - also no @ prefix when we have stops
           let viaKeyPart = viaPart.geoPosition.longitude + ',' + viaPart.geoPosition.latitude;
-          if (viaPart.platform !== null) {
-            viaKeyPart = viaKeyPart + '$' + viaPart.platform;
-          }
+
+          // TODO: PLATFORM doesnt work with coords, only with !DIDOK|platform
+          // if (viaPart.platform !== null) {
+          //   viaKeyPart = viaKeyPart + '$' + viaPart.platform;
+          // }
           viaKeyParts.push(viaKeyPart);
         });
 
