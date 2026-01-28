@@ -17,6 +17,7 @@ type RequestMotType = 'rail' | 'bus' | 'coach' | 'foot' | 'tram' | 'subway' | 'g
 
 interface ViaPart {
   geoPosition: OJP_Next.GeoPosition,
+  floor: string | null,
   platform: string | null,
 }
 
@@ -156,6 +157,7 @@ export class ShapeProviderService {
 
       const legEndpointViaPart: ViaPart = {
         geoPosition: geoPosition,
+        floor: null,
         platform: null,
       };
 
@@ -200,6 +202,7 @@ export class ShapeProviderService {
         const viaPart: ViaPart = {
           geoPosition: geoPosition,
           platform: null,
+          floor: null,
         };
 
         const platform = stopPoint.actualPlatform ?? stopPoint.plannedPlatform;
