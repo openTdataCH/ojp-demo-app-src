@@ -11,7 +11,7 @@ import OJP_Legacy from '../../config/ojp-legacy';
 import { OJPHelpers } from '../../helpers/ojp-helpers';
 import { TripLegLineType } from '../types/map-geometry-types';
 import { MapHelpers } from '../../map/helpers/map.helpers';
-import { APP_CONFIG } from 'src/app/config/app-config';
+import { APP_CONFIG } from '../../config/app-config';
 
 type RequestMotType = 'rail' | 'bus' | 'coach' | 'foot' | 'tram' | 'subway' | 'gondola' | 'funicular' | 'ferry';
 
