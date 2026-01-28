@@ -1,4 +1,5 @@
-// Map stops that have levels underground
+// Map stops that have levels underground, based on Jan export of OSM data, 
+//    full list here https://gist.github.com/vasile/faf7ec203299026719173d7ffce0ea25
 export const MapStopsLevelsUnderground: Record<string, number> = {
   // Bern RBS
   'ch:1:sloid:7000:500:21': -2,
