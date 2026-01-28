@@ -4,6 +4,11 @@ OJP-Demo URL: https://opentdatach.github.io/ojp-demo-app/
 
 ----
 
+28.January 2025
+- TR shapes provider - adds floors - [PR #343](https://github.com/openTdataCH/ojp-demo-app-src/pull/343)
+  - adds mapping file for sloids-floors to improve routing
+  - improves shape provider results
+
 23.January 2025
 - updates TRR - [PR #342](https://github.com/openTdataCH/ojp-demo-app-src/pull/342)
   - remove the initial hack that discarded nonTimedLegs
