@@ -81,7 +81,7 @@ export class JourneyResultsComponent implements OnInit {
     })
   }
 
-  public loadPreviousTrips() {
+  public async loadPreviousTrips() {
     if (this.model.tripsData.length === 0) {
       return;
     }
@@ -93,10 +93,10 @@ export class JourneyResultsComponent implements OnInit {
 
     this.model.isFetchingPrevTrips = true;
 
-    this.loadTrips('NumberOfResultsBefore', depArrDate);
+    await this.loadTrips('NumberOfResultsBefore', depArrDate);
   }
 
-  public loadNextTrips() {
+  public async loadNextTrips() {
     if (this.model.tripsData.length === 0) {
       return;
     }
@@ -114,11 +114,11 @@ export class JourneyResultsComponent implements OnInit {
 
     this.model.isFetchingNextTrips = true;
 
-    this.loadTrips('NumberOfResultsAfter', depArrDate);
+    await this.loadTrips('NumberOfResultsAfter', depArrDate);
   }
 
-  private loadTrips(numberOfResultsType: NumberOfResultsType, depArrDate: Date) {
     const viaTripLocations = this.userTripService.isViaEnabled ? this.userTripService.viaTripLocations.map(el => el.asOJP_TripLocationPoint()) : [];
+  private async loadTrips(numberOfResultsType: NumberOfResultsType, depArrDate: Date) {
 
     const numberOfResults: number | null = (() => {
       const hasPublicTransport = this.userTripService.hasPublicTransport();
