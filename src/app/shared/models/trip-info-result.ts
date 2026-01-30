@@ -50,7 +50,7 @@ export class TripInfoResult {
       return null;
     }
 
-    const mapPlaces = OJPHelpers.parseAnyTripInfoPlaceContext(ojpVersion, response);
+    const mapPlaces = OJPHelpers.parseAnyPlaceContext(ojpVersion, response.value.tripInfoResponseContext);
 
     const calls: StopPointCall[] = [];
     const callsSchema = firstTripInfoResultSchema.previousCall.concat(firstTripInfoResultSchema.onwardCall);

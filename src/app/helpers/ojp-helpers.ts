@@ -575,87 +575,58 @@ export class OJPHelpers {
     return distanceMeters + 'm';
   }
 
-  public static parseAnyTripInfoPlaceContext(version: OJP_Next.OJP_VERSION, response: AnyTripInfoRequestResponse): Record<string, StopPlace> {
+  public static parseAnyPlaceContext(version: OJP_Next.OJP_VERSION, responseContextSchema: AnyResponseContextSchema | undefined): Record<string, StopPlace> {
+    if (responseContextSchema === undefined) {
+      return {};
+    }
+
     const isOJPv2 = version === '2.0';
 
     let placeResults: AnyPlaceResultSchema[] = [];
     if (isOJPv2) {
-      const responseOJPv2 = response as OJP_Next.TripInfoRequestResponse;
-      if (responseOJPv2.ok) {
-        const places = responseOJPv2.value.tripInfoResponseContext?.places?.place ?? [];
-        placeResults = places.map(place => {
-          const placeResult: OJP_Types.PlaceResultSchema = {
-            place: place,
-            complete: true,
-          };
-          return placeResult;
-        });
-      }
+      const responseOJPv2 = responseContextSchema as OJP_Types.ResponseContextSchema;
+      const places = responseOJPv2.places?.place ?? [];
+      placeResults = places.map(place => {
+        const placeResult: OJP_Types.PlaceResultSchema = {
+          place: place,
+          complete: true,
+        };
+        return placeResult;
+      });
     } else {
-      const responseOJPv1 = response as OJP_Next.OJPv1_TripInfoRequestResponse;
-      if (responseOJPv1.ok) {
-        const places = responseOJPv1.value.tripInfoResponseContext?.places?.location ?? [];
-        placeResults = places.map(place => {
-          const placeResult: OJP_Types.OJPv1_LocationResultSchema = {
-            location: place,
-            complete: true,
-          };
-          return placeResult;
-        });
-      }
-    }
-
-    const mapPlaces = OJPHelpers.mapAnyPlaceResults(version, placeResults);
-    return mapPlaces;
-  }
-
-  public static parseAnyStopEventResultPlaceContext(version: OJP_Next.OJP_VERSION, response: AnyStopEventRequestResponse): Record<string, StopPlace> {
-    const isOJPv2 = version === '2.0';
-
-    let placeResults: AnyPlaceResultSchema[] = [];
-    if (isOJPv2) {
-      const responseOJPv2 = response as OJP_Next.StopEventRequestResponse;
-      if (responseOJPv2.ok) {
-        const places = responseOJPv2.value.stopEventResponseContext?.places?.place ?? [];
-        placeResults = places.map(place => {
-          const placeResult: OJP_Types.PlaceResultSchema = {
-            place: place,
-            complete: true,
-          };
-          return placeResult;
-        });
-      }
-    } else {
-      const responseOJPv1 = response as OJP_Next.OJPv1_StopEventRequestResponse;
-      if (responseOJPv1.ok) {
-        const places = responseOJPv1.value.stopEventResponseContext?.places?.location ?? [];
-        placeResults = places.map(place => {
-          const placeResult: OJP_Types.OJPv1_LocationResultSchema = {
-            location: place,
-            complete: true,
-          };
-          return placeResult;
-        });
-      }
-    }
-
-    const mapPlaces = OJPHelpers.mapAnyPlaceResults(version, placeResults);
-    return mapPlaces;
-  }
-
-  public static parseAnyStopEventResultSituationsContext(sanitizer: DomSanitizer, version: OJP_Next.OJP_VERSION, response: AnyStopEventRequestResponse): Record<string, SituationContent[]> {
-    const mapSituations: Record<string, SituationContent[]> = {};
-
-    if (response.ok) {
-      const situationsSchema = response.value.stopEventResponseContext?.situations?.ptSituation ?? [];
-      situationsSchema.forEach(situationSchema => {
-        const situationElements = SituationContent.initWithAnySituationSchema(sanitizer, version, situationSchema);
-        if (situationElements.length > 0) {
-          mapSituations[situationElements[0].situationNumber] = situationElements;
-        }
+      const responseOJPv1 = responseContextSchema as OJP_Types.OJPv1_ResponseContextSchema;
+      const places = responseOJPv1.places?.location ?? [];
+      placeResults = places.map(place => {
+        const placeResult: OJP_Types.OJPv1_LocationResultSchema = {
+          location: place,
+          complete: true,
+        };
+        return placeResult;
       });
     }
 
+    const mapPlaces = OJPHelpers.mapAnyPlaceResults(version, placeResults);
+    return mapPlaces;
+  }
+
+  public static parseAnySituationsContext(sanitizer: DomSanitizer, version: OJP_Next.OJP_VERSION, responseContextSchema: AnyResponseContextSchema | undefined): Record<string, SituationContent[]> {
+    if (responseContextSchema === undefined) {
+      return {};
+    }
+
+    const mapSituations: Record<string, SituationContent[]> = {};
+
+    const isOJPv2 = version === '2.0';
+
+    const situationsSchema: AnyPtSituationElement[] = responseContextSchema.situations?.ptSituation ?? [];
+    situationsSchema.forEach(situationsSchema => {
+      const situationContentData = SituationContent.initWithAnySituationSchema(sanitizer, version, situationsSchema);
+      if (situationContentData.length > 0) {
+        const situationNumber = situationContentData[0].situationNumber;
+        mapSituations[situationNumber] = situationContentData;
+      }
+    });
+    
     return mapSituations;
   }
 

@@ -223,6 +223,8 @@ export class JourneyResultRowComponent implements OnInit {
 
     // TRR response is similar with TR response
     const trRequest = OJP_Legacy.TripRequest.initWithResponseMock(trrRequest.requestInfo.responseXML, xmlConfig, REQUESTOR_REF);
+    const mapPlaces = OJPHelpers.parseAnyPlaceContext(OJP_VERSION, trrResponse.value.tripResponseContext);
+    const mapSituations = OJPHelpers.parseAnySituationsContext(this.sanitizer, OJP_VERSION, trrResponse.value.tripResponseContext);
     
     const trResponse = await trRequest.fetchResponse();
 
