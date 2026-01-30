@@ -27,6 +27,7 @@ import { ReportIssueComponent } from '../shared/components/report-issue.componen
 
 import { OJPHelpers } from '../helpers/ojp-helpers';
 import { AnyPlace, PlaceBuilder } from '../shared/models/place/place-builder';
+import { JourneyPointType, TripRequestBoardingType } from '../shared/types/_all';
 
 @Component({
   selector: 'app-search-form',
@@ -183,7 +184,7 @@ export class SearchFormComponent implements OnInit {
   }
 
   private updateLocationTexts() {
-    const endpointTypes: OJP_Legacy.JourneyPointType[] = ['From', 'To'];
+    const endpointTypes: JourneyPointType[] = ['From', 'To'];
     const fromToTextParts: string[] = [];
     endpointTypes.forEach(endpointType => {
       const tripLocationPoint = endpointType === 'From' ? this.userTripService.fromTripPlace : this.userTripService.toTripPlace;
@@ -272,7 +273,7 @@ export class SearchFormComponent implements OnInit {
     this.initFromMockXML(mockText);
   }
 
-  onPlaceSelected(newPlace: AnyPlace, originType: OJP_Legacy.JourneyPointType) {
+  onPlaceSelected(newPlace: AnyPlace, originType: JourneyPointType) {
     this.userTripService.updateTripEndpoint(newPlace, originType, 'SearchForm');
   }
 

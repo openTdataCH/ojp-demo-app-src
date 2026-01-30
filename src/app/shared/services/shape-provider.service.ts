@@ -12,6 +12,7 @@ import { OJPHelpers } from '../../helpers/ojp-helpers';
 import { TripLegLineType } from '../types/map-geometry-types';
 import { MapHelpers } from '../../map/helpers/map.helpers';
 import { APP_CONFIG } from 'src/app/config/app-config';
+import { JourneyPointType } from '../types/_all';
 
 type RequestMotType = 'rail' | 'bus' | 'coach' | 'foot' | 'tram' | 'subway' | 'gondola' | 'funicular' | 'ferry';
 
@@ -142,7 +143,7 @@ export class ShapeProviderService {
   private computeLegViaParts(leg: OJP_Legacy.TripLeg): ViaPart[] {
     const legEndpointViaParts: ViaPart[] = [];
 
-    const endpointTypes: OJP_Legacy.JourneyPointType[] = ['From', 'To'];
+    const endpointTypes: JourneyPointType[] = ['From', 'To'];
     endpointTypes.forEach(endPointType => {
       const isFrom = endPointType === 'From';
       const location = isFrom ? leg.fromLocation : leg.toLocation;

@@ -12,12 +12,12 @@ import { MAP_LAYERS_DEFINITIONS } from "./map-layers-def";
 import { AnyPlace, PlaceBuilder } from '../../shared/models/place/place-builder';
 import { Poi, POI_Restriction, RestrictionPoiOSMTag } from '../../shared/models/place/poi';
 import { OJPHelpers } from '../../helpers/ojp-helpers';
-import { AnyLocationInformationRequest } from '../../shared/types/_all';
 
 export enum FeaturePropsEnum {
     OJP_GeoRestrictionType = 'OJP_Legacy.GeoRestrictionType',
     OJP_GeoRestrictionPoiOSMTag = 'OJP_Legacy.GeoRestrictionPoiOSMTag',
 }
+import { AnyLocationInformationRequest, JourneyPointType } from '../../shared/types/_all';
 
 export class AppMapLayer {
     private language: OJP_Next.Language;
@@ -390,7 +390,7 @@ export class AppMapLayer {
     
         popupContainer.addEventListener('click', ev => {
             const btnEl = ev.target as HTMLButtonElement;
-            const endpointType = btnEl.getAttribute('data-endpoint-type') as OJP_Legacy.JourneyPointType;
+            const endpointType = btnEl.getAttribute('data-endpoint-type') as JourneyPointType;
             if (endpointType === null) {
                 return;
             }

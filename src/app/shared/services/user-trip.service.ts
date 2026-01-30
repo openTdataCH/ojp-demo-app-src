@@ -141,7 +141,7 @@ export class UserTripService {
 
     const ojpSDK_Next = this.createOJP_SDK_Instance(language, appStage);
 
-    const endpointTypes: OJP_Legacy.JourneyPointType[] = ['From', 'To'];
+    const endpointTypes: JourneyPointType[] = ['From', 'To'];
     for (const endpointType of endpointTypes) {
       const isFrom = endpointType === 'From';
 
@@ -301,7 +301,7 @@ export class UserTripService {
   public async refetchEndpointsByName(language: OJP_Legacy.Language) {
     const ojpSDK_Next = this.createOJP_SDK_Instance(language);
 
-    const endpointTypes: OJP_Legacy.JourneyPointType[] = ['From', 'To'];
+    const endpointTypes: JourneyPointType[] = ['From', 'To'];
     for (const endpointType of endpointTypes) {
       const isFrom = endpointType === 'From';
 
@@ -371,7 +371,7 @@ export class UserTripService {
     this.updateURLs();
   }
 
-  updateTripEndpoint(place: AnyPlace, endpointType: OJP_Legacy.JourneyPointType, updateSource: LocationUpdateSource) {
+  updateTripEndpoint(place: AnyPlace, endpointType: JourneyPointType, updateSource: LocationUpdateSource) {
     if (endpointType === 'From') {
       if (this.fromTripPlace) {
         this.fromTripPlace = this.patchTripPlace(this.fromTripPlace, place);
@@ -436,7 +436,7 @@ export class UserTripService {
   public updateURLs() {
     const queryParams = new URLSearchParams();
 
-    const endpointTypes: OJP_Legacy.JourneyPointType[] = ['From', 'To'];
+    const endpointTypes: JourneyPointType[] = ['From', 'To'];
     endpointTypes.forEach(endpointType => {
       const tripLocationPoint = endpointType === 'From' ? this.fromTripPlace : this.toTripPlace;
       const place = tripLocationPoint?.place ?? null;
@@ -699,7 +699,7 @@ export class UserTripService {
   private computeTripPlacesToUpdate(): TripPlace[] {
     const tripPlacesToUpdate: TripPlace[] = [];
 
-    const endpointTypes: OJP_Legacy.JourneyPointType[] = ['From', 'To'];
+    const endpointTypes: JourneyPointType[] = ['From', 'To'];
     endpointTypes.forEach(endpointType => {
       const isFrom = endpointType === 'From';
       const tripPlace = isFrom ? this.fromTripPlace : this.toTripPlace;

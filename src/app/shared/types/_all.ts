@@ -49,3 +49,5 @@ export type AnyLocationInformationRequestResponse = OJP_Next.LocationInformation
 export type AnyStopEventRequestResponse = OJP_Next.StopEventRequestResponse | OJP_Next.OJPv1_StopEventRequestResponse;
 export type AnyTripInfoRequestResponse = OJP_Next.TripInfoRequestResponse | OJP_Next.OJPv1_TripInfoRequestResponse;
 export type AnyTripRequestResponse = OJP_Next.TripRequestResponse | OJP_Next.OJPv1_TripRequestResponse;
+
+export type JourneyPointType = 'From' | 'To' | 'Via';
