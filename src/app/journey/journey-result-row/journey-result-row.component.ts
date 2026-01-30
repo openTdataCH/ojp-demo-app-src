@@ -1,4 +1,6 @@
 import { Component, Input, OnInit, ViewChild } from '@angular/core';
+import { DomSanitizer } from '@angular/platform-browser';
+
 import { SbbExpansionPanel } from '@sbb-esta/angular/accordion';
 
 import * as OJP_Next from 'ojp-sdk-next';
@@ -46,7 +48,7 @@ export class JourneyResultRowComponent implements OnInit {
 
   public trrRequestInfo: OJP_Next.RequestInfo | null;
 
-  constructor(private userTripService: UserTripService, private mapService: MapService, private languageService: LanguageService, private shapeProviderService: ShapeProviderService) {
+  constructor(private userTripService: UserTripService, private mapService: MapService, private languageService: LanguageService, private shapeProviderService: ShapeProviderService, private sanitizer: DomSanitizer) {
     this.tripHeaderStats = <TripHeaderStats>{};
     this.trrRequestInfo = null;
   }

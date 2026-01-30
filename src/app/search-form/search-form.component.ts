@@ -2,6 +2,7 @@ import { Component, OnInit, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
 import { FormControl } from '@angular/forms';
 import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
+import { DomSanitizer } from '@angular/platform-browser';
 import { debounceTime } from 'rxjs';
 
 import { SbbDialog } from "@sbb-esta/angular/dialog";
@@ -73,6 +74,7 @@ export class SearchFormComponent implements OnInit {
     private languageService: LanguageService,
     public userTripService: UserTripService,
     private breakpointObserver: BreakpointObserver,
+    private sanitizer: DomSanitizer,
   ) {
     const searchDate = this.userTripService.departureDate;
     this.searchDate = searchDate;
