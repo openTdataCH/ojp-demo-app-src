@@ -1,3 +1,5 @@
+import * as GeoJSON from 'geojson';
+
 import * as OJP_Types from 'ojp-shared-types';
 import * as OJP_Next from 'ojp-sdk-next';
 
@@ -88,5 +90,16 @@ export class Address extends BasePlace {
 
   public override computeName() {
     return this.addressName;
+  }
+
+  public override asGeoJSONFeature(): GeoJSON.Feature<GeoJSON.Point> {
+    const feature = super.asGeoJSONFeature();
+    if (feature.properties) {
+      feature.properties['addressCode'] = this.publicCode;
+      feature.properties['addressName'] = this.addressName;
+      feature.properties['topographicPlaceRef'] = this.topographicPlaceRef;
+    }
+    
+    return feature;
   }
 }

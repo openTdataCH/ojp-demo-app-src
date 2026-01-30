@@ -1,3 +1,5 @@
+import * as GeoJSON from 'geojson';
+
 import * as OJP_Types from 'ojp-shared-types';
 import * as OJP_Next from 'ojp-sdk-next';
 
@@ -260,5 +262,18 @@ export class Poi extends BasePlace {
 
   public override computeName() {
     return this.name;
+  }
+
+  public override asGeoJSONFeature(): GeoJSON.Feature<GeoJSON.Point> {
+    const feature = super.asGeoJSONFeature();
+    
+    if (feature.properties) {
+      feature.properties['poi.name'] = this.name;
+      feature.properties['poi.code'] = this.publicCode;
+      feature.properties['poi.category'] = this.category;
+      feature.properties['poi.subcategory'] = this.subCategory;
+    }
+    
+    return feature;
   }
 }

@@ -1,3 +1,5 @@
+import * as GeoJSON from 'geojson';
+
 import * as OJP_Types from 'ojp-shared-types';
 import * as OJP_Next from 'ojp-sdk-next';
 
@@ -144,5 +146,15 @@ export class StopPlace extends BasePlace {
     location.updateLegacyGeoPosition(this.geoPosition.longitude, this.geoPosition.latitude);
 
     return location;
+  public override asGeoJSONFeature(): GeoJSON.Feature<GeoJSON.Point> {
+    const feature = super.asGeoJSONFeature();
+    
+    if (feature.properties) {
+      feature.properties['stopPlace.stopPlaceRef'] = this.placeRef.ref;
+      feature.properties['stopPlace.stopPlaceName'] = this.placeRef.name;
+      feature.properties['stopPlace.refSource'] = this.placeRef.source;
+    }
+    
+    return feature;
   }
 }
