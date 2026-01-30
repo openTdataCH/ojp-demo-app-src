@@ -9,9 +9,11 @@ import { GeoPositionBBOX } from '../models/geo/geoposition-bbox';
 import { MapLegLineTypeColor } from '../../config/map-colors';
 import { OJPHelpers } from 'src/app/helpers/ojp-helpers';
 import { IndividualTransportMode } from '../types/transport-mode';
+import { StopCallType } from '../types/_all';
+type StopCallType = 'From' | 'To' | 'Intermediate';
 
 interface LinePointData {
-  type: OJP_Legacy.StopPointType,
+  type: StopCallType,
   feature: GeoJSON.Feature<GeoJSON.Point>
 }
 
@@ -308,7 +310,7 @@ export class TripLegGeoController {
       }
 
       const isFrom = location === this.leg.fromLocation;
-      const stopPointType: OJP_Legacy.StopPointType = isFrom ? 'From' : 'To';
+      const stopCallType: StopCallType = isFrom ? 'From' : 'To';
 
       linePointsData.push({
         type: stopPointType,
