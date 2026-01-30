@@ -7,7 +7,7 @@ import OJP_Legacy from '../config/ojp-legacy';
 
 import { LegStopPointData } from '../shared/components/service-stops.component';
 import { APP_STAGE, DEBUG_LEVEL, DEFAULT_APP_STAGE } from '../config/constants';
-import { AnyLocationInformationRequestResponse, AnyPlaceResultSchema, AnyStopEventRequestResponse, AnyTripInfoRequestResponse, StopEventType, StopPointCall, VehicleAccessType } from '../shared/types/_all';
+import { AnyLocationInformationRequestResponse, AnyPlaceResultSchema, AnyPtSituationElement, AnyResponseContextSchema } from '../shared/types/_all';
 import { JourneyService } from '../shared/models/journey-service';
 import { PlaceLocation } from '../shared/models/place/location';
 import { APP_CONFIG } from '../config/app-config';
@@ -17,6 +17,7 @@ import { SituationContent } from '../shared/models/situation';
 import { TripLegLineType } from '../shared/types/map-geometry-types';
 import { TripData, TripLegData } from '../shared/types/trip';
 import { TripLegGeoController } from '../shared/controllers/trip-geo-controller';
+import { Trip } from '../shared/models/trip/trip';
 
 type PublicTransportPictogram =  'picto-bus-fallback' | 'picto-bus'
   | 'picto-railway' | 'picto-tram' | 'picto-rack-railway'
@@ -868,14 +869,14 @@ export class OJPHelpers {
     });
   }
 
-  public static convertTripsToTripData(trips: OJP_Legacy.Trip[]): TripData[] {
+  public static convertTripsToTripData(trips: Trip[]): TripData[] {
     const tripsData = trips.map((trip, tripIdx) => {
       const legsData = trip.legs.map(leg => {
         const legData: TripLegData = {
           tripId: trip.id,
           leg: leg,
           info: {
-            id: '' + leg.legID,
+            id: '' + leg.id,
             comments: null,
           },
           map: {
