@@ -672,7 +672,7 @@ export class UserTripService {
     return tripDateTime;
   }
 
-  public getStageConfig(forStage: APP_STAGE = this.currentAppStage): OJP_Legacy.ApiConfig {
+  public getStageConfig(forStage: APP_STAGE = this.currentAppStage): OJP_Next.HTTPConfig {
     const stageConfig = APP_CONFIG.stages[forStage] ?? null;
 
     if (stageConfig === null) {
