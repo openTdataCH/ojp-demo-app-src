@@ -36,8 +36,8 @@ export class UserTripService {
   public numberOfResults: number | null;
   public numberOfResultsBefore: number | null;
   public numberOfResultsAfter: number | null;
-  public railSubmodesFilter: string[];
   public publicTransportModesFilter: ModeOfTransportType[];
+  public railSubmodesFilter: OJP_Types.RailSubmodeEnum[];
   public useRealTimeDataType: OJP_Types.UseRealtimeDataEnum;
   public walkSpeedDeviation: number | null;
 
@@ -252,14 +252,12 @@ export class UserTripService {
     })();
 
     this.railSubmodesFilter = (() => {
-      const modes: string[] = [];
-
       const railSubmodesS = this.queryParams.get('rail_submodes') ?? null;
       if (railSubmodesS === null) {
-        return modes;
+        return [];
       }
 
-      const userRailSubmodes = railSubmodesS.split(',').map(el => el.toLowerCase().trim());
+      const userRailSubmodes = railSubmodesS.split(',').map(el => el.toLowerCase().trim()) as OJP_Types.RailSubmodeEnum[];
       return userRailSubmodes;
     })();
 

@@ -102,8 +102,9 @@ export class TripModeTypeComponent implements OnInit {
   public walkSpeedDeviation: number;
   public walkSpeedDeviationValues: number[];
 
-  public mapRailSubmodeFilter: Record<string, boolean>;
   public mapPublicTransportModesFilter: Record<ModeOfTransportType, boolean>;
+  public mapRailSubmodeFilter: Record<OJP_Types.RailSubmodeEnum, boolean>;
+  public availableRailSubmodesFilter: OJP_Types.RailSubmodeEnum[];
 
   public isV1: boolean;
 
@@ -172,7 +173,9 @@ export class TripModeTypeComponent implements OnInit {
       interregionalRail: false,
       railShuttle: false,
       local: false,
+      vehicleTunnelTransportRailService: false,
     };
+    this.availableRailSubmodesFilter = ['international', 'highSpeedRail', 'interregionalRail', 'railShuttle', 'local'];
 
     this.isV1 = OJP_VERSION === '1.0';
 
@@ -322,12 +325,9 @@ export class TripModeTypeComponent implements OnInit {
         }
       });
 
-      
-
       this.userTripService.railSubmodesFilter = [];
       if (this.mapPublicTransportModesFilter.rail) {
-        const availableRailSubmodesFilter: string[] = Object.keys(this.mapRailSubmodeFilter);
-        availableRailSubmodesFilter.forEach(railSubmode => {
+        this.availableRailSubmodesFilter.forEach(railSubmode => {
           if (this.mapRailSubmodeFilter[railSubmode]) {
             this.userTripService.railSubmodesFilter.push(railSubmode);
           }
