@@ -572,7 +572,7 @@ export class OJPHelpers {
       return distanceKmS;
     }
 
-    return distanceMeters + 'm'
+    return distanceMeters + 'm';
   }
 
   public static parseAnyTripInfoPlaceContext(version: OJP_Next.OJP_VERSION, response: AnyTripInfoRequestResponse): Record<string, StopPlace> {
