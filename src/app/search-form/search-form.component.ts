@@ -61,7 +61,7 @@ export class SearchFormComponent implements OnInit {
 
   public headerText: string;
 
-  public tripRequestBoardingTypes: OJP_Legacy.TripRequestBoardingType[];
+  public tripRequestBoardingTypes: TripRequestBoardingType[];
 
   private useMocks: boolean;
 

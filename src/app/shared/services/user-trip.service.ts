@@ -41,7 +41,7 @@ export class UserTripService {
   public useRealTimeDataType: OJP_Types.UseRealtimeDataEnum;
   public walkSpeedDeviation: number | null;
 
-  public currentBoardingType: OJP_Legacy.TripRequestBoardingType;
+  public currentBoardingType: TripRequestBoardingType;
 
   public tripModeType: TripModeType;
   public tripTransportMode: IndividualTransportMode;
@@ -276,7 +276,7 @@ export class UserTripService {
         return 'Arr';
       }
 
-      return 'Dep' as OJP_Legacy.TripRequestBoardingType;
+      return 'Dep' as TripRequestBoardingType;
     })();
 
     this._initialLocationsChanges.next(true);

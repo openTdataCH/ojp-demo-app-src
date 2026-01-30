@@ -51,3 +51,4 @@ export type AnyTripInfoRequestResponse = OJP_Next.TripInfoRequestResponse | OJP_
 export type AnyTripRequestResponse = OJP_Next.TripRequestResponse | OJP_Next.OJPv1_TripRequestResponse;
 
 export type JourneyPointType = 'From' | 'To' | 'Via';
+export type TripRequestBoardingType = 'Dep' | 'Arr';
