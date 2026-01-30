@@ -641,7 +641,7 @@ export class OJPHelpers {
 
     const mapPlaces: Record<string, StopPlace> = {};
     places.forEach(place => {
-      mapPlaces[place.stopRef] = place;
+      mapPlaces[place.placeRef.ref] = place;
     });
 
     return mapPlaces;
