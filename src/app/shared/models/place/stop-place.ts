@@ -9,23 +9,18 @@ import OJP_Legacy from '../../../config/ojp-legacy';
 import { BasePlace } from '../place';
 
 import { AnyPlaceResultSchema } from '../../types/_all';
-
-type PlaceSubType = 'stop-point' | 'stop-place';
+import { PlaceRef, PlaceRefSourceType } from '../place-ref';
 
 export class StopPlace extends BasePlace {
-  public stopName: string;
-  public stopRef: string;
-  public subType: PlaceSubType;
+  public placeRef: PlaceRef;
 
   public parentRef: string | null;
   public plannedQuay: string | null;
   public estimatedQuay: string | null;
 
-  private constructor(longitude: number, latitude: number, placeName: string, stopName: string, stopRef: string, subType: PlaceSubType = 'stop-place') {
+  private constructor(longitude: number, latitude: number, placeName: string, placeRef: PlaceRef) {
     super(longitude, latitude, 'stop', placeName);
-    this.stopName = stopName;
-    this.stopRef = stopRef;
-    this.subType = subType;
+    this.placeRef = placeRef;
 
     this.parentRef = null;
     this.plannedQuay = null;
@@ -33,13 +28,15 @@ export class StopPlace extends BasePlace {
   }
   
   public static Empty(stopName: string = 'n/a') {
-    const stopPlace = new StopPlace(0, 0, 'n/a', stopName, 'n/a');
+    const placeRef = new PlaceRef(stopName, 'n/a');
+    const stopPlace = new StopPlace(0, 0, 'n/a', placeRef);
     return stopPlace;
   }
 
   // static init to avoid exposing subType
   public static initWithCoordsRefAndName(longitude: number, latitude: number, placeName: string, stopName: string, stopRef: string) {
-    const stopPlace = new StopPlace(longitude, latitude, placeName, stopName, stopRef);
+    const placeRef = new PlaceRef(stopName, stopRef);
+    const stopPlace = new StopPlace(longitude, latitude, placeName, placeRef);
     return stopPlace;
   }
 
@@ -124,9 +121,10 @@ export class StopPlace extends BasePlace {
       return null;
     }
 
-    const subType: PlaceSubType = stopPlaceSchema === null ? 'stop-point' : 'stop-point';
+    const sourceType: PlaceRefSourceType = stopPlaceSchema === null ? 'stop-point' : 'stop-point';
+    const placeRef = new PlaceRef(stopPlaceName, stopPlaceRef, sourceType);
 
-    const stopPlace = new StopPlace(geoPosition.longitude, geoPosition.latitude, placeName, stopPlaceName, stopPlaceRef, subType);
+    const stopPlace = new StopPlace(geoPosition.longitude, geoPosition.latitude, placeName, placeRef);
 
     if (stopPointSchema !== null) {
       stopPlace.parentRef = stopPointSchema.parentRef ?? null;
@@ -138,7 +136,7 @@ export class StopPlace extends BasePlace {
   }
 
   public override computeName() {
-    return this.stopName;
+    return this.placeRef.name;
   }
 
   public override asOJP_LegacyLocation(): OJP_Legacy.Location {
