@@ -21,6 +21,12 @@ export interface CreateIssueBody {
   projectKey: string
 }
 
+export interface BookingArrangement {
+  agencyCode: string,
+  agencyName: string,
+  infoURL: string,
+}
+
 export type AnyPlaceSchema = OJP_Types.PlaceSchema | OJP_Types.OJPv1_LocationSchema;
 export type AnyPlaceResultSchema = OJP_Types.PlaceResultSchema | OJP_Types.OJPv1_LocationResultSchema;
 export type AnyPointOfInterestSchema = OJP_Types.PointOfInterestSchema | OJP_Types.OJPv1_PointOfInterestSchema;

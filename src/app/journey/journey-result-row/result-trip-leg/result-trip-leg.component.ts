@@ -27,6 +27,7 @@ import { JourneyService } from '../../../shared/models/journey-service';
 import { PlaceLocation } from '../../../shared/models/place/location';
 import { GeoPositionBBOX } from '../../../shared/models/geo/geoposition-bbox';
 import { SituationContent } from '../../../shared/models/situation';
+import { BookingArrangement, JourneyPointType } from '../../../shared/types/_all';
 import { StopPointHelpers } from '../../../shared/models/stop-point-call';
 
 type LegTemplate = 'walk' | 'timed' | 'taxi';
@@ -50,7 +51,7 @@ interface LegInfoDataModel {
   leadingText: string,
   
   guidanceRows: GuidanceRow[],
-  bookingArrangements: OJP_Legacy.BookingArrangement[]
+  bookingArrangements: BookingArrangement[],
   
   isWalking: boolean,
   durationText: string,
