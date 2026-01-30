@@ -62,7 +62,7 @@ export class JourneyService implements OJP_Types.DatedJourneySchema  {
     service.directionRef = schema.directionRef;
     service.productCategory = schema.productCategory;
     service.trainNumber = schema.trainNumber;
-    service.operatorRef = schema.operatorRef;
+    service.operatorRef = String(schema.operatorRef);
     service.destinationStopPointRef = schema.destinationStopPointRef;
     service.destinationText = schema.destinationText;
     service.unplanned = schema.unplanned;
@@ -88,7 +88,7 @@ export class JourneyService implements OJP_Types.DatedJourneySchema  {
     service.directionRef = schema.directionRef;
     service.productCategory = schema.productCategory;
     service.trainNumber = undefined; // this comes from TimedLeg
-    service.operatorRef = schema.operatorRef;
+    service.operatorRef = String(schema.operatorRef);
     service.destinationStopPointRef = schema.destinationStopPointRef;
     service.destinationText = schema.destinationText;
     service.unplanned = schema.unplanned;
