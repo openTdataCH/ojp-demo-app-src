@@ -18,6 +18,10 @@ import { TripLegLineType } from '../shared/types/map-geometry-types';
 import { TripData, TripLegData } from '../shared/types/trip';
 import { TripLegGeoController } from '../shared/controllers/trip-geo-controller';
 import { Trip } from '../shared/models/trip/trip';
+import { TimedLeg } from '../shared/models/trip/leg/timed-leg';
+import { AnyLeg } from '../shared/models/trip/leg-builder';
+import { ContinuousLeg } from '../shared/models/trip/leg/continuous-leg';
+import { TransferLeg } from '../shared/models/trip/leg/transfer-leg';
 
 type PublicTransportPictogram =  'picto-bus-fallback' | 'picto-bus'
   | 'picto-railway' | 'picto-tram' | 'picto-rack-railway'
@@ -80,20 +84,19 @@ export class OJPHelpers {
     return 'picto-bus-fallback';
   }
 
-  public static computeIconFilenameForLeg(leg: OJP_Legacy.TripLeg): string {
-    if (leg.legType === 'TransferLeg') {
+  public static computeIconFilenameForLeg(leg: AnyLeg): string {
+    if (leg.type === 'TransferLeg') {
       return 'picto-walk';
     }
 
-    if (leg.legType === 'TimedLeg') {
-      const timdLeg = leg as OJP_Legacy.TripTimedLeg;
-      const service = JourneyService.initWithOJP_LegacyJourneyService(timdLeg.service);
-      const serviceIcon = OJPHelpers.computeIconFilenameForService(service);
+    if (leg.type === 'TimedLeg') {
+      const timdLeg = leg as TimedLeg;
+      const serviceIcon = OJPHelpers.computeIconFilenameForService(timdLeg.service);
       return serviceIcon;
     }
 
-    if (leg.legType === 'ContinuousLeg') {
-      const continousLeg = leg as OJP_Legacy.TripContinuousLeg;
+    if (leg.type === 'ContinuousLeg') {
+      const continousLeg = leg as ContinuousLeg;
       if (continousLeg.isDriveCarLeg()) {
         return 'car-sharing';
       }
@@ -747,11 +750,11 @@ export class OJPHelpers {
     return stopCall;
   }
 
-  public static computeLegLineType(leg: OJP_Legacy.TripLeg): TripLegLineType {
+  public static computeLegLineType(leg: AnyLeg): TripLegLineType {
     const defaultType: TripLegLineType = 'Unknown';
 
-    if (leg.legType === 'ContinuousLeg' || leg.legType === 'TransferLeg') {
-      const continuousLeg = leg as OJP_Legacy.TripContinuousLeg;
+    if (leg.type === 'ContinuousLeg') {
+      const continuousLeg = leg as ContinuousLeg;
 
       if (continuousLeg.isDriveCarLeg()) {
         return 'Self-Drive Car';
@@ -765,21 +768,20 @@ export class OJPHelpers {
         return 'OnDemand';
       }
   
-      if (leg.legType === 'TransferLeg') {
-        return 'Transfer';
-      }
-  
-      if (continuousLeg.legTransportMode === 'car-ferry') {
+      if (continuousLeg.isWater()) {
         return 'Water';
       }
 
       return 'Walk';
     }
+
+    if (leg.type === 'TransferLeg') {
+      return 'Transfer';
+    }
     
-    if (leg.legType === 'TimedLeg') {
-      const timedLeg = leg as OJP_Legacy.TripTimedLeg;
-      const service = JourneyService.initWithOJP_LegacyJourneyService(timedLeg.service);
-      return service.computeLegColorType();
+    if (leg.type === 'TimedLeg') {
+      const timedLeg = leg as TimedLeg;
+      return timedLeg.service.computeLegColorType();
     }
 
     return defaultType;
@@ -817,7 +819,7 @@ export class OJPHelpers {
           tripId: tripData.trip.id,
           leg: leg,
           info: {
-            id: '' + leg.legID,
+            id: '' + leg.id,
             comments: null,
           },
           map: tripData.legsData[legIdx].map,
@@ -839,16 +841,19 @@ export class OJPHelpers {
         let shouldMergeLegs = false;
         const leg2 = tripData.trip.legs[leg2Idx];
         const leg3 = tripData.trip.legs[leg3Idx];
-        if (leg.legType === 'TimedLeg' && leg2.legType === 'TransferLeg' && leg3.legType === 'TimedLeg') {
-          const continousLeg = leg2 as OJP_Legacy.TripContinuousLeg;
-          if ((continousLeg.transferMode === 'remainInVehicle') || (continousLeg.transferMode === 'changeWithinVehicle')) {
+        if (leg.type === 'TimedLeg' && leg2.type === 'TransferLeg' && leg3.type === 'TimedLeg') {
+          const transferLeg = leg2 as TransferLeg;
+          if ((transferLeg.transferType === 'remainInVehicle') || (transferLeg.transferType === 'changeWithinVehicle')) {
             shouldMergeLegs = true;
             skipIdx = leg3Idx;
           }
         }
 
         if (shouldMergeLegs) {
-          const newLeg = OJPHelpers.mergeTimedLegs(leg as OJP_Legacy.TripTimedLeg, leg3 as OJP_Legacy.TripTimedLeg);
+          const leg1Timed = leg as TimedLeg;
+          const leg3Timed = leg3 as TimedLeg;
+          const newLeg = leg1Timed.mergeWithAnotherTimedLeg(leg3Timed);
+          
           legData.leg = newLeg;
           legData.info.id = (legIdx + 1) + '-' + (leg3Idx + 1);
           legData.info.comments = 'Timed legs were merged: ' +  legData.info.id;
