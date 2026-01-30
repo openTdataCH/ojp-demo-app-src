@@ -3,9 +3,6 @@ import * as GeoJSON from 'geojson';
 import * as OJP_Types from 'ojp-shared-types';
 import * as OJP_Next from 'ojp-sdk-next';
 
-// TODO - remove after migration
-import OJP_Legacy from '../../../config/ojp-legacy';
-
 import { BasePlace } from '../place';
 
 import { AnyPlaceResultSchema } from '../../types/_all';
@@ -139,11 +136,6 @@ export class StopPlace extends BasePlace {
     return this.placeRef.name;
   }
 
-  public override asOJP_LegacyLocation(): OJP_Legacy.Location {
-    const location = OJP_Legacy.Location.initWithStopPlaceRef(this.stopRef, this.stopName);
-    location.updateLegacyGeoPosition(this.geoPosition.longitude, this.geoPosition.latitude);
-
-    return location;
   public override asGeoJSONFeature(): GeoJSON.Feature<GeoJSON.Point> {
     const feature = super.asGeoJSONFeature();
     
