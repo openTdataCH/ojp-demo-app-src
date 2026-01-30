@@ -77,13 +77,13 @@ export class Address extends BasePlace {
   public override computeGeoJSON_Properties() {
     const properties = super.computeGeoJSON_Properties();
 
-    properties['address.publicCode'] = this.publicCode ?? '';
-    properties['address.name'] = this.addressName ?? '';
-    properties['address.postCode'] = this.postCode ?? '';
-    properties['address.topographicPlaceName'] = this.topographicPlaceName ?? '';
-    properties['address.topographicPlaceRef'] = this.topographicPlaceRef ?? '';
-    properties['address.street'] = this.street ?? '';
-    properties['address.houseNumber'] = this.houseNumber ?? '';
+    properties['address.publicCode'] = this.publicCode;
+    properties['address.name'] = this.addressName;
+    properties['address.postCode'] = this.postCode;
+    properties['address.topographicPlaceName'] = this.topographicPlaceName;
+    properties['address.topographicPlaceRef'] = this.topographicPlaceRef;
+    properties['address.street'] = this.street;
+    properties['address.houseNumber'] = this.houseNumber;
 
     return properties;
   }
