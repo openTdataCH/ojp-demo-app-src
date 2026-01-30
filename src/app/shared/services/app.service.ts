@@ -13,13 +13,9 @@ export class AppService {
   constructor(private title: Title) {
     this.baseTitle = (() => {
       const titleParts: string[] = [
-        'OJP Demo',
+        'OJP Demo TR Legacy',
       ];
 
-      if (DEBUG_LEVEL === 'DEBUG') {
-        titleParts.push('BETA');
-      }
-      
       titleParts.push('OJP ' + OJP_VERSION);
 
       const titleS = titleParts.join(' - ');
