@@ -1,4 +1,4 @@
-import * as GeoJSON from 'geojson'
+import * as GeoJSON from 'geojson';
 import mapboxgl from "mapbox-gl";
 
 import * as OJP_Types from 'ojp-shared-types';
@@ -10,7 +10,7 @@ import { UserTripService } from "../../shared/services/user-trip.service";
 import { MapHelpers } from "../helpers/map.helpers";
 import { MAP_LAYERS_DEFINITIONS } from "./map-layers-def";
 import { AnyPlace, PlaceBuilder } from '../../shared/models/place/place-builder';
-import { Poi, POI_Restriction, RestrictionPoiOSMTag } from '../../shared/models/place/poi';
+import { Poi, POI_Restriction } from '../../shared/models/place/poi';
 import { OJPHelpers } from '../../helpers/ojp-helpers';
 
 export enum FeaturePropsEnum {
