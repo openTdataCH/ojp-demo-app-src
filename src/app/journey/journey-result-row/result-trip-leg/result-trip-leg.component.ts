@@ -27,6 +27,7 @@ import { JourneyService } from '../../../shared/models/journey-service';
 import { PlaceLocation } from '../../../shared/models/place/location';
 import { GeoPositionBBOX } from '../../../shared/models/geo/geoposition-bbox';
 import { SituationContent } from '../../../shared/models/situation';
+import { StopPointHelpers } from '../../../shared/models/stop-point-call';
 
 type LegTemplate = 'walk' | 'timed' | 'taxi';
 
@@ -466,8 +467,7 @@ export class ResultTripLegComponent implements OnInit {
           locationText: stopPoint.location.computeLocationName() ?? 'n/a',
         };
 
-        const stopPointCall = OJPHelpers.convertOJP_LegacyStopPoint2StopPointCall(stopPoint);
-        OJPHelpers.updateLocationDataWithTime(stopPointData, stopPointCall);
+        StopPointHelpers.updateLocationDataWithTime(stopPointData, stopCall);
 
         stopPointsData.push(stopPointData);
       });
@@ -499,13 +499,13 @@ export class ResultTripLegComponent implements OnInit {
     if (leg.legType === 'TimedLeg') {
       const timedLeg = leg as OJP_Legacy.TripTimedLeg;
       
-      const fromLocationVehicleAccessType = OJPHelpers.computePlatformAssistance(timedLeg.fromStopPoint.vehicleAccessType);
-      this.legInfoDataModel.fromLocationData.platformAssistanceIconPath = OJPHelpers.computePlatformAssistanceIconPath(fromLocationVehicleAccessType);
-      this.legInfoDataModel.fromLocationData.platformAssistanceTooltip = OJPHelpers.computePlatformAssistanceTooltip(fromLocationVehicleAccessType);
+      const fromLocationVehicleAccessType = StopPointHelpers.computePlatformAssistance(timedLeg.fromStopCall.vehicleAccessType);
+      this.legInfoDataModel.fromLocationData.platformAssistanceIconPath = StopPointHelpers.computePlatformAssistanceIconPath(fromLocationVehicleAccessType);
+      this.legInfoDataModel.fromLocationData.platformAssistanceTooltip = StopPointHelpers.computePlatformAssistanceTooltip(fromLocationVehicleAccessType);
 
-      const toLocationVehicleAccessType = OJPHelpers.computePlatformAssistance(timedLeg.toStopPoint.vehicleAccessType);
-      this.legInfoDataModel.toLocationData.platformAssistanceIconPath = OJPHelpers.computePlatformAssistanceIconPath(toLocationVehicleAccessType);
-      this.legInfoDataModel.toLocationData.platformAssistanceTooltip = OJPHelpers.computePlatformAssistanceTooltip(toLocationVehicleAccessType);
+      const toLocationVehicleAccessType = StopPointHelpers.computePlatformAssistance(timedLeg.toStopCall.vehicleAccessType);
+      this.legInfoDataModel.toLocationData.platformAssistanceIconPath = StopPointHelpers.computePlatformAssistanceIconPath(toLocationVehicleAccessType);
+      this.legInfoDataModel.toLocationData.platformAssistanceTooltip = StopPointHelpers.computePlatformAssistanceTooltip(toLocationVehicleAccessType);
 
       timedLeg.intermediateStopPoints.forEach((stopPoint, idx) => {
         const locationData = this.legInfoDataModel.intermediaryLocationsData[idx] ?? null;
@@ -513,9 +513,9 @@ export class ResultTripLegComponent implements OnInit {
           return;
         }
 
-        const locationVehicleAccessType = OJPHelpers.computePlatformAssistance(stopPoint.vehicleAccessType);
-        locationData.platformAssistanceIconPath = OJPHelpers.computePlatformAssistanceIconPath(locationVehicleAccessType);
-        locationData.platformAssistanceTooltip = OJPHelpers.computePlatformAssistanceTooltip(locationVehicleAccessType);
+        const locationVehicleAccessType = StopPointHelpers.computePlatformAssistance(stopPoint.vehicleAccessType);
+        locationData.platformAssistanceIconPath = StopPointHelpers.computePlatformAssistanceIconPath(locationVehicleAccessType);
+        locationData.platformAssistanceTooltip = StopPointHelpers.computePlatformAssistanceTooltip(locationVehicleAccessType);
       });
     }
 

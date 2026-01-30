@@ -5,13 +5,13 @@ import { SbbDialog } from '@sbb-esta/angular/dialog';
 import * as OJP_Next from 'ojp-sdk-next';
 
 import { StationBoardService } from '../station-board.service';
-import { OJPHelpers } from '../../helpers/ojp-helpers';
 
 import { TripInfoResultPopoverComponent } from '../../journey/journey-result-row/result-trip-leg/trip-info-result-popover/trip-info-result-popover.component';
 import { StationBoardType } from '../types/stop-event';
 import { StopEventResult } from '../../shared/models/stop-event-result';
-import { StopEventType, StopPointCall } from '../../shared/types/_all';
+import { StopEventType } from '../../shared/types/_all';
 import { SituationContent } from '../../shared/models/situation';
+import { StopPointCall, StopPointHelpers } from '../../shared/models/stop-point-call';
 
 interface StationBoardTime {
   stopTime: string
@@ -153,7 +153,7 @@ export class StationBoardResultComponent implements OnInit, AfterViewInit {
     const isArrival = forBoardType === 'Arrivals';
 
     const stopEventType: StopEventType = isArrival ? 'arrival' : 'departure';
-    const delayMinutes = OJPHelpers.computeDelayMinutes(stopEventType, stopPoint);
+    const delayMinutes = StopPointHelpers.computeDelayMinutes(stopEventType, stopPoint);
     if (delayMinutes === null) {
       return null;
     }
