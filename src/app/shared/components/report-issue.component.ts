@@ -1,7 +1,6 @@
 import { AfterViewInit, Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 
-import OJP_Legacy from '../../config/ojp-legacy';
 import * as OJP_Next from 'ojp-sdk-next';
 
 import { CreateIssueBody } from '../types/_all';
@@ -24,7 +23,7 @@ interface PageModel {
   templateUrl: './report-issue.component.html',
 })
 export class ReportIssueComponent implements OnInit, AfterViewInit {
-  public requestInfo: OJP_Legacy.RequestInfo | null;
+  public requestInfo: OJP_Next.RequestInfo | null;
   public model: PageModel;
 
   public form: FormGroup;

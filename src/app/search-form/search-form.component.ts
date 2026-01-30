@@ -49,7 +49,7 @@ export class SearchFormComponent implements OnInit {
   public isSearching: boolean;
 
   public requestDurationF: string | null;
-  public currentRequestInfo: OJP_Legacy.RequestInfo | null;
+  public currentRequestInfo: OJP_Next.RequestInfo | null;
 
   private lastCustomTripRequestXML: string | null;
 
@@ -429,7 +429,7 @@ export class SearchFormComponent implements OnInit {
     this.userTripService.updateTrips(trips);
   }
 
-  private logResponseTime(requestInfo: OJP_Legacy.RequestInfo, messagePrefix: string) {
+  private logResponseTime(requestInfo: OJP_Next.RequestInfo, messagePrefix: string) {
     if (DEBUG_LEVEL !== 'DEBUG') {
       return;
     }

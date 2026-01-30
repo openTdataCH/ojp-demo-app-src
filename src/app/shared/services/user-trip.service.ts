@@ -66,7 +66,7 @@ export class UserTripService {
   public tripFaresUpdated = new EventEmitter<OJP_Types.FareResultSchema[]>();
   
   public mapActiveTripSelected = new EventEmitter<TripData | null>();
-  public tripRequestFinished = new EventEmitter<OJP_Legacy.RequestInfo>();
+  public tripRequestFinished = new EventEmitter<OJP_Next.RequestInfo>();
 
   public searchParamsReset = new EventEmitter<void>();
 
