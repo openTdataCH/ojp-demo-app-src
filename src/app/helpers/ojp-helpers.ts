@@ -816,6 +816,7 @@ export class OJPHelpers {
   private static mergeTimedLegs(leg1: OJP_Legacy.TripTimedLeg, leg2: OJP_Legacy.TripTimedLeg) {
     let newLegIntermediatePoints = leg1.intermediateStopPoints.slice();
     leg1.toStopPoint.stopPointType = 'Intermediate';
+    leg1.toStopPoint.departureData = leg2.fromStopPoint.departureData;
     newLegIntermediatePoints.push(leg1.toStopPoint);
     newLegIntermediatePoints = newLegIntermediatePoints.concat(leg2.intermediateStopPoints.slice());
 
