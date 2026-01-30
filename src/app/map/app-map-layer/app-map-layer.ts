@@ -12,11 +12,6 @@ import { MAP_LAYERS_DEFINITIONS } from "./map-layers-def";
 import { AnyPlace, PlaceBuilder } from '../../shared/models/place/place-builder';
 import { Poi, POI_Restriction } from '../../shared/models/place/poi';
 import { OJPHelpers } from '../../helpers/ojp-helpers';
-
-export enum FeaturePropsEnum {
-    OJP_GeoRestrictionType = 'OJP_Legacy.GeoRestrictionType',
-    OJP_GeoRestrictionPoiOSMTag = 'OJP_Legacy.GeoRestrictionPoiOSMTag',
-}
 import { AnyLocationInformationRequest, JourneyPointType } from '../../shared/types/_all';
 
 export class AppMapLayer {
