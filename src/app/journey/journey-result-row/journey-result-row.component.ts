@@ -6,18 +6,18 @@ import { SbbExpansionPanel } from '@sbb-esta/angular/accordion';
 import * as OJP_Next from 'ojp-sdk-next';
 import * as OJP_Types from 'ojp-shared-types';
 
-import OJP_Legacy from '../../config/ojp-legacy';
-
-import { DEBUG_LEVEL, REQUESTOR_REF, OJP_VERSION, FLAG_USE_2nd_SHAPE_PROVIDER } from '../../config/constants';
+import { REQUESTOR_REF, OJP_VERSION, FLAG_USE_2nd_SHAPE_PROVIDER } from '../../config/constants';
 
 import { UserTripService } from '../../shared/services/user-trip.service';
 import { MapService } from '../../shared/services/map.service';
 import { LanguageService } from '../../shared/services/language.service';
 import { TripLegGeoController } from '../../shared/controllers/trip-geo-controller';
-import { TripData, TripLegData } from '../../shared/types/trip';
+import { TripData } from '../../shared/types/trip';
 import { OJPHelpers } from '../../helpers/ojp-helpers';
 import { ShapeProviderService } from '../../shared/services/shape-provider.service';
 import { DateHelpers } from '../../helpers/date-helpers';
+import { Trip } from '../../shared/models/trip/trip';
+
 
 interface TripHeaderStats {
   title: string,
@@ -130,38 +130,34 @@ export class JourneyResultRowComponent implements OnInit {
     }
   }
 
-  private initTripHeaderStats(trip: OJP_Legacy.Trip) {
+  private initTripHeaderStats(trip: Trip) {
     this.tripHeaderStats.title = 'Trip ' + ((this.idx ?? 0) + 1);
 
-    this.tripHeaderStats.isCancelled = trip.stats.isCancelled === true;
-    this.tripHeaderStats.isInfeasible = trip.stats.isInfeasible === true;
-    this.tripHeaderStats.isUnplanned = trip.stats.isUnplanned === true;
+    this.tripHeaderStats.isCancelled = trip.realTimeData.cancelled === true;
+    this.tripHeaderStats.isInfeasible = trip.realTimeData.infeasible === true;
+    this.tripHeaderStats.isUnplanned = trip.realTimeData.unplanned === true;
       
-    if (trip.stats.transferNo === 0) {
+    if (trip.transfers === 0) {
       this.tripHeaderStats.tripChangesInfo = 'direct';
-    } else if (trip.stats.transferNo === 1) {
-      this.tripHeaderStats.tripChangesInfo = trip.stats.transferNo + ' transfer';
+    } else if (trip.transfers === 1) {
+      this.tripHeaderStats.tripChangesInfo = '1 transfer';
     } else {
-      this.tripHeaderStats.tripChangesInfo = trip.stats.transferNo + ' transfers';
+      this.tripHeaderStats.tripChangesInfo = trip.transfers + ' transfers';
     }
 
-    this.tripHeaderStats.tripFromTime = OJP_Next.DateHelpers.formatTimeHHMM(trip.stats.startDatetime);
+    this.tripHeaderStats.tripFromTime = OJP_Next.DateHelpers.formatTimeHHMM(trip.startDateTime);
     
-    this.tripHeaderStats.tripToTime = OJP_Next.DateHelpers.formatTimeHHMM(trip.stats.endDatetime);
-    const dayDiff = JourneyResultRowComponent.getDayOffset(trip.stats.endDatetime, trip.stats.startDatetime);
+    this.tripHeaderStats.tripToTime = OJP_Next.DateHelpers.formatTimeHHMM(trip.endDateTime);
+    const dayDiff = JourneyResultRowComponent.getDayOffset(trip.startDateTime, trip.endDateTime);
     if(dayDiff > 0){
       this.tripHeaderStats.tripToTime = '(+' + dayDiff + 'd) ' + this.tripHeaderStats.tripToTime;
     }
 
-    this.tripHeaderStats.tripDurationS = trip.stats.duration.formatDuration()
+    this.tripHeaderStats.tripDurationS = trip.duration.format();
 
     this.tripHeaderStats.tripDistanceS = (() => {
-      if (DEBUG_LEVEL !== 'DEBUG') {
-        return OJPHelpers.formatDistance(trip.stats.distanceMeters);
-      }
-
-      const sourceF = trip.stats.distanceSource === 'trip' ? 'Δ' : 'Σ';
-      const distanceF = OJPHelpers.formatDistance(trip.stats.distanceMeters);
+      const sourceF = trip.distance.source === '1a.trip.distance' ? 'Δ' : 'Σ';
+      const distanceF = OJPHelpers.formatDistance(trip.distance.distanceM ?? 0);
 
       return distanceF + ' ' + sourceF;
     })();
@@ -189,22 +185,28 @@ export class JourneyResultRowComponent implements OnInit {
       return;
     }
 
-    const isOJPv2 = OJP_VERSION === '2.0';
-    const xmlConfig = isOJPv2 ? OJP_Next.DefaultXML_Config : OJP_Next.XML_BuilderConfigOJPv1;
+    const trip = this.tripData.trip;
+    const tripSchema = trip.asOJP_Schema();
 
-    const tripXML = this.tripData.trip.asXML(xmlConfig);
-    // console.log(tripXML);
-
-    // TODO - when migrating this code to next version we dont need to serialize/deserialize the obj anymore
-    const tripV2 = OJP_Next.Trip.initWithTripXML(tripXML);
-
-    // HACK - keep for now only timedLegs
-    tripV2.leg = tripV2.leg.filter(el => (el.timedLeg || el.transferLeg));
+    // strip-out unecessary nodes
+    tripSchema.leg.forEach(legSchema => {
+      if (legSchema.continuousLeg?.legTrack) {
+        delete(legSchema.continuousLeg?.legTrack);
+        delete(legSchema.continuousLeg?.pathGuidance);
+      }
+      if (legSchema.timedLeg) {
+        delete(legSchema.timedLeg?.legTrack);
+        
+        legSchema.timedLeg.legBoard.expectedDepartureOccupancy = [];
+        legSchema.timedLeg.legIntermediate.forEach(el => el.expectedDepartureOccupancy = []);
+        legSchema.timedLeg.legAlight.expectedDepartureOccupancy = [];
+      }
+    });
 
     const stageConfig = this.userTripService.getStageConfig();
     const ojpSDK_Next = OJP_Next.SDK.create(REQUESTOR_REF, stageConfig, this.languageService.language);
-    const trrRequest = ojpSDK_Next.requests.TripRefineRequest.initWithTrip(tripV2);
-    
+    const trrRequest = ojpSDK_Next.requests.TripRefineRequest.initWithTrip(tripSchema);
+
     const trrResponse = await trrRequest.fetchResponse(ojpSDK_Next);
     if (!trrResponse.ok) {
       console.error('ERROR - fetchTripRefineRequestResponse');
@@ -221,22 +223,23 @@ export class JourneyResultRowComponent implements OnInit {
       return;
     }
 
+    if (trrResponse.value.tripResult.length !== 1) {
+      console.error('Expected 1 trip in reponse');
+      console.log(trrResponse);
+      return;
+    }
+
     this.trrRequestInfo = trrRequest.requestInfo;
 
-    // TRR response is similar with TR response
-    const trRequest = OJP_Legacy.TripRequest.initWithResponseMock(trrRequest.requestInfo.responseXML, xmlConfig, REQUESTOR_REF);
     const mapPlaces = OJPHelpers.parseAnyPlaceContext(OJP_VERSION, trrResponse.value.tripResponseContext);
     const mapSituations = OJPHelpers.parseAnySituationsContext(this.sanitizer, OJP_VERSION, trrResponse.value.tripResponseContext);
     
-    const trResponse = await trRequest.fetchResponse();
-
-    if (trResponse.trips.length !== 1) {
-      console.error('Expected 1 trip in reponse');
-      console.log(trResponse);
+    const updatedTrip = Trip.initWithTripResultSchema(OJP_VERSION, trrResponse.value.tripResult[0], mapPlaces, mapSituations);
+    if (!updatedTrip) {
+      console.error('cant decode trip');
+      console.log(trrResponse);
       return;
     }
-    
-    const updatedTrip = trResponse.trips[0];
 
     const fareResults = await this.userTripService.fetchFaresForTrips(this.languageService.language, [updatedTrip]);
     if (fareResults.length === 1) {
