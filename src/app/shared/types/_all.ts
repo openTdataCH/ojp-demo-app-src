@@ -27,6 +27,16 @@ export interface BookingArrangement {
   infoURL: string,
 }
 
+export type TripModeType = 'monomodal' | 'mode_at_start' | 'mode_at_end' | 'mode_at_start_end';
+
+// https://vdvde.github.io/OJP/develop/documentation-tables/siri.html#type_siri__VehicleModesOfTransportEnumeration
+export type ModeOfTransportType = 'air' |
+    'bus' | 'coach' | 'trolleyBus' |
+    'metro' | 'rail' | 'tram' | 
+    'water' | 'ferry' |
+    'cableway' | 'funicular' | 'lift' |
+    'other' | 'unknown';
+
 export type AnyPlaceSchema = OJP_Types.PlaceSchema | OJP_Types.OJPv1_LocationSchema;
 export type AnyPlaceResultSchema = OJP_Types.PlaceResultSchema | OJP_Types.OJPv1_LocationResultSchema;
 export type AnyPointOfInterestSchema = OJP_Types.PointOfInterestSchema | OJP_Types.OJPv1_PointOfInterestSchema;

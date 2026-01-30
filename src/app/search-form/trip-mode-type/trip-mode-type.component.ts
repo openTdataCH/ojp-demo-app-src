@@ -11,9 +11,10 @@ import { FormatHelpers } from '../../helpers/format-helpers';
 import { IndividualTransportMode } from '../../shared/types/transport-mode';
 
 import { TRIP_REQUEST_DEFAULT_NUMBER_OF_RESULTS, OJP_VERSION } from '../../config/constants';
+import { ModeOfTransportType, TripModeType } from '../../shared/types/_all';
 
 interface TripTransportModeData {
-  modeType: OJP_Legacy.TripModeType,
+  modeType: TripModeType,
   transportModes: IndividualTransportMode[],
 };
 
@@ -101,8 +102,8 @@ export class TripModeTypeComponent implements OnInit {
   public walkSpeedDeviation: number;
   public walkSpeedDeviationValues: number[];
 
-  public mapPublicTransportModesFilter: Record<OJP_Legacy.ModeOfTransportType, boolean>;
   public mapRailSubmodeFilter: Record<string, boolean>;
+  public mapPublicTransportModesFilter: Record<ModeOfTransportType, boolean>;
 
   public isV1: boolean;
 
@@ -160,7 +161,7 @@ export class TripModeTypeComponent implements OnInit {
     this.walkSpeedDeviation = 100;
     this.walkSpeedDeviationValues = [50, 75, 100, 150, 200, 400];
 
-    this.mapPublicTransportModesFilter = <Record<OJP_Legacy.ModeOfTransportType, boolean>>{};
+    this.mapPublicTransportModesFilter = <Record<ModeOfTransportType, boolean>>{};
     this.mapPublicTransportModesFilter.rail = false;
     this.mapPublicTransportModesFilter.bus = false;
     this.mapPublicTransportModesFilter.water = false;
@@ -314,7 +315,7 @@ export class TripModeTypeComponent implements OnInit {
         numberOfResultsAfter = this.numberOfResultsAfter;
       }
 
-      const availablePublicTransportModesFilter: OJP_Legacy.ModeOfTransportType[] = ['bus', 'tram', 'rail', 'water'];
+      const availablePublicTransportModesFilter: ModeOfTransportType[] = ['bus', 'tram', 'rail', 'water'];
       availablePublicTransportModesFilter.forEach(modeFilter => {
         if (this.mapPublicTransportModesFilter[modeFilter] === true) {
           this.userTripService.publicTransportModesFilter.push(modeFilter);
@@ -396,8 +397,8 @@ export class TripModeTypeComponent implements OnInit {
     this.prevTransportMode = this.userTripService.tripTransportMode;
   }
 
-  public computeTripModeTypeText(tripModeType: OJP_Legacy.TripModeType): string {
-    const MapTripMotType: Record<OJP_Legacy.TripModeType, string> = {
+  public computeTripModeTypeText(tripModeType: TripModeType): string {
+    const MapTripMotType: Record<TripModeType, string> = {
       monomodal: 'Monomodal',
       mode_at_start: 'Mode at Start',
       mode_at_end: 'Mode at End',

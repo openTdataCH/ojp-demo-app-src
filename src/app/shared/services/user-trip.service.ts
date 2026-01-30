@@ -15,7 +15,7 @@ import { AnyPlace, PlaceBuilder, sortPlaces } from '../models/place/place-builde
 import { PlaceLocation } from '../models/place/location';
 import { GeoPositionBBOX } from '../models/geo/geoposition-bbox';
 import { OJPHelpers } from '../../helpers/ojp-helpers';
-import { AnyLocationInformationRequestResponse } from '../types/_all';
+import { AnyLocationInformationRequestResponse, JourneyPointType, ModeOfTransportType, TripModeType, TripRequestBoardingType } from '../types/_all';
 import { IndividualTransportMode } from '../types/transport-mode';
 import { TripPlace } from '../models/trip-place';
 import { StopPlace } from '../models/place/stop-place';
@@ -36,14 +36,14 @@ export class UserTripService {
   public numberOfResults: number | null;
   public numberOfResultsBefore: number | null;
   public numberOfResultsAfter: number | null;
-  public publicTransportModesFilter: OJP_Legacy.ModeOfTransportType[];
   public railSubmodesFilter: string[];
+  public publicTransportModesFilter: ModeOfTransportType[];
   public useRealTimeDataType: OJP_Types.UseRealtimeDataEnum;
   public walkSpeedDeviation: number | null;
 
   public currentBoardingType: OJP_Legacy.TripRequestBoardingType;
 
-  public tripModeType: OJP_Legacy.TripModeType;
+  public tripModeType: TripModeType;
   public tripTransportMode: IndividualTransportMode;
 
   public journeyTripRequests: OJP_Legacy.TripRequest[];
@@ -218,7 +218,7 @@ export class UserTripService {
     this.tripModeType = 'monomodal';
     const tripModeTypesS = this.queryParams.get('mode_types') ?? null;
     if (tripModeTypesS !== null) {
-      this.tripModeType = tripModeTypesS.split(';')[0] as OJP_Legacy.TripModeType;
+      this.tripModeType = tripModeTypesS.split(';')[0] as TripModeType;
     }
 
     this.tripTransportMode = 'public_transport';
@@ -228,7 +228,7 @@ export class UserTripService {
     }
 
     this.publicTransportModesFilter = (() => {
-      const modes: OJP_Legacy.ModeOfTransportType[] = [];
+      const modes: ModeOfTransportType[] = [];
 
       const publicTransportModesS = this.queryParams.get('public_transport_modes') ?? null;
       if (publicTransportModesS === null) {
