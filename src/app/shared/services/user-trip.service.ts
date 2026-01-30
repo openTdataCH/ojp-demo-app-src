@@ -449,7 +449,7 @@ export class UserTripService {
       const stopPlaceRef: string | null = (() => {
         if (place.type === 'stop') {
           const stopPlace = place as StopPlace;
-          return stopPlace.stopRef;
+          return stopPlace.placeRef.ref;
         }
 
         return null;
@@ -469,7 +469,7 @@ export class UserTripService {
       const place = viaTripLocation.place;
       if (place.type === 'stop') {
         const stopPlace = place as StopPlace;
-        viaParamParts.push(stopPlace.stopRef);
+        viaParamParts.push(stopPlace.placeRef.ref);
       } else {
         const geoPositionLngLatS = place.geoPosition.asLatLngString(true);
         viaParamParts.push(geoPositionLngLatS);

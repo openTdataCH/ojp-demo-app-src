@@ -22,9 +22,9 @@ export class StopAppMapLayer extends AppMapLayer {
 
     const stopPlace = place as StopPlace;
 
-    const featureStopPlaceRef = stopPlace.stopRef;
+    const featureStopPlaceRef = stopPlace.placeRef.ref;
     feature.properties['stopPlace.stopPlaceRef'] = featureStopPlaceRef;
-    feature.properties['stopPlace.stopPlaceName'] = stopPlace.stopName;
+    feature.properties['stopPlace.stopPlaceName'] = stopPlace.placeRef.name;
 
     let featureStopPlaceRefLabel = featureStopPlaceRef.slice();
     // TEST LA issue - long ids are too long - trim the Mapbox layer label if needed
@@ -52,8 +52,8 @@ export class StopAppMapLayer extends AppMapLayer {
 
     const stopPlace = place as StopPlace;
 
-    const stopName = stopPlace.stopName;
-    const stopId = stopPlace.stopRef;
+    const stopName = stopPlace.placeRef.name;
+    const stopId = stopPlace.placeRef.ref;
 
     let popupHTML = popupWrapperDIV.innerHTML;
 
