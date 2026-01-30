@@ -1,9 +1,10 @@
-import OJP_Legacy from '../../config/ojp-legacy';
+import { AnyLeg } from '../models/trip/leg-builder';
+import { Trip } from '../models/trip/trip';
 import { LegShapeResult } from '../services/shape-provider.service';
 
 export interface TripLegData {
   tripId: string,
-  leg: OJP_Legacy.TripLeg,
+  leg: AnyLeg,
   info: {
     id: string,
     comments: string | null,
@@ -18,7 +19,7 @@ export interface TripLegData {
 }
 
 export interface TripData {
-  trip: OJP_Legacy.Trip,
+  trip: Trip,
   legsData: TripLegData[],
   info: {
     comments: string | null,
