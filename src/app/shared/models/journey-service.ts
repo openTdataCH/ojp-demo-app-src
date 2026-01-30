@@ -440,4 +440,38 @@ export class JourneyService implements OJP_Types.DatedJourneySchema  {
 
     return url;
   }
+
+  public asLegacyOJP_Schema(): OJP_Types.OJPv1_DatedJourneySchema {
+    const service: OJP_Types.OJPv1_DatedJourneySchema = {
+      conventionalModeOfOperation: this.conventionalModeOfOperation,
+      operatingDayRef: this.operatingDayRef,
+      journeyRef: this.journeyRef,
+      publicCode: this.publicCode,
+      lineRef: this.lineRef,
+      directionRef: this.directionRef,
+      mode: this.mode,
+      productCategory: this.productCategory,
+      publishedLineName: this.publishedServiceName,
+      trainNumber: this.trainNumber,
+      attribute: [], // updated below
+      operatorRef: this.operatorRef,
+      destinationStopPointRef: this.destinationStopPointRef,
+      destinationText: this.destinationText,
+      unplanned: this.unplanned,
+      cancelled: this.cancelled,
+      deviation: this.deviation,
+    };
+
+    service.attribute = [];
+    this.attribute.forEach(attributeSchema => {
+      const attributeOJPv1Schema: OJP_Types.OJPv1_GeneralAttributeSchema = {
+        text: attributeSchema.userText,
+        code: attributeSchema.code,
+        importance: attributeSchema.importance,
+      };
+      service.attribute.push(attributeOJPv1Schema);
+    });
+
+    return service;
+  }
 }
