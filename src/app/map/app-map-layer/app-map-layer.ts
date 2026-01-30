@@ -2,8 +2,7 @@ import * as GeoJSON from 'geojson'
 import mapboxgl from "mapbox-gl";
 
 import * as OJP_Types from 'ojp-shared-types';
-
-import OJP_Legacy from '../../config/ojp-legacy';
+import * as OJP_Next from 'ojp-sdk-next';
 
 import { AppMapLayerOptions, DEBUG_LEVEL, MAP_APP_MAP_LAYERS, OJP_VERSION } from '../../config/constants'
 
@@ -21,7 +20,7 @@ export enum FeaturePropsEnum {
 }
 
 export class AppMapLayer {
-    private language: OJP_Legacy.Language;
+    private language: OJP_Next.Language;
     private layerKey: string;
 
     private map: mapboxgl.Map;
@@ -38,7 +37,7 @@ export class AppMapLayer {
 
     protected mapCurrentPlaces: Record<string, AnyPlace>;
 
-    constructor(language: OJP_Legacy.Language, layerKey: string, map: mapboxgl.Map, appMapLayerOptions: AppMapLayerOptions, userTripService: UserTripService) {
+    constructor(language: OJP_Next.Language, layerKey: string, map: mapboxgl.Map, appMapLayerOptions: AppMapLayerOptions, userTripService: UserTripService) {
         this.language = language;
         this.layerKey = layerKey;
 
