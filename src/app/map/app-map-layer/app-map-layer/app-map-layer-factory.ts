@@ -1,4 +1,4 @@
-import mapboxgl from 'mapbox-gl'
+import mapboxgl from 'mapbox-gl';
 
 import OJP_Legacy from '../../../config/ojp-legacy';
 
