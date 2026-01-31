@@ -4,5 +4,3 @@ type SharedIndividualTransportMode = 'escooter_rental' | 'car_sharing' | 'self-d
 
 type OtherTransportMode = 'charging_station' | 'taxi' | 'others-drive-car' | 'car-shuttle-train' | 'car-ferry'
 export type IndividualTransportMode = DefaultIndividualTransportMode | SharedIndividualTransportMode | OtherTransportMode
-
-type TransferMode = 'walk' | 'remainInVehicle' | 'changeWithinVehicle';
