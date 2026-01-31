@@ -141,16 +141,6 @@ export class JourneyService implements OJP_Types.DatedJourneySchema  {
     const service = JourneyService.initWithLegacyDatedJourneySchema(schema);
     service.trainNumber = legacyStopEventResultSchema.stopEvent.extension?.publishedJourneyNumber?.text ?? undefined;
 
-    service.situationFullRefs = {
-      situationFullRef: []
-    };
-    const situationFullRefItems = legacyStopEventResultSchema.stopEvent.thisCall.callAtStop.situationFullRef ?? [];
-    situationFullRefItems.forEach(item => {
-      if (service.situationFullRefs) {
-        service.situationFullRefs.situationFullRef.push(item);
-      }
-    });
-
     return service;
   }
 
