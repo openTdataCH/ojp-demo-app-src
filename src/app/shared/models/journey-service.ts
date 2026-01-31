@@ -73,6 +73,21 @@ export class JourneyService implements OJP_Types.DatedJourneySchema  {
     return service;
   }
 
+  private static convertAttributesV2Schema(attributesV1: OJP_Types.OJPv1_GeneralAttributeSchema[]): OJP_Types.GeneralAttributeSchema[] {
+    const attributesV2: OJP_Types.GeneralAttributeSchema[] = [];
+    
+    attributesV1.forEach(legacyAttributeSchema => {
+      const attributeV2: OJP_Types.GeneralAttributeSchema = {
+        userText: legacyAttributeSchema.text,
+        code: legacyAttributeSchema.code,
+        importance: legacyAttributeSchema.importance,
+      };
+      attributesV2.push(attributeV2);
+    });
+
+    return attributesV2;
+  }
+
   private static initWithLegacyDatedJourneySchema(schema: OJP_Types.OJPv1_DatedJourneySchema): JourneyService {
     const publishedServiceName = schema.publishedLineName;
     const attributesV2 = JourneyService.convertAttributesV2Schema(schema.attribute);
@@ -131,21 +146,6 @@ export class JourneyService implements OJP_Types.DatedJourneySchema  {
     });
 
     return service;
-  }
-
-  private static convertAttributesV2Schema(attributesV1: OJP_Types.OJPv1_GeneralAttributeSchema[]) {
-    const attributesV2: OJP_Types.GeneralAttributeSchema[] = [];
-    
-    attributesV1.forEach(legacyAttributeSchema => {
-      const attributeV2: OJP_Types.GeneralAttributeSchema = {
-        userText: legacyAttributeSchema.text,
-        code: legacyAttributeSchema.code,
-        importance: legacyAttributeSchema.importance,
-      };
-      attributesV2.push(attributeV2);
-    });
-
-    return attributesV2;
   }
 
   // Init with OJP 1.0 XML schema - TripInfoRequest
