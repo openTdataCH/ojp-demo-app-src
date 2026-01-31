@@ -103,7 +103,12 @@ export class JourneyService implements OJP_Types.DatedJourneySchema  {
     service.directionRef = schema.directionRef;
     service.productCategory = schema.productCategory;
     service.trainNumber = undefined; // this comes from TimedLeg
-    service.operatorRef = String(schema.operatorRef);
+    
+    // OJP v1 hack - the values are prefixed with :ojp, strip them out
+    let operatorRef = String(schema.operatorRef ?? '');
+    operatorRef = operatorRef.replace('ojp:', '');
+    service.operatorRef = operatorRef;
+    
     service.destinationStopPointRef = schema.destinationStopPointRef;
     service.destinationText = schema.destinationText;
     service.unplanned = schema.unplanned;
