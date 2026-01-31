@@ -4,8 +4,6 @@ import { BehaviorSubject, Observable } from 'rxjs';
 import * as OJP_Types from 'ojp-shared-types';
 import * as OJP_Next from 'ojp-sdk-next';
 
-import OJP_Legacy from '../../config/ojp-legacy';
-
 import { APP_CONFIG } from '../../config/app-config';
 import { APP_STAGE, DEFAULT_APP_STAGE, REQUESTOR_REF, TRIP_REQUEST_DEFAULT_NUMBER_OF_RESULTS, OJP_VERSION, EMPTY_HTTPConfig } from '../../config/constants';
 
@@ -19,6 +17,7 @@ import { AnyLocationInformationRequestResponse, JourneyPointType, ModeOfTranspor
 import { IndividualTransportMode } from '../types/transport-mode';
 import { TripPlace } from '../models/trip-place';
 import { StopPlace } from '../models/place/stop-place';
+import { Trip } from '../models/trip/trip';
 
 type LocationUpdateSource = 'SearchForm' | 'MapDragend' | 'MapPopupClick';
 
@@ -46,7 +45,7 @@ export class UserTripService {
   public tripModeType: TripModeType;
   public tripTransportMode: IndividualTransportMode;
 
-  public journeyTripRequests: OJP_Legacy.TripRequest[];
+  public currentTrips: Trip[];
   public departureDate: Date;
   public currentAppStage: APP_STAGE;
 
@@ -98,7 +97,7 @@ export class UserTripService {
     this.tripModeType = 'monomodal';
     this.tripTransportMode = 'public_transport';
 
-    this.journeyTripRequests = [];
+    this.currentTrips = [];
     
     this.departureDate = this.computeInitialDate()
     this.currentAppStage = DEFAULT_APP_STAGE;
@@ -424,9 +423,11 @@ export class UserTripService {
     this.updateURLs();
   }
 
-  updateTrips(trips: OJP_Legacy.Trip[]) {
+  updateTrips(trips: Trip[]) {
     const tripsData = OJPHelpers.convertTripsToTripData(trips);
     this.tripsDataUpdated.emit(tripsData);
+
+    this.currentTrips = trips;
   }
 
   private updateFares(fareResults: OJP_Types.FareResultSchema[]) {
@@ -746,23 +747,20 @@ export class UserTripService {
     });
   }
 
-  public updateParamsFromTrip(trip: OJP_Legacy.Trip) {
+  public updateParamsFromTrip(trip: Trip) {
     const hasLegs = trip.legs.length > 0;
     if (!hasLegs) {
       return;
     }
 
     const firstLeg = trip.legs[0];
-    const lastLeg = trip.legs[trip.legs.length - 1];
-
-    const fromPlace = PlaceBuilder.initWithLegacyLocation(firstLeg.fromLocation);
-    if (fromPlace) {
-      this.fromTripPlace = TripPlace.initWithPlace(fromPlace);
+    if (firstLeg.fromPlace) {
+      this.fromTripPlace = TripPlace.initWithPlace(firstLeg.fromPlace);
     }
 
-    const toPlace = PlaceBuilder.initWithLegacyLocation(firstLeg.toLocation);
-    if (toPlace) {
-      this.toTripPlace = TripPlace.initWithPlace(toPlace);
+    const lastLeg = trip.legs[trip.legs.length - 1];
+    if (lastLeg.toPlace) {
+      this.toTripPlace = TripPlace.initWithPlace(lastLeg.toPlace);
     }
 
     this.viaTripLocations = [];
@@ -774,8 +772,8 @@ export class UserTripService {
     this.updateURLs();
   }
 
-  public async fetchFares(language: OJP_Legacy.Language) {
-    if (this.journeyTripRequests.length === 0) {
+  public async fetchFares(language: OJP_Next.Language) {
+    if (this.currentTrips.length === 0) {
       return;
     }
 
@@ -784,28 +782,17 @@ export class UserTripService {
       return;
     }
 
-    const tripRequestResponse = this.journeyTripRequests[0].response;
-    if (tripRequestResponse === null) {
-      return;
-    }
-
-    const trips = tripRequestResponse.trips;
+    const trips = this.currentTrips;
     const fareResults = await this.fetchFaresForTrips(language, trips);
     this.updateFares(fareResults);
   }
 
-  public async fetchFaresForTrips(language: OJP_Legacy.Language, trips: OJP_Legacy.Trip[]): Promise<OJP_Types.FareResultSchema[]> {
+  public async fetchFaresForTrips(language: OJP_Next.Language, trips: Trip[]): Promise<OJP_Types.FareResultSchema[]> {
     const fareHttpConfig = this.getStageConfig('NOVA-INT');
     const ojpSDK_Next = OJP_Next.SDK.v1(REQUESTOR_REF, fareHttpConfig, language);
     
-    const tripsV2: OJP_Next.Trip[] = [];
-    trips.forEach(tripLegacy => {
-      const tripV2_XML = tripLegacy.asXML(OJP_Next.DefaultXML_Config);
-      const tripV2 = OJP_Next.Trip.initWithTripXML(tripV2_XML);
-      tripsV2.push(tripV2);
-    });
-
-    const fareRequest = ojpSDK_Next.requests.FareRequest.initWithOJPv2Trips(tripsV2);
+    const ojpV1Trips = trips.map(trip => trip.asLegacyOJP_Schema());
+    const fareRequest = ojpSDK_Next.requests.FareRequest.initWithOJPv1Trips(ojpV1Trips);
 
     try {
       const response = await fareRequest.fetchResponse(ojpSDK_Next);
