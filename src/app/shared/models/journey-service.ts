@@ -29,7 +29,7 @@ export class JourneyService implements OJP_Types.DatedJourneySchema  {
       situationNumber: string;
     }[]
   }
- 
+  
   private constructor(operatingDayRef: string, journeyRef: string, lineRef: string, mode: OJP_Types.ModeStructureSchema, publishedServiceName: OJP_Types.InternationalTextSchema, attribute: OJP_Types.GeneralAttributeSchema[], originText: OJP_Types.InternationalTextSchema) {
     this.conventionalModeOfOperation = undefined;
     this.operatingDayRef = operatingDayRef;
@@ -49,7 +49,7 @@ export class JourneyService implements OJP_Types.DatedJourneySchema  {
     this.unplanned = undefined;
     this.cancelled = undefined;
     this.deviation = undefined;
-    
+
     this.situationFullRefs = undefined;
   }
 
@@ -126,10 +126,9 @@ export class JourneyService implements OJP_Types.DatedJourneySchema  {
   // - it needs the TimedLeg because there we have the the 'publishedJourneyNumber' stored
   public static initWithLegacyTripTimedLegSchema(legacyTripLegSchema: OJP_Types.OJPv1_TimedLegSchema): JourneyService {
     const schema = legacyTripLegSchema.service;
-    
+
     const service = JourneyService.initWithLegacyDatedJourneySchema(schema);
     service.trainNumber = legacyTripLegSchema.extension?.publishedJourneyNumber?.text ?? undefined;
-
 
     return service;
   }
