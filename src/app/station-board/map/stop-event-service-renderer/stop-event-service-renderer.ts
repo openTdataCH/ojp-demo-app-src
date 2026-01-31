@@ -7,7 +7,7 @@ import serviceTrackLineLayerJSON from './map-layers-def/service-track-line.json'
 import serviceTrackStopLayerJSON from './map-layers-def/service-track-stop.json'
 import { TripInfoResult } from '../../../shared/models/trip-info-result';
 import { StopEventResult } from '../../../shared/models/stop-event-result';
-import { StopPointCall } from '../../../shared/types/_all';
+import { StopPointCall } from '../../../shared/models/stop-point-call';
 
 type LinePointType = 'prev' | 'next';
 
