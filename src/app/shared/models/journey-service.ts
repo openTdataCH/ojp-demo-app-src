@@ -1,5 +1,4 @@
 import * as OJP_Types from 'ojp-shared-types';
-import OJP_Legacy from '../../config/ojp-legacy';
 
 import { TripLegLineType } from '../types/map-geometry-types';
 
@@ -173,75 +172,6 @@ export class JourneyService implements OJP_Types.DatedJourneySchema  {
     service.deviation = legacyServiceSchema.deviation;
 
     return service;
-  }
-
-  //  Init with old OJP SDK model
-  public static initWithOJP_LegacyJourneyService(legacyJourneyService: OJP_Legacy.JourneyService): JourneyService {
-    const operatingDayRef = legacyJourneyService.operatingDayRef;
-    const journeyRef = legacyJourneyService.journeyRef;
-    const lineRef = legacyJourneyService.lineRef ?? 'n/a OJP_Legacy.JourneyService.lineRef';
-    const mode: OJP_Types.ModeStructureSchema = {
-      ptMode: legacyJourneyService.ptMode.ptMode as OJP_Types.VehicleModesOfTransportEnum,
-      name: {
-        text: legacyJourneyService.ptMode.name ?? 'n/a OJP_Legacy.mode.name',
-      },
-      shortName: {
-        text: legacyJourneyService.ptMode.shortName ?? 'n/a OJP_Legacy.mode.shortName',
-      },
-    };
-    const publishedServiceName: OJP_Types.InternationalTextSchema = {
-      text: legacyJourneyService.serviceLineNumber ?? 'n/a OJP_Legacy.JourneyService.serviceLineNumber',
-    };
-    const journeyAttributes: OJP_Types.GeneralAttributeSchema[] = Object.values(legacyJourneyService.serviceAttributes).map(el => {
-      const journeyAttribute: OJP_Types.GeneralAttributeSchema = {
-        userText: {
-          text: el.text,
-        },
-        code: el.code,
-      };
-
-      return journeyAttribute;
-    });
-
-    const originText: OJP_Types.InternationalTextSchema = {
-      text: ''
-    };
-
-    const service = new JourneyService(operatingDayRef, journeyRef, lineRef, mode, publishedServiceName, journeyAttributes, originText);
-
-    if (legacyJourneyService.productCategory) {
-      service.productCategory = {
-        name: {
-          text: legacyJourneyService.productCategory.name,
-        },
-        shortName: {
-          text: legacyJourneyService.productCategory.shortName,
-        },
-        productCategoryRef: legacyJourneyService.productCategory?.productCategoryRef,
-      };
-    }
-
-    if (legacyJourneyService.journeyNumber) {
-      service.trainNumber = legacyJourneyService.journeyNumber;
-    }
-
-    if (legacyJourneyService.operatorRef) {
-      service.operatorRef = legacyJourneyService.operatorRef;
-    }
-
-    if (legacyJourneyService.destinationStopPlace) {
-      service.destinationStopPointRef = legacyJourneyService.destinationStopPlace.stopPlaceRef;
-      if (legacyJourneyService.destinationStopPlace.stopPlaceName) {
-        service.destinationText = {
-          text: legacyJourneyService.destinationStopPlace.stopPlaceName,
-        };
-      }
-    }
-
-    service.unplanned = legacyJourneyService.isUnplanned ?? undefined;
-    service.cancelled = legacyJourneyService.hasCancellation ?? undefined;
-    service.deviation = legacyJourneyService.hasDeviation ?? undefined;
-
     return service;
   }
 
