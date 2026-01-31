@@ -109,7 +109,7 @@ export class UserTripService {
     this.sbbURL = null;
   }
 
-  public async initDefaults(language: OJP_Legacy.Language): Promise<void> {
+  public async initDefaults(language: OJP_Next.Language): Promise<void> {
     const appStage = OJPHelpers.computeAppStage();
 
     setTimeout(() => {
@@ -298,7 +298,7 @@ export class UserTripService {
     return place;
   }
 
-  public async refetchEndpointsByName(language: OJP_Legacy.Language) {
+  public async refetchEndpointsByName(language: OJP_Next.Language) {
     const ojpSDK_Next = this.createOJP_SDK_Instance(language);
 
     const endpointTypes: JourneyPointType[] = ['From', 'To'];
@@ -827,7 +827,7 @@ export class UserTripService {
     return this.tripTransportMode === 'public_transport';
   }
 
-  public createOJP_SDK_Instance(language: OJP_Legacy.Language, appStage: APP_STAGE = this.currentAppStage): OJP_Next.AnySDK {
+  public createOJP_SDK_Instance(language: OJP_Next.Language, appStage: APP_STAGE = this.currentAppStage): OJP_Next.AnySDK {
     const isOJPv2 = OJP_VERSION === '2.0';
 
     const stageConfig = this.getStageConfig(appStage);
