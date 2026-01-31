@@ -145,33 +145,14 @@ export class JourneyService implements OJP_Types.DatedJourneySchema  {
 
   // Init with OJP 1.0 XML schema - TripInfoRequest
   public static initWithLegacyTripInfoResultSchema(legacyTripInfoResultSchema: OJP_Types.OJPv1_TripInfoResultStructureSchema): JourneyService | null {
-    const legacyServiceSchema = legacyTripInfoResultSchema.service ?? null;
-    if (legacyServiceSchema === null) {
+    const schema = legacyTripInfoResultSchema.service ?? null;
+    if (schema === null) {
       return null;
     }
-    
-    const publishedServiceName = legacyServiceSchema.publishedLineName;
-    const attributesV2 = JourneyService.convertAttributesV2Schema(legacyServiceSchema.attribute);
 
-    const originText: OJP_Types.InternationalTextSchema = {
-      text: ''
-    };
-
-    const service = new JourneyService(legacyServiceSchema.operatingDayRef, legacyServiceSchema.journeyRef, legacyServiceSchema.lineRef, legacyServiceSchema.mode, publishedServiceName, attributesV2, originText);
-
-    service.conventionalModeOfOperation = legacyServiceSchema.conventionalModeOfOperation;
-    service.publicCode = legacyServiceSchema.publicCode;
-    service.directionRef = legacyServiceSchema.directionRef;
-    service.productCategory = legacyServiceSchema.productCategory;
+    const service = JourneyService.initWithLegacyDatedJourneySchema(schema);
     service.trainNumber = legacyTripInfoResultSchema.extension?.publishedJourneyNumber?.text ?? undefined;
-    service.operatorRef = legacyServiceSchema.operatorRef;
-    service.destinationStopPointRef = legacyServiceSchema.destinationStopPointRef;
-    service.destinationText = legacyServiceSchema.destinationText;
-    service.unplanned = legacyServiceSchema.unplanned;
-    service.cancelled = legacyServiceSchema.cancelled;
-    service.deviation = legacyServiceSchema.deviation;
-
-    return service;
+    
     return service;
   }
 
