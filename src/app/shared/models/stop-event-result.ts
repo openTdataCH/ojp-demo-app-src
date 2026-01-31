@@ -1,10 +1,9 @@
 import * as OJP_Types from 'ojp-shared-types';
 
-import { StopPointCall } from '../types/_all';
-import { OJPHelpers } from '../../helpers/ojp-helpers';
 import { JourneyService } from './journey-service';
 import { StopPlace } from './place/stop-place';
 import { SituationContent } from './situation';
+import { StopPointCall } from './stop-point-call';
 
 export class StopEventResult {
   public prevCalls: StopPointCall[];
@@ -31,7 +30,7 @@ export class StopEventResult {
       const stopRef = callAtStopSchema.stopPointRef;
       const place = mapPlaces[stopRef] ?? null;
 
-      const stopCall = OJPHelpers.createStopPointCall(callAtStopSchema, place);
+      const stopCall = StopPointCall.initWithCallAtStopSchema(callAtStopSchema, place);
       calls.push(stopCall);
     });
 
