@@ -133,8 +133,8 @@ export class SearchFormComponent implements OnInit {
       this.currentRequestInfo = null;
     });
 
-    this.userTripService.searchFormAfterDefaultsInited.subscribe(nothing => {
-      this.customInitFromParams();
+    this.userTripService.searchFormAfterDefaultsInited.subscribe(async nothing => {
+      await this.customInitFromParams();
     });
 
     this.userTripService.tripRequestFinished.subscribe(requestInfo => {
@@ -169,18 +169,18 @@ export class SearchFormComponent implements OnInit {
     firstVia.dwellTimeMinutes = viaDwellTimeValue;
   }
 
-  private customInitFromParams() {
+  private async customInitFromParams() {
     const queryParams = new URLSearchParams(document.location.search);
     
     const doSearch = queryParams.get('do_search') ?? false;
     if (doSearch) {
-      this.handleTapOnSearch();
+      await this.handleTapOnSearch();
       return;
     }
 
     const gistId = queryParams.get('gist');
     if (gistId) {
-      this.initFromGistRef(gistId);
+      await this.initFromGistRef(gistId);
       return;
     }
   }
