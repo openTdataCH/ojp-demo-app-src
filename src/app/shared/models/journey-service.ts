@@ -115,7 +115,9 @@ export class JourneyService implements OJP_Types.DatedJourneySchema  {
     service.cancelled = schema.cancelled;
     service.deviation = schema.deviation;
 
-    service.situationFullRefs = undefined; // is set in the other constructors
+    service.situationFullRefs = {
+      situationFullRef: schema.situationFullRef ?? [],
+    };
 
     return service;
   }
