@@ -86,7 +86,13 @@ export class JourneyResultsComponent implements OnInit {
       return;
     }
 
-    const depArrDate = this.model.tripsData[0].trip.computeDepartureTime();
+    const tripsWithTimedLegs = this.model.tripsData.filter(tripData => (tripData.legsData.filter(legData => legData.leg.type === 'TimedLeg')).length > 0);
+    if (tripsWithTimedLegs.length === 0) {
+      return;
+    }
+
+    const firstTrip = tripsWithTimedLegs[0].trip;
+    const depArrDate = firstTrip.computeTimedLegDepartureTime();
     if (depArrDate === null) {
       return;
     }
@@ -101,13 +107,13 @@ export class JourneyResultsComponent implements OnInit {
       return;
     }
 
-    const tripsWithTimedLegs = this.model.tripsData.filter(tripData => (tripData.legsData.filter(legData => legData.leg.legType === 'TimedLeg')).length > 0);
+    const tripsWithTimedLegs = this.model.tripsData.filter(tripData => (tripData.legsData.filter(legData => legData.leg.type === 'TimedLeg')).length > 0);
     if (tripsWithTimedLegs.length === 0) {
       return;
     }
 
-    const lastTripData = tripsWithTimedLegs[tripsWithTimedLegs.length - 1];
-    const depArrDate = lastTripData.trip.computeDepartureTime();
+    const lastTrip = tripsWithTimedLegs[tripsWithTimedLegs.length - 1].trip;
+    const depArrDate = lastTrip.computeTimedLegDepartureTime();
     if (depArrDate === null) {
       return;
     }
@@ -117,7 +123,6 @@ export class JourneyResultsComponent implements OnInit {
     await this.loadTrips('NumberOfResultsAfter', depArrDate);
   }
 
-    const viaTripLocations = this.userTripService.isViaEnabled ? this.userTripService.viaTripLocations.map(el => el.asOJP_TripLocationPoint()) : [];
   private async loadTrips(numberOfResultsType: NumberOfResultsType, depArrDate: Date) {
 
     const numberOfResults: number | null = (() => {
