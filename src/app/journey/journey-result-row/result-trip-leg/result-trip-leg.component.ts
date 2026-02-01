@@ -7,6 +7,7 @@ import mapboxgl from 'mapbox-gl';
 import { SbbDialog } from "@sbb-esta/angular/dialog";
 
 import OJP_Legacy from '../../../config/ojp-legacy';
+import * as OJP_Types from 'ojp-shared-types';
 import * as OJP_Next from 'ojp-sdk-next';
 
 import { DEBUG_LEVEL, FLAG_USE_2nd_SHAPE_PROVIDER, OJP_VERSION } from '../../../config/constants';
@@ -28,7 +29,11 @@ import { PlaceLocation } from '../../../shared/models/place/location';
 import { GeoPositionBBOX } from '../../../shared/models/geo/geoposition-bbox';
 import { SituationContent } from '../../../shared/models/situation';
 import { BookingArrangement, JourneyPointType } from '../../../shared/types/_all';
+import { ContinuousLeg } from '../../../shared/models/trip/leg/continuous-leg';
+import { TimedLeg } from '../../../shared/models/trip/leg/timed-leg';
+import { AnyLeg } from '../../../shared/models/trip/leg-builder';
 import { StopPointHelpers } from '../../../shared/models/stop-point-call';
+import { TransferLeg } from '../../../shared/models/trip/leg/transfer-leg';
 
 type LegTemplate = 'walk' | 'timed' | 'taxi';
 
@@ -74,7 +79,7 @@ interface LegInfoDataModel {
   serviceIntermediaryStopsText: string | null,
   serviceJourneyRef: string | null,
   debugServicePtMode: boolean,
-  servicePtMode: OJP_Legacy.PublicTransportMode | null,
+  servicePtMode: OJP_Types.ModeStructureSchema | null,
   serviceFormationURL: string | null,
 
   isCancelled: boolean,
@@ -115,8 +120,7 @@ export class ResultTripLegComponent implements OnInit {
     private mapService: MapService, 
     private router: Router, 
     private popover: SbbDialog, 
-    private userTripService: UserTripService, 
-    private sanitizer: DomSanitizer,
+    private userTripService: UserTripService
   ) {
     this.legInfoDataModel = <LegInfoDataModel>{};
     this.isEmbed = this.router.url.indexOf('/embed/') !== -1;
@@ -130,7 +134,7 @@ export class ResultTripLegComponent implements OnInit {
       return;
     }
 
-    this.legElementId = 'leg_' + this.legData.leg.legID;
+    this.legElementId = 'leg_' + this.legData.leg.id;
     this.initLegInfo();
   }
   
@@ -141,37 +145,37 @@ export class ResultTripLegComponent implements OnInit {
 
     const legIdxS = '' + (this.legData.info.id) + '. ';
 
-    if (this.legData.leg.legType === 'TransferLeg') {
+    if (this.legData.leg.type === 'TransferLeg') {
       const leadingTextTitle = 'Transfer';
       
-      const continuousLeg = this.legData.leg as OJP_Legacy.TripContinuousLeg;
+      const transferLeg = this.legData.leg as TransferLeg;
       let legDurationS = '';
-      if (continuousLeg.walkDuration) {
-        legDurationS = ' ' + continuousLeg.walkDuration.formatDuration()
+      if (transferLeg.duration) {
+        legDurationS = ' - ' + transferLeg.duration.format();
       }
       
       return legIdxS + leadingTextTitle + legDurationS;
     }
 
-    if (this.legData.leg.legType === 'ContinuousLeg') {
-      const continuousLeg = this.legData.leg as OJP_Legacy.TripContinuousLeg;
+    if (this.legData.leg.type === 'ContinuousLeg') {
+      const continuousLeg = this.legData.leg as ContinuousLeg;
 
       const leadingText = this.computeLegLeadingTextContinousLeg(continuousLeg);
 
       let legDurationS = '';
-      if (this.legData.leg.legDuration) {
-        legDurationS = ' ' + this.legData.leg.legDuration.formatDuration();
+      if (this.legData.leg.duration) {
+        legDurationS = ' ' + this.legData.leg.duration.format();
       }
       
       return legIdxS + leadingText + ' - ' + legDurationS;
     }
 
-    if (this.legData.leg.legType === 'TimedLeg') {
-      const timedLeg = this.legData.leg as OJP_Legacy.TripTimedLeg;
+    if (this.legData.leg.type === 'TimedLeg') {
+      const timedLeg = this.legData.leg as TimedLeg;
 
-      let leadingText = timedLeg.service.ptMode.name;
+      let leadingText = timedLeg.service.mode.name?.text ?? null;
       if (leadingText === null) {
-        leadingText = timedLeg.service.ptMode.ptMode;
+        leadingText = timedLeg.service.mode.ptMode;
       }
 
       if (timedLeg.service.ptMode.isDemandMode) {
@@ -179,18 +183,18 @@ export class ResultTripLegComponent implements OnInit {
       }
 
       let legDurationS = '';
-      if (this.legData.leg.legDuration) {
-        legDurationS = ' ' + this.legData.leg.legDuration.formatDuration();
+      if (this.legData.leg.duration) {
+        legDurationS = ' ' + this.legData.leg.duration.format();
       }
 
       return legIdxS + leadingText + ' - ' + legDurationS;
     }
 
-    return legIdxS + this.legData.leg.legType;
+    return legIdxS + this.legData.leg.type;
   }
 
-  private computeLegLeadingTextContinousLeg(continuousLeg: OJP_Legacy.TripContinuousLeg): string {
-    if (continuousLeg.legTransportMode === 'walk') {
+  private computeLegLeadingTextContinousLeg(continuousLeg: ContinuousLeg): string {
+    if (continuousLeg.service.personalMode === 'foot') {
       return 'Walk';
     }
 
@@ -226,15 +230,15 @@ export class ResultTripLegComponent implements OnInit {
       return ''
     }
 
-    if (this.legData.leg.legType === 'ContinuousLeg') {
+    if (this.legData.leg.type === 'ContinuousLeg') {
       return 'continous-leg-pill'
     }
 
-    if (this.legData.leg.legType === 'TimedLeg') {
+    if (this.legData.leg.type === 'TimedLeg') {
       return 'timed-leg-pill'
     }
 
-    if (this.legData.leg.legType === 'TransferLeg') {
+    if (this.legData.leg.type === 'TransferLeg') {
       return 'transfer-leg-pill'
     }
 
@@ -307,17 +311,20 @@ export class ResultTripLegComponent implements OnInit {
       return defaultColor;
     }
 
-    const legType = this.legData.leg.legType;
+    const legType = this.legData.leg.type;
 
-    if (legType === 'ContinuousLeg' || legType === 'TransferLeg') {
-      const leg = this.legData.leg as OJP_Legacy.TripContinuousLeg;
+    if (legType === 'ContinuousLeg') {
+      const leg = this.legData.leg as ContinuousLeg;
       return this.computeContinousLegColor(leg);
     }
 
+    if (legType === 'TransferLeg') {
+      return MapLegLineTypeColor['Transfer'];
+    }
+
     if (legType === 'TimedLeg') {
-      const leg = this.legData.leg as OJP_Legacy.TripTimedLeg;
-      const service = JourneyService.initWithOJP_LegacyJourneyService(leg.service);
-      const serviceColorType = service.computeLegColorType();
+      const leg = this.legData.leg as TimedLeg;
+      const serviceColorType = leg.service.computeLegColorType();
       const serviceColor = MapLegLineTypeColor[serviceColorType];
       return serviceColor;
     }
@@ -325,17 +332,17 @@ export class ResultTripLegComponent implements OnInit {
     return defaultColor;
   }
 
-  private computeContinousLegColor(leg: OJP_Legacy.TripContinuousLeg): string {
+  private computeContinousLegColor(leg: ContinuousLeg): string {
     if (leg.isDriveCarLeg()) {
-      return MapLegLineTypeColor['Self-Drive Car']
+      return MapLegLineTypeColor['Self-Drive Car'];
     }
 
     if (leg.isSharedMobility()) {
-      return MapLegLineTypeColor['Shared Mobility']
+      return MapLegLineTypeColor['Shared Mobility'];
     }
 
-    if (leg.legType === 'TransferLeg') {
-      return MapLegLineTypeColor.Transfer
+    if (leg.type === 'TransferLeg') {
+      return MapLegLineTypeColor.Transfer;
     }
 
     if (leg.isTaxi()) {
@@ -362,24 +369,24 @@ export class ResultTripLegComponent implements OnInit {
     this.legInfoDataModel.guidanceRows = (() => {
       const rows: GuidanceRow[] = [];
 
-      const isContinous = (leg.legType === 'ContinuousLeg') || (leg.legType === 'TransferLeg');
+      const isContinous = (leg.type === 'ContinuousLeg') || (leg.type === 'TransferLeg');
       if (!isContinous) {
         return rows;
       }
 
-      const guidanceSections = (leg as OJP_Legacy.TripContinuousLeg).pathGuidance?.sections ?? [];
+      const guidanceSections = (leg as ContinuousLeg).pathGuidance?.sections ?? [];
       guidanceSections.forEach(section => {
         if (section.guidanceAdvice === null) {
           return;
         }
 
         const durationF = (() => {
-          const duration = OJP_Legacy.Duration.initFromDurationText(section.trackSection?.duration ?? null);
+          const duration = section.trackSection.duration;
           if (duration === null) {
             return '';
           }
 
-          const durationF_s1 = duration.formatDuration();
+          const durationF_s1 = duration.format();
           if (durationF_s1 === '0min') {
             return '';
           }
@@ -387,14 +394,14 @@ export class ResultTripLegComponent implements OnInit {
           return durationF_s1;
         })();
 
-        const geojsonFeature = section.trackSection?.linkProjection?.asGeoJSONFeature() ?? null;
+        const geojsonFeature = section.trackSection.linkProjection?.asGeoJSONFeature() ?? null;
 
         const row: GuidanceRow = {
-          turnDescription: section.turnAction ?? '',
+          turnDescription: section.turnDescription ?? '',
           advice: section.guidanceAdvice ?? '',
-          lengthF: OJPHelpers.formatDistance(section.trackSection?.length ?? 0),
+          lengthF: OJPHelpers.formatDistance(section.trackSection.distance?.distanceM ?? 0),
           durationF: durationF,
-          streetName: section.trackSection?.roadName ?? '',
+          streetName: section.roadName ?? '',
           geojsonFeature: geojsonFeature,
         };
         rows.push(row);
@@ -403,29 +410,32 @@ export class ResultTripLegComponent implements OnInit {
       return rows;
     })();
 
-    let isWalking = leg.legType === 'TransferLeg'
-    const isContinous = leg.legType === 'ContinuousLeg';
-    if (isContinous) {
-      const continousLeg = leg as OJP_Legacy.TripContinuousLeg;
-      isWalking = continousLeg.isWalking();
-
-      if (isWalking) {
-        this.legInfoDataModel.distanceText = OJPHelpers.formatDistance(continousLeg.legDistance);
+    const isContinous = leg.type === 'ContinuousLeg';
+    this.legInfoDataModel.isWalking = (() => {
+      const isTransfer = leg.type === 'TransferLeg';
+      if (isTransfer) {
+        return true;
       }
-    }
-    this.legInfoDataModel.isWalking = isWalking;
+
+      if (isContinous) {
+        const continousLeg = leg as ContinuousLeg;
+        return continousLeg.isWalking();
+      }
+
+      return false;
+    })();
 
     this.legInfoDataModel.legTemplate = (() => {
       const defaultLegTemplate: LegTemplate = 'walk';
       
       if (isContinous) {
-        const continousLeg = leg as OJP_Legacy.TripContinuousLeg;
+        const continousLeg = leg as ContinuousLeg;
         if (continousLeg.isTaxi()) {
           return 'taxi';
         }
       }
 
-      if (leg.legType === 'TimedLeg') {
+      if (leg.type === 'TimedLeg') {
         return 'timed';
       }
       
@@ -437,20 +447,16 @@ export class ResultTripLegComponent implements OnInit {
         return [];
       }
 
-      const continousLeg = leg as OJP_Legacy.TripContinuousLeg;
-      if (continousLeg.serviceBooking === null) {
-        return [];
-      }
 
       return continousLeg.serviceBooking.bookingArrangements;
     })();
 
-    this.legInfoDataModel.durationText = leg.legDuration?.formatDuration() ?? ''
+    this.legInfoDataModel.durationText = leg.duration?.format() ?? ''
 
     const legIconFilename = OJPHelpers.computeIconFilenameForLeg(leg);
-    this.legInfoDataModel.legIconPath = 'assets/pictograms/' + legIconFilename + '.png'
+    this.legInfoDataModel.legIconPath = 'assets/pictograms/' + legIconFilename + '.png';
 
-    this.legInfoDataModel.isTimed = leg.legType === 'TimedLeg'
+    this.legInfoDataModel.isTimed = leg.type === 'TimedLeg';
     
     this.legInfoDataModel.fromLocationData = this.computeLocationData(leg, 'From');
     this.legInfoDataModel.toLocationData = this.computeLocationData(leg, 'To');
@@ -458,14 +464,14 @@ export class ResultTripLegComponent implements OnInit {
     this.legInfoDataModel.intermediaryLocationsData = (() => {
       const stopPointsData: LegStopPointData[] = [];
 
-      if (leg.legType !== 'TimedLeg') {
+      if (leg.type !== 'TimedLeg') {
         return stopPointsData;
       }
 
-      const timedLeg = leg as OJP_Legacy.TripTimedLeg;
-      timedLeg.intermediateStopPoints.forEach(stopPoint => {
+      const timedLeg = leg as TimedLeg;
+      timedLeg.intermediateStopCalls.forEach(stopCall => {
         const stopPointData = <LegStopPointData>{
-          locationText: stopPoint.location.computeLocationName() ?? 'n/a',
+          locationText: stopCall.place?.computeName() ?? 'n/a',
         };
 
         StopPointHelpers.updateLocationDataWithTime(stopPointData, stopCall);
@@ -477,28 +483,17 @@ export class ResultTripLegComponent implements OnInit {
     })();
 
     this.legInfoDataModel.situations = (() => {
-      if (leg.legType !== 'TimedLeg') {
+      if (leg.type !== 'TimedLeg') {
         return [];
       }
 
-      const timedLeg = leg as OJP_Legacy.TripTimedLeg;
-      const timedLegSituations = timedLeg.service.siriSituations;
-      const situationsData = OJPHelpers.computeSituationsData(this.sanitizer, timedLegSituations);
-      
-      if (DEBUG_LEVEL === 'DEBUG') {
-        if ((timedLegSituations.length > 0) && (situationsData.length === 0)) {
-          console.error('ResultTripLegComponent.initLegInfo ERROR - have situations but cant extract data from them');
-          console.log(timedLegSituations);
-          console.log('========================================================');
-        }
-      }  
-
-      return situationsData;
+      const timedLeg = leg as TimedLeg;
+      return timedLeg.situationsContent;
     })();
     this.legInfoDataModel.hasSituations = this.legInfoDataModel.situations.length > 0;
 
-    if (leg.legType === 'TimedLeg') {
-      const timedLeg = leg as OJP_Legacy.TripTimedLeg;
+    if (leg.type === 'TimedLeg') {
+      const timedLeg = leg as TimedLeg;
       
       const fromLocationVehicleAccessType = StopPointHelpers.computePlatformAssistance(timedLeg.fromStopCall.vehicleAccessType);
       this.legInfoDataModel.fromLocationData.platformAssistanceIconPath = StopPointHelpers.computePlatformAssistanceIconPath(fromLocationVehicleAccessType);
@@ -508,7 +503,7 @@ export class ResultTripLegComponent implements OnInit {
       this.legInfoDataModel.toLocationData.platformAssistanceIconPath = StopPointHelpers.computePlatformAssistanceIconPath(toLocationVehicleAccessType);
       this.legInfoDataModel.toLocationData.platformAssistanceTooltip = StopPointHelpers.computePlatformAssistanceTooltip(toLocationVehicleAccessType);
 
-      timedLeg.intermediateStopPoints.forEach((stopPoint, idx) => {
+      timedLeg.intermediateStopCalls.forEach((stopPoint, idx) => {
         const locationData = this.legInfoDataModel.intermediaryLocationsData[idx] ?? null;
         if (locationData === null) {
           return;
@@ -523,21 +518,21 @@ export class ResultTripLegComponent implements OnInit {
     this.legInfoDataModel.serviceAttributes = this.computeServiceAttributeModel(leg);
 
     this.legInfoDataModel.serviceDestinationText = (() => {
-      if (leg.legType !== 'TimedLeg') {
+      if (leg.type !== 'TimedLeg') {
         return null;
       }
 
-      const timedLeg = leg as OJP_Legacy.TripTimedLeg;
-      return timedLeg.service.destinationStopPlace?.stopPlaceName ?? 'n/a';
+      const timedLeg = leg as TimedLeg;
+      return timedLeg.service.destinationText?.text ?? 'n/a';
     })();
 
     this.legInfoDataModel.serviceIntermediaryStopsText = (() => {
-      if (leg.legType !== 'TimedLeg') {
+      if (leg.type !== 'TimedLeg') {
         return null;
       }
 
-      const timedLeg = leg as OJP_Legacy.TripTimedLeg;
-      const intermediaryStopsNo = timedLeg.intermediateStopPoints.length;
+      const timedLeg = leg as TimedLeg;
+      const intermediaryStopsNo = timedLeg.intermediateStopCalls.length;
       
       if (intermediaryStopsNo === 0) {
         return null;
@@ -551,70 +546,69 @@ export class ResultTripLegComponent implements OnInit {
     })();
 
     const timedLegService: JourneyService | null = (() => {
-      if (leg.legType !== 'TimedLeg') {
+      if (leg.type !== 'TimedLeg') {
         return null;
       }
 
-      const timedLeg = leg as OJP_Legacy.TripTimedLeg;
-      const service = JourneyService.initWithOJP_LegacyJourneyService(timedLeg.service);
-
-      return service;
+      const timedLeg = leg as TimedLeg;
+      
+      return timedLeg.service;
     })();
 
     this.legInfoDataModel.serviceInfo = timedLegService?.formatServiceName() ?? null;
     this.legInfoDataModel.serviceFormationURL = timedLegService?.computeFormationServiceURL() ?? null;
 
     this.legInfoDataModel.serviceJourneyRef = (() => {
-      if (leg.legType !== 'TimedLeg') {
+      if (leg.type !== 'TimedLeg') {
         return null;
       }
 
-      const timedLeg = leg as OJP_Legacy.TripTimedLeg;
+      const timedLeg = leg as TimedLeg;
 
       return timedLeg.service.journeyRef;
     })();
 
     this.legInfoDataModel.debugServicePtMode = DEBUG_LEVEL === 'DEBUG';
     this.legInfoDataModel.servicePtMode = (() => {
-      if (leg.legType !== 'TimedLeg') {
+      if (leg.type !== 'TimedLeg') {
         return null;
       }
 
-      const timedLeg = leg as OJP_Legacy.TripTimedLeg;
-      return timedLeg.service.ptMode;
+      const timedLeg = leg as TimedLeg;
+      return timedLeg.service.mode;
     })();
 
     this.legInfoDataModel.isCancelled = (() => {
-      if (leg.legType !== 'TimedLeg') {
+      if (leg.type !== 'TimedLeg') {
         return false;
       }
 
-      const timedLeg = leg as OJP_Legacy.TripTimedLeg;
+      const timedLeg = leg as TimedLeg;
 
-      return timedLeg.service.hasCancellation === true;
+      return timedLeg.service.cancelled === true;
     })();
 
     this.legInfoDataModel.hasDeviation = (() => {
-      if (leg.legType !== 'TimedLeg') {
+      if (leg.type !== 'TimedLeg') {
         return false;
       }
 
-      const timedLeg = leg as OJP_Legacy.TripTimedLeg;
+      const timedLeg = leg as TimedLeg;
 
-      return timedLeg.service.hasDeviation === true;
+      return timedLeg.service.deviation === true;
     })();
 
     this.legInfoDataModel.isUnplanned = (() => {
-      if (leg.legType !== 'TimedLeg') {
+      if (leg.type !== 'TimedLeg') {
         return false;
       }
 
-      const timedLeg = leg as OJP_Legacy.TripTimedLeg;
+      const timedLeg = leg as TimedLeg;
 
-      return timedLeg.service.isUnplanned === true;
+      return timedLeg.service.unplanned === true;
     })();
 
-    const legIdKey = this.legData.tripId + '_' + this.legData.leg.legID;
+    const legIdKey = this.legData.tripId + '_' + this.legData.leg.id;
     this.legInfoDataModel.gui = {
       showLineLabelId: 'show_line_' + legIdKey,
       showPreciseLineLabelId: 'show_precise_line_' + legIdKey,
@@ -625,15 +619,16 @@ export class ResultTripLegComponent implements OnInit {
     };
   }
 
-  private computeServiceAttributeModel(leg: OJP_Legacy.TripLeg): ServiceAttributeRenderModel[] {
+  private computeServiceAttributeModel(leg: AnyLeg): ServiceAttributeRenderModel[] {
     const rows: ServiceAttributeRenderModel[] = [];
 
-    if (leg.legType !== 'TimedLeg') {
-      return rows;
+    if (leg.type !== 'TimedLeg') {
+      return [];
     } 
 
-    const timedLeg = leg as OJP_Legacy.TripTimedLeg;
-    for (const [key, attrData] of Object.entries(timedLeg.service.serviceAttributes)) {
+    const timedLeg = leg as TimedLeg;
+    timedLeg.service.attribute.forEach(serviceAttribute => {
+      const key = serviceAttribute.code;
       const icon: string = (() => {
         const defaultIcon = 'kom:circle-question-mark-medium';
         
@@ -659,54 +654,51 @@ export class ResultTripLegComponent implements OnInit {
       })();
 
       if (icon === null) {
-        continue;
+        return;
       }
 
       const rowData: ServiceAttributeRenderModel = {
         icon: icon,
-        caption: attrData.text
+        caption: serviceAttribute.userText.text,
       };
       rows.push(rowData);
-    }
+    });
 
     return rows;
   }
 
-  private computeLocationData(leg: OJP_Legacy.TripLeg, endpointType: OJP_Legacy.JourneyPointType): LegStopPointData {
-    const isFrom = endpointType === 'From'
+  private computeLocationData(leg: AnyLeg, endpointType: JourneyPointType): LegStopPointData {
+    const isFrom = endpointType === 'From';
 
-    let location = isFrom ? leg.fromLocation : leg.toLocation
+    const place = isFrom ? leg.fromPlace : leg.toPlace;
 
     const stopPointData = <LegStopPointData>{
-      locationText: location.computeLocationName() ?? '',
+      locationText: place?.computeName() ?? null,
       platformText: null,
       arrText: null,
       arrDelayText: null,
       depText: null,
       depDelayText: null,
-    }
+    };
 
-    if (leg.legType === 'TimedLeg') {
-      const timedLeg = leg as OJP_Legacy.TripTimedLeg
-      const stopPoint = isFrom ? timedLeg.fromStopPoint : timedLeg.toStopPoint;
-
-      const stopPointCall = OJPHelpers.convertOJP_LegacyStopPoint2StopPointCall(stopPoint);
-      OJPHelpers.updateLocationDataWithTime(stopPointData, stopPointCall);
+    if (leg.type === 'TimedLeg') {
+      const timedLeg = leg as TimedLeg
+      const stopPointCall = isFrom ? timedLeg.fromStopCall : timedLeg.toStopCall;
+      StopPointHelpers.updateLocationDataWithTime(stopPointData, stopPointCall);
     }
 
     return stopPointData
   }
 
-  public zoomToEndpoint(endpointType: OJP_Legacy.JourneyPointType) {
+  public zoomToEndpoint(endpointType: JourneyPointType) {
     if (!this.legData) {
       return;
     }
 
     const isFrom = endpointType === 'From';
-    const location = isFrom ? this.legData.leg.fromLocation : this.legData.leg.toLocation;
-    if (location.geoPosition) {
-      const placeLocation = new PlaceLocation(location.geoPosition.longitude, location.geoPosition.latitude);
-      this.mapService.tryToCenterAndZoomToPlace(placeLocation);
+    const place = isFrom ? this.legData.leg.fromPlace : this.legData.leg.toPlace;
+    if (place?.geoPosition) {
+      this.mapService.tryToCenterAndZoomToPlace(place);
     } else {
       console.log('ERROR zoomToEndpoint - no location coords');
       console.log(location);
@@ -736,12 +728,12 @@ export class ResultTripLegComponent implements OnInit {
       const legLocation = (() => {
         const isFirst = idx === 0;
         if (isFirst) {
-          return this.legData?.leg.fromLocation ?? null;
+          return this.legData?.leg.fromPlace ?? null;
         }
 
         const isLast = idx === (this.legInfoDataModel.guidanceRows.length - 1);
         if (isLast) {
-          return this.legData?.leg.toLocation ?? null;
+          return this.legData?.leg.toPlace ?? null;
         }
 
         return null;
