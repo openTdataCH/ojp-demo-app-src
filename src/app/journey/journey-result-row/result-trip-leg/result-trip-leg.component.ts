@@ -177,9 +177,6 @@ export class ResultTripLegComponent implements OnInit {
         leadingText = timedLeg.service.mode.ptMode;
       }
 
-      if (timedLeg.service.ptMode.isDemandMode) {
-        leadingText = 'OnDemand ' + leadingText;
-      }
 
       let legDurationS = '';
       if (this.legData.leg.duration) {
@@ -220,20 +217,11 @@ export class ResultTripLegComponent implements OnInit {
     }
 
     if (continuousLeg.isTaxi()) {
-      if (continuousLeg.legTransportMode === 'others-drive-car') {
-        return 'Limo';
-      }
       
       return 'Taxi';
     }
 
-    if (continuousLeg.legTransportMode === 'car-shuttle-train') {
-      return 'Ride Autoverladezug';
-    }
 
-    if (continuousLeg.legTransportMode === 'car-ferry') {
-      return 'Use Ferry';
-    }
 
     return 'PLACEHOLDER - NEW MOT?';
   }
@@ -362,9 +350,6 @@ export class ResultTripLegComponent implements OnInit {
       return MapLegLineTypeColor.OnDemand;
     }
 
-    if (leg.legTransportMode === 'car-ferry') {
-      return MapLegLineTypeColor.Water;
-    }
 
     return MapLegLineTypeColor.Walk;
   }
@@ -479,7 +464,7 @@ export class ResultTripLegComponent implements OnInit {
       }
 
 
-      return continousLeg.serviceBooking.bookingArrangements;
+      return [];
     })();
 
     this.legInfoDataModel.durationText = leg.duration?.format() ?? ''
