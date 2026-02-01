@@ -1,11 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { DomSanitizer } from '@angular/platform-browser';
 
-import * as OJP_Next from 'ojp-sdk-next';
 import * as OJP_Types from 'ojp-shared-types';
-import OJP_Legacy from '../../config/ojp-legacy';
-
-import { REQUESTOR_REF, OJP_VERSION } from '../../config/constants';
 
 import { UserTripService } from 'src/app/shared/services/user-trip.service';
 import { MapService } from '../../shared/services/map.service'
