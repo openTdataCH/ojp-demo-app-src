@@ -123,7 +123,6 @@
         <div class="text-center">
           <img class="leg-icon" src="{{ this.legInfoDataModel.legIconPath }}" />
         </div>
-        <div class="text-center">{{ this.legInfoDataModel.distanceText }}</div>
       </div>
     </div>
     
@@ -336,7 +335,10 @@
     </div>
     
     <div class="flex-grow-0 leg-time leg-right-side">
-      <div>{{ this.legInfoDataModel.durationText }}</div>
+      <div class="d-flex gap-1">
+        <div>{{ this.legInfoDataModel.durationText }}</div>
+        <div *ngIf="this.legInfoDataModel.distanceText !== ''">({{ this.legInfoDataModel.distanceText }})</div>
+      </div>
     </div>
   </div>
 </ng-template>
