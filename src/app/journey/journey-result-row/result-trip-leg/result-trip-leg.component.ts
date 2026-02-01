@@ -80,6 +80,7 @@ interface LegInfoDataModel {
   serviceJourneyRef: string | null,
   debugServicePtMode: boolean,
   servicePtMode: OJP_Types.ModeStructureSchema | null,
+  servicePtSubMode: Record<string, string>,
   serviceFormationURL: string | null,
 
   isCancelled: boolean,
@@ -191,6 +192,20 @@ export class ResultTripLegComponent implements OnInit {
     }
 
     return legIdxS + this.legData.leg.type;
+  }
+
+  private computeSubMode(mode: OJP_Types.ModeStructureSchema): Record<string, string> {
+    const subModeKeys = ['air', 'bus', 'coach', 'funicular', 'metro', 'tram', 'telecabin', 'rail', 'water'];
+    
+    const mapSubMode: Record<string, string> = {};
+    subModeKeys.forEach(subModeKey => {
+      const subModeValue = (mode as Record<string, any>)[subModeKey + 'Submode'] ?? null;
+      if (subModeValue !== null) {
+        mapSubMode[subModeKey + 'Submode'] = subModeValue;
+      } 
+    });
+    
+    return mapSubMode;
   }
 
   private computeLegLeadingTextContinousLeg(continuousLeg: ContinuousLeg): string {
@@ -576,6 +591,15 @@ export class ResultTripLegComponent implements OnInit {
 
       const timedLeg = leg as TimedLeg;
       return timedLeg.service.mode;
+    })();
+    this.legInfoDataModel.servicePtSubMode = (() => {
+      if (leg.type !== 'TimedLeg') {
+        return {};
+      }
+
+      const timedLeg = leg as TimedLeg;
+      const subMode = this.computeSubMode(timedLeg.service.mode);
+      return subMode;
     })();
 
     this.legInfoDataModel.isCancelled = (() => {
