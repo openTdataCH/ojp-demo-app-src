@@ -678,11 +678,7 @@ export class ResultTripLegComponent implements OnInit {
           return defaultIcon;
         }
 
-        if (key === 'A__GF') {
-          return 'kom:circle-information-large';
-        }
-
-        if (key === 'A__HL') {
+        if (['A__GF', 'A__HL', 'A__BU'].includes(key)) {
           return 'kom:circle-information-large';
         }
 
