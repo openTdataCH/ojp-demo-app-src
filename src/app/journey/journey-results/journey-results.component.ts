@@ -1,5 +1,4 @@
 import { Component, OnInit } from '@angular/core';
-import { UserTripService } from 'src/app/shared/services/user-trip.service';
 
 import * as OJP_Next from 'ojp-sdk-next';
 import * as OJP_Types from 'ojp-shared-types';
@@ -7,6 +6,7 @@ import OJP_Legacy from '../../config/ojp-legacy';
 
 import { REQUESTOR_REF, OJP_VERSION } from '../../config/constants';
 
+import { UserTripService } from 'src/app/shared/services/user-trip.service';
 import { MapService } from '../../shared/services/map.service'
 import { LanguageService } from '../../shared/services/language.service';
 import { TripData } from '../../shared/types/trip';
