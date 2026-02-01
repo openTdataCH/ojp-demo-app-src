@@ -118,7 +118,7 @@ export class ResultTripLegComponent implements OnInit {
     private userTripService: UserTripService, 
     private sanitizer: DomSanitizer,
   ) {
-    this.legInfoDataModel = <LegInfoDataModel>{}
+    this.legInfoDataModel = <LegInfoDataModel>{};
     this.isEmbed = this.router.url.indexOf('/embed/') !== -1;
 
     const isOJPv2 = OJP_VERSION === '2.0';
