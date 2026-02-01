@@ -1,6 +1,3 @@
-// TODO - remove after migration
-import OJP_Legacy from '../../config/ojp-legacy';
-
 import { IndividualTransportMode } from "../types/transport-mode";
 import { AnyPlace } from "./place/place-builder";
 
@@ -26,12 +23,5 @@ export class TripPlace {
   public static initWithPlace(place: AnyPlace) {
     const tripPlace = new TripPlace(place);
     return tripPlace;
-  }
-
-  // TODO - remove after migration
-  public asOJP_TripLocationPoint(): OJP_Legacy.TripLocationPoint {
-    const location = this.place.asOJP_LegacyLocation();
-    const tripLocationPoint = new OJP_Legacy.TripLocationPoint(location);
-    return tripLocationPoint;
   }
 }
