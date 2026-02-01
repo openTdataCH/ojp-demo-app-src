@@ -440,6 +440,24 @@ export class ResultTripLegComponent implements OnInit {
       return false;
     })();
 
+    this.legInfoDataModel.distanceText = (() => {
+      if (leg.type === 'TimedLeg') {
+        return '';
+      }
+
+      if (leg.distance.distanceM === 0) {
+        return '';
+      }
+      
+      // No need to format, use 'Δ' : 'Σ' because the distance is always computed
+      // const sourceF = leg.distance.source === '1a.trip.distance' ? 'Δ' : 'Σ';
+      // const distanceF = OJPHelpers.formatDistance(leg.distance.distanceM ?? 0);
+      // const distanceS = distanceF + ' ' + sourceF + '';
+
+      const distanceS = OJPHelpers.formatDistance(leg.distance.distanceM);
+      return distanceS;
+    })();
+
     this.legInfoDataModel.legTemplate = (() => {
       const defaultLegTemplate: LegTemplate = 'walk';
       
