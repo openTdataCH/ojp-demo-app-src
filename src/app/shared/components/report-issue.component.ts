@@ -129,7 +129,6 @@ export class ReportIssueComponent implements OnInit, AfterViewInit {
     this.metadataRows = [
       'URL: ' + requestURL,
       'OJP version: ' + OJP_VERSION,
-      'ojp-sdk-legacy version: ' + OJP_Legacy.SDK_VERSION,
       'ojp-sdk-next version: ' + OJP_Next.SDK_VERSION,
       'viewport-resolution: ' + viewportResolution,
       'screen-resolution: ' + screenResolution,
