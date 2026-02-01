@@ -18,16 +18,16 @@ Javascript SDK branches
 
 | Branch | NPM | Demo App | Description |
 |-|-|-|-|
-| [ojp-js#ojp-sdk-legacy](https://github.com/openTdataCH/ojp-js/tree/feature/ojp-sdk-legacy) | [ojp-sdk-legacy](https://www.npmjs.com/package/ojp-sdk-legacy) | <ul><li>[PROD - OJP 2.0](https://opentdatach.github.io/ojp-demo-app/search)</li><li>[BETA - OJP 1.0](https://tools.odpch.ch/beta-ojp-demo/search)</li></ul> | original SDK, contains dual code for OJP `1.0`,`2.0` |
-| [ojp-js#ojp-sdk-next](https://github.com/openTdataCH/ojp-js/tree/feature/ojp-sdk-next) | [ojp-sdk-next](https://www.npmjs.com/package/ojp-sdk-next) - temporarely, long-term will be published under `ojp-sdk` | under development | new SDK code with models derived from XSD schema, this will be the main development reference for OJP JS SDK |
+| [ojp-js#ojp-sdk-legacy](https://github.com/openTdataCH/ojp-js/tree/feature/ojp-sdk-legacy) | [ojp-sdk-legacy](https://www.npmjs.com/package/ojp-sdk-legacy) | deprecated | original SDK, contains dual code for OJP `1.0`,`2.0` |
+| [ojp-js#ojp-sdk-next](https://github.com/openTdataCH/ojp-js/tree/feature/ojp-sdk-next) | [ojp-sdk-next](https://www.npmjs.com/package/ojp-sdk-next) - temporarely, long-term will be published under `ojp-sdk` | <ul><li>[PROD - OJP 2.0](https://opentdatach.github.io/ojp-demo-app/search)</li><li>[BETA - OJP 1.0](https://tools.odpch.ch/beta-ojp-demo/search)</li></ul> | new SDK code with models derived from XSD schema |
 
 Code / Demo App Implementation
 
 | Code Place | LIR | SER | TR | TIR | FR | TRR | Comments |
 | - | - | - | - | - | - | - | - |
-| `ojp-sdk-legacy` (legacy SDK) | - | - | :white_check_mark: | - | - | - | TRR is only available for OJP v2.0 |
+| `ojp-sdk-legacy` (legacy SDK) | - | - | - | - | - | - | TRR is only available for OJP v2.0 |
 | `ojp-sdk-next` (new SDK) | :white_check_mark: | :white_check_mark: | :white_check_mark: | :white_check_mark: | :white_check_mark: | :white_check_mark: |  |
-| DemoApp | `ojp-sdk-next` | `ojp-sdk-next` | `legacy` | `ojp-sdk-next` | `ojp-sdk-next` | `ojp-sdk-next` | `legacy` is the old SDK (OJP v1 and v2, see above) |
+| DemoApp | `ojp-sdk-next` | `ojp-sdk-next` | `ojp-sdk-next` | `ojp-sdk-next` | `ojp-sdk-next` | `ojp-sdk-next` | using only `ojp-sdk-next` |
 
 - LIR - LocationInformationRequest
 - SER - StopEventRequest
