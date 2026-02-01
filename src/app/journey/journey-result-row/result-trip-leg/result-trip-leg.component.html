@@ -385,9 +385,9 @@
     class="mb-2 ms-2 d-flex gap-1 service-pt-mode align-items-center"
   >
     <span class="badge rounded-pill text-bg-secondary">{{ this.legInfoDataModel.servicePtMode?.ptMode }}</span>
-    <ng-container *ngIf="this.legInfoDataModel.servicePtMode?.subMode !== null">
-      <div>{{ this.legInfoDataModel.servicePtMode?.subMode?.key }} = </div>
-      <span class="badge rounded-pill text-bg-secondary">{{ this.legInfoDataModel.servicePtMode?.subMode?.value }}</span>
+    <ng-container *ngFor="let subModeItem of this.legInfoDataModel.servicePtSubMode | keyvalue">
+      <div>{{ subModeItem.key }} = </div>
+      <span class="badge rounded-pill text-bg-secondary">{{ subModeItem.value }}</span>
     </ng-container>
   </div>
 
