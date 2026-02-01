@@ -32,7 +32,7 @@
             <label class="form-check-label" [for]="this.legInfoDataModel.gui.showLineLabelId" stopClickPropagation>Shape #1</label>
           </ng-container>
 
-          <ng-container *ngIf="this.legInfoDataModel.gui.showLinkProjectionToggle && this.legData?.leg?.legType === 'TimedLeg'">
+          <ng-container *ngIf="this.legInfoDataModel.gui.showLinkProjectionToggle && this.legData?.leg?.type === 'TimedLeg'">
             <ng-container *ngIf="this.legInfoDataModel.gui.useOtherProvider">
               <div>•</div>
             </ng-container>
