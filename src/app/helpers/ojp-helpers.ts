@@ -3,13 +3,9 @@ import { DomSanitizer } from '@angular/platform-browser';
 import * as OJP_Next from 'ojp-sdk-next';
 import * as OJP_Types from 'ojp-shared-types';
 
-import OJP_Legacy from '../config/ojp-legacy';
-
-import { LegStopPointData } from '../shared/components/service-stops.component';
 import { APP_STAGE, DEBUG_LEVEL, DEFAULT_APP_STAGE } from '../config/constants';
 import { AnyLocationInformationRequestResponse, AnyPlaceResultSchema, AnyPtSituationElement, AnyResponseContextSchema } from '../shared/types/_all';
 import { JourneyService } from '../shared/models/journey-service';
-import { PlaceLocation } from '../shared/models/place/location';
 import { APP_CONFIG } from '../config/app-config';
 import { StopPlace } from '../shared/models/place/stop-place';
 import { PlaceBuilder } from '../shared/models/place/place-builder';
@@ -29,7 +25,6 @@ type PublicTransportPictogram =  'picto-bus-fallback' | 'picto-bus'
   | 'picto-funicular' | 'picto-cablecar' | 'picto-gondola' | 'picto-chairlift'
   | 'car-sharing' | 'autozug' | 'train-gf';
 
-const stopEventTypes: StopEventType[] = ['arrival', 'departure'];
 export class OJPHelpers {
   public static computeIconFilenameForService(service: JourneyService): PublicTransportPictogram {
     if (service.mode.ptMode === 'bus') {
