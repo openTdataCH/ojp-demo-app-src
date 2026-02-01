@@ -104,13 +104,6 @@ export class OJPHelpers {
         return 'taxi';
       }
 
-      if (continousLeg.legTransportMode === 'car-shuttle-train') {
-        return 'autozug';
-      }
-
-      if (continousLeg.legTransportMode === 'car-ferry') {
-        return 'ferry';
-      }
 
       return 'picto-walk';
     }
