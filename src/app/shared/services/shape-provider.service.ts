@@ -14,11 +14,14 @@ import { APP_CONFIG } from 'src/app/config/app-config';
 import { JourneyPointType } from '../types/_all';
 import { AnyLeg } from '../models/trip/leg-builder';
 import { TimedLeg } from '../models/trip/leg/timed-leg';
+import { MapStopsLevelsUnderground } from '../../config/stops-underground';
+import { StopPlace } from '../models/place/stop-place';
 
 type RequestMotType = 'rail' | 'bus' | 'coach' | 'foot' | 'tram' | 'subway' | 'gondola' | 'funicular' | 'ferry';
 
 interface ViaPart {
   geoPosition: OJP_Next.GeoPosition,
+  floor: string | null,
   platform: string | null,
 }
 
@@ -147,13 +150,16 @@ export class ShapeProviderService {
     const endpointTypes: JourneyPointType[] = ['From', 'To'];
     endpointTypes.forEach(endPointType => {
       const isFrom = endPointType === 'From';
-      const geoPosition = (isFrom ? leg.fromPlace?.geoPosition : leg.toPlace?.geoPosition) ?? null;
-      if (geoPosition === null) {
+      const place = (isFrom ? leg.fromPlace : leg.toPlace);
+      if (place === null) {
         return;
       }
 
+      const geoPosition = place.geoPosition;
+
       const legEndpointViaPart: ViaPart = {
         geoPosition: geoPosition,
+        floor: null,
         platform: null,
       };
 
@@ -163,6 +169,15 @@ export class ShapeProviderService {
         const platform = stopCall.platform.realtime ?? stopCall.platform.timetable;
         if (platform !== null) {
           legEndpointViaPart.platform = platform;
+        }
+      } else {
+        if (place.type === 'stop') {
+          const stopPlace = place as StopPlace;
+          const stopPlaceRef = stopPlace.placeRef.ref;
+          const floor = MapStopsLevelsUnderground[stopPlaceRef] ?? null;
+          if (floor !== null) {
+            legEndpointViaPart.floor = floor.toString();
+          }
         }
       }
 
@@ -178,6 +193,7 @@ export class ShapeProviderService {
       throw new Error("Endpoints are too close");
     }
 
+    // step1. from 
     const viaParts = [
       legEndpointViaParts[0],
     ];
@@ -194,6 +210,7 @@ export class ShapeProviderService {
         const viaPart: ViaPart = {
           geoPosition: geoPosition,
           platform: null,
+          floor: null,
         };
 
         const platform = stopCall.platform.realtime ?? stopCall.platform.timetable;
@@ -205,6 +222,7 @@ export class ShapeProviderService {
       });
     };
 
+    // step3. to
     viaParts.push(legEndpointViaParts[1]);
 
     return viaParts;
@@ -254,9 +272,16 @@ export class ShapeProviderService {
         viaParts.forEach(viaPart => {
           // in API the hops are in lat,long format
           let viaKeyPart = viaPart.geoPosition.latitude + ',' + viaPart.geoPosition.longitude;
-          if (viaPart.platform !== null) {
-            viaKeyPart = '@' + viaKeyPart + '$' + viaPart.platform;
+
+          if (viaPart.floor !== null) {
+            viaKeyPart = viaKeyPart + '$' + viaPart.floor;
+          } else {
+            // TODO: platform works ONLY with !DIDOK
+            // if (viaPart.platform !== null) {
+            //   viaKeyPart = '@' + viaKeyPart + '$' + viaPart.platform;
+            // }
           }
+
           viaKeyParts.push(viaKeyPart);
         });
 
@@ -273,14 +298,48 @@ export class ShapeProviderService {
     })();
 
     const demoURL = (() => {
+      const floorInfo: string = (() => {
+        const defValue = '0,0';
+
+        if (leg.type === 'TimedLeg') {
+          return defValue;
+        }
+
+        if (viaParts.length < 2) {
+          return defValue;
+        }
+
+        const endpointTypes: JourneyPointType[] = ['From', 'To'];
+        const floorValues = endpointTypes.map(endpointType => {
+          const defFloorValue = '0';
+
+
+          const isFrom = endpointType === 'From';
+          const viaPart = isFrom ? viaParts[0] : viaParts[viaParts.length - 1];
+
+          const floor = viaPart.floor;
+          if (floor === null) {
+            return defFloorValue;
+          }
+
+          const floorS = floor.toString();
+          return floorS;
+        });
+
+        const floorPartsS = floorValues.join(',');
+        return floorPartsS;
+      })();
+
       const viaParam: string = (() => {
         const viaKeyParts: string[] = [];
         viaParts.forEach(viaPart => {
           // in GUI the hops are in long,lat format - also no @ prefix when we have stops
           let viaKeyPart = viaPart.geoPosition.longitude + ',' + viaPart.geoPosition.latitude;
-          if (viaPart.platform !== null) {
-            viaKeyPart = viaKeyPart + '$' + viaPart.platform;
-          }
+
+          // TODO: PLATFORM doesnt work with coords, only with !DIDOK|platform
+          // if (viaPart.platform !== null) {
+          //   viaKeyPart = viaKeyPart + '$' + viaPart.platform;
+          // }
           viaKeyParts.push(viaKeyPart);
         });
 
@@ -291,7 +350,7 @@ export class ShapeProviderService {
 
       const url = new URL('https://routing-demo.geops.io');
 
-      url.searchParams.set('floorInfo', '0,0');
+      url.searchParams.set('floorInfo', floorInfo);
       url.searchParams.set('mot', motType);
       url.searchParams.set('resolve-hops', 'false');
       url.searchParams.set('via', viaParam);

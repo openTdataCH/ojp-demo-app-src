@@ -71,6 +71,10 @@ export class TripRequestBuilder {
         if (isPublicTransport && (userTripService.railSubmodesFilter.length > 0)) {
           request.setRailSubmodes(userTripService.railSubmodesFilter);
         }
+
+        if (userTripService.trOptimisationMethod !== null) {
+          requestOJPv2.payload.params.optimisationMethod = userTripService.trOptimisationMethod;
+        }
       }
     } 
 
