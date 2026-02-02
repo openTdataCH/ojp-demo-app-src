@@ -40,7 +40,35 @@ export abstract class Leg {
   }
 
   protected static parseDuration(legSchema: OJP_Types.LegSchema): Duration | null {
-    const duration = Duration.initWithDurationSchema(legSchema.duration);    
+    const durationS: string | undefined = (() => {
+      const legDuration = legSchema.duration;
+      if (legDuration !== undefined) {
+        return legDuration;
+      }
+
+      if (legSchema.continuousLeg) {
+        const continousLegSchema = legSchema.continuousLeg as OJP_Types.ContinuousLegSchema;
+        return continousLegSchema.duration;
+      }
+
+      if (legSchema.timedLeg) {
+        const timedLegSchema = legSchema.timedLeg as OJP_Types.TimedLegSchema;
+        const trackSections = timedLegSchema.legTrack?.trackSection ?? [];
+        if (trackSections.length > 0) {
+          // Hack for OJPv1, try to get duration from first track section
+          return trackSections[0].duration;
+        }
+      }
+
+      if (legSchema.transferLeg) {
+        const transferLegSchema = legSchema.transferLeg as OJP_Types.TransferLegSchema;
+        return transferLegSchema.duration;
+      }
+
+      return undefined;
+    })();
+
+    const duration = Duration.initWithDurationSchema(durationS);    
     return duration;
   }
 
