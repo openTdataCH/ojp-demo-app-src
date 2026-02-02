@@ -1,9 +1,7 @@
 import { Component } from '@angular/core';
 
-import OJP_Legacy from '../../config/ojp-legacy';
-
 import { UserTripService } from '../../shared/services/user-trip.service';
-import { PlaceBuilder } from '../../shared/models/place/place-builder';
+import { TripPlace } from '../../shared/models/trip-place';
 
 @Component({
   selector: 'embed-search-popover',
@@ -19,19 +17,19 @@ export class EmbedSearchPopoverComponent {
   public toLocationChecked = true
 
   constructor(private userTripService: UserTripService) {
-    this.fromLocationText = EmbedSearchPopoverComponent.computeLocationText(userTripService.fromTripLocation);
-    this.toLocationText = EmbedSearchPopoverComponent.computeLocationText(userTripService.toTripLocation);
+    this.fromLocationText = EmbedSearchPopoverComponent.computeLocationText(userTripService.fromTripPlace);
+    this.toLocationText = EmbedSearchPopoverComponent.computeLocationText(userTripService.toTripPlace);
 
     this.updateEmbedHTML();
   }
 
-  private static computeLocationText(tripLocationPoint: OJP_Legacy.TripLocationPoint | null): string {
+  private static computeLocationText(tripLocationPoint: TripPlace | null): string {
     if (!tripLocationPoint) {
       return '';
     }
 
-    const place = PlaceBuilder.initWithLegacyLocation(tripLocationPoint.location);
-    return place?.computeName() ?? '';
+    const place = tripLocationPoint.place;
+    return place.computeName();
   }
 
   public updateEmbedHTML() {

@@ -2,6 +2,7 @@ import { Component, OnInit, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
 import { FormControl } from '@angular/forms';
 import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
+import { DomSanitizer } from '@angular/platform-browser';
 import { debounceTime } from 'rxjs';
 
 import { SbbDialog } from "@sbb-esta/angular/dialog";
@@ -10,8 +11,6 @@ import { SbbNotificationToast } from '@sbb-esta/angular/notification-toast';
 import { SbbRadioChange } from '@sbb-esta/angular/radio-button';
 
 import * as OJP_Next from 'ojp-sdk-next';
-
-import OJP_Legacy from '../config/ojp-legacy';
 
 import { APP_STAGE, APP_STAGEs, DEBUG_LEVEL, REQUESTOR_REF, OJP_VERSION } from '../config/constants';
 
@@ -26,7 +25,11 @@ import { DebugXmlPopoverComponent } from './debug-xml-popover/debug-xml-popover.
 import { ReportIssueComponent } from '../shared/components/report-issue.component';
 
 import { OJPHelpers } from '../helpers/ojp-helpers';
-import { AnyPlace, PlaceBuilder } from '../shared/models/place/place-builder';
+import { AnyPlace } from '../shared/models/place/place-builder';
+import { JourneyPointType, TripRequestBoardingType } from '../shared/types/_all';
+import { TripRequestBuilder } from '../shared/models/trip/trip-request';
+import { Trip } from '../shared/models/trip/trip';
+import { ContinuousLeg } from '../shared/models/trip/leg/continuous-leg';
 
 @Component({
   selector: 'app-search-form',
@@ -48,7 +51,7 @@ export class SearchFormComponent implements OnInit {
   public isSearching: boolean;
 
   public requestDurationF: string | null;
-  public currentRequestInfo: OJP_Legacy.RequestInfo | null;
+  public currentRequestInfo: OJP_Next.RequestInfo | null;
 
   private lastCustomTripRequestXML: string | null;
 
@@ -59,7 +62,7 @@ export class SearchFormComponent implements OnInit {
 
   public headerText: string;
 
-  public tripRequestBoardingTypes: OJP_Legacy.TripRequestBoardingType[];
+  public tripRequestBoardingTypes: TripRequestBoardingType[];
 
   private useMocks: boolean;
 
@@ -72,6 +75,7 @@ export class SearchFormComponent implements OnInit {
     private languageService: LanguageService,
     public userTripService: UserTripService,
     private breakpointObserver: BreakpointObserver,
+    private sanitizer: DomSanitizer,
   ) {
     const searchDate = this.userTripService.departureDate;
     this.searchDate = searchDate;
@@ -130,8 +134,8 @@ export class SearchFormComponent implements OnInit {
       this.currentRequestInfo = null;
     });
 
-    this.userTripService.searchFormAfterDefaultsInited.subscribe(nothing => {
-      this.customInitFromParams();
+    this.userTripService.searchFormAfterDefaultsInited.subscribe(async nothing => {
+      await this.customInitFromParams();
     });
 
     this.userTripService.tripRequestFinished.subscribe(requestInfo => {
@@ -166,28 +170,31 @@ export class SearchFormComponent implements OnInit {
     firstVia.dwellTimeMinutes = viaDwellTimeValue;
   }
 
-  private customInitFromParams() {
+  private async customInitFromParams() {
     const queryParams = new URLSearchParams(document.location.search);
     
     const doSearch = queryParams.get('do_search') ?? false;
     if (doSearch) {
-      this.handleTapOnSearch();
+      await this.handleTapOnSearch();
       return;
     }
 
     const gistId = queryParams.get('gist');
     if (gistId) {
-      this.initFromGistRef(gistId);
+      await this.initFromGistRef(gistId);
       return;
     }
   }
 
   private updateLocationTexts() {
-    const endpointTypes: OJP_Legacy.JourneyPointType[] = ['From', 'To'];
+    const endpointTypes: JourneyPointType[] = ['From', 'To'];
     const fromToTextParts: string[] = [];
     endpointTypes.forEach(endpointType => {
-      const tripLocationPoint = endpointType === 'From' ? this.userTripService.fromTripLocation : this.userTripService.toTripLocation;
-      const place = PlaceBuilder.initWithLegacyLocation(tripLocationPoint?.location ?? null);
+      const tripLocationPoint = endpointType === 'From' ? this.userTripService.fromTripPlace : this.userTripService.toTripPlace;
+      if (tripLocationPoint === null) {
+        return;
+      }
+      const place = tripLocationPoint.place;
 
       if (endpointType === 'From') {
         this.fromPlace = place;
@@ -201,10 +208,7 @@ export class SearchFormComponent implements OnInit {
     if (this.userTripService.viaTripLocations.length > 0) {
       this.viaPlaces = [];
       this.userTripService.viaTripLocations.forEach(viaTripLocation => {
-        const place = PlaceBuilder.initWithLegacyLocation(viaTripLocation.location);
-        if (place) {
-          this.viaPlaces.push(place);
-        }
+        this.viaPlaces.push(viaTripLocation.place);
       });
     }
 
@@ -234,30 +238,18 @@ export class SearchFormComponent implements OnInit {
   }
 
   private async initFromMockXML(mockText: string) {
-    const isOJPv2 = OJP_VERSION === '2.0';
-    const xmlConfig = isOJPv2 ? OJP_Next.DefaultXML_Config : OJP_Next.XML_BuilderConfigOJPv1;
+    const sdk = this.userTripService.createOJP_SDK_Instance(this.languageService.language);
+    const request2 = sdk.requests.TripRequest.initWithResponseMock(mockText);
+    const response = await request2.fetchResponse(sdk);
 
-    const request = OJP_Legacy.TripRequest.initWithResponseMock(mockText, xmlConfig, REQUESTOR_REF);
-    request.fetchResponseWithCallback((response) => {
-      if (response.message === 'TripRequest.TripsNo') {
-        if (DEBUG_LEVEL === 'DEBUG') {
-          console.log('DEBUG: TripsNo => ' + response.tripsNo);
-        }
-      }
-      if (response.message === 'TripRequest.Trip') {
-        if (DEBUG_LEVEL === 'DEBUG') {
-          console.log('DEBUG: New Trip => ' + response.trips.length + '/' + response.tripsNo);
-        }
-        
-        if (response.trips.length === 1) {
-          this.handleCustomTripResponse(response.trips, request, false);
-        }
-      }
-      if (response.message === 'TripRequest.DONE') {
-        this.collapseSearchPanel();
-        this.handleCustomTripResponse(response.trips, request, true);
-      }
-    });
+    if (response.ok) {
+      this.collapseSearchPanel();
+      
+      const trips = TripRequestBuilder.parseTrips(this.sanitizer, response);
+      this.handleCustomTripResponse(trips, request2.requestInfo, true);
+    } else {
+      this.handleCustomTripResponse([], request2.requestInfo, true);
+    }
   }
 
   private async initFromGistRef(gistId: string) {
@@ -272,7 +264,7 @@ export class SearchFormComponent implements OnInit {
     this.initFromMockXML(mockText);
   }
 
-  onPlaceSelected(newPlace: AnyPlace, originType: OJP_Legacy.JourneyPointType) {
+  onPlaceSelected(newPlace: AnyPlace, originType: JourneyPointType) {
     this.userTripService.updateTripEndpoint(newPlace, originType, 'SearchForm');
   }
 
@@ -316,8 +308,11 @@ export class SearchFormComponent implements OnInit {
 
     this.userTripService.updateDepartureDateTime(this.computeFormDepartureDate());
 
+    const sdk = this.userTripService.createOJP_SDK_Instance(this.languageService.language);
+
     const includeLegProjectionStep1 = !doTwiceTR;
-    const tripRequestStep1 = this.computeTripRequest(includeLegProjectionStep1);
+    const tripRequestStep1 = TripRequestBuilder.computeTripRequest(this.userTripService, sdk, includeLegProjectionStep1);
+
     if (tripRequestStep1 === null) {
       this.notificationToast.open('Please check from/to input points', {
         type: 'error',
@@ -329,18 +324,16 @@ export class SearchFormComponent implements OnInit {
     this.notificationToast.dismiss();
 
     this.isSearching = true;
-    const responseStep1 = await tripRequestStep1.fetchResponse();
+    const responseStep1 = await tripRequestStep1.fetchResponse(sdk);
     this.isSearching = false;
 
     this.logResponseTime(tripRequestStep1.requestInfo, 'DEBUG TR - 1st request');
 
-    if (responseStep1.message === 'ERROR') {
+    if (!responseStep1.ok) {
       this.notificationToast.open('ParseTripsXMLError', {
         type: 'error',
         verticalPosition: 'top',
       });
-
-      this.userTripService.journeyTripRequests = [];
 
       this.requestDurationF = null;
 
@@ -349,9 +342,8 @@ export class SearchFormComponent implements OnInit {
 
       return;
     }
-
-    const trips = responseStep1.trips;
-    this.userTripService.journeyTripRequests = [tripRequestStep1];
+    
+    const trips = TripRequestBuilder.parseTrips(this.sanitizer, responseStep1);
 
     this.userTripService.tripRequestFinished.emit(tripRequestStep1.requestInfo);
     this.userTripService.updateTrips(trips);
@@ -373,9 +365,9 @@ export class SearchFormComponent implements OnInit {
     this.userTripService.fetchFares(this.languageService.language);
 
     // build a hash of trips so they can be looked up later, TripId is not consistent
-    const mapTripsRequest1: Record<string, OJP_Legacy.Trip> = {};
+    const mapTripsRequest1: Record<string, Trip> = {};
     trips.forEach(trip => {
-      const tripHash = OJPHelpers.computeTripHash(trip);
+      const tripHash = trip.computeTripHash();
       mapTripsRequest1[tripHash] = trip;
     });
 
@@ -386,20 +378,28 @@ export class SearchFormComponent implements OnInit {
     }
 
     const includeLegProjectionStep2 = true;
-    const tripRequestStep2 = this.computeTripRequest(includeLegProjectionStep2);
+    const tripRequestStep2 = TripRequestBuilder.computeTripRequest(this.userTripService, sdk, includeLegProjectionStep2);
     if (tripRequestStep2 === null) {
       return;
     }
 
     // update the legTrack of trips from step1
-    const responseStep2 = await tripRequestStep2.fetchResponse();
+    const responseStep2 = await tripRequestStep2.fetchResponse(sdk);
     this.logResponseTime(tripRequestStep2.requestInfo, 'DEBUG TR - 2nd request');
 
-    responseStep2.trips.forEach(trip2 => {
-      const trip2Hash = OJPHelpers.computeTripHash(trip2);
+    const responseStep2Trips = TripRequestBuilder.parseTrips(this.sanitizer, responseStep2);
+
+    responseStep2Trips.forEach(trip2 => {
+      const trip2Hash = trip2.computeTripHash();
       const trip1 = mapTripsRequest1[trip2Hash] ?? null;
       if (trip1) {
+        trip1.distance = trip2.distance;
+        
         trip1.legs.forEach((leg, idx) => {
+          if (trip2.legs.length === trip1.legs.length) {
+            trip1.legs[idx].distance = trip2.legs[idx].distance;
+          }
+
           if (leg.legTrack) {
             const leg2 = trip2.legs[idx];
             if (leg2.legTrack) {
@@ -407,10 +407,10 @@ export class SearchFormComponent implements OnInit {
             }
           }
 
-          const isContinuousLeg = (leg.legType === 'ContinuousLeg') || (leg.legType === 'TransferLeg');
+          const isContinuousLeg = (leg.type === 'ContinuousLeg') || (leg.type === 'TransferLeg');
           if (isContinuousLeg) {
-            const trip1ContinuousLeg = leg as OJP_Legacy.TripContinuousLeg;
-            const trip2ContinuousLeg = trip2.legs[idx] as OJP_Legacy.TripContinuousLeg;
+            const trip1ContinuousLeg = leg as ContinuousLeg;
+            const trip2ContinuousLeg = trip2.legs[idx] as ContinuousLeg;
             if (trip1ContinuousLeg.pathGuidance && trip2ContinuousLeg.pathGuidance) {
               trip1ContinuousLeg.pathGuidance = trip2ContinuousLeg.pathGuidance;
             }
@@ -420,15 +420,14 @@ export class SearchFormComponent implements OnInit {
     });
 
     // update the requests / response XML only if we have same trips (same number)
-    if (responseStep2.trips.length === responseStep1.trips.length) {
-      this.userTripService.journeyTripRequests = [tripRequestStep2];
+    if (responseStep2Trips.length === trips.length) {
       this.userTripService.tripRequestFinished.emit(tripRequestStep2.requestInfo);
     }
 
     this.userTripService.updateTrips(trips);
   }
 
-  private logResponseTime(requestInfo: OJP_Legacy.RequestInfo, messagePrefix: string) {
+  private logResponseTime(requestInfo: OJP_Next.RequestInfo, messagePrefix: string) {
     if (DEBUG_LEVEL !== 'DEBUG') {
       return;
     }
@@ -454,27 +453,32 @@ export class SearchFormComponent implements OnInit {
     });
     dialogRef.afterOpened().subscribe(() => {
       const popover = dialogRef.componentInstance as InputXmlPopoverComponent
-      const currentTR = this.computeTripRequest();
+      const sdk = this.userTripService.createOJP_SDK_Instance(this.languageService.language);
+      const currentTR = TripRequestBuilder.computeTripRequest(this.userTripService, sdk);
       if (currentTR) {
-        // force re-built of XML request
-        currentTR.updateRequestXML();
-        
-        popover.inputTripRequestXML = currentTR.requestInfo.requestXML ?? 'n/a';
-      }
-
-      const handleCustomXMLResponse = (tripsResponseXML: string) => {
-        this.lastCustomTripRequestXML = popover.inputTripRequestXML;
-
         const isOJPv2 = OJP_VERSION === '2.0';
         const xmlConfig = isOJPv2 ? OJP_Next.DefaultXML_Config : OJP_Next.XML_BuilderConfigOJPv1;
+        const requestXML = currentTR.buildRequestXML(this.languageService.language, REQUESTOR_REF, xmlConfig);
+        
+        popover.inputTripRequestXML = requestXML ?? 'n/a';
+      }
 
-        const request = OJP_Legacy.TripRequest.initWithResponseMock(tripsResponseXML, xmlConfig, REQUESTOR_REF);
-        request.fetchResponse().then((response) => {
-          popover.inputTripRequestResponseXML = tripsResponseXML;
-          dialogRef.close();
+      const handleCustomXMLResponse = async (tripsResponseXML: string) => {
+        this.lastCustomTripRequestXML = popover.inputTripRequestXML;
 
-          this.handleCustomTripResponse(response.trips, request, true);
-        });
+        const sdk = this.userTripService.createOJP_SDK_Instance(this.languageService.language);
+        const request = sdk.requests.TripRequest.initWithResponseMock(tripsResponseXML);
+        const response = await request.fetchResponse(sdk);
+
+        popover.inputTripRequestResponseXML = tripsResponseXML;
+        dialogRef.close();
+
+        if (response.ok) {
+          const trips = TripRequestBuilder.parseTrips(this.sanitizer, response);
+          this.handleCustomTripResponse(trips, request.requestInfo, true);
+        } else {
+          this.handleCustomTripResponse([], request.requestInfo, true);
+        }
       };
 
       popover.tripCustomRequestSaved.subscribe(handleCustomXMLResponse);
@@ -482,18 +486,17 @@ export class SearchFormComponent implements OnInit {
     });
   }
 
-  private handleCustomTripResponse(trips: OJP_Legacy.Trip[], request: OJP_Legacy.TripRequest, isDoneParsing: boolean) {
+  private handleCustomTripResponse(trips: Trip[], requestInfo: OJP_Next.RequestInfo, isDoneParsing: boolean) {
     this.requestDurationF = 'USER XML';
     this.isSearching = false;
 
-    this.userTripService.tripRequestFinished.emit(request.requestInfo);
+    this.userTripService.tripRequestFinished.emit(requestInfo);
     
-    this.userTripService.journeyTripRequests = [request];
     this.userTripService.updateTrips(trips);
     this.updateSearchForm(trips);
   }
 
-  private updateSearchForm(trips: OJP_Legacy.Trip[]) {
+  private updateSearchForm(trips: Trip[]) {
     if (trips.length === 0) {
       return;
     }
@@ -572,46 +575,5 @@ export class SearchFormComponent implements OnInit {
         popover.updateMetadataRows(requestURL);
       }
     });
-  }
-
-  private computeTripRequest(includeLegProjection: boolean = false) {
-    const isOJPv2 = OJP_VERSION === '2.0';
-    const xmlConfig = isOJPv2 ? OJP_Next.DefaultXML_Config : OJP_Next.XML_BuilderConfigOJPv1;
-
-    const stageConfig = this.userTripService.getStageConfig();
-    const viaTripLocations = this.userTripService.isViaEnabled ? this.userTripService.viaTripLocations : [];
-
-    const tripRequest = OJP_Legacy.TripRequest.initWithTripLocationsAndDate(
-      stageConfig, 
-      this.languageService.language,
-      xmlConfig,
-      REQUESTOR_REF,
-
-      this.userTripService.fromTripLocation,
-      this.userTripService.toTripLocation,
-      this.userTripService.departureDate,
-      this.userTripService.currentBoardingType,
-      includeLegProjection,
-      this.userTripService.tripModeType,
-      this.userTripService.tripTransportMode,
-      viaTripLocations,
-      this.userTripService.numberOfResults,
-      this.userTripService.numberOfResultsBefore,
-      this.userTripService.numberOfResultsAfter,
-      this.userTripService.publicTransportModesFilter,
-      this.userTripService.railSubmodesFilter,
-    );
-
-    if (tripRequest !== null) {
-      tripRequest.enableExtensions = this.userTripService.currentAppStage !== 'OJP-SI';
-      tripRequest.useRealTimeDataType = this.userTripService.useRealTimeDataType;
-      tripRequest.optimisationMethod = this.userTripService.trOptimisationMethod;
-
-      if (isOJPv2) {
-        tripRequest.walkSpeedDeviation = this.userTripService.walkSpeedDeviation;
-      }
-    }
-
-    return tripRequest;
   }
 }

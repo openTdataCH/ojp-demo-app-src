@@ -3,7 +3,7 @@ import { DomSanitizer, SafeHtml } from "@angular/platform-browser";
 import * as OJP_Types from 'ojp-shared-types';
 import * as OJP_Next from 'ojp-sdk-next';
 
-type AnyPtSituationElement = OJP_Types.PtSituationElement | OJP_Types.OJPv1_PtSituationElement;
+import { AnyPtSituationElement } from "../types/_all";
 
 export class SituationContent {
   public situationNumber: string;

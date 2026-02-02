@@ -5,8 +5,6 @@ import { SbbDialog } from "@sbb-esta/angular/dialog";
 
 import mapboxgl from 'mapbox-gl'
 
-import OJP_Legacy from '../config/ojp-legacy';
-
 import { IMapBoundsData, MapService } from '../shared/services/map.service';
 import { UserTripService } from '../shared/services/user-trip.service';
 
@@ -18,6 +16,7 @@ import { PlaceLocation } from '../shared/models/place/location';
 import { AnyPlace, PlaceBuilder, sortPlaces } from '../shared/models/place/place-builder';
 import { OJPHelpers } from '../helpers/ojp-helpers';
 import { OJP_VERSION } from '../config/constants';
+import { JourneyPointType } from '../shared/types/_all';
 
 @Component({
   selector: 'app-map',
@@ -47,7 +46,7 @@ export class MapComponent implements OnInit, AfterViewInit {
     this.fromMarker = new mapboxgl.Marker();
     this.toMarker = new mapboxgl.Marker();
 
-    const endpointTypes: OJP_Legacy.JourneyPointType[] = ['From', 'To'];
+    const endpointTypes: JourneyPointType[] = ['From', 'To'];
     endpointTypes.forEach(endpointType => {
       var markerDIV = document.createElement('div');
       markerDIV.className = 'marker-journey-endpoint marker-journey-endpoint-' + endpointType;
@@ -144,22 +143,23 @@ export class MapComponent implements OnInit, AfterViewInit {
   }
 
   private updateMarkers() {
-    const endpointTypes: OJP_Legacy.JourneyPointType[] = ['From', 'To'];
+    const endpointTypes: JourneyPointType[] = ['From', 'To'];
     endpointTypes.forEach(endpointType => {
       const isFrom = endpointType === 'From';
-      const tripLocationPoint = isFrom ? this.userTripService.fromTripLocation : this.userTripService.toTripLocation;
+      const tripLocationPoint = isFrom ? this.userTripService.fromTripPlace : this.userTripService.toTripPlace;
+      if (tripLocationPoint === null) {
+        return;
+      }
+
       const marker = isFrom ? this.fromMarker : this.toMarker;
-      const place = PlaceBuilder.initWithLegacyLocation(tripLocationPoint?.location ?? null);
+      const place = tripLocationPoint.place;
       this.updateMarkerLocation(marker, place);
     });
 
     if (this.userTripService.isViaEnabled) {
       this.userTripService.viaTripLocations.forEach((viaTripLocation, markerIDx) => {
         let marker = this.viaMarkers[markerIDx] ?? null;
-        const place = PlaceBuilder.initWithLegacyLocation(viaTripLocation.location);
-        if (place === null) {
-          return;
-        }
+        const place = viaTripLocation.place;
 
         if (marker === null) {
           marker = this.createViaMarker(place, markerIDx);
@@ -177,7 +177,7 @@ export class MapComponent implements OnInit, AfterViewInit {
     }
   }
 
-  private async handleMarkerDrag(marker: mapboxgl.Marker, endpointType: OJP_Legacy.JourneyPointType) {
+  private async handleMarkerDrag(marker: mapboxgl.Marker, endpointType: JourneyPointType) {
     const lngLat = marker.getLngLat();
 
     let place = new PlaceLocation(lngLat.lng, lngLat.lat);
@@ -256,7 +256,7 @@ export class MapComponent implements OnInit, AfterViewInit {
 
     popupContainer.addEventListener('click', ev => {
       const btnEl = ev.target as HTMLButtonElement;
-      const endpointType = btnEl.getAttribute('data-endpoint-type') as OJP_Legacy.JourneyPointType;
+      const endpointType = btnEl.getAttribute('data-endpoint-type') as JourneyPointType;
       if (endpointType === null) {
         return;
       }

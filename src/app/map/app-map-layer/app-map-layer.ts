@@ -1,9 +1,8 @@
-import * as GeoJSON from 'geojson'
+import * as GeoJSON from 'geojson';
 import mapboxgl from "mapbox-gl";
 
 import * as OJP_Types from 'ojp-shared-types';
-
-import OJP_Legacy from '../../config/ojp-legacy';
+import * as OJP_Next from 'ojp-sdk-next';
 
 import { AppMapLayerOptions, DEBUG_LEVEL, MAP_APP_MAP_LAYERS, OJP_VERSION } from '../../config/constants'
 
@@ -11,17 +10,12 @@ import { UserTripService } from "../../shared/services/user-trip.service";
 import { MapHelpers } from "../helpers/map.helpers";
 import { MAP_LAYERS_DEFINITIONS } from "./map-layers-def";
 import { AnyPlace, PlaceBuilder } from '../../shared/models/place/place-builder';
-import { Poi, POI_Restriction, RestrictionPoiOSMTag } from '../../shared/models/place/poi';
+import { Poi, POI_Restriction } from '../../shared/models/place/poi';
 import { OJPHelpers } from '../../helpers/ojp-helpers';
-import { AnyLocationInformationRequest } from '../../shared/types/_all';
-
-export enum FeaturePropsEnum {
-    OJP_GeoRestrictionType = 'OJP_Legacy.GeoRestrictionType',
-    OJP_GeoRestrictionPoiOSMTag = 'OJP_Legacy.GeoRestrictionPoiOSMTag',
-}
+import { AnyLocationInformationRequest, JourneyPointType } from '../../shared/types/_all';
 
 export class AppMapLayer {
-    private language: OJP_Legacy.Language;
+    private language: OJP_Next.Language;
     private layerKey: string;
 
     private map: mapboxgl.Map;
@@ -38,7 +32,7 @@ export class AppMapLayer {
 
     protected mapCurrentPlaces: Record<string, AnyPlace>;
 
-    constructor(language: OJP_Legacy.Language, layerKey: string, map: mapboxgl.Map, appMapLayerOptions: AppMapLayerOptions, userTripService: UserTripService) {
+    constructor(language: OJP_Next.Language, layerKey: string, map: mapboxgl.Map, appMapLayerOptions: AppMapLayerOptions, userTripService: UserTripService) {
         this.language = language;
         this.layerKey = layerKey;
 
@@ -391,7 +385,7 @@ export class AppMapLayer {
     
         popupContainer.addEventListener('click', ev => {
             const btnEl = ev.target as HTMLButtonElement;
-            const endpointType = btnEl.getAttribute('data-endpoint-type') as OJP_Legacy.JourneyPointType;
+            const endpointType = btnEl.getAttribute('data-endpoint-type') as JourneyPointType;
             if (endpointType === null) {
                 return;
             }

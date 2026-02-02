@@ -3,23 +3,24 @@ import { FormControl } from '@angular/forms';
 import { debounceTime, Subject, takeUntil } from 'rxjs';
 
 import * as OJP_Types from 'ojp-shared-types';
-import OJP_Legacy from '../../config/ojp-legacy';
 
 import { UserTripService } from '../../shared/services/user-trip.service';
 import { LanguageService } from '../../shared/services/language.service';
 import { FormatHelpers } from '../../helpers/format-helpers';
+import { IndividualTransportMode } from '../../shared/types/transport-mode';
 
 import { TRIP_REQUEST_DEFAULT_NUMBER_OF_RESULTS, OJP_VERSION } from '../../config/constants';
+import { ModeOfTransportType, TripModeType } from '../../shared/types/_all';
 
 interface TripTransportModeData {
-  modeType: OJP_Legacy.TripModeType,
-  transportModes: OJP_Legacy.IndividualTransportMode[],
+  modeType: TripModeType,
+  transportModes: IndividualTransportMode[],
 };
 
 const isOJPv2 = OJP_VERSION === '2.0';
 
-const walkTransportMode: OJP_Legacy.IndividualTransportMode = isOJPv2 ? 'foot' : 'walk'; 
-const carTransportMode: OJP_Legacy.IndividualTransportMode = isOJPv2 ? 'car' : 'self-drive-car';
+const walkTransportMode: IndividualTransportMode = isOJPv2 ? 'foot' : 'walk'; 
+const carTransportMode: IndividualTransportMode = isOJPv2 ? 'car' : 'self-drive-car';
 
 const appTripTransportModeData: TripTransportModeData[] = [
   {
@@ -76,8 +77,8 @@ const appTripTransportModeData: TripTransportModeData[] = [
 export class TripModeTypeComponent implements OnInit {
   public tripTransportModeData: TripTransportModeData[];
 
-  public tripTransportModes: OJP_Legacy.IndividualTransportMode[];
-  private prevTransportMode: OJP_Legacy.IndividualTransportMode;
+  public tripTransportModes: IndividualTransportMode[];
+  private prevTransportMode: IndividualTransportMode;
 
   public settingsCollapseID: string;
 
@@ -100,8 +101,9 @@ export class TripModeTypeComponent implements OnInit {
   public walkSpeedDeviation: number;
   public walkSpeedDeviationValues: number[];
 
-  public mapPublicTransportModesFilter: Record<OJP_Legacy.ModeOfTransportType, boolean>;
-  public mapRailSubmodeFilter: Record<string, boolean>;
+  public mapPublicTransportModesFilter: Record<ModeOfTransportType, boolean>;
+  public mapRailSubmodeFilter: Record<OJP_Types.RailSubmodeEnum, boolean>;
+  public availableRailSubmodesFilter: OJP_Types.RailSubmodeEnum[];
 
   public isV1: boolean;
 
@@ -161,7 +163,7 @@ export class TripModeTypeComponent implements OnInit {
     this.walkSpeedDeviation = 100;
     this.walkSpeedDeviationValues = [50, 75, 100, 150, 200, 400];
 
-    this.mapPublicTransportModesFilter = <Record<OJP_Legacy.ModeOfTransportType, boolean>>{};
+    this.mapPublicTransportModesFilter = <Record<ModeOfTransportType, boolean>>{};
     this.mapPublicTransportModesFilter.rail = false;
     this.mapPublicTransportModesFilter.bus = false;
     this.mapPublicTransportModesFilter.water = false;
@@ -172,7 +174,9 @@ export class TripModeTypeComponent implements OnInit {
       interregionalRail: false,
       railShuttle: false,
       local: false,
+      vehicleTunnelTransportRailService: false,
     };
+    this.availableRailSubmodesFilter = ['international', 'highSpeedRail', 'interregionalRail', 'railShuttle', 'local'];
 
     this.isV1 = OJP_VERSION === '1.0';
 
@@ -317,19 +321,16 @@ export class TripModeTypeComponent implements OnInit {
         numberOfResultsAfter = this.numberOfResultsAfter;
       }
 
-      const availablePublicTransportModesFilter: OJP_Legacy.ModeOfTransportType[] = ['bus', 'tram', 'rail', 'water'];
+      const availablePublicTransportModesFilter: ModeOfTransportType[] = ['bus', 'tram', 'rail', 'water'];
       availablePublicTransportModesFilter.forEach(modeFilter => {
         if (this.mapPublicTransportModesFilter[modeFilter] === true) {
           this.userTripService.publicTransportModesFilter.push(modeFilter);
         }
       });
 
-      
-
       this.userTripService.railSubmodesFilter = [];
       if (this.mapPublicTransportModesFilter.rail) {
-        const availableRailSubmodesFilter: string[] = Object.keys(this.mapRailSubmodeFilter);
-        availableRailSubmodesFilter.forEach(railSubmode => {
+        this.availableRailSubmodesFilter.forEach(railSubmode => {
           if (this.mapRailSubmodeFilter[railSubmode]) {
             this.userTripService.railSubmodesFilter.push(railSubmode);
           }
@@ -399,8 +400,8 @@ export class TripModeTypeComponent implements OnInit {
     this.prevTransportMode = this.userTripService.tripTransportMode;
   }
 
-  public computeTripModeTypeText(tripModeType: OJP_Legacy.TripModeType): string {
-    const MapTripMotType: Record<OJP_Legacy.TripModeType, string> = {
+  public computeTripModeTypeText(tripModeType: TripModeType): string {
+    const MapTripMotType: Record<TripModeType, string> = {
       monomodal: 'Monomodal',
       mode_at_start: 'Mode at Start',
       mode_at_end: 'Mode at End',
@@ -411,8 +412,8 @@ export class TripModeTypeComponent implements OnInit {
     return text;
   }
 
-  public computeTripTransportModeText(transportMode: OJP_Legacy.IndividualTransportMode): string {
-    const MapIndividualTransportMode: Record<OJP_Legacy.IndividualTransportMode, string> = {
+  public computeTripTransportModeText(transportMode: IndividualTransportMode): string {
+    const MapIndividualTransportMode: Record<IndividualTransportMode, string> = {
       public_transport: 'Public Transport',
       walk: 'Walking',
       cycle: 'Own Bicycle',

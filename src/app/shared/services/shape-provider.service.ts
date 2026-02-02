@@ -6,13 +6,16 @@ import { catchError, firstValueFrom, map, Observable, shareReplay, throwError } 
 import * as GeoJSON from 'geojson';
 
 import * as OJP_Next from 'ojp-sdk-next';
-import OJP_Legacy from '../../config/ojp-legacy';
 
 import { OJPHelpers } from '../../helpers/ojp-helpers';
 import { TripLegLineType } from '../types/map-geometry-types';
 import { MapHelpers } from '../../map/helpers/map.helpers';
-import { APP_CONFIG } from '../../config/app-config';
+import { APP_CONFIG } from 'src/app/config/app-config';
+import { JourneyPointType } from '../types/_all';
+import { AnyLeg } from '../models/trip/leg-builder';
+import { TimedLeg } from '../models/trip/leg/timed-leg';
 import { MapStopsLevelsUnderground } from '../../config/stops-underground';
+import { StopPlace } from '../models/place/stop-place';
 
 type RequestMotType = 'rail' | 'bus' | 'coach' | 'foot' | 'tram' | 'subway' | 'gondola' | 'funicular' | 'ferry';
 
@@ -51,7 +54,7 @@ export class ShapeProviderService {
 
   constructor(private http: HttpClient) {}
 
-  private getLegShape$(leg: OJP_Legacy.TripLeg): Observable<LegShapeResult> {
+  private getLegShape$(leg: AnyLeg): Observable<LegShapeResult> {
     const viaParts = this.computeLegViaParts(leg);
     
     const viaKey = viaParts.map(el => {
@@ -117,7 +120,7 @@ export class ShapeProviderService {
     return legShapeResult;
   }
 
-  public async fetchLegShape(leg: OJP_Legacy.TripLeg): Promise<LegShapeResult> {
+  public async fetchLegShape(leg: AnyLeg): Promise<LegShapeResult> {
     const response = await firstValueFrom(this.getLegShape$(leg))
     return response;
   }
@@ -141,20 +144,18 @@ export class ShapeProviderService {
     return fc;
   }
 
-  private computeLegViaParts(leg: OJP_Legacy.TripLeg): ViaPart[] {
+  private computeLegViaParts(leg: AnyLeg): ViaPart[] {
     const legEndpointViaParts: ViaPart[] = [];
 
-    const endpointTypes: OJP_Legacy.JourneyPointType[] = ['From', 'To'];
+    const endpointTypes: JourneyPointType[] = ['From', 'To'];
     endpointTypes.forEach(endPointType => {
       const isFrom = endPointType === 'From';
-      const location = isFrom ? leg.fromLocation : leg.toLocation;
-
-      if (location.geoPosition === null) {
+      const place = (isFrom ? leg.fromPlace : leg.toPlace);
+      if (place === null) {
         return;
       }
 
-      // convert legacy GeoPosition
-      const geoPosition = new OJP_Next.GeoPosition(location.geoPosition.longitude, location.geoPosition.latitude);
+      const geoPosition = place.geoPosition;
 
       const legEndpointViaPart: ViaPart = {
         geoPosition: geoPosition,
@@ -162,17 +163,17 @@ export class ShapeProviderService {
         platform: null,
       };
 
-      if (leg.legType === 'TimedLeg') {
-        const timedLeg = leg as OJP_Legacy.TripTimedLeg;
-        const stopPoint = isFrom ? timedLeg.fromStopPoint : timedLeg.toStopPoint;
-        
-        const platform = stopPoint.actualPlatform ?? stopPoint.plannedPlatform;
+      if (leg.type === 'TimedLeg') {
+        const timedLeg = leg as TimedLeg;
+        const stopCall = isFrom ? timedLeg.fromStopCall : timedLeg.toStopCall;
+        const platform = stopCall.platform.realtime ?? stopCall.platform.timetable;
         if (platform !== null) {
           legEndpointViaPart.platform = platform;
         }
       } else {
-        const stopPlaceRef = location.stopPlace?.stopPlaceRef ?? null;
-        if (stopPlaceRef !== null) {
+        if (place.type === 'stop') {
+          const stopPlace = place as StopPlace;
+          const stopPlaceRef = stopPlace.placeRef.ref;
           const floor = MapStopsLevelsUnderground[stopPlaceRef] ?? null;
           if (floor !== null) {
             legEndpointViaPart.floor = floor.toString();
@@ -197,17 +198,14 @@ export class ShapeProviderService {
       legEndpointViaParts[0],
     ];
 
-    // step2. intermediates
-    if (leg.legType === 'TimedLeg') {
-      const timedLeg = leg as OJP_Legacy.TripTimedLeg;
+    if (leg.type === 'TimedLeg') {
+      const timedLeg = leg as TimedLeg;
 
-      timedLeg.intermediateStopPoints.forEach(stopPoint => {
-        if (stopPoint.location.geoPosition === null) {
+      timedLeg.intermediateStopCalls.forEach(stopCall => {
+        const geoPosition = stopCall.place?.geoPosition ?? null;
+        if (geoPosition === null) {
           return;
         }
-
-        // convert legacy GeoPosition
-        const geoPosition = new OJP_Next.GeoPosition(stopPoint.location.geoPosition.longitude, stopPoint.location.geoPosition.latitude);
 
         const viaPart: ViaPart = {
           geoPosition: geoPosition,
@@ -215,7 +213,7 @@ export class ShapeProviderService {
           floor: null,
         };
 
-        const platform = stopPoint.actualPlatform ?? stopPoint.plannedPlatform;
+        const platform = stopCall.platform.realtime ?? stopCall.platform.timetable;
         if (platform !== null) {
           viaPart.platform = platform;
         }
@@ -230,7 +228,7 @@ export class ShapeProviderService {
     return viaParts;
   }
 
-  private computeRequestData(leg: OJP_Legacy.TripLeg, viaParts: ViaPart[]): RequestData {
+  private computeRequestData(leg: AnyLeg, viaParts: ViaPart[]): RequestData {
     const footLegTypes: TripLegLineType[] = ['Guidance', 'Transfer', 'Walk'];
     const railTypes: TripLegLineType[] = ['LongDistanceRail', 'SBahn', 'CogRailway'];
 
@@ -303,7 +301,7 @@ export class ShapeProviderService {
       const floorInfo: string = (() => {
         const defValue = '0,0';
 
-        if (leg.legType === 'TimedLeg') {
+        if (leg.type === 'TimedLeg') {
           return defValue;
         }
 
@@ -311,7 +309,7 @@ export class ShapeProviderService {
           return defValue;
         }
 
-        const endpointTypes: OJP_Legacy.JourneyPointType[] = ['From', 'To'];
+        const endpointTypes: JourneyPointType[] = ['From', 'To'];
         const floorValues = endpointTypes.map(endpointType => {
           const defFloorValue = '0';
 

@@ -1,15 +1,13 @@
 import { Component, OnInit } from '@angular/core';
-import { UserTripService } from 'src/app/shared/services/user-trip.service';
+import { DomSanitizer } from '@angular/platform-browser';
 
-import * as OJP_Next from 'ojp-sdk-next';
 import * as OJP_Types from 'ojp-shared-types';
-import OJP_Legacy from '../../config/ojp-legacy';
 
-import { REQUESTOR_REF, OJP_VERSION } from '../../config/constants';
-
+import { UserTripService } from 'src/app/shared/services/user-trip.service';
 import { MapService } from '../../shared/services/map.service'
 import { LanguageService } from '../../shared/services/language.service';
 import { TripData } from '../../shared/types/trip';
+import { TripRequestBuilder } from '../../shared/models/trip/trip-request';
 
 type NumberOfResultsType = 'NumberOfResults' | 'NumberOfResultsBefore' | 'NumberOfResultsAfter';
 
@@ -29,7 +27,7 @@ interface PageModel {
 export class JourneyResultsComponent implements OnInit {
   public model: PageModel;
 
-  constructor(private userTripService: UserTripService, private mapService: MapService, private languageService: LanguageService) {
+  constructor(private userTripService: UserTripService, private mapService: MapService, private languageService: LanguageService, private sanitizer: DomSanitizer) {
     this.model = {
       tripsData: [],
       mapFareResult: {},
@@ -81,44 +79,60 @@ export class JourneyResultsComponent implements OnInit {
     })
   }
 
-  public loadPreviousTrips() {
+  public async loadPreviousTrips() {
     if (this.model.tripsData.length === 0) {
       return;
     }
 
-    const depArrDate = this.model.tripsData[0].trip.computeDepartureTime();
+    const tripsWithTimedLegs = this.model.tripsData.filter(tripData => (tripData.legsData.filter(legData => legData.leg.type === 'TimedLeg')).length > 0);
+    if (tripsWithTimedLegs.length === 0) {
+      return;
+    }
+
+    const firstTrip = tripsWithTimedLegs[0].trip;
+    const depArrDate = firstTrip.computeTimedLegDepartureTime();
     if (depArrDate === null) {
       return;
     }
 
     this.model.isFetchingPrevTrips = true;
 
-    this.loadTrips('NumberOfResultsBefore', depArrDate);
+    await this.loadTrips('NumberOfResultsBefore', depArrDate);
   }
 
-  public loadNextTrips() {
+  public async loadNextTrips() {
     if (this.model.tripsData.length === 0) {
       return;
     }
 
-    const tripsWithTimedLegs = this.model.tripsData.filter(tripData => (tripData.legsData.filter(legData => legData.leg.legType === 'TimedLeg')).length > 0);
+    const tripsWithTimedLegs = this.model.tripsData.filter(tripData => (tripData.legsData.filter(legData => legData.leg.type === 'TimedLeg')).length > 0);
     if (tripsWithTimedLegs.length === 0) {
       return;
     }
 
-    const lastTripData = tripsWithTimedLegs[tripsWithTimedLegs.length - 1];
-    const depArrDate = lastTripData.trip.computeDepartureTime();
+    const lastTrip = tripsWithTimedLegs[tripsWithTimedLegs.length - 1].trip;
+    const depArrDate = lastTrip.computeTimedLegDepartureTime();
     if (depArrDate === null) {
       return;
     }
 
     this.model.isFetchingNextTrips = true;
 
-    this.loadTrips('NumberOfResultsAfter', depArrDate);
+    await this.loadTrips('NumberOfResultsAfter', depArrDate);
   }
 
-  private loadTrips(numberOfResultsType: NumberOfResultsType, depArrDate: Date) {
-    const viaTripLocations = this.userTripService.isViaEnabled ? this.userTripService.viaTripLocations : [];
+  private async loadTrips(numberOfResultsType: NumberOfResultsType, depArrDate: Date) {
+    const sdk = this.userTripService.createOJP_SDK_Instance(this.languageService.language);
+    const includeLegProjection = true;
+    
+    const request = TripRequestBuilder.computeTripRequest(this.userTripService, sdk, includeLegProjection);
+    if (request === null) {
+      return;
+    }
+
+    request.setDepartureDatetime(depArrDate);
+
+    request.enableLinkProkection();
 
     const numberOfResults: number | null = (() => {
       const hasPublicTransport = this.userTripService.hasPublicTransport();
@@ -126,67 +140,38 @@ export class JourneyResultsComponent implements OnInit {
       return hasPublicTransport ? this.userTripService.numberOfResults : null;
     })();
 
-    let numberOfResultsBefore: number | null = null;
-    if (numberOfResultsType === 'NumberOfResultsBefore') {
-      numberOfResultsBefore = numberOfResults;
-    }
-
-    let numberOfResultsAfter: number | null = null;
-    if (numberOfResultsType === 'NumberOfResultsAfter') {
-      numberOfResultsAfter = numberOfResults;
-    }
-
-    const stageConfig = this.userTripService.getStageConfig();
-    const isOJPv2 = OJP_VERSION === '2.0';
-    const xmlConfig = isOJPv2 ? OJP_Next.DefaultXML_Config : OJP_Next.XML_BuilderConfigOJPv1;
-    
-    const request = OJP_Legacy.TripRequest.initWithTripLocationsAndDate(
-      stageConfig,
-      this.languageService.language,
-      xmlConfig,
-      REQUESTOR_REF,
-      
-      this.userTripService.fromTripLocation,
-      this.userTripService.toTripLocation,
-      depArrDate,
-      this.userTripService.currentBoardingType,
-      true,
-      this.userTripService.tripModeType,
-      this.userTripService.tripTransportMode,
-      viaTripLocations,
-      null,
-      numberOfResultsBefore,
-      numberOfResultsAfter,
-      this.userTripService.publicTransportModesFilter,
-    );
-
-    if (request === null) {
+    if (numberOfResults === null) {
+      console.log('NumberOfResults is not set?');
       return;
     }
-    
-    request.enableExtensions = this.userTripService.currentAppStage !== 'OJP-SI';
-    request.useRealTimeDataType = this.userTripService.useRealTimeDataType;
-    request.optimisationMethod = this.userTripService.trOptimisationMethod;
 
-    if (isOJPv2) {
-      request.walkSpeedDeviation = this.userTripService.walkSpeedDeviation;
+    if (numberOfResultsType === 'NumberOfResultsBefore') {
+      request.setNumberOfResults(null);
+      request.setNumberOfResultsBefore(numberOfResults);
+    }
+    if (numberOfResultsType === 'NumberOfResultsAfter') {
+      request.setNumberOfResults(null);
+      request.setNumberOfResultsAfter(numberOfResults);
     }
 
-    this.userTripService.journeyTripRequests = [request];
+    const response = await request.fetchResponse(sdk);
+    if (!response.ok) {
+      console.log('ERROR with TR for ' + numberOfResultsType);
+      console.log(request);
+      return;
+    }
 
-    request.fetchResponse().then(response => {
-      const trips = response.trips;
-      this.userTripService.updateTrips(trips);
 
-      const requestInfo = request.requestInfo;
-      this.userTripService.tripRequestFinished.emit(requestInfo);
+    const trips = TripRequestBuilder.parseTrips(this.sanitizer, response);
 
-      if (trips.length > 0) {
-        this.userTripService.fetchFares(this.languageService.language);
-      } else {
-        this.userTripService.mapActiveTripSelected.emit(null);
-      }
-    });
+    this.userTripService.tripRequestFinished.emit(request.requestInfo);
+    this.userTripService.updateTrips(trips);
+
+    this.userTripService.fetchFares(this.languageService.language);
+
+    if (trips.length === 0) {
+      this.userTripService.mapActiveTripSelected.emit(null);
+    }
   }
 
   private updatePageModel(tripsData: TripData[]) {

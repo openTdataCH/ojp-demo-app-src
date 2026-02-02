@@ -180,7 +180,7 @@ export class StationBoardSearchComponent implements OnInit {
 
     const stopPlace = place as StopPlace;
 
-    this.updateCurrentRequestData(stopPlace.stopRef);
+    this.updateCurrentRequestData(stopPlace.placeRef.ref);
 
     this.stopPlace = stopPlace;
 
@@ -225,7 +225,7 @@ export class StationBoardSearchComponent implements OnInit {
   public async searchButtonClicked() {
     this.notificationToast.dismiss();
 
-    const stopPlaceRef = this.stopPlace?.stopRef ?? null;
+    const stopPlaceRef = this.stopPlace?.placeRef.ref ?? null;
     if (stopPlaceRef === null) {
       console.error('ERROR - no stopPlaceRef available');
       return;
@@ -280,7 +280,7 @@ export class StationBoardSearchComponent implements OnInit {
       queryParams.set('type', 'arr');
     }
     
-    const stopPlaceRef = this.stopPlace?.stopRef ?? null;
+    const stopPlaceRef = this.stopPlace?.placeRef.ref ?? null;
     if (stopPlaceRef) {
       queryParams.set('stop_id', stopPlaceRef);
     }
@@ -382,8 +382,8 @@ export class StationBoardSearchComponent implements OnInit {
 
     const isOJPv2 = OJP_VERSION === '2.0';
 
-    const mapPlaces = OJPHelpers.parseAnyStopEventResultPlaceContext(OJP_VERSION, response);
-    const mapSituations = OJPHelpers.parseAnyStopEventResultSituationsContext(this.sanitizer, OJP_VERSION, response);
+    const mapPlaces = OJPHelpers.parseAnyPlaceContext(OJP_VERSION, response.value.stopEventResponseContext);
+    const mapSituations = OJPHelpers.parseAnySituationsContext(this.sanitizer, OJP_VERSION, response.value.stopEventResponseContext);
 
     const stopEventResultsSchema: OJP_Types.StopEventResultSchema[] = (() => {
       if (isOJPv2) {
@@ -498,7 +498,7 @@ export class StationBoardSearchComponent implements OnInit {
       return;
     }
 
-    this.headerText = this.stationBoardType + ' ' + this.stopPlace.stopName;
+    this.headerText = this.stationBoardType + ' ' + this.stopPlace.placeRef.name;
   }
 
   private handleMapClick(feature: GeoJSON.Feature) {

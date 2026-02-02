@@ -1,7 +1,6 @@
 import { SbbDialog } from "@sbb-esta/angular/dialog";
 
 import mapboxgl from "mapbox-gl";
-import OJP_Legacy from '../../config/ojp-legacy';
 
 import { UserTripService } from "../../shared/services/user-trip.service";
 import { LanguageService } from "../../shared/services/language.service";

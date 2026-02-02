@@ -1,8 +1,7 @@
+import * as GeoJSON from 'geojson';
+
 import * as OJP_Types from 'ojp-shared-types';
 import * as OJP_Next from 'ojp-sdk-next';
-
-// TODO - remove after migration
-import OJP_Legacy from '../../config/ojp-legacy';
 
 export abstract class BasePlace {
   public geoPosition: OJP_Next.GeoPosition;
@@ -30,12 +29,28 @@ export abstract class BasePlace {
     return this.placeName;
   }
 
-  // TODO - remove after migration
-  public asOJP_LegacyLocation(): OJP_Legacy.Location {
-    const location = new OJP_Legacy.Location();
-    location.updateLegacyGeoPosition(this.geoPosition.longitude, this.geoPosition.latitude);
-    location.attributes = this.computeGeoJSON_Properties();
+  public asGeoJSONFeature(): GeoJSON.Feature<GeoJSON.Point> {
+    const geoJSON_Properties: GeoJSON.GeoJsonProperties = {
+      'place.type': this.type,
+      'locationName': this.placeName,
+    };
 
-    return location;
+    for (const attrKey in this.properties) {
+      geoJSON_Properties['OJP.Attr.' + attrKey] = this.properties[attrKey]
+    }
+
+    const feature: GeoJSON.Feature<GeoJSON.Point> = {
+      type: 'Feature',
+      properties: geoJSON_Properties,
+      geometry: {
+        type: 'Point',
+        coordinates: [
+          this.geoPosition.longitude,
+          this.geoPosition.latitude
+        ]
+      }
+    }
+    
+    return feature;
   }
 }

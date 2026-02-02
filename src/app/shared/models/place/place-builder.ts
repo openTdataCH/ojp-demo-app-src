@@ -1,8 +1,5 @@
 import * as OJP_Next from 'ojp-sdk-next';
 
-// DELETE after migration
-import OJP_Legacy from '../../../config/ojp-legacy';
-
 import { Address } from './address';
 import { StopPlace } from './stop-place';
 import { Poi } from './poi';
@@ -59,33 +56,6 @@ export class PlaceBuilder {
     }
 
     return null;
-  }
-
-  // TODO - remove after migration
-  public static initWithLegacyLocation(location: OJP_Legacy.Location | null) {
-    if ((location === null) || (location.geoPosition === null)) {
-      return null;
-    }
-
-    if (location.stopPlace) {
-      const place = StopPlace.initWithCoordsRefAndName(
-        location.geoPosition.longitude, 
-        location.geoPosition.latitude,
-        location.locationName ?? location.stopPlace.stopPlaceName ?? 'n/a location.locationName',
-        location.stopPlace.stopPlaceName ?? 'n/a location.stopPlace.stopPlaceName',
-        location.stopPlace.stopPlaceRef,
-      );
-
-      return place;
-    }
-
-    const place = new PlaceLocation(
-      location.geoPosition.longitude, 
-      location.geoPosition.latitude, 
-      location.locationName
-    );
-
-    return place;
   }
 }
 

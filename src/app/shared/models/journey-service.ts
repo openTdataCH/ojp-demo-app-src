@@ -1,5 +1,4 @@
 import * as OJP_Types from 'ojp-shared-types';
-import OJP_Legacy from '../../config/ojp-legacy';
 
 import { TripLegLineType } from '../types/map-geometry-types';
 
@@ -29,7 +28,7 @@ export class JourneyService implements OJP_Types.DatedJourneySchema  {
       situationNumber: string;
     }[]
   }
- 
+  
   private constructor(operatingDayRef: string, journeyRef: string, lineRef: string, mode: OJP_Types.ModeStructureSchema, publishedServiceName: OJP_Types.InternationalTextSchema, attribute: OJP_Types.GeneralAttributeSchema[], originText: OJP_Types.InternationalTextSchema) {
     this.conventionalModeOfOperation = undefined;
     this.operatingDayRef = operatingDayRef;
@@ -49,7 +48,7 @@ export class JourneyService implements OJP_Types.DatedJourneySchema  {
     this.unplanned = undefined;
     this.cancelled = undefined;
     this.deviation = undefined;
-    
+
     this.situationFullRefs = undefined;
   }
 
@@ -62,7 +61,7 @@ export class JourneyService implements OJP_Types.DatedJourneySchema  {
     service.directionRef = schema.directionRef;
     service.productCategory = schema.productCategory;
     service.trainNumber = schema.trainNumber;
-    service.operatorRef = schema.operatorRef;
+    service.operatorRef = String(schema.operatorRef);
     service.destinationStopPointRef = schema.destinationStopPointRef;
     service.destinationText = schema.destinationText;
     service.unplanned = schema.unplanned;
@@ -71,6 +70,21 @@ export class JourneyService implements OJP_Types.DatedJourneySchema  {
     service.situationFullRefs = schema.situationFullRefs;
     
     return service;
+  }
+
+  private static convertAttributesV2Schema(attributesV1: OJP_Types.OJPv1_GeneralAttributeSchema[]): OJP_Types.GeneralAttributeSchema[] {
+    const attributesV2: OJP_Types.GeneralAttributeSchema[] = [];
+    
+    attributesV1.forEach(legacyAttributeSchema => {
+      const attributeV2: OJP_Types.GeneralAttributeSchema = {
+        userText: legacyAttributeSchema.text,
+        code: legacyAttributeSchema.code,
+        importance: legacyAttributeSchema.importance,
+      };
+      attributesV2.push(attributeV2);
+    });
+
+    return attributesV2;
   }
 
   private static initWithLegacyDatedJourneySchema(schema: OJP_Types.OJPv1_DatedJourneySchema): JourneyService {
@@ -88,164 +102,57 @@ export class JourneyService implements OJP_Types.DatedJourneySchema  {
     service.directionRef = schema.directionRef;
     service.productCategory = schema.productCategory;
     service.trainNumber = undefined; // this comes from TimedLeg
-    service.operatorRef = schema.operatorRef;
+    
+    // OJP v1 hack - the values are prefixed with :ojp, strip them out
+    let operatorRef = String(schema.operatorRef ?? '');
+    operatorRef = operatorRef.replace('ojp:', '');
+    service.operatorRef = operatorRef;
+    
     service.destinationStopPointRef = schema.destinationStopPointRef;
     service.destinationText = schema.destinationText;
     service.unplanned = schema.unplanned;
     service.cancelled = schema.cancelled;
     service.deviation = schema.deviation;
 
-    service.situationFullRefs = undefined; // is set in the other constructors
+    service.situationFullRefs = {
+      situationFullRef: schema.situationFullRef ?? [],
+    };
 
     return service;
   }
 
   // Init with OJP 1.0 XML schema - TripRequest
-  // - it needs the TimedLeg because there we have the the 'publishedJourneyNumber' stored
+  // - it needs the TimedLeg because 'publishedJourneyNumber' is stored under <Extension> 
   public static initWithLegacyTripTimedLegSchema(legacyTripLegSchema: OJP_Types.OJPv1_TimedLegSchema): JourneyService {
     const schema = legacyTripLegSchema.service;
-    
+
     const service = JourneyService.initWithLegacyDatedJourneySchema(schema);
     service.trainNumber = legacyTripLegSchema.extension?.publishedJourneyNumber?.text ?? undefined;
 
-
     return service;
   }
 
   // Init with OJP 1.0 XML schema - TripRequest
-  // - it needs the TimedLeg because there we have the the 'publishedJourneyNumber' stored
+  // - it needs the StopEvent because 'publishedJourneyNumber' is stored under <Extension> 
   public static initWithLegacyStopEventResultSchema(legacyStopEventResultSchema: OJP_Types.OJPv1_StopEventResultSchema): JourneyService {
     const schema = legacyStopEventResultSchema.stopEvent.service;
     
     const service = JourneyService.initWithLegacyDatedJourneySchema(schema);
     service.trainNumber = legacyStopEventResultSchema.stopEvent.extension?.publishedJourneyNumber?.text ?? undefined;
 
-    service.situationFullRefs = {
-      situationFullRef: []
-    };
-    const situationFullRefItems = legacyStopEventResultSchema.stopEvent.thisCall.callAtStop.situationFullRef ?? [];
-    situationFullRefItems.forEach(item => {
-      if (service.situationFullRefs) {
-        service.situationFullRefs.situationFullRef.push(item);
-      }
-    });
-
     return service;
-  }
-
-  private static convertAttributesV2Schema(attributesV1: OJP_Types.OJPv1_GeneralAttributeSchema[]) {
-    const attributesV2: OJP_Types.GeneralAttributeSchema[] = [];
-    
-    attributesV1.forEach(legacyAttributeSchema => {
-      const attributeV2: OJP_Types.GeneralAttributeSchema = {
-        userText: legacyAttributeSchema.text,
-        code: legacyAttributeSchema.code,
-        importance: legacyAttributeSchema.importance,
-      };
-      attributesV2.push(attributeV2);
-    });
-
-    return attributesV2;
   }
 
   // Init with OJP 1.0 XML schema - TripInfoRequest
   public static initWithLegacyTripInfoResultSchema(legacyTripInfoResultSchema: OJP_Types.OJPv1_TripInfoResultStructureSchema): JourneyService | null {
-    const legacyServiceSchema = legacyTripInfoResultSchema.service ?? null;
-    if (legacyServiceSchema === null) {
+    const schema = legacyTripInfoResultSchema.service ?? null;
+    if (schema === null) {
       return null;
     }
-    
-    const publishedServiceName = legacyServiceSchema.publishedLineName;
-    const attributesV2 = JourneyService.convertAttributesV2Schema(legacyServiceSchema.attribute);
 
-    const originText: OJP_Types.InternationalTextSchema = {
-      text: ''
-    };
-
-    const service = new JourneyService(legacyServiceSchema.operatingDayRef, legacyServiceSchema.journeyRef, legacyServiceSchema.lineRef, legacyServiceSchema.mode, publishedServiceName, attributesV2, originText);
-
-    service.conventionalModeOfOperation = legacyServiceSchema.conventionalModeOfOperation;
-    service.publicCode = legacyServiceSchema.publicCode;
-    service.directionRef = legacyServiceSchema.directionRef;
-    service.productCategory = legacyServiceSchema.productCategory;
+    const service = JourneyService.initWithLegacyDatedJourneySchema(schema);
     service.trainNumber = legacyTripInfoResultSchema.extension?.publishedJourneyNumber?.text ?? undefined;
-    service.operatorRef = legacyServiceSchema.operatorRef;
-    service.destinationStopPointRef = legacyServiceSchema.destinationStopPointRef;
-    service.destinationText = legacyServiceSchema.destinationText;
-    service.unplanned = legacyServiceSchema.unplanned;
-    service.cancelled = legacyServiceSchema.cancelled;
-    service.deviation = legacyServiceSchema.deviation;
-
-    return service;
-  }
-
-  //  Init with old OJP SDK model
-  public static initWithOJP_LegacyJourneyService(legacyJourneyService: OJP_Legacy.JourneyService): JourneyService {
-    const operatingDayRef = legacyJourneyService.operatingDayRef;
-    const journeyRef = legacyJourneyService.journeyRef;
-    const lineRef = legacyJourneyService.lineRef ?? 'n/a OJP_Legacy.JourneyService.lineRef';
-    const mode: OJP_Types.ModeStructureSchema = {
-      ptMode: legacyJourneyService.ptMode.ptMode as OJP_Types.VehicleModesOfTransportEnum,
-      name: {
-        text: legacyJourneyService.ptMode.name ?? 'n/a OJP_Legacy.mode.name',
-      },
-      shortName: {
-        text: legacyJourneyService.ptMode.shortName ?? 'n/a OJP_Legacy.mode.shortName',
-      },
-    };
-    const publishedServiceName: OJP_Types.InternationalTextSchema = {
-      text: legacyJourneyService.serviceLineNumber ?? 'n/a OJP_Legacy.JourneyService.serviceLineNumber',
-    };
-    const journeyAttributes: OJP_Types.GeneralAttributeSchema[] = Object.values(legacyJourneyService.serviceAttributes).map(el => {
-      const journeyAttribute: OJP_Types.GeneralAttributeSchema = {
-        userText: {
-          text: el.text,
-        },
-        code: el.code,
-      };
-
-      return journeyAttribute;
-    });
-
-    const originText: OJP_Types.InternationalTextSchema = {
-      text: ''
-    };
-
-    const service = new JourneyService(operatingDayRef, journeyRef, lineRef, mode, publishedServiceName, journeyAttributes, originText);
-
-    if (legacyJourneyService.productCategory) {
-      service.productCategory = {
-        name: {
-          text: legacyJourneyService.productCategory.name,
-        },
-        shortName: {
-          text: legacyJourneyService.productCategory.shortName,
-        },
-        productCategoryRef: legacyJourneyService.productCategory?.productCategoryRef,
-      };
-    }
-
-    if (legacyJourneyService.journeyNumber) {
-      service.trainNumber = legacyJourneyService.journeyNumber;
-    }
-
-    if (legacyJourneyService.operatorRef) {
-      service.operatorRef = legacyJourneyService.operatorRef;
-    }
-
-    if (legacyJourneyService.destinationStopPlace) {
-      service.destinationStopPointRef = legacyJourneyService.destinationStopPlace.stopPlaceRef;
-      if (legacyJourneyService.destinationStopPlace.stopPlaceName) {
-        service.destinationText = {
-          text: legacyJourneyService.destinationStopPlace.stopPlaceName,
-        };
-      }
-    }
-
-    service.unplanned = legacyJourneyService.isUnplanned ?? undefined;
-    service.cancelled = legacyJourneyService.hasCancellation ?? undefined;
-    service.deviation = legacyJourneyService.hasDeviation ?? undefined;
-
+    
     return service;
   }
 
@@ -439,5 +346,39 @@ export class JourneyService implements OJP_Types.DatedJourneySchema  {
     const url = 'https://opentdatach.github.io/train-formation-view/?number=' + trainNumber + '&operator=' + operatorEVU;
 
     return url;
+  }
+
+  public asLegacyOJP_Schema(): OJP_Types.OJPv1_DatedJourneySchema {
+    const service: OJP_Types.OJPv1_DatedJourneySchema = {
+      conventionalModeOfOperation: this.conventionalModeOfOperation,
+      operatingDayRef: this.operatingDayRef,
+      journeyRef: this.journeyRef,
+      publicCode: this.publicCode,
+      lineRef: this.lineRef,
+      directionRef: this.directionRef,
+      mode: this.mode,
+      productCategory: this.productCategory,
+      publishedLineName: this.publishedServiceName,
+      trainNumber: this.trainNumber,
+      attribute: [], // updated below
+      operatorRef: this.operatorRef,
+      destinationStopPointRef: this.destinationStopPointRef,
+      destinationText: this.destinationText,
+      unplanned: this.unplanned,
+      cancelled: this.cancelled,
+      deviation: this.deviation,
+    };
+
+    service.attribute = [];
+    this.attribute.forEach(attributeSchema => {
+      const attributeOJPv1Schema: OJP_Types.OJPv1_GeneralAttributeSchema = {
+        text: attributeSchema.userText,
+        code: attributeSchema.code,
+        importance: attributeSchema.importance,
+      };
+      service.attribute.push(attributeOJPv1Schema);
+    });
+
+    return service;
   }
 }

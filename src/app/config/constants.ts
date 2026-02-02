@@ -253,3 +253,8 @@ export const MAP_RASTER_LAYERS: RasterLayerType[] = [
 ];
 
 export const TRIP_REQUEST_DEFAULT_NUMBER_OF_RESULTS = 5;
+
+export const EMPTY_HTTPConfig: OJP_Next.HTTPConfig = {
+  url: 'na-URL',
+  authToken: null
+};

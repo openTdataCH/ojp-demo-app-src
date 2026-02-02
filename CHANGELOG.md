@@ -4,6 +4,18 @@ OJP-Demo URL: https://opentdatach.github.io/ojp-demo-app/
 
 ----
 
+02.February 2025
+- TR - patch trips with merged timed legs - [PR #345](https://github.com/openTdataCH/ojp-demo-app-src/pull/345)
+  - adds departure data for intermediary points
+- Migrate TR to use ojp-sdk-next - [PR #337](https://github.com/openTdataCH/ojp-demo-app-src/pull/337)
+  - use TR from `ojp-sdk-next`, extract Trip, Leg + other related models from legacy SDK
+  - removes `ojp-sdk-legacy` dependency
+  - adds `TODOTRIPMIGRATION` note points for OJPv1 left-over features
+  - other improvements
+    - computes / display distance for transfer legs
+    - fix via feature
+    - catch `A__BU` Service attribute
+
 28.January 2025
 - TR shapes provider - adds floors - [PR #343](https://github.com/openTdataCH/ojp-demo-app-src/pull/343)
   - adds mapping file for sloids-floors to improve routing

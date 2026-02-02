@@ -1,9 +1,8 @@
 import { Injectable, EventEmitter } from '@angular/core'
+
 import mapboxgl from 'mapbox-gl';
 
 import { SbbDialog } from '@sbb-esta/angular/dialog';
-
-import OJP_Legacy from '../../config/ojp-legacy';
 
 import { UserTripService } from './user-trip.service';
 import { MapHelpers } from '../../map/helpers/map.helpers'
@@ -13,6 +12,7 @@ import { LanguageService } from './language.service';
 import { TripGeoController } from '../controllers/trip-geo-controller';
 import { MAP_RASTER_LAYERS } from '../../config/constants';
 import { AnyPlace } from '../models/place/place-builder';
+import { Trip } from '../models/trip/trip';
 
 export interface IMapBoundsData {
   bounds: mapboxgl.LngLatBounds
@@ -71,7 +71,7 @@ export class MapService {
     });
   }
 
-  public zoomToTrip(trip: OJP_Legacy.Trip) {
+  public zoomToTrip(trip: Trip) {
     const tripController = new TripGeoController(trip);
 
     const bbox = tripController.computeBBOX();

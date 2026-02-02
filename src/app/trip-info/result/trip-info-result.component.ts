@@ -9,6 +9,7 @@ import { UserTripService } from '../../shared/services/user-trip.service';
 import { DEFAULT_APP_STAGE } from '../../config/constants';
 import { TripInfoResult } from '../../shared/models/trip-info-result';
 import { JourneyService } from '../../shared/models/journey-service';
+import { StopPointHelpers } from '../../shared/models/stop-point-call';
 
 interface PageModel {
   tripInfoResult: TripInfoResult | null
@@ -96,9 +97,9 @@ export class TripInfoResultComponent implements OnInit, AfterViewInit {
           locationText: stopPoint.stopPointName,
         };
 
-        OJPHelpers.updateLocationDataWithTime(stopPointData, stopPoint);
-        stopPointData.platformAssistanceIconPath = OJPHelpers.computePlatformAssistanceIconPath(stopPoint.vehicleAccessType);
-        stopPointData.platformAssistanceTooltip = OJPHelpers.computePlatformAssistanceTooltip(stopPoint.vehicleAccessType);
+        StopPointHelpers.updateLocationDataWithTime(stopPointData, stopPoint);
+        stopPointData.platformAssistanceIconPath = StopPointHelpers.computePlatformAssistanceIconPath(stopPoint.vehicleAccessType);
+        stopPointData.platformAssistanceTooltip = StopPointHelpers.computePlatformAssistanceTooltip(stopPoint.vehicleAccessType);
 
         stopPointsData.push(stopPointData);
       });

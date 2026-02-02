@@ -1,15 +1,12 @@
 import * as OJP_Types from 'ojp-shared-types';
 import * as OJP_Next from 'ojp-sdk-next';
 
-import OJP_Legacy from '../../config/ojp-legacy';
-
 import { OJP_VERSION } from '../../config/constants';
 
-import { AnyTripInfoRequestResponse, StopEventType, StopPointCall } from '../types/_all';
+import { AnyTripInfoRequestResponse, StopEventType } from '../types/_all';
 import { OJPHelpers } from '../../helpers/ojp-helpers';
 import { JourneyService } from './journey-service';
-import { StopPlace } from './place/stop-place';
-import { PlaceBuilder } from './place/place-builder';
+import { StopPointCall } from './stop-point-call';
 
 const stopEventTypes: StopEventType[] = ['arrival', 'departure'];
 
@@ -24,7 +21,7 @@ export class TripInfoResult {
     this.trackSectionsGeoPositions = [];
   }
 
-  public static initWithTripInfoResponse(ojpVersion: OJP_Legacy.OJP_VERSION_Type, response: AnyTripInfoRequestResponse | null): TripInfoResult | null {
+  public static initWithTripInfoResponse(ojpVersion: OJP_Next.OJP_VERSION, response: AnyTripInfoRequestResponse | null): TripInfoResult | null {
     if (response === null || !response.ok) {
       return null;
     }
@@ -50,14 +47,14 @@ export class TripInfoResult {
       return null;
     }
 
-    const mapPlaces = OJPHelpers.parseAnyTripInfoPlaceContext(ojpVersion, response);
+    const mapPlaces = OJPHelpers.parseAnyPlaceContext(ojpVersion, response.value.tripInfoResponseContext);
 
     const calls: StopPointCall[] = [];
     const callsSchema = firstTripInfoResultSchema.previousCall.concat(firstTripInfoResultSchema.onwardCall);
     callsSchema.forEach((callSchema, idx) => {
       const place = mapPlaces[callSchema.stopPointRef] ?? null;
 
-      const stopCall = OJPHelpers.createStopPointCall(callSchema, place);
+      const stopCall = StopPointCall.initWithCallAtStopSchema(callSchema, place);
 
       calls.push(stopCall);
     });

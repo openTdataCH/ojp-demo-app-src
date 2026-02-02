@@ -1,23 +1,30 @@
 import * as GeoJSON from 'geojson';
 
 import * as OJP_Next from 'ojp-sdk-next';
-import OJP_Legacy from '../../config/ojp-legacy';
 
-import { JourneyService } from '../models/journey-service';
 import { TripLegDrawType, TripLegLineType, TripLegPropertiesEnum } from '../types/map-geometry-types';
+
 import { GeoPositionBBOX } from '../models/geo/geoposition-bbox';
 import { MapLegLineTypeColor } from '../../config/map-colors';
 import { OJPHelpers } from 'src/app/helpers/ojp-helpers';
+import { AnyLeg } from '../models/trip/leg-builder';
+import { Trip } from '../models/trip/trip';
+import { TransferLeg } from '../models/trip/leg/transfer-leg';
+import { TimedLeg } from '../models/trip/leg/timed-leg';
+import { AnyPlace } from '../models/place/place-builder';
+import { ContinuousLeg } from '../models/trip/leg/continuous-leg';
+
+type StopCallType = 'From' | 'To' | 'Intermediate';
 
 interface LinePointData {
-  type: OJP_Legacy.StopPointType,
+  type: StopCallType,
   feature: GeoJSON.Feature<GeoJSON.Point>
 }
 
 export class TripGeoController {
-  private trip: OJP_Legacy.Trip;
+  private trip: Trip;
 
-  constructor(trip: OJP_Legacy.Trip) {
+  constructor(trip: Trip) {
     this.trip = trip;
   }
 
@@ -63,16 +70,16 @@ export class TripGeoController {
     }
 
     const firstLeg = this.trip.legs[0];
-    const legLegacyGeoPosition = firstLeg.fromLocation.geoPosition;
-    if (legLegacyGeoPosition) {
-      const geoPosition = new OJP_Next.GeoPosition(legLegacyGeoPosition.longitude, legLegacyGeoPosition.latitude);
-      return geoPosition;
+    const legGeoPosition = firstLeg.fromPlace?.geoPosition ?? null;
+    if (legGeoPosition) {
+      return legGeoPosition;
     }
 
-    const legTrackLegacyGeoPosition = firstLeg.legTrack?.fromGeoPosition() ?? null;
-    if (legTrackLegacyGeoPosition) {
-      const geoPosition = new OJP_Next.GeoPosition(legTrackLegacyGeoPosition.longitude, legTrackLegacyGeoPosition.latitude);
-      return geoPosition;
+    if (firstLeg.legTrack.trackSections.length > 0) {
+      const trackSection = firstLeg.legTrack.trackSections[0];
+      if (trackSection.fromPlace) {
+        return trackSection.fromPlace.geoPosition;
+      }
     }
 
     return null;
@@ -84,16 +91,16 @@ export class TripGeoController {
     }
 
     const lastLeg = this.trip.legs[this.trip.legs.length - 1];
-    const legLegacyGeoPosition = lastLeg.toLocation.geoPosition;
-    if (legLegacyGeoPosition !== null) {
-      const geoPosition = new OJP_Next.GeoPosition(legLegacyGeoPosition.longitude, legLegacyGeoPosition.latitude);
-      return geoPosition;
+    const legGeoPosition = lastLeg.toPlace?.geoPosition;
+    if (legGeoPosition) {
+      return legGeoPosition;
     }
 
-    const legTrackLegacyGeoPosition = lastLeg.legTrack?.toGeoPosition() ?? null;
-    if (legTrackLegacyGeoPosition) {
-      const geoPosition = new OJP_Next.GeoPosition(legTrackLegacyGeoPosition.longitude, legTrackLegacyGeoPosition.latitude);
-      return geoPosition;
+    if (lastLeg.legTrack.trackSections.length > 0) {
+      const trackSection = lastLeg.legTrack.trackSections[lastLeg.legTrack.trackSections.length - 1];
+      if (trackSection.toPlace) {
+        return trackSection.toPlace.geoPosition;
+      }
     }
 
     return null;
@@ -101,10 +108,10 @@ export class TripGeoController {
 }
 
 export class TripLegGeoController {
-  private leg: OJP_Legacy.TripLeg;
+  private leg: AnyLeg;
   private useBeeLine: boolean;
 
-  constructor(leg: OJP_Legacy.TripLeg, useBeeLine = false) {
+  constructor(leg: AnyLeg, useBeeLine = false) {
     this.leg = leg;
 
     this.useBeeLine = useBeeLine;
@@ -133,21 +140,21 @@ export class TripLegGeoController {
           debugger;
         }
 
-        feature.properties['leg.idx'] = this.leg.legID;
-        feature.properties[TripLegPropertiesEnum.LegType] = this.leg.legType;
+        feature.properties['leg.idx'] = this.leg.id;
+        feature.properties[TripLegPropertiesEnum.LegType] = this.leg.type;
       }
     });
 
     return features;
   }
 
-  public static shouldUseBeeline(leg: OJP_Legacy.TripLeg): boolean {
+  public static shouldUseBeeline(leg: AnyLeg): boolean {
     const defaultHasBeeline = (() => {
       if (leg.legTrack === null) {
         return true;
       }
 
-      const trackSectionCoordsNo = leg.legTrack.trackSections.map(el => el.linkProjection?.coordinates.length ?? 0);
+      const trackSectionCoordsNo = leg.legTrack.trackSections.map(el => el.linkProjection?.geoPositions.length ?? 0);
       if (trackSectionCoordsNo.length === 0) {
         return true;
       }
@@ -156,8 +163,8 @@ export class TripLegGeoController {
       return hasNoCoords;
     })();
 
-    if ((leg.legType === 'ContinuousLeg') || (leg.legType === 'TransferLeg')) {
-      const transferLeg = leg as OJP_Legacy.TripContinuousLeg;
+    if ((leg.type === 'ContinuousLeg') || (leg.type === 'TransferLeg')) {
+      const transferLeg = leg as TransferLeg;
       if (transferLeg.pathGuidance === null) {
         return defaultHasBeeline;
       }
@@ -172,11 +179,10 @@ export class TripLegGeoController {
       return hasPathGuidance === false;
     }
 
-    if (leg.legType === 'TimedLeg') {
-      const timedLeg = leg as OJP_Legacy.TripTimedLeg;
+    if (leg.type === 'TimedLeg') {
+      const timedLeg = leg as TimedLeg;
 
-      const service = JourneyService.initWithOJP_LegacyJourneyService(timedLeg.service);
-      const usedDetailedLine = service.hasPrecisePolyline();
+      const usedDetailedLine = timedLeg.service.hasPrecisePolyline();
 
       return !usedDetailedLine;
     }
@@ -222,24 +228,21 @@ export class TripLegGeoController {
   private computeBeelineGeoPositions(): OJP_Next.GeoPosition[] {
     const geoPositions: OJP_Next.GeoPosition[] = [];
 
-    if (this.leg.fromLocation.geoPosition) {
-      const geoPosition = new OJP_Next.GeoPosition(this.leg.fromLocation.geoPosition.longitude, this.leg.fromLocation.geoPosition.latitude);
-      geoPositions.push(geoPosition);
+    if (this.leg.fromPlace?.geoPosition) {
+      geoPositions.push(this.leg.fromPlace?.geoPosition);
     }
 
-    if (this.leg.legType === 'TimedLeg') {
-      const timedLeg = this.leg as OJP_Legacy.TripTimedLeg;
-      timedLeg.intermediateStopPoints.forEach(stopPoint => {
-        if (stopPoint.location.geoPosition) {
-          const geoPosition = new OJP_Next.GeoPosition(stopPoint.location.geoPosition.longitude, stopPoint.location.geoPosition.latitude);
-          geoPositions.push(geoPosition);
+    if (this.leg.type === 'TimedLeg') {
+      const timedLeg = this.leg as TimedLeg;
+      timedLeg.intermediateStopCalls.forEach(stopCall => {
+        if (stopCall.place?.geoPosition) {
+          geoPositions.push(stopCall.place?.geoPosition);
         }
       });
     }
 
-    if (this.leg.toLocation.geoPosition) {
-      const geoPosition = new OJP_Next.GeoPosition(this.leg.toLocation.geoPosition.longitude, this.leg.toLocation.geoPosition.latitude);
-      geoPositions.push(geoPosition);
+    if (this.leg.toPlace?.geoPosition) {
+      geoPositions.push(this.leg.toPlace?.geoPosition);
     }
 
     return geoPositions;
@@ -277,14 +280,13 @@ export class TripLegGeoController {
     return features;
   }
 
-  // TODO - this should be in be in the SDK (add to ojp-sdk-next)
-  private positionAsFeature(position: GeoJSON.Position): GeoJSON.Feature<GeoJSON.Point> {
+  private positionAsFeature(geoPosition: OJP_Next.GeoPosition): GeoJSON.Feature<GeoJSON.Point> {
     const feature: GeoJSON.Feature<GeoJSON.Point> = {
       type: 'Feature',
       properties: {},
       geometry: {
         type: 'Point',
-        coordinates: position,
+        coordinates: geoPosition.asLngLat(),
       }
     };
 
@@ -294,62 +296,66 @@ export class TripLegGeoController {
   private computeLinePointsData(): LinePointData[] {
     const linePointsData: LinePointData[] = [];
 
-    const locations = [this.leg.fromLocation, this.leg.toLocation];
-    locations.forEach(location => {
-      if (this.leg.legType !== 'TimedLeg') {
+    const places: AnyPlace[] = [];
+    if (this.leg.fromPlace) {
+      places.push(this.leg.fromPlace);
+    }
+    if (this.leg.toPlace) {
+      places.push(this.leg.toPlace);
+    }
+    
+    places.forEach(place => {
+      if (this.leg.type !== 'TimedLeg') {
         // Display From/To only for TimedLeg features
         return;
       }
 
-      const locationFeature = location.asGeoJSONFeature();
-      if (!locationFeature?.properties) {
-        return;
-      }
+      const feature = place.asGeoJSONFeature();
 
-      const isFrom = location === this.leg.fromLocation;
-      const stopPointType: OJP_Legacy.StopPointType = isFrom ? 'From' : 'To';
+      const isFrom = place === this.leg.fromPlace;
+      const stopCallType: StopCallType = isFrom ? 'From' : 'To';
 
       linePointsData.push({
-        type: stopPointType,
-        feature: locationFeature
+        type: stopCallType,
+        feature: feature
       });
     });
 
-    if (this.leg.legType === 'TimedLeg') {
-      const timedLeg = this.leg as OJP_Legacy.TripTimedLeg;
+    if (this.leg.type === 'TimedLeg') {
+      const timedLeg = this.leg as TimedLeg;
 
       // Intermediate points
-      timedLeg.intermediateStopPoints.forEach(stopPoint => {
-        const locationFeature = stopPoint.location.asGeoJSONFeature();
-        if (!locationFeature?.properties) {
+      timedLeg.intermediateStopCalls.forEach(stopCall => {
+        const feature = stopCall.place?.asGeoJSONFeature() ?? null;
+        if (!feature) {
           return;
         }
 
         linePointsData.push({
           type: 'Intermediate',
-          feature: locationFeature
+          feature: feature
         });
       });
     }
 
     // Continous / TransferLeg - add gudance endpoints as intermediate points
-    const isContinous = ((this.leg.legType === 'TransferLeg') || (this.leg.legType === 'ContinuousLeg'));
+    const isContinous = ((this.leg.type === 'TransferLeg') || (this.leg.type === 'ContinuousLeg'));
     if (isContinous) {
-      const continuousLeg = this.leg as OJP_Legacy.TripContinuousLeg;
-      const guidanceSections = continuousLeg.pathGuidance?.sections ?? [];
-      guidanceSections.forEach((pathGuidanceSection, idx) => {
-        const lineCoordinates = pathGuidanceSection.trackSection?.linkProjection?.coordinates ?? [];
-        if (lineCoordinates.length === 0) {
+      const continuousLeg = this.leg as ContinuousLeg;
+
+      continuousLeg.pathGuidance.sections.forEach((pathGuidanceSection, idx) => {
+        const lineGeoPositions = pathGuidanceSection.trackSection.linkProjection?.geoPositions ?? [];
+        if (lineGeoPositions.length === 0) {
           return;
         }
 
-        const feature = this.positionAsFeature(lineCoordinates[0].asPosition());
+        const feature = this.positionAsFeature(lineGeoPositions[0]);
         linePointsData.push({
           type: 'Intermediate',
           feature: feature,
         });
 
-        const lastCoord = lineCoordinates[lineCoordinates.length - 1].asPosition();
+        const lastCoord = lineGeoPositions[lineGeoPositions.length - 1];
         const lastFeature = this.positionAsFeature(lastCoord);
         linePointsData.push({
           type: 'Intermediate',
@@ -362,50 +368,54 @@ export class TripLegGeoController {
   }
 
   private computeLegLineGeoJSONFeatures(): GeoJSON.Feature[] {
-    if (this.leg.legType === 'ContinuousLeg' || this.leg.legType === 'TransferLeg') {
-      const continuousLeg = this.leg as OJP_Legacy.TripContinuousLeg;
+    if (this.leg.type === 'ContinuousLeg') {
+      const continuousLeg = this.leg as ContinuousLeg;
       return this.computeContinousLegGeoJSONFeatures(continuousLeg);
     }
 
-    if (this.leg.legType === 'TimedLeg') {
-      const timedLeg = this.leg as OJP_Legacy.TripTimedLeg;
+    if (this.leg.type === 'TimedLeg') {
+      const timedLeg = this.leg as TimedLeg;
       return this.computeTimedLegGeoJSONFeatures(timedLeg);
     }
 
     return [];
   }
 
-  private computeContinousLegGeoJSONFeatures(continuousLeg: OJP_Legacy.TripContinuousLeg): GeoJSON.Feature[] {
+  private computeContinousLegGeoJSONFeatures(continuousLeg: ContinuousLeg): GeoJSON.Feature[] {
     const features: GeoJSON.Feature[] = [];
 
     const lineType: TripLegLineType = (() => {
-      if (continuousLeg.legTransportMode === null) {
-        return 'Guidance';
-      }
+      // TODOTRIPMIGRATION - evaluate per continuousLeg.service.personalMode
+      
+      // if (continuousLeg.legTransportMode === null) {
+      //   return 'Guidance';
+      // }
 
-      const sharedMobilityModes: OJP_Legacy.IndividualTransportMode[] = ['cycle', 'escooter_rental', 'bicycle_rental', 'charging_station'];
-      if (sharedMobilityModes.includes(continuousLeg.legTransportMode)) {
-        return 'Shared Mobility';
-      }
+      // const sharedMobilityModes: IndividualTransportMode[] = ['cycle', 'escooter_rental', 'bicycle_rental', 'charging_station'];
+      // if (sharedMobilityModes.includes(continuousLeg.service.personalMode)) {
+      //   return 'Shared Mobility';
+      // }
 
-      const autoModes: OJP_Legacy.IndividualTransportMode[] = ['car', 'car_sharing', 'self-drive-car', 'taxi', 'others-drive-car', 'car-shuttle-train', 'car-ferry'];
-      if (autoModes.includes(continuousLeg.legTransportMode)) {
-        return 'Self-Drive Car';
-      }
+      // const autoModes: IndividualTransportMode[] = ['car', 'car_sharing', 'self-drive-car', 'taxi', 'others-drive-car', 'car-shuttle-train', 'car-ferry'];
+      // if (autoModes.includes(continuousLeg.legTransportMode)) {
+      //   return 'Self-Drive Car';
+      // }
 
-      return 'Walk';
+      const defaultMode: TripLegLineType = 'Walk';
+
+      return defaultMode;
     })();
 
-    continuousLeg.pathGuidance?.sections.forEach((pathGuidanceSection, guidanceIDx) => {
-      const feature = pathGuidanceSection.trackSection?.linkProjection?.asGeoJSONFeature();
+    continuousLeg.pathGuidance.sections.forEach((pathGuidanceSection, guidanceIDx) => {
+      const feature = pathGuidanceSection.trackSection.linkProjection?.asGeoJSONFeature() ?? null;
       if (!feature?.properties) {
         return;
       }
 
       const drawType: TripLegDrawType = (() => {
-        if (this.leg.legType === 'ContinuousLeg') {
-          const continousLeg = this.leg as OJP_Legacy.TripContinuousLeg;
-          if (continousLeg.legTransportMode !== 'walk') {
+        if (this.leg.type === 'ContinuousLeg') {
+          const continousLeg = this.leg as ContinuousLeg;
+          if (continousLeg.service.personalMode !== 'foot') {
             return 'LegLine';
           }
         }
@@ -416,11 +426,11 @@ export class TripLegGeoController {
       feature.properties[TripLegPropertiesEnum.LineColor] = MapLegLineTypeColor[lineType];
 
       feature.properties['PathGuidanceSection.idx'] = guidanceIDx;
-      feature.properties['PathGuidanceSection.TrackSection.RoadName'] = pathGuidanceSection.trackSection?.roadName ?? '';
-      feature.properties['PathGuidanceSection.TrackSection.Duration'] = pathGuidanceSection.trackSection?.duration ?? '';
-      feature.properties['PathGuidanceSection.TrackSection.Length'] = pathGuidanceSection.trackSection?.length ?? '';
+      feature.properties['PathGuidanceSection.TrackSection.RoadName'] = pathGuidanceSection.roadName ?? '';
+      feature.properties['PathGuidanceSection.TrackSection.Duration'] = pathGuidanceSection.trackSection?.duration.durationText ?? '';
+      feature.properties['PathGuidanceSection.TrackSection.Length'] = pathGuidanceSection.trackSection?.distance?.distanceM ?? '';
       feature.properties['PathGuidanceSection.GuidanceAdvice'] = pathGuidanceSection.guidanceAdvice ?? '';
-      feature.properties['PathGuidanceSection.TurnAction'] = pathGuidanceSection.turnAction ?? '';
+      feature.properties['PathGuidanceSection.TurnAction'] = pathGuidanceSection.turnDescription ?? '';
 
       features.push(feature);
     });
@@ -441,15 +451,14 @@ export class TripLegGeoController {
     return features;
   }
 
-  private computeTimedLegGeoJSONFeatures(timedLeg: OJP_Legacy.TripTimedLeg): GeoJSON.Feature[] {
+  private computeTimedLegGeoJSONFeatures(timedLeg: TimedLeg): GeoJSON.Feature[] {
     const features: GeoJSON.Feature[] = [];
 
-    const service = JourneyService.initWithOJP_LegacyJourneyService(timedLeg.service);
-    const lineType: TripLegLineType = service.computeLegColorType();
+    const lineType: TripLegLineType = timedLeg.service.computeLegColorType();
 
     // beeline is already rendered
     if (this.useBeeLine) {
-      return features;
+      return [];
     }
 
     const trackSections = timedLeg.legTrack?.trackSections ?? [];

@@ -1,9 +1,6 @@
 import * as OJP_Types from 'ojp-shared-types';
 import * as OJP_Next from 'ojp-sdk-next';
 
-// TODO - remove after migration
-import OJP_Legacy from '../../../config/ojp-legacy';
-
 import { BasePlace } from '../place';
 import { AnyPlaceResultSchema } from '../../types/_all';
 
@@ -58,12 +55,5 @@ export class TopographicPlace extends BasePlace {
     const topographicPlace = new TopographicPlace(geoPosition.longitude, geoPosition.latitude, placeName, topographicPlaceCode, topographicPlaceName);
 
     return topographicPlace;
-  }
-
-  public override asOJP_LegacyLocation(): OJP_Legacy.Location {
-    const location = super.asOJP_LegacyLocation();
-    location.locationName = this.placeName;
-
-    return location;
   }
 }

@@ -1,9 +1,6 @@
 import { Component } from '@angular/core';
 
-import OJP_Legacy from '../../../../config/ojp-legacy';
-import * as OJP_Next from 'ojp-sdk-next';
-
-import { REQUESTOR_REF, OJP_VERSION } from '../../../../config/constants';
+import { OJP_VERSION } from '../../../../config/constants';
 
 import { UserTripService } from '../../../../shared/services/user-trip.service';
 import { TripInfoService } from '../../../../trip-info/trip-info.service';

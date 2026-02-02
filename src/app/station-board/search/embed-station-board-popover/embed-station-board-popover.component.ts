@@ -14,7 +14,7 @@ export class EmbedStationBoardPopoverComponent {
   }
 
   public updateEmbedHTML(stopPlace: StopPlace) {
-    const stopRef = stopPlace.stopRef;
+    const stopRef = stopPlace.placeRef.ref;
 
     const embedLinkRelativeURL = document.location.pathname.replace('/board', '/embed/board') + '?stop_id=' +  stopRef;
     const embedURL = document.location.protocol + '//' + document.location.host + embedLinkRelativeURL;

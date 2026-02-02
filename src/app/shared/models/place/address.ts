@@ -1,3 +1,5 @@
+import * as GeoJSON from 'geojson';
+
 import * as OJP_Types from 'ojp-shared-types';
 import * as OJP_Next from 'ojp-sdk-next';
 
@@ -75,18 +77,29 @@ export class Address extends BasePlace {
   public override computeGeoJSON_Properties() {
     const properties = super.computeGeoJSON_Properties();
 
-    properties['address.publicCode'] = this.publicCode ?? '';
-    properties['address.name'] = this.addressName ?? '';
-    properties['address.postCode'] = this.postCode ?? '';
-    properties['address.topographicPlaceName'] = this.topographicPlaceName ?? '';
-    properties['address.topographicPlaceRef'] = this.topographicPlaceRef ?? '';
-    properties['address.street'] = this.street ?? '';
-    properties['address.houseNumber'] = this.houseNumber ?? '';
+    properties['address.publicCode'] = this.publicCode;
+    properties['address.name'] = this.addressName;
+    properties['address.postCode'] = this.postCode;
+    properties['address.topographicPlaceName'] = this.topographicPlaceName;
+    properties['address.topographicPlaceRef'] = this.topographicPlaceRef;
+    properties['address.street'] = this.street;
+    properties['address.houseNumber'] = this.houseNumber;
 
     return properties;
   }
 
   public override computeName() {
     return this.addressName;
+  }
+
+  public override asGeoJSONFeature(): GeoJSON.Feature<GeoJSON.Point> {
+    const feature = super.asGeoJSONFeature();
+    if (feature.properties) {
+      feature.properties['addressCode'] = this.publicCode;
+      feature.properties['addressName'] = this.addressName;
+      feature.properties['topographicPlaceRef'] = this.topographicPlaceRef;
+    }
+    
+    return feature;
   }
 }
