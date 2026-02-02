@@ -68,23 +68,51 @@ export class ContinuousLeg extends Leg {
     return continuousLeg;
   }
 
+  // TODOTRIPMIGRATION
+  // public isDriveCarLeg(): boolean {
+  //   return this.legTransportMode === 'self-drive-car';
+  // } 
   public isDriveCarLeg(): boolean {
     return this.service.personalMode === 'car';
   }
 
+  // TODOTRIPMIGRATION
+  // public isSharedMobility(): boolean {
+  //   if (this.legTransportMode === null) {
+  //     return false;
+  //   }
+
+  //   const sharedMobilityModes: IndividualTransportMode[] = ['cycle', 'bicycle_rental', 'car_sharing', 'escooter_rental'];
+  //   const hasSharedMobilityMode = sharedMobilityModes.indexOf(this.legTransportMode) !== -1;
+
+  //   return hasSharedMobilityMode;
+  // }
   public isSharedMobility() {
+    // TODOTRIPMIGRATION - see Legacy logic above
     return false;
   }
 
+  // TODOTRIPMIGRATION
+  // public isWalking(): boolean {
+  //   return this.legTransportMode === 'walk';
+  // }
   public isWalking(): boolean {
     return this.service.personalMode === 'foot';
   }
 
+  // TODOTRIPMIGRATION
+  // public isTaxi(): boolean {
+  //   return this.legTransportMode === 'taxi' || this.legTransportMode === 'others-drive-car';
+  // }
   public isTaxi(): boolean {
+    // TODOTRIPMIGRATION - see Legacy logic above
     return false;
   }
 
+  // TODOTRIPMIGRATION
+  // if (continuousLeg.legTransportMode === 'car-ferry') {}
   public isWater(): boolean {
+    // TODOTRIPMIGRATION - see Legacy logic above
     return false;
   }
 

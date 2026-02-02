@@ -104,6 +104,15 @@ export class OJPHelpers {
         return 'taxi';
       }
 
+      // TODOTRIPMIGRATION - check car-shuttle-train, car-ferry
+      // 
+      // if (continousLeg.legTransportMode === 'car-shuttle-train') {
+      //   return 'autozug';
+      // }
+
+      // if (continousLeg.legTransportMode === 'car-ferry') {
+      //   return 'ferry';
+      // }
 
       return 'picto-walk';
     }

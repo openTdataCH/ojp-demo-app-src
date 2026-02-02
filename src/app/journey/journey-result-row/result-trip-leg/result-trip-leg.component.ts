@@ -177,6 +177,11 @@ export class ResultTripLegComponent implements OnInit {
         leadingText = timedLeg.service.mode.ptMode;
       }
 
+      // TODOTRIPMIGRATION - check OJP 1
+
+      // if (timedLeg.service.ptMode.isDemandMode) {
+      //   leadingText = 'OnDemand ' + leadingText;
+      // }
 
       let legDurationS = '';
       if (this.legData.leg.duration) {
@@ -204,6 +209,7 @@ export class ResultTripLegComponent implements OnInit {
   }
 
   private computeLegLeadingTextContinousLeg(continuousLeg: ContinuousLeg): string {
+    // TODOTRIPMIGRATION - check real example
     if (continuousLeg.service.personalMode === 'foot') {
       return 'Walk';
     }
@@ -217,11 +223,23 @@ export class ResultTripLegComponent implements OnInit {
     }
 
     if (continuousLeg.isTaxi()) {
+      // TODOTRIPMIGRATION - check limo?
+      // if (continuousLeg.legTransportMode === 'others-drive-car') {
+      //   return 'Limo';
+      // }
       
       return 'Taxi';
     }
 
+    // TODOTRIPMIGRATION - check Autoverladezug
+    // if (continuousLeg.legTransportMode === 'car-shuttle-train') {
+    //   return 'Ride Autoverladezug';
+    // }
 
+    // TODOTRIPMIGRATION - check Autoverladezug
+    // if (continuousLeg.legTransportMode === 'car-ferry') {
+    //   return 'Use Ferry';
+    // }
 
     return 'PLACEHOLDER - NEW MOT?';
   }
@@ -350,6 +368,10 @@ export class ResultTripLegComponent implements OnInit {
       return MapLegLineTypeColor.OnDemand;
     }
 
+    // TODOTRIPMIGRATION - check water
+    // if (leg.legTransportMode === 'car-ferry') {
+    //   return MapLegLineTypeColor.Water;
+    // }
 
     return MapLegLineTypeColor.Walk;
   }
@@ -463,7 +485,14 @@ export class ResultTripLegComponent implements OnInit {
         return [];
       }
 
+      const continousLeg = leg as ContinuousLeg;
+      // TODOTRIPMIGRATION - check booking OJP 1
+      // 
+      // if (continousLeg.serviceBooking === null) {
+      //   return [];
+      // }
 
+      // return continousLeg.serviceBooking.bookingArrangements;
       return [];
     })();
 

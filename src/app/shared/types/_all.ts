@@ -21,6 +21,7 @@ export interface CreateIssueBody {
   projectKey: string
 }
 
+// TODOTRIPMIGRATION - check OJPv1 booking (limo, taxi)
 export interface BookingArrangement {
   agencyCode: string,
   agencyName: string,

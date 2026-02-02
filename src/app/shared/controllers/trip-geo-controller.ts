@@ -385,7 +385,21 @@ export class TripLegGeoController {
     const features: GeoJSON.Feature[] = [];
 
     const lineType: TripLegLineType = (() => {
+      // TODOTRIPMIGRATION - evaluate per continuousLeg.service.personalMode
+      
+      // if (continuousLeg.legTransportMode === null) {
+      //   return 'Guidance';
+      // }
 
+      // const sharedMobilityModes: IndividualTransportMode[] = ['cycle', 'escooter_rental', 'bicycle_rental', 'charging_station'];
+      // if (sharedMobilityModes.includes(continuousLeg.service.personalMode)) {
+      //   return 'Shared Mobility';
+      // }
+
+      // const autoModes: IndividualTransportMode[] = ['car', 'car_sharing', 'self-drive-car', 'taxi', 'others-drive-car', 'car-shuttle-train', 'car-ferry'];
+      // if (autoModes.includes(continuousLeg.legTransportMode)) {
+      //   return 'Self-Drive Car';
+      // }
 
       const defaultMode: TripLegLineType = 'Walk';
 
