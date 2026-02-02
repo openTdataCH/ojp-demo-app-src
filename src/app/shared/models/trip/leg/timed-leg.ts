@@ -73,6 +73,7 @@ export class TimedLeg extends Leg {
 
   public mergeWithAnotherTimedLeg(leg2: TimedLeg): TimedLeg {
     let newLegIntermediatePoints = this.intermediateStopCalls.slice();
+    this.toStopCall.departure = leg2.fromStopCall.departure;
     newLegIntermediatePoints.push(this.toStopCall);
     newLegIntermediatePoints = newLegIntermediatePoints.concat(leg2.intermediateStopCalls.slice());
 
