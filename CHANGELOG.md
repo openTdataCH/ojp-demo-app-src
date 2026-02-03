@@ -4,6 +4,10 @@ OJP-Demo URL: https://opentdatach.github.io/ojp-demo-app/
 
 ----
 
+03.February 2025
+- Updates ojp-js - [PR #347](https://github.com/openTdataCH/ojp-demo-app-src/pull/347)
+  - use `ojp-sdk` SDK package, use `OJP` as SDK name
+
 02.February 2025
 - TR - patch trips with merged timed legs - [PR #345](https://github.com/openTdataCH/ojp-demo-app-src/pull/345)
   - adds departure data for intermediary points
