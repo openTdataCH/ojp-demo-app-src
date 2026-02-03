@@ -7,6 +7,9 @@ OJP-Demo URL: https://opentdatach.github.io/ojp-demo-app/
 03.February 2025
 - Updates ojp-js - [PR #347](https://github.com/openTdataCH/ojp-demo-app-src/pull/347)
   - use `ojp-sdk` SDK package, use `OJP` as SDK name
+- Optimize requests - [PR #348](https://github.com/openTdataCH/ojp-demo-app-src/pull/348)
+  - use only one TR request, simplify logic
+  - correct serialize of the Trip back to XML, fix for https://github.com/openTdataCH/ojp-sdk/issues/352
 
 02.February 2025
 - TR - patch trips with merged timed legs - [PR #345](https://github.com/openTdataCH/ojp-demo-app-src/pull/345)
