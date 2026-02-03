@@ -11,14 +11,13 @@ type PageModel = {
   isTopograhicPlaceMapLayerEnabled: boolean,
   rasterLayers: RasterLayerType[],
   mapSDK_Versions: {
-    ojpNext: string,
+    ojp: string,
     ojpSharedTypes: string,
     ojpAPI: OJP.OJP_VERSION,
   },
   mapChangelogURLs: {
     ojpDemoApp: string,
-    ojpSDK_Legacy: string,
-    ojpSDK_Next: string,
+    ojpSDK: string,
     ojpSDK_SharedTypes: string,
   }
 };
@@ -38,14 +37,13 @@ export class WebFooterComponent implements OnInit {
       isTopograhicPlaceMapLayerEnabled: isTopograhicPlaceMapLayerEnabled,
       rasterLayers: MAP_RASTER_LAYERS,
       mapSDK_Versions: {
-        ojpNext: OJP.SDK_VERSION,
+        ojp: OJP.SDK_VERSION,
         ojpSharedTypes: OJP_Types.VERSION,
         ojpAPI: OJP_VERSION,
       },
       mapChangelogURLs: {
         ojpDemoApp: 'https://github.com/openTdataCH/ojp-demo-app-src/blob/main/CHANGELOG.md',
-        ojpSDK_Legacy: 'https://github.com/openTdataCH/ojp-js/blob/feature/ojp-sdk-legacy/CHANGELOG.md',
-        ojpSDK_Next: 'https://github.com/openTdataCH/ojp-js/blob/main/CHANGELOG.md',
+        ojpSDK: 'https://github.com/openTdataCH/ojp-js/blob/main/CHANGELOG.md',
         ojpSDK_SharedTypes: 'https://github.com/openTdataCH/ojp-shared-types/blob/main/CHANGELOG.md',
       },
     }
