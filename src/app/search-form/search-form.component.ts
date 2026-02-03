@@ -29,7 +29,6 @@ import { AnyPlace } from '../shared/models/place/place-builder';
 import { JourneyPointType, TripRequestBoardingType } from '../shared/types/_all';
 import { TripRequestBuilder } from '../shared/models/trip/trip-request';
 import { Trip } from '../shared/models/trip/trip';
-import { ContinuousLeg } from '../shared/models/trip/leg/continuous-leg';
 
 @Component({
   selector: 'app-search-form',
