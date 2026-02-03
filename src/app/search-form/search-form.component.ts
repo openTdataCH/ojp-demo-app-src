@@ -303,14 +303,11 @@ export class SearchFormComponent implements OnInit {
   }
 
   public async handleTapOnSearch() {
-    // Do 2 TR only for public transport routes
-    const doTwiceTR = (this.userTripService.tripModeType === 'monomodal') && (this.userTripService.tripTransportMode === 'public_transport');
-
     this.userTripService.updateDepartureDateTime(this.computeFormDepartureDate());
 
     const sdk = this.userTripService.createOJP_SDK_Instance(this.languageService.language);
 
-    const includeLegProjectionStep1 = !doTwiceTR;
+    const includeLegProjectionStep1 = true;
     const tripRequestStep1 = TripRequestBuilder.computeTripRequest(this.userTripService, sdk, includeLegProjectionStep1);
 
     if (tripRequestStep1 === null) {
@@ -363,68 +360,6 @@ export class SearchFormComponent implements OnInit {
     // no need for AWAIT, FareResult call is fire and forget
     //    -> it will update the mapFareResult in JourneyResultsComponent component
     this.userTripService.fetchFares(this.languageService.language);
-
-    // build a hash of trips so they can be looked up later, TripId is not consistent
-    const mapTripsRequest1: Record<string, Trip> = {};
-    trips.forEach(trip => {
-      const tripHash = trip.computeTripHash();
-      mapTripsRequest1[tripHash] = trip;
-    });
-
-    // step2 - this time with link projection
-    //        - only for public transport requests
-    if (!doTwiceTR) {
-      return;
-    }
-
-    const includeLegProjectionStep2 = true;
-    const tripRequestStep2 = TripRequestBuilder.computeTripRequest(this.userTripService, sdk, includeLegProjectionStep2);
-    if (tripRequestStep2 === null) {
-      return;
-    }
-
-    // update the legTrack of trips from step1
-    const responseStep2 = await tripRequestStep2.fetchResponse(sdk);
-    this.logResponseTime(tripRequestStep2.requestInfo, 'DEBUG TR - 2nd request');
-
-    const responseStep2Trips = TripRequestBuilder.parseTrips(this.sanitizer, responseStep2);
-
-    responseStep2Trips.forEach(trip2 => {
-      const trip2Hash = trip2.computeTripHash();
-      const trip1 = mapTripsRequest1[trip2Hash] ?? null;
-      if (trip1) {
-        trip1.distance = trip2.distance;
-        
-        trip1.legs.forEach((leg, idx) => {
-          if (trip2.legs.length === trip1.legs.length) {
-            trip1.legs[idx].distance = trip2.legs[idx].distance;
-          }
-
-          if (leg.legTrack) {
-            const leg2 = trip2.legs[idx];
-            if (leg2.legTrack) {
-              leg.legTrack = leg2.legTrack;
-            }
-          }
-
-          const isContinuousLeg = (leg.type === 'ContinuousLeg') || (leg.type === 'TransferLeg');
-          if (isContinuousLeg) {
-            const trip1ContinuousLeg = leg as ContinuousLeg;
-            const trip2ContinuousLeg = trip2.legs[idx] as ContinuousLeg;
-            if (trip1ContinuousLeg.pathGuidance && trip2ContinuousLeg.pathGuidance) {
-              trip1ContinuousLeg.pathGuidance = trip2ContinuousLeg.pathGuidance;
-            }
-          }
-        });
-      }
-    });
-
-    // update the requests / response XML only if we have same trips (same number)
-    if (responseStep2Trips.length === trips.length) {
-      this.userTripService.tripRequestFinished.emit(tripRequestStep2.requestInfo);
-    }
-
-    this.userTripService.updateTrips(trips);
   }
 
   private logResponseTime(requestInfo: OJP.RequestInfo, messagePrefix: string) {
