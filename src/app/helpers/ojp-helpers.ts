@@ -1,6 +1,6 @@
 import { DomSanitizer } from '@angular/platform-browser';
 
-import * as OJP_Next from 'ojp-sdk-next';
+import * as OJP from 'ojp-sdk';
 import * as OJP_Types from 'ojp-shared-types';
 
 import { APP_STAGE, DEBUG_LEVEL, DEFAULT_APP_STAGE } from '../config/constants';
@@ -161,7 +161,7 @@ export class OJPHelpers {
     return distanceMeters + 'm';
   }
 
-  public static parseAnyPlaceContext(version: OJP_Next.OJP_VERSION, responseContextSchema: AnyResponseContextSchema | undefined): Record<string, StopPlace> {
+  public static parseAnyPlaceContext(version: OJP.OJP_VERSION, responseContextSchema: AnyResponseContextSchema | undefined): Record<string, StopPlace> {
     if (responseContextSchema === undefined) {
       return {};
     }
@@ -195,7 +195,7 @@ export class OJPHelpers {
     return mapPlaces;
   }
 
-  public static parseAnySituationsContext(sanitizer: DomSanitizer, version: OJP_Next.OJP_VERSION, responseContextSchema: AnyResponseContextSchema | undefined): Record<string, SituationContent[]> {
+  public static parseAnySituationsContext(sanitizer: DomSanitizer, version: OJP.OJP_VERSION, responseContextSchema: AnyResponseContextSchema | undefined): Record<string, SituationContent[]> {
     if (responseContextSchema === undefined) {
       return {};
     }
@@ -216,7 +216,7 @@ export class OJPHelpers {
     return mapSituations;
   }
 
-  private static mapAnyPlaceResults(ojpVersion: OJP_Next.OJP_VERSION, placeResults: AnyPlaceResultSchema[]) {
+  private static mapAnyPlaceResults(ojpVersion: OJP.OJP_VERSION, placeResults: AnyPlaceResultSchema[]) {
     const places: StopPlace[] = [];
     placeResults.forEach(placeResult => {
       const place = PlaceBuilder.initWithPlaceResultSchema(ojpVersion, placeResult);
@@ -233,18 +233,18 @@ export class OJPHelpers {
     return mapPlaces;
   }
 
-  public static parseAnyPlaceResult(version: OJP_Next.OJP_VERSION, response: AnyLocationInformationRequestResponse): AnyPlaceResultSchema[] {
+  public static parseAnyPlaceResult(version: OJP.OJP_VERSION, response: AnyLocationInformationRequestResponse): AnyPlaceResultSchema[] {
     const isOJPv2 = version === '2.0';
 
     let placeResults: AnyPlaceResultSchema[] = [];
     
     if (isOJPv2) {
-      const responseOJPv2 = response as OJP_Next.LocationInformationRequestResponse;
+      const responseOJPv2 = response as OJP.LocationInformationRequestResponse;
       if (responseOJPv2.ok) {
         placeResults = placeResults.concat(responseOJPv2.value.placeResult);
       }
     } else {
-      const responseOJPv1 = response as OJP_Next.OJPv1_LocationInformationRequestResponse;
+      const responseOJPv1 = response as OJP.OJPv1_LocationInformationRequestResponse;
       if (responseOJPv1.ok) {
         placeResults = placeResults.concat(responseOJPv1.value.location);
       }

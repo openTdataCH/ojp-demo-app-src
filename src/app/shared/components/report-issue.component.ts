@@ -1,7 +1,7 @@
 import { AfterViewInit, Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 
-import * as OJP_Next from 'ojp-sdk-next';
+import * as OJP from 'ojp-sdk';
 
 import { CreateIssueBody } from '../types/_all';
 import { HTTP_Service } from '../services/http.service';
@@ -23,7 +23,7 @@ interface PageModel {
   templateUrl: './report-issue.component.html',
 })
 export class ReportIssueComponent implements OnInit, AfterViewInit {
-  public requestInfo: OJP_Next.RequestInfo | null;
+  public requestInfo: OJP.RequestInfo | null;
   public model: PageModel;
 
   public form: FormGroup;
@@ -129,7 +129,7 @@ export class ReportIssueComponent implements OnInit, AfterViewInit {
     this.metadataRows = [
       'URL: ' + requestURL,
       'OJP version: ' + OJP_VERSION,
-      'ojp-sdk-next version: ' + OJP_Next.SDK_VERSION,
+      'ojp-sdk version: ' + OJP.SDK_VERSION,
       'viewport-resolution: ' + viewportResolution,
       'screen-resolution: ' + screenResolution,
       'user-agent:' + ua,

@@ -1,7 +1,7 @@
 import { Component, EventEmitter, Output } from '@angular/core';
 
 
-import * as OJP_Next from 'ojp-sdk-next';
+import * as OJP from 'ojp-sdk';
 
 import { UserTripService } from 'src/app/shared/services/user-trip.service';
 import { LanguageService } from '../../../shared/services/language.service';
@@ -16,7 +16,7 @@ export class CustomTripInfoXMLPopoverComponent {
 
   public isRunningRequest: boolean
 
-  @Output() customRequestSaved = new EventEmitter<OJP_Next.RequestInfo>()
+  @Output() customRequestSaved = new EventEmitter<OJP.RequestInfo>()
   @Output() customResponseSaved = new EventEmitter<string>()
 
   constructor(private userTripService: UserTripService, private languageService: LanguageService) {

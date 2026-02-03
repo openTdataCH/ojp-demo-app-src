@@ -2,7 +2,7 @@ import { EventEmitter, Injectable } from '@angular/core'
 import { BehaviorSubject, Observable } from 'rxjs';
 
 import * as OJP_Types from 'ojp-shared-types';
-import * as OJP_Next from 'ojp-sdk-next';
+import * as OJP from 'ojp-sdk';
 
 import { APP_CONFIG } from '../../config/app-config';
 import { APP_STAGE, DEFAULT_APP_STAGE, REQUESTOR_REF, TRIP_REQUEST_DEFAULT_NUMBER_OF_RESULTS, OJP_VERSION, EMPTY_HTTPConfig } from '../../config/constants';
@@ -66,7 +66,7 @@ export class UserTripService {
   public tripFaresUpdated = new EventEmitter<OJP_Types.FareResultSchema[]>();
   
   public mapActiveTripSelected = new EventEmitter<TripData | null>();
-  public tripRequestFinished = new EventEmitter<OJP_Next.RequestInfo>();
+  public tripRequestFinished = new EventEmitter<OJP.RequestInfo>();
 
   public searchParamsReset = new EventEmitter<void>();
 
@@ -110,7 +110,7 @@ export class UserTripService {
     this.sbbURL = null;
   }
 
-  public async initDefaults(language: OJP_Next.Language): Promise<void> {
+  public async initDefaults(language: OJP.Language): Promise<void> {
     const appStage = OJPHelpers.computeAppStage();
 
     setTimeout(() => {
@@ -304,7 +304,7 @@ export class UserTripService {
     return place;
   }
 
-  public async refetchEndpointsByName(language: OJP_Next.Language) {
+  public async refetchEndpointsByName(language: OJP.Language) {
     const ojpSDK_Next = this.createOJP_SDK_Instance(language);
 
     const endpointTypes: JourneyPointType[] = ['From', 'To'];
@@ -506,7 +506,7 @@ export class UserTripService {
     const now = new Date();
     const deltaNowMinutes = Math.abs((now.getTime() - this.departureDate.getTime()) / 1000 / 60);
     if (deltaNowMinutes > 5) {
-      const dateTimeS = OJP_Next.DateHelpers.formatDate(this.departureDate);
+      const dateTimeS = OJP.DateHelpers.formatDate(this.departureDate);
       queryParams.append('trip_datetime', dateTimeS.substring(0, 16));
     }
 
@@ -682,7 +682,7 @@ export class UserTripService {
     return tripDateTime;
   }
 
-  public getStageConfig(forStage: APP_STAGE = this.currentAppStage): OJP_Next.HTTPConfig {
+  public getStageConfig(forStage: APP_STAGE = this.currentAppStage): OJP.HTTPConfig {
     const stageConfig = APP_CONFIG.stages[forStage] ?? null;
 
     if (stageConfig === null) {
@@ -783,7 +783,7 @@ export class UserTripService {
     this.updateURLs();
   }
 
-  public async fetchFares(language: OJP_Next.Language) {
+  public async fetchFares(language: OJP.Language) {
     if (this.currentTrips.length === 0) {
       return;
     }
@@ -798,9 +798,9 @@ export class UserTripService {
     this.updateFares(fareResults);
   }
 
-  public async fetchFaresForTrips(language: OJP_Next.Language, trips: Trip[]): Promise<OJP_Types.FareResultSchema[]> {
+  public async fetchFaresForTrips(language: OJP.Language, trips: Trip[]): Promise<OJP_Types.FareResultSchema[]> {
     const fareHttpConfig = this.getStageConfig('NOVA-INT');
-    const ojpSDK_Next = OJP_Next.SDK.v1(REQUESTOR_REF, fareHttpConfig, language);
+    const ojpSDK_Next = OJP.SDK.v1(REQUESTOR_REF, fareHttpConfig, language);
     
     const ojpV1Trips = trips.map(trip => trip.asLegacyOJP_Schema());
     const fareRequest = ojpSDK_Next.requests.FareRequest.initWithOJPv1Trips(ojpV1Trips);
@@ -825,7 +825,7 @@ export class UserTripService {
     return this.tripTransportMode === 'public_transport';
   }
 
-  public createOJP_SDK_Instance(language: OJP_Next.Language, appStage: APP_STAGE = this.currentAppStage): OJP_Next.AnySDK {
+  public createOJP_SDK_Instance(language: OJP.Language, appStage: APP_STAGE = this.currentAppStage): OJP.AnySDK {
     const isOJPv2 = OJP_VERSION === '2.0';
 
     const stageConfig = this.getStageConfig(appStage);
@@ -835,10 +835,10 @@ export class UserTripService {
     }
 
     if (isOJPv2) {
-      const sdk = OJP_Next.SDK.create(REQUESTOR_REF, stageConfig, language);
+      const sdk = OJP.SDK.create(REQUESTOR_REF, stageConfig, language);
       return sdk;
     } else {
-      const sdk = OJP_Next.SDK.v1(REQUESTOR_REF, stageConfig, language);
+      const sdk = OJP.SDK.v1(REQUESTOR_REF, stageConfig, language);
       return sdk;
     }
   }

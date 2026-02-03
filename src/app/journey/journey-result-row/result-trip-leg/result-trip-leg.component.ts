@@ -6,7 +6,7 @@ import mapboxgl from 'mapbox-gl';
 import { SbbDialog } from "@sbb-esta/angular/dialog";
 
 import * as OJP_Types from 'ojp-shared-types';
-import * as OJP_Next from 'ojp-sdk-next';
+import * as OJP from 'ojp-sdk';
 
 import { DEBUG_LEVEL, FLAG_USE_2nd_SHAPE_PROVIDER, OJP_VERSION } from '../../../config/constants';
 
@@ -102,7 +102,7 @@ interface LegInfoDataModel {
 })
 export class ResultTripLegComponent implements OnInit {
   @Input() legData: TripLegData | undefined;
-  @Input() trrRequestInfo: OJP_Next.RequestInfo | undefined;
+  @Input() trrRequestInfo: OJP.RequestInfo | undefined;
 
   @Output() legReloadRequest = new EventEmitter<void>();
   @Output() legMapRedrawRequest = new EventEmitter<void>();

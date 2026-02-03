@@ -1,7 +1,7 @@
 import * as GeoJSON from 'geojson';
 
 import * as OJP_Types from 'ojp-shared-types';
-import * as OJP_Next from 'ojp-sdk-next';
+import * as OJP from 'ojp-sdk';
 
 import { BasePlace } from '../place';
 import { AnyPlaceResultSchema } from '../../types/_all';
@@ -43,7 +43,7 @@ export class Poi extends BasePlace {
     this.topographicPlaceRef = null;
   }
 
-  public static initWithPlaceResultSchema(version: OJP_Next.OJP_VERSION, placeResultSchema: AnyPlaceResultSchema): Poi | null {
+  public static initWithPlaceResultSchema(version: OJP.OJP_VERSION, placeResultSchema: AnyPlaceResultSchema): Poi | null {
     const isOJPv2 = version === '2.0';
 
     const poiContainer = (() => {
@@ -72,7 +72,7 @@ export class Poi extends BasePlace {
         return (placeResultSchema as OJP_Types.OJPv1_LocationResultSchema).location.geoPosition;
       }
     })();
-    const geoPosition = new OJP_Next.GeoPosition(geoPositioSchema);
+    const geoPosition = new OJP.GeoPosition(geoPositioSchema);
     if (!geoPosition.isValid()) {
       return null;
     }
@@ -174,7 +174,7 @@ export class Poi extends BasePlace {
       const poiAdditionalInformationItems = (poiContainer as OJP_Types.PointOfInterestSchema).pOIAdditionalInformation?.pOIAdditionalInformation ?? [];
       poiAdditionalInformationItems.forEach(item => {
         // Use same mechanism as the XML parser to transform the tag names (i.e. snake_case to camelCase) 
-        const newKey = OJP_Next.XmlSerializer.transformTagName(item.key);
+        const newKey = OJP.XmlSerializer.transformTagName(item.key);
         poi.properties[newKey] = item.value;
       });
 

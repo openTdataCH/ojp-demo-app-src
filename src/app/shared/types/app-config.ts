@@ -1,5 +1,5 @@
-import * as OJP_Next from 'ojp-sdk-next';
+import * as OJP from 'ojp-sdk';
 
 export interface AppConfig {
-    stages: Record<string, OJP_Next.HTTPConfig>,
+    stages: Record<string, OJP.HTTPConfig>,
 };

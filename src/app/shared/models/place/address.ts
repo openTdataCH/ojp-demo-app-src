@@ -1,7 +1,7 @@
 import * as GeoJSON from 'geojson';
 
 import * as OJP_Types from 'ojp-shared-types';
-import * as OJP_Next from 'ojp-sdk-next';
+import * as OJP from 'ojp-sdk';
 
 import { BasePlace } from '../place';
 import { AnyPlaceResultSchema } from '../../types/_all';
@@ -27,7 +27,7 @@ export class Address extends BasePlace {
     this.houseNumber = null;
   }
 
-  public static initWithPlaceResultSchema(version: OJP_Next.OJP_VERSION, placeResultSchema: AnyPlaceResultSchema): Address | null {
+  public static initWithPlaceResultSchema(version: OJP.OJP_VERSION, placeResultSchema: AnyPlaceResultSchema): Address | null {
     const isOJPv2 = version === '2.0';
 
     const addressContainer = (() => {
@@ -48,7 +48,7 @@ export class Address extends BasePlace {
         return (placeResultSchema as OJP_Types.OJPv1_LocationResultSchema).location.geoPosition;
       }
     })();
-    const geoPosition = new OJP_Next.GeoPosition(geoPositioSchema);
+    const geoPosition = new OJP.GeoPosition(geoPositioSchema);
     if (!geoPosition.isValid()) {
       return null;
     }

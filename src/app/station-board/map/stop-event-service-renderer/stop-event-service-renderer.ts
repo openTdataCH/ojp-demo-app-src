@@ -1,7 +1,7 @@
 import * as GeoJSON from 'geojson'
 import mapboxgl from "mapbox-gl";
 
-import * as OJP_Next from 'ojp-sdk-next';
+import * as OJP from 'ojp-sdk';
 
 import serviceTrackLineLayerJSON from './map-layers-def/service-track-line.json'
 import serviceTrackStopLayerJSON from './map-layers-def/service-track-stop.json'
@@ -45,12 +45,12 @@ export class StopEventServiceRenderer {
 
     public drawStopEvent(stopEvent: StopEventResult) {
         const convertStopPointsToGeoPosition = (stopPoints: StopPointCall[]) => {
-            const geoPositions: OJP_Next.GeoPosition[] = [];
+            const geoPositions: OJP.GeoPosition[] = [];
             
             stopPoints.forEach(el => {
                 const geoPosition = el.place?.geoPosition ?? null;
                 if (geoPosition) {
-                    geoPositions.push(new OJP_Next.GeoPosition(geoPosition.longitude, geoPosition.latitude));
+                    geoPositions.push(new OJP.GeoPosition(geoPosition.longitude, geoPosition.latitude));
                 }
             });
 
@@ -66,7 +66,7 @@ export class StopEventServiceRenderer {
 
     public drawTripInfoResult(tripResult: TripInfoResult) {
         const nextStopPositions = (() => {
-            const geoPositions: OJP_Next.GeoPosition[] = [];
+            const geoPositions: OJP.GeoPosition[] = [];
             tripResult.calls.forEach(el => {
                 if (el.place) {
                     geoPositions.push(el.place.geoPosition);
@@ -76,7 +76,7 @@ export class StopEventServiceRenderer {
             return geoPositions;
         })();
 
-        const detailedRouteCoords: OJP_Next.GeoPosition[] = (() => {
+        const detailedRouteCoords: OJP.GeoPosition[] = (() => {
             if (tripResult.trackSectionsGeoPositions.length === 0) {
                 return [];
             }
@@ -91,7 +91,7 @@ export class StopEventServiceRenderer {
         this.drawStopPositions([], nextStopPositions, null, detailedRouteCoords);
     }
     
-    private drawStopPositions(prevStopPositions: OJP_Next.GeoPosition[], nextStopPositions: OJP_Next.GeoPosition[], currentGeoPosition: OJP_Next.GeoPosition | null, detailedRouteCoords: OJP_Next.GeoPosition[]) {
+    private drawStopPositions(prevStopPositions: OJP.GeoPosition[], nextStopPositions: OJP.GeoPosition[], currentGeoPosition: OJP.GeoPosition | null, detailedRouteCoords: OJP.GeoPosition[]) {
         this.geojsonFeatures = [];
         const hasDetailedRoute = detailedRouteCoords.length > 0;
 

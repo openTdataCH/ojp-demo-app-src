@@ -1,4 +1,4 @@
-import * as OJP_Next from 'ojp-sdk-next';
+import * as OJP from 'ojp-sdk';
 import * as OJP_Types from 'ojp-shared-types';
 
 import { DEBUG_LEVEL } from '../../config/constants';
@@ -376,11 +376,11 @@ export class StopPointCall {
 
       const timetableDateSrc = sourceStopEvent?.timetabledTime ?? null;
       const timetableDate = timetableDateSrc ? new Date(Date.parse(timetableDateSrc)) : null;
-      const timetableDateF = timetableDate ? OJP_Next.DateHelpers.formatTimeHHMM(timetableDate) : '';
+      const timetableDateF = timetableDate ? OJP.DateHelpers.formatTimeHHMM(timetableDate) : '';
 
       const realtimeDateSrc = sourceStopEvent?.estimatedTime ?? null;
       const realtimeDate = realtimeDateSrc ? new Date(Date.parse(realtimeDateSrc)) : null;
-      const realtimeDateF = realtimeDate ? OJP_Next.DateHelpers.formatTimeHHMM(realtimeDate) : '';
+      const realtimeDateF = realtimeDate ? OJP.DateHelpers.formatTimeHHMM(realtimeDate) : '';
 
       if (isArrival) {
         stopCall.arrival.timetable = timetableDate;

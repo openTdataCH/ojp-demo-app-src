@@ -1,7 +1,7 @@
 import { Component, EventEmitter, Output } from '@angular/core';
 import { UserTripService } from 'src/app/shared/services/user-trip.service';
 
-import * as OJP_Next from 'ojp-sdk-next';
+import * as OJP from 'ojp-sdk';
 
 import { OJP_VERSION } from '../../../config/constants';
 import { LanguageService } from '../../../shared/services/language.service';
@@ -29,7 +29,7 @@ export class CustomStopEventXMLPopoverComponent {
   public async parseCustomRequestXML() {
     this.isRunningRequest = true;
     const isOJPv2 = OJP_VERSION === '2.0';
-    const xmlConfig = isOJPv2 ? OJP_Next.DefaultXML_Config : OJP_Next.XML_BuilderConfigOJPv1;
+    const xmlConfig = isOJPv2 ? OJP.DefaultXML_Config : OJP.XML_BuilderConfigOJPv1;
 
     const sdk = this.userTripService.createOJP_SDK_Instance(this.languageService.language);
     const request = sdk.requests.StopEventRequest.initWithRequestMock(this.customRequestXMLs);

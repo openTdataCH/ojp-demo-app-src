@@ -1,18 +1,18 @@
-import * as OJP_Next from 'ojp-sdk-next';
+import * as OJP from 'ojp-sdk';
 
 import * as GeoJSON from 'geojson';
 
 export class GeoPositionBBOX {
-  public southWest: OJP_Next.GeoPosition;
-  public northEast: OJP_Next.GeoPosition;
-  public center: OJP_Next.GeoPosition;
+  public southWest: OJP.GeoPosition;
+  public northEast: OJP.GeoPosition;
+  public center: OJP.GeoPosition;
 
   public minLongitude: number;
   public minLatitude: number;
   public maxLongitude: number;
   public maxLatitude: number;
 
-  constructor(geoPositions: OJP_Next.GeoPosition | OJP_Next.GeoPosition[]) {
+  constructor(geoPositions: OJP.GeoPosition | OJP.GeoPosition[]) {
     if (!Array.isArray(geoPositions)) {
       geoPositions = [geoPositions];
     }
@@ -23,22 +23,22 @@ export class GeoPositionBBOX {
     this.maxLongitude = Math.max.apply(null, geoPositions.map(gp => gp.longitude));
     this.maxLatitude = Math.max.apply(null, geoPositions.map(gp => gp.latitude));
 
-    this.southWest = new OJP_Next.GeoPosition(this.minLongitude, this.minLatitude);
-    this.northEast = new OJP_Next.GeoPosition(this.maxLongitude, this.maxLatitude);
+    this.southWest = new OJP.GeoPosition(this.minLongitude, this.minLatitude);
+    this.northEast = new OJP.GeoPosition(this.maxLongitude, this.maxLatitude);
 
     const centerX = (this.southWest.longitude + this.northEast.longitude) / 2;
     const centerY = (this.southWest.latitude + this.northEast.latitude) / 2;
-    this.center = new OJP_Next.GeoPosition(centerX, centerY);
+    this.center = new OJP.GeoPosition(centerX, centerY);
   }
 
-  public static initFromGeoPosition(geoPosition: OJP_Next.GeoPosition, width_x_meters: number, width_y_meters: number): GeoPositionBBOX {
+  public static initFromGeoPosition(geoPosition: OJP.GeoPosition, width_x_meters: number, width_y_meters: number): GeoPositionBBOX {
     // 7612m for 0.1deg long - for Switzerland, latitude 46.8
     // 11119m for 0.1deg lat
     const spanLongitude = width_x_meters * 0.1 / 7612;
     const spanLatitude = width_y_meters * 0.1 / 11119;
 
-    const southWest = new OJP_Next.GeoPosition(geoPosition.longitude - spanLongitude / 2, geoPosition.latitude - spanLatitude / 2);
-    const northEast = new OJP_Next.GeoPosition(geoPosition.longitude + spanLongitude / 2, geoPosition.latitude + spanLatitude / 2);
+    const southWest = new OJP.GeoPosition(geoPosition.longitude - spanLongitude / 2, geoPosition.latitude - spanLatitude / 2);
+    const northEast = new OJP.GeoPosition(geoPosition.longitude + spanLongitude / 2, geoPosition.latitude + spanLatitude / 2);
 
     const bbox = new GeoPositionBBOX([southWest, northEast]);
     return bbox;
@@ -50,16 +50,16 @@ export class GeoPositionBBOX {
     features.forEach(feature => {
       const featureBBOX = feature.bbox ?? null;
       if (featureBBOX) {
-        const bboxSW = new OJP_Next.GeoPosition(featureBBOX[0], featureBBOX[1])
+        const bboxSW = new OJP.GeoPosition(featureBBOX[0], featureBBOX[1])
         bbox.extend(bboxSW);
 
-        const bboxNE = new OJP_Next.GeoPosition(featureBBOX[2], featureBBOX[3])
+        const bboxNE = new OJP.GeoPosition(featureBBOX[2], featureBBOX[3])
         bbox.extend(bboxNE);
       } else {
         if (feature.geometry.type === 'LineString') {
           const points = feature.geometry as GeoJSON.LineString;
           points.coordinates.forEach(pointCoords => {
-            const geoPosition = new OJP_Next.GeoPosition(pointCoords[0], pointCoords[1]);
+            const geoPosition = new OJP.GeoPosition(pointCoords[0], pointCoords[1]);
             bbox.extend(geoPosition);
           });
         }
@@ -69,7 +69,7 @@ export class GeoPositionBBOX {
     return bbox;
   }
 
-  extend(geoPositions: OJP_Next.GeoPosition | OJP_Next.GeoPosition[]) {
+  extend(geoPositions: OJP.GeoPosition | OJP.GeoPosition[]) {
     if (!Array.isArray(geoPositions)) {
       geoPositions = [geoPositions];
     }
@@ -80,13 +80,13 @@ export class GeoPositionBBOX {
       const northEastLongitude = Math.max(this.northEast.longitude, geoPosition.longitude);
       const northEastLatitude = Math.max(this.northEast.latitude, geoPosition.latitude);
 
-      this.southWest = new OJP_Next.GeoPosition(southWestLongitude, southWestLatitude);
-      this.northEast = new OJP_Next.GeoPosition(northEastLongitude, northEastLatitude);
+      this.southWest = new OJP.GeoPosition(southWestLongitude, southWestLatitude);
+      this.northEast = new OJP.GeoPosition(northEastLongitude, northEastLatitude);
     });
 
     const centerX = (this.southWest.longitude + this.northEast.longitude) / 2;
     const centerY = (this.southWest.latitude + this.northEast.latitude) / 2;
-    this.center = new OJP_Next.GeoPosition(centerX, centerY);
+    this.center = new OJP.GeoPosition(centerX, centerY);
 
     this.minLongitude = this.southWest.longitude;
     this.minLatitude = this.southWest.latitude;
@@ -113,7 +113,7 @@ export class GeoPositionBBOX {
     return true;
   }
 
-  containsGeoPosition(geoPosition: OJP_Next.GeoPosition): boolean {
+  containsGeoPosition(geoPosition: OJP.GeoPosition): boolean {
     if (geoPosition.longitude < this.southWest.longitude) {
       return false
     }
@@ -134,8 +134,8 @@ export class GeoPositionBBOX {
   }
 
   public computeWidth(): number {
-    const northWest = new OJP_Next.GeoPosition(this.southWest.longitude, this.northEast.latitude);
-    const southEast = new OJP_Next.GeoPosition(this.northEast.longitude, this.southWest.latitude);
+    const northWest = new OJP.GeoPosition(this.southWest.longitude, this.northEast.latitude);
+    const southEast = new OJP.GeoPosition(this.northEast.longitude, this.southWest.latitude);
 
     const distLongitude1 = southEast.distanceFrom(this.southWest);
     const distLongitude2 = this.northEast.distanceFrom(northWest);
@@ -145,8 +145,8 @@ export class GeoPositionBBOX {
   }
 
   public computeHeight(): number {
-    const northWest = new OJP_Next.GeoPosition(this.southWest.longitude, this.northEast.latitude);
-    const southEast = new OJP_Next.GeoPosition(this.northEast.longitude, this.southWest.latitude);
+    const northWest = new OJP.GeoPosition(this.southWest.longitude, this.northEast.latitude);
+    const southEast = new OJP.GeoPosition(this.northEast.longitude, this.southWest.latitude);
 
     const distLatitude1 = southEast.distanceFrom(this.northEast);
     const distLatitude2 = this.southWest.distanceFrom(northWest);
@@ -157,9 +157,9 @@ export class GeoPositionBBOX {
 
   public asPolygon(): GeoJSON.Polygon {
     const bboxSW = this.southWest;
-    const bboxNW = new OJP_Next.GeoPosition(this.southWest.longitude, this.northEast.latitude);
+    const bboxNW = new OJP.GeoPosition(this.southWest.longitude, this.northEast.latitude);
     const bboxNE = this.northEast;
-    const bboxSE = new OJP_Next.GeoPosition(this.northEast.longitude, this.southWest.latitude);
+    const bboxSE = new OJP.GeoPosition(this.northEast.longitude, this.southWest.latitude);
     
     const coords: GeoJSON.Position[] = [
       bboxSW.asLngLat(),

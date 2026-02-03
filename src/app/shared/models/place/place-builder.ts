@@ -1,4 +1,4 @@
-import * as OJP_Next from 'ojp-sdk-next';
+import * as OJP from 'ojp-sdk';
 
 import { Address } from './address';
 import { StopPlace } from './stop-place';
@@ -10,7 +10,7 @@ import { TopographicPlace } from './topographic-place';
 export type AnyPlace = Address | PlaceLocation | Poi | StopPlace | TopographicPlace;
 
 export class PlaceBuilder {
-  public static initWithPlaceResultSchema(version: OJP_Next.OJP_VERSION, placeResultSchema: AnyPlaceResultSchema): AnyPlace | null {
+  public static initWithPlaceResultSchema(version: OJP.OJP_VERSION, placeResultSchema: AnyPlaceResultSchema): AnyPlace | null {
     let placeStopPlace: StopPlace | null = null;
     try {
       placeStopPlace = StopPlace.initWithPlaceResultSchema(version, placeResultSchema);

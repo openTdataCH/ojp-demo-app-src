@@ -1,4 +1,4 @@
-import * as OJP_Next from 'ojp-sdk-next';
+import * as OJP from 'ojp-sdk';
 
 import * as GeoJSON from 'geojson'
 import mapboxgl from "mapbox-gl";
@@ -243,7 +243,7 @@ export class MapHelpers {
     }, 500);
   }
 
-  public static computeGeoPositionsDistance(positions: OJP_Next.GeoPosition[]): number | null {
+  public static computeGeoPositionsDistance(positions: OJP.GeoPosition[]): number | null {
     if (positions.length < 2) {
       return null;
     }
