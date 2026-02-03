@@ -4,7 +4,7 @@ import { SbbExpansionPanel } from '@sbb-esta/angular/accordion';
 import { SbbDialog } from '@sbb-esta/angular/dialog';
 import { SbbNotificationToast } from '@sbb-esta/angular/notification-toast';
 
-import * as OJP_Next from 'ojp-sdk-next';
+import * as OJP from 'ojp-sdk';
 
 import { APP_STAGE, APP_STAGEs, DEFAULT_APP_STAGE, OJP_VERSION } from '../../config/constants';
 
@@ -40,7 +40,7 @@ export class TripInfoSearchComponent implements OnInit {
 
   public model: PagelModel;
 
-  public currentRequestInfo: OJP_Next.RequestInfo | null;
+  public currentRequestInfo: OJP.RequestInfo | null;
 
   public headerText: string = 'Search Trip Info';
 
@@ -160,7 +160,7 @@ export class TripInfoSearchComponent implements OnInit {
     const queryParams = new URLSearchParams();
     queryParams.set('ref', this.model.journeyRef);
     
-    const dayS = OJP_Next.DateHelpers.formatDate(this.model.journeyDateTime).substring(0, 10);
+    const dayS = OJP.DateHelpers.formatDate(this.model.journeyDateTime).substring(0, 10);
     queryParams.set('day', dayS);
 
     if (this.model.currentAppStage !== DEFAULT_APP_STAGE) {
@@ -191,13 +191,13 @@ export class TripInfoSearchComponent implements OnInit {
   }
 
   private async fetchTripInfo() {
-    const ojpSDK_Next = this.userTripService.createOJP_SDK_Instance(this.languageService.language);
+    const ojpSDK = this.userTripService.createOJP_SDK_Instance(this.languageService.language);
 
-    const request = ojpSDK_Next.requests.TripInfoRequest.initWithJourneyRef(this.model.journeyRef, this.model.journeyDateTime);
+    const request = ojpSDK.requests.TripInfoRequest.initWithJourneyRef(this.model.journeyRef, this.model.journeyDateTime);
     request.enableTrackProjection();
 
     this.model.isSearching = true;
-    const response = await request.fetchResponse(ojpSDK_Next);
+    const response = await request.fetchResponse(ojpSDK);
     this.model.isSearching = false;
 
     if (response.ok) {
@@ -236,7 +236,7 @@ export class TripInfoSearchComponent implements OnInit {
     });
   }
 
-  private parseTripInfo(requestInfo: OJP_Next.RequestInfo, tripInfoResult: TripInfoResult | null): void {
+  private parseTripInfo(requestInfo: OJP.RequestInfo, tripInfoResult: TripInfoResult | null): void {
     this.currentRequestInfo = requestInfo;
     this.tripInfoService.tripInfoResultUpdated.emit(tripInfoResult);
   }
@@ -274,12 +274,12 @@ export class TripInfoSearchComponent implements OnInit {
   }
 
   private async handleCustomResponse(responseXML: string) {
-    const ojpSDK_Next = this.userTripService.createOJP_SDK_Instance(this.languageService.language);
+    const ojpSDK = this.userTripService.createOJP_SDK_Instance(this.languageService.language);
 
-    const request = ojpSDK_Next.requests.TripInfoRequest.initWithResponseMock(responseXML);
+    const request = ojpSDK.requests.TripInfoRequest.initWithResponseMock(responseXML);
     request.enableTrackProjection();
     
-    const response = await request.fetchResponse(ojpSDK_Next);
+    const response = await request.fetchResponse(ojpSDK);
     if (response.ok) {
       const tripInfoResult = TripInfoResult.initWithTripInfoResponse(OJP_VERSION, response);
       this.parseTripInfo(request.requestInfo, tripInfoResult);

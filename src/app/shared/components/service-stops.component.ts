@@ -1,6 +1,6 @@
 import { AfterViewInit, Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 
-import * as OJP_Next from 'ojp-sdk-next';
+import * as OJP from 'ojp-sdk';
 
 export interface LegStopPointData {
   locationText: string,
@@ -16,7 +16,7 @@ export interface LegStopPointData {
   platformAssistanceIconPath: string | null,
   platformAssistanceTooltip: string,
 
-  geoPosition: OJP_Next.GeoPosition | null,
+  geoPosition: OJP.GeoPosition | null,
 
   isNotServicedStop: boolean,
 

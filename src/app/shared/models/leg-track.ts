@@ -1,7 +1,7 @@
 import * as GeoJSON from 'geojson';
 
 import * as OJP_Types from 'ojp-shared-types';
-import * as OJP_Next from 'ojp-sdk-next';
+import * as OJP from 'ojp-sdk';
 
 import { DistanceData } from "./distance";
 import { AnyPlace } from "./place/place-builder";
@@ -11,14 +11,14 @@ import { PlaceRef } from './place-ref';
 import { GeoPositionBBOX } from './geo/geoposition-bbox';
 
 export class LinkProjection {
-  public geoPositions: OJP_Next.GeoPosition[];
+  public geoPositions: OJP.GeoPosition[];
 
-  private constructor(geoPositions: OJP_Next.GeoPosition[]) {
+  private constructor(geoPositions: OJP.GeoPosition[]) {
     this.geoPositions = geoPositions;
   }
 
   public static initWithPositions(positions: OJP_Types.GeoPositionSchema[]): LinkProjection | null {
-    const geoPositions: OJP_Next.GeoPosition[] = [];
+    const geoPositions: OJP.GeoPosition[] = [];
 
     // Though we expect a LineString we need to support also some PathGuidance are using origin with 1 vertex only
     // if (positions.length < 2) {
@@ -26,7 +26,7 @@ export class LinkProjection {
     // }
     
     positions.forEach(position => {
-      const geoPosition = new OJP_Next.GeoPosition(position.longitude, position.latitude);
+      const geoPosition = new OJP.GeoPosition(position.longitude, position.latitude);
       geoPositions.push(geoPosition);
     });
 

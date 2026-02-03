@@ -31,12 +31,12 @@ export class TripInfoResultPopoverComponent {
   public async fetchJourneyRef(journeyRef: string, journeyDateTime: Date) {
     this.model.title = 'JourneyRef: ' + journeyRef;
 
-    const ojpSDK_Next = this.userTripService.createOJP_SDK_Instance(this.languageService.language);
-    const request = ojpSDK_Next.requests.TripInfoRequest.initWithJourneyRef(journeyRef, journeyDateTime);
+    const ojpSDK = this.userTripService.createOJP_SDK_Instance(this.languageService.language);
+    const request = ojpSDK.requests.TripInfoRequest.initWithJourneyRef(journeyRef, journeyDateTime);
     request.enableTrackProjection();
 
     this.model.isFetching = true;
-    const response = await request.fetchResponse(ojpSDK_Next);
+    const response = await request.fetchResponse(ojpSDK);
     this.model.isFetching = false;
 
     if (response.ok) {

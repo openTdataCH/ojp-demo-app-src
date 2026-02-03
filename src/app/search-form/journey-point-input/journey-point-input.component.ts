@@ -6,7 +6,7 @@ import { SbbAutocompleteSelectedEvent, SbbAutocompleteTrigger } from '@sbb-esta/
 import { SbbErrorStateMatcher } from '@sbb-esta/angular/core';
 
 import * as OJP_Types from 'ojp-shared-types';
-import * as OJP_Next from 'ojp-sdk-next';
+import * as OJP from 'ojp-sdk';
 
 import { OJP_VERSION } from '../../config/constants';
 
@@ -191,7 +191,7 @@ export class JourneyPointInputComponent implements OnInit {
     await this.fetchRequest(sdk, request);
   }
 
-  private async fetchRequest(sdk: OJP_Next.AnySDK, request: AnyLocationInformationRequest) {
+  private async fetchRequest(sdk: OJP.AnySDK, request: AnyLocationInformationRequest) {
     const response = await request.fetchResponse(sdk);
 
     if (!response.ok) {
@@ -280,7 +280,7 @@ export class JourneyPointInputComponent implements OnInit {
   }
 
   private async handleNewGeoPosition(position: GeolocationPosition) {
-    const nearbyGeoPosition = new OJP_Next.GeoPosition(position.coords.longitude, position.coords.latitude);
+    const nearbyGeoPosition = new OJP.GeoPosition(position.coords.longitude, position.coords.latitude);
     const bbox = GeoPositionBBOX.initFromGeoPosition(nearbyGeoPosition, 5000, 5000);
     const bboxData = bbox.asFeatureBBOX();
 

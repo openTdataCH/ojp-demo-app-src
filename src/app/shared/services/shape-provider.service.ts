@@ -5,7 +5,7 @@ import { catchError, firstValueFrom, map, Observable, shareReplay, throwError } 
 
 import * as GeoJSON from 'geojson';
 
-import * as OJP_Next from 'ojp-sdk-next';
+import * as OJP from 'ojp-sdk';
 
 import { OJPHelpers } from '../../helpers/ojp-helpers';
 import { TripLegLineType } from '../types/map-geometry-types';
@@ -20,7 +20,7 @@ import { StopPlace } from '../models/place/stop-place';
 type RequestMotType = 'rail' | 'bus' | 'coach' | 'foot' | 'tram' | 'subway' | 'gondola' | 'funicular' | 'ferry';
 
 interface ViaPart {
-  geoPosition: OJP_Next.GeoPosition,
+  geoPosition: OJP.GeoPosition,
   floor: string | null,
   platform: string | null,
 }

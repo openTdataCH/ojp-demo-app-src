@@ -10,7 +10,7 @@ import { SbbExpansionPanel } from '@sbb-esta/angular/accordion';
 import { SbbNotificationToast } from '@sbb-esta/angular/notification-toast';
 import { SbbRadioChange } from '@sbb-esta/angular/radio-button';
 
-import * as OJP_Next from 'ojp-sdk-next';
+import * as OJP from 'ojp-sdk';
 
 import { APP_STAGE, APP_STAGEs, DEBUG_LEVEL, REQUESTOR_REF, OJP_VERSION } from '../config/constants';
 
@@ -51,7 +51,7 @@ export class SearchFormComponent implements OnInit {
   public isSearching: boolean;
 
   public requestDurationF: string | null;
-  public currentRequestInfo: OJP_Next.RequestInfo | null;
+  public currentRequestInfo: OJP.RequestInfo | null;
 
   private lastCustomTripRequestXML: string | null;
 
@@ -79,7 +79,7 @@ export class SearchFormComponent implements OnInit {
   ) {
     const searchDate = this.userTripService.departureDate;
     this.searchDate = searchDate;
-    this.searchTime = OJP_Next.DateHelpers.formatTimeHHMM(searchDate);
+    this.searchTime = OJP.DateHelpers.formatTimeHHMM(searchDate);
 
     this.fromPlace = null;
     this.toPlace = null;
@@ -427,7 +427,7 @@ export class SearchFormComponent implements OnInit {
     this.userTripService.updateTrips(trips);
   }
 
-  private logResponseTime(requestInfo: OJP_Next.RequestInfo, messagePrefix: string) {
+  private logResponseTime(requestInfo: OJP.RequestInfo, messagePrefix: string) {
     if (DEBUG_LEVEL !== 'DEBUG') {
       return;
     }
@@ -457,7 +457,7 @@ export class SearchFormComponent implements OnInit {
       const currentTR = TripRequestBuilder.computeTripRequest(this.userTripService, sdk);
       if (currentTR) {
         const isOJPv2 = OJP_VERSION === '2.0';
-        const xmlConfig = isOJPv2 ? OJP_Next.DefaultXML_Config : OJP_Next.XML_BuilderConfigOJPv1;
+        const xmlConfig = isOJPv2 ? OJP.DefaultXML_Config : OJP.XML_BuilderConfigOJPv1;
         const requestXML = currentTR.buildRequestXML(this.languageService.language, REQUESTOR_REF, xmlConfig);
         
         popover.inputTripRequestXML = requestXML ?? 'n/a';
@@ -486,7 +486,7 @@ export class SearchFormComponent implements OnInit {
     });
   }
 
-  private handleCustomTripResponse(trips: Trip[], requestInfo: OJP_Next.RequestInfo, isDoneParsing: boolean) {
+  private handleCustomTripResponse(trips: Trip[], requestInfo: OJP.RequestInfo, isDoneParsing: boolean) {
     this.requestDurationF = 'USER XML';
     this.isSearching = false;
 
@@ -528,7 +528,7 @@ export class SearchFormComponent implements OnInit {
   public resetDateTime() {
     const nowDateTime = new Date();
     this.searchDate = nowDateTime;
-    this.searchTime = OJP_Next.DateHelpers.formatTimeHHMM(nowDateTime);
+    this.searchTime = OJP.DateHelpers.formatTimeHHMM(nowDateTime);
     this.userTripService.updateDepartureDateTime(this.computeFormDepartureDate());
   }
 

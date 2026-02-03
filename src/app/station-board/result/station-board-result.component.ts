@@ -2,7 +2,7 @@ import { AfterViewInit, Component, ElementRef, OnInit, ViewChild } from '@angula
 import { DomSanitizer } from '@angular/platform-browser';
 import { SbbDialog } from '@sbb-esta/angular/dialog';
 
-import * as OJP_Next from 'ojp-sdk-next';
+import * as OJP from 'ojp-sdk';
 
 import { StationBoardService } from '../station-board.service';
 
@@ -144,7 +144,7 @@ export class StationBoardResultComponent implements OnInit, AfterViewInit {
       return null
     }
 
-    const stopTimeText = OJP_Next.DateHelpers.formatTimeHHMM(stopTime);
+    const stopTimeText = OJP.DateHelpers.formatTimeHHMM(stopTime);
     
     return stopTimeText;
   }
@@ -187,8 +187,8 @@ export class StationBoardResultComponent implements OnInit, AfterViewInit {
     const delayMinutes = this.computeDelayTime(stopPoint, forBoardType);
     const hasDelay = delayMinutes !== null;
     
-    const timetableTimeF = OJP_Next.DateHelpers.formatTimeHHMM(stopPointTime.timetable);
-    const estimatedTimeF = stopPointTime.realtime ? OJP_Next.DateHelpers.formatTimeHHMM(stopPointTime.realtime) : 'n/a';
+    const timetableTimeF = OJP.DateHelpers.formatTimeHHMM(stopPointTime.timetable);
+    const estimatedTimeF = stopPointTime.realtime ? OJP.DateHelpers.formatTimeHHMM(stopPointTime.realtime) : 'n/a';
     const hasDelayDifferentTime = stopPointTime.realtime ? (timetableTimeF !== estimatedTimeF) : false;
 
     const stopTime = this.computeStopTime(stopPointTime.timetable);

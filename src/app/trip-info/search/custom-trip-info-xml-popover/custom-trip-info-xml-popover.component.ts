@@ -1,7 +1,6 @@
 import { Component, EventEmitter, Output } from '@angular/core';
 
-
-import * as OJP_Next from 'ojp-sdk-next';
+import * as OJP from 'ojp-sdk';
 
 import { UserTripService } from 'src/app/shared/services/user-trip.service';
 import { LanguageService } from '../../../shared/services/language.service';
@@ -11,29 +10,29 @@ import { LanguageService } from '../../../shared/services/language.service';
   templateUrl: './custom-trip-info-xml-popover.component.html',
 })
 export class CustomTripInfoXMLPopoverComponent {
-  public customRequestXMLs: string
-  public customResponseXMLs: string
+  public customRequestXMLs: string;
+  public customResponseXMLs: string;
 
-  public isRunningRequest: boolean
+  public isRunningRequest: boolean;
 
-  @Output() customRequestSaved = new EventEmitter<OJP_Next.RequestInfo>()
-  @Output() customResponseSaved = new EventEmitter<string>()
+  @Output() customRequestSaved = new EventEmitter<OJP.RequestInfo>();
+  @Output() customResponseSaved = new EventEmitter<string>();
 
   constructor(private userTripService: UserTripService, private languageService: LanguageService) {
-    this.customRequestXMLs = '... wait'
-    this.customResponseXMLs = 'Paste custom OJP TripInfoRequest Response XML here...'
+    this.customRequestXMLs = '... wait';
+    this.customResponseXMLs = 'Paste custom OJP TripInfoRequest Response XML here...';
 
-    this.isRunningRequest = false
+    this.isRunningRequest = false;
   }
 
   public async parseCustomRequestXML() {
-    this.isRunningRequest = true
+    this.isRunningRequest = true;
 
-    const ojpSDK_Next = this.userTripService.createOJP_SDK_Instance(this.languageService.language);
-    const request = ojpSDK_Next.requests.TripInfoRequest.initWithRequestMock(this.customRequestXMLs);
+    const ojpSDK = this.userTripService.createOJP_SDK_Instance(this.languageService.language);
+    const request = ojpSDK.requests.TripInfoRequest.initWithRequestMock(this.customRequestXMLs);
     
     this.isRunningRequest = true;
-    await request.fetchResponse(ojpSDK_Next);
+    await request.fetchResponse(ojpSDK);
     this.isRunningRequest = false;
 
     if (request.requestInfo.responseXML !== null) {

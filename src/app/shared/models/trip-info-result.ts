@@ -1,5 +1,5 @@
 import * as OJP_Types from 'ojp-shared-types';
-import * as OJP_Next from 'ojp-sdk-next';
+import * as OJP from 'ojp-sdk';
 
 import { OJP_VERSION } from '../../config/constants';
 
@@ -13,7 +13,7 @@ const stopEventTypes: StopEventType[] = ['arrival', 'departure'];
 export class TripInfoResult {
   public calls: StopPointCall[];
   public service: JourneyService;
-  public trackSectionsGeoPositions: OJP_Next.GeoPosition[][];
+  public trackSectionsGeoPositions: OJP.GeoPosition[][];
 
   private constructor(calls: StopPointCall[], service: JourneyService) {
     this.calls = calls;
@@ -21,7 +21,7 @@ export class TripInfoResult {
     this.trackSectionsGeoPositions = [];
   }
 
-  public static initWithTripInfoResponse(ojpVersion: OJP_Next.OJP_VERSION, response: AnyTripInfoRequestResponse | null): TripInfoResult | null {
+  public static initWithTripInfoResponse(ojpVersion: OJP.OJP_VERSION, response: AnyTripInfoRequestResponse | null): TripInfoResult | null {
     if (response === null || !response.ok) {
       return null;
     }
@@ -86,11 +86,11 @@ export class TripInfoResult {
     tripInfoResult.trackSectionsGeoPositions = [];
     const trackSections = firstTripInfoResultSchema.journeyTrack?.trackSection ?? [];
     trackSections.forEach(trackSectionSchema => {
-      const trackSectionGeoPositions: OJP_Next.GeoPosition[] = [];
+      const trackSectionGeoPositions: OJP.GeoPosition[] = [];
 
       const positions = trackSectionSchema.linkProjection?.position ?? [];
       positions.forEach(geoPositionSchema => {
-        const geoPosition = new OJP_Next.GeoPosition(geoPositionSchema);
+        const geoPosition = new OJP.GeoPosition(geoPositionSchema);
         if (geoPosition.isValid()) {
           trackSectionGeoPositions.push(geoPosition);
         }

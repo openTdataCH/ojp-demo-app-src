@@ -2,7 +2,7 @@ import { EventEmitter, Injectable } from '@angular/core'
 import { BehaviorSubject, Observable } from 'rxjs';
 
 import * as OJP_Types from 'ojp-shared-types';
-import * as OJP_Next from 'ojp-sdk-next';
+import * as OJP from 'ojp-sdk';
 
 import { APP_CONFIG } from '../../config/app-config';
 import { APP_STAGE, DEFAULT_APP_STAGE, REQUESTOR_REF, TRIP_REQUEST_DEFAULT_NUMBER_OF_RESULTS, OJP_VERSION, EMPTY_HTTPConfig } from '../../config/constants';
@@ -66,7 +66,7 @@ export class UserTripService {
   public tripFaresUpdated = new EventEmitter<OJP_Types.FareResultSchema[]>();
   
   public mapActiveTripSelected = new EventEmitter<TripData | null>();
-  public tripRequestFinished = new EventEmitter<OJP_Next.RequestInfo>();
+  public tripRequestFinished = new EventEmitter<OJP.RequestInfo>();
 
   public searchParamsReset = new EventEmitter<void>();
 
@@ -110,7 +110,7 @@ export class UserTripService {
     this.sbbURL = null;
   }
 
-  public async initDefaults(language: OJP_Next.Language): Promise<void> {
+  public async initDefaults(language: OJP.Language): Promise<void> {
     const appStage = OJPHelpers.computeAppStage();
 
     setTimeout(() => {
@@ -140,7 +140,7 @@ export class UserTripService {
     const fromPlaceRef = this.queryParams.get('from') ?? defaultLocationsPlaceRef[fromPlaceName];
     const toPlaceRef = this.queryParams.get('to') ?? defaultLocationsPlaceRef[toPlaceName];
 
-    const ojpSDK_Next = this.createOJP_SDK_Instance(language, appStage);
+    const ojpSDK = this.createOJP_SDK_Instance(language, appStage);
 
     const endpointTypes: JourneyPointType[] = ['From', 'To'];
     for (const endpointType of endpointTypes) {
@@ -169,12 +169,12 @@ export class UserTripService {
       if (coordsPlace) {
         place = coordsPlace;
       } else {
-        let request = ojpSDK_Next.requests.LocationInformationRequest.initWithPlaceRef(stopPlaceRef, 10);
+        let request = ojpSDK.requests.LocationInformationRequest.initWithPlaceRef(stopPlaceRef, 10);
         // Check if is location name instead of stopId / sloid
         if (typeof stopPlaceRef === 'string' && /^[A-Z]/.test(stopPlaceRef)) {
-          request = ojpSDK_Next.requests.LocationInformationRequest.initWithLocationName(stopPlaceRef, ['stop'], 10);
+          request = ojpSDK.requests.LocationInformationRequest.initWithLocationName(stopPlaceRef, ['stop'], 10);
         }
-        const response = await request.fetchResponse(ojpSDK_Next);
+        const response = await request.fetchResponse(ojpSDK);
 
         place = this.parsePlace(response);
       }
@@ -201,8 +201,8 @@ export class UserTripService {
       if (coordsPlace) {
         place = coordsPlace;
       } else {
-        const request = ojpSDK_Next.requests.LocationInformationRequest.initWithPlaceRef(viaKey, 10);
-        const response = await request.fetchResponse(ojpSDK_Next);
+        const request = ojpSDK.requests.LocationInformationRequest.initWithPlaceRef(viaKey, 10);
+        const response = await request.fetchResponse(ojpSDK);
         place = this.parsePlace(response);
       }
 
@@ -304,8 +304,8 @@ export class UserTripService {
     return place;
   }
 
-  public async refetchEndpointsByName(language: OJP_Next.Language) {
-    const ojpSDK_Next = this.createOJP_SDK_Instance(language);
+  public async refetchEndpointsByName(language: OJP.Language) {
+    const ojpSDK = this.createOJP_SDK_Instance(language);
 
     const endpointTypes: JourneyPointType[] = ['From', 'To'];
     for (const endpointType of endpointTypes) {
@@ -321,9 +321,9 @@ export class UserTripService {
       // Search nearby locations, in a bbox of 200x200m
       const bbox = GeoPositionBBOX.initFromGeoPosition(tripPlaceLocation.geoPosition, 200, 200);
       const bboxData = bbox.asFeatureBBOX();
-      const request = ojpSDK_Next.requests.LocationInformationRequest.initWithBBOX(bboxData, ['stop'], 300);
+      const request = ojpSDK.requests.LocationInformationRequest.initWithBBOX(bboxData, ['stop'], 300);
 
-      const response = await request.fetchResponse(ojpSDK_Next);
+      const response = await request.fetchResponse(ojpSDK);
 
       if (!response.ok) {
           console.log('ERROR - failed to bbox lookup locations for "' + bboxData.join(', ') + '"');
@@ -506,7 +506,7 @@ export class UserTripService {
     const now = new Date();
     const deltaNowMinutes = Math.abs((now.getTime() - this.departureDate.getTime()) / 1000 / 60);
     if (deltaNowMinutes > 5) {
-      const dateTimeS = OJP_Next.DateHelpers.formatDate(this.departureDate);
+      const dateTimeS = OJP.DateHelpers.formatDate(this.departureDate);
       queryParams.append('trip_datetime', dateTimeS.substring(0, 16));
     }
 
@@ -682,7 +682,7 @@ export class UserTripService {
     return tripDateTime;
   }
 
-  public getStageConfig(forStage: APP_STAGE = this.currentAppStage): OJP_Next.HTTPConfig {
+  public getStageConfig(forStage: APP_STAGE = this.currentAppStage): OJP.HTTPConfig {
     const stageConfig = APP_CONFIG.stages[forStage] ?? null;
 
     if (stageConfig === null) {
@@ -783,7 +783,7 @@ export class UserTripService {
     this.updateURLs();
   }
 
-  public async fetchFares(language: OJP_Next.Language) {
+  public async fetchFares(language: OJP.Language) {
     if (this.currentTrips.length === 0) {
       return;
     }
@@ -798,15 +798,15 @@ export class UserTripService {
     this.updateFares(fareResults);
   }
 
-  public async fetchFaresForTrips(language: OJP_Next.Language, trips: Trip[]): Promise<OJP_Types.FareResultSchema[]> {
+  public async fetchFaresForTrips(language: OJP.Language, trips: Trip[]): Promise<OJP_Types.FareResultSchema[]> {
     const fareHttpConfig = this.getStageConfig('NOVA-INT');
-    const ojpSDK_Next = OJP_Next.SDK.v1(REQUESTOR_REF, fareHttpConfig, language);
+    const ojpSDK = OJP.SDK.v1(REQUESTOR_REF, fareHttpConfig, language);
     
     const ojpV1Trips = trips.map(trip => trip.asLegacyOJP_Schema());
-    const fareRequest = ojpSDK_Next.requests.FareRequest.initWithOJPv1Trips(ojpV1Trips);
+    const fareRequest = ojpSDK.requests.FareRequest.initWithOJPv1Trips(ojpV1Trips);
 
     try {
-      const response = await fareRequest.fetchResponse(ojpSDK_Next);
+      const response = await fareRequest.fetchResponse(ojpSDK);
       if (!response.ok) {
         console.log('ERROR: fetchFareRequestResponse');
         console.log(response);
@@ -825,7 +825,7 @@ export class UserTripService {
     return this.tripTransportMode === 'public_transport';
   }
 
-  public createOJP_SDK_Instance(language: OJP_Next.Language, appStage: APP_STAGE = this.currentAppStage): OJP_Next.AnySDK {
+  public createOJP_SDK_Instance(language: OJP.Language, appStage: APP_STAGE = this.currentAppStage): OJP.AnySDK {
     const isOJPv2 = OJP_VERSION === '2.0';
 
     const stageConfig = this.getStageConfig(appStage);
@@ -835,10 +835,10 @@ export class UserTripService {
     }
 
     if (isOJPv2) {
-      const sdk = OJP_Next.SDK.create(REQUESTOR_REF, stageConfig, language);
+      const sdk = OJP.SDK.create(REQUESTOR_REF, stageConfig, language);
       return sdk;
     } else {
-      const sdk = OJP_Next.SDK.v1(REQUESTOR_REF, stageConfig, language);
+      const sdk = OJP.SDK.v1(REQUESTOR_REF, stageConfig, language);
       return sdk;
     }
   }

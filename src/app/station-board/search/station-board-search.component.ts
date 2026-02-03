@@ -9,7 +9,7 @@ import { SbbNotificationToast } from '@sbb-esta/angular/notification-toast';
 import * as GeoJSON from 'geojson';
 
 import * as OJP_Types from 'ojp-shared-types';
-import * as OJP_Next from 'ojp-sdk-next';
+import * as OJP from 'ojp-sdk';
 
 import { APP_STAGE, APP_STAGEs, DEFAULT_APP_STAGE, OJP_VERSION } from '../../config/constants';
 
@@ -56,7 +56,7 @@ export class StationBoardSearchComponent implements OnInit {
   public permalinkRelativeURL: string;
   public otherVersionURL: string | null;
 
-  public currentRequestInfo: OJP_Next.RequestInfo | null;
+  public currentRequestInfo: OJP.RequestInfo | null;
 
   public headerText: string = 'Search'
 
@@ -98,7 +98,7 @@ export class StationBoardSearchComponent implements OnInit {
     this.stopPlace = null;
 
     this.stationBoardService.searchDate = this.computeSearchDateTime();
-    this.searchTime = OJP_Next.DateHelpers.formatTimeHHMM(this.stationBoardService.searchDate);
+    this.searchTime = OJP.DateHelpers.formatTimeHHMM(this.stationBoardService.searchDate);
     
     this.isSearching = false
 
@@ -290,8 +290,8 @@ export class StationBoardSearchComponent implements OnInit {
     const deltaNowMinutes = Math.abs((now.getTime() - searchDate.getTime()) / 1000 / 60);
     if (deltaNowMinutes > 5) {
       const nowDate = new Date();
-      const nowDateF = OJP_Next.DateHelpers.formatDate(nowDate);
-      const searchDateF = OJP_Next.DateHelpers.formatDate(searchDate);
+      const nowDateF = OJP.DateHelpers.formatDate(nowDate);
+      const searchDateF = OJP.DateHelpers.formatDate(searchDate);
 
       const nowDayF = nowDateF.substring(0, 10);
       const searchDayF = searchDateF.substring(0, 10);
@@ -299,8 +299,8 @@ export class StationBoardSearchComponent implements OnInit {
         queryParams.set('day', searchDayF);
       }
 
-      const nowTimeF = OJP_Next.DateHelpers.formatTimeHHMM(nowDate);
-      const searchTimeF = OJP_Next.DateHelpers.formatTimeHHMM(searchDate);
+      const nowTimeF = OJP.DateHelpers.formatTimeHHMM(nowDate);
+      const searchTimeF = OJP.DateHelpers.formatTimeHHMM(searchDate);
       if (nowTimeF !== searchTimeF) {
         queryParams.set('time', searchTimeF);
       }
@@ -461,10 +461,10 @@ export class StationBoardSearchComponent implements OnInit {
   private async lookupStopPlaceRef(stopPlaceRef: string) {
     stopPlaceRef = DataHelpers.convertStopPointToStopPlace(stopPlaceRef);
 
-    const ojpSDK_Next = this.userTripService.createOJP_SDK_Instance(this.languageService.language);
-    const request = ojpSDK_Next.requests.LocationInformationRequest.initWithPlaceRef(stopPlaceRef, 10);
+    const ojpSDK = this.userTripService.createOJP_SDK_Instance(this.languageService.language);
+    const request = ojpSDK.requests.LocationInformationRequest.initWithPlaceRef(stopPlaceRef, 10);
 
-    const response = await request.fetchResponse(ojpSDK_Next);
+    const response = await request.fetchResponse(ojpSDK);
     if (!response.ok) {
       console.log('ERROR - LIR - initWithPlaceRef');
       console.log(response);
@@ -613,7 +613,7 @@ export class StationBoardSearchComponent implements OnInit {
     this.currentRequestInfo.responseXML = responseXML;
 
     const isOJPv2 = OJP_VERSION === '2.0';
-    const xmlConfig = isOJPv2 ? OJP_Next.DefaultXML_Config : OJP_Next.XML_BuilderConfigOJPv1;
+    const xmlConfig = isOJPv2 ? OJP.DefaultXML_Config : OJP.XML_BuilderConfigOJPv1;
 
     const sdk = this.userTripService.createOJP_SDK_Instance(this.languageService.language);
 
@@ -661,7 +661,7 @@ export class StationBoardSearchComponent implements OnInit {
   public resetDateTime() {
     const nowDateTime = new Date();
     this.searchDate = nowDateTime;
-    this.searchTime = OJP_Next.DateHelpers.formatTimeHHMM(nowDateTime);
+    this.searchTime = OJP.DateHelpers.formatTimeHHMM(nowDateTime);
     this.stationBoardService.searchDate = nowDateTime;
   }
 }

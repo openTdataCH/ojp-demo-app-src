@@ -1,5 +1,5 @@
 import * as OJP_Types from 'ojp-shared-types';
-import * as OJP_Next from 'ojp-sdk-next';
+import * as OJP from 'ojp-sdk';
 
 import { BasePlace } from '../place';
 import { AnyPlaceResultSchema } from '../../types/_all';
@@ -15,7 +15,7 @@ export class TopographicPlace extends BasePlace {
     this.topographicPlaceName = topographicPlaceName;
   }
 
-  public static initWithPlaceResultSchema(version: OJP_Next.OJP_VERSION, placeResultSchema: AnyPlaceResultSchema): TopographicPlace | null {
+  public static initWithPlaceResultSchema(version: OJP.OJP_VERSION, placeResultSchema: AnyPlaceResultSchema): TopographicPlace | null {
     const isOJPv2 = version === '2.0';
 
     const placeName = (() => {
@@ -44,7 +44,7 @@ export class TopographicPlace extends BasePlace {
         return (placeResultSchema as OJP_Types.OJPv1_LocationResultSchema).location.geoPosition;
       }
     })();
-    const geoPosition = new OJP_Next.GeoPosition(geoPositioSchema);
+    const geoPosition = new OJP.GeoPosition(geoPositioSchema);
     if (!geoPosition.isValid()) {
       return null;
     }

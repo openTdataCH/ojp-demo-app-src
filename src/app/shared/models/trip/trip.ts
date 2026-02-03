@@ -1,4 +1,4 @@
-import * as OJP_Next from 'ojp-sdk-next';
+import * as OJP from 'ojp-sdk';
 import * as OJP_Types from 'ojp-shared-types';
 
 import { AnyTripResultSchema, JourneyPointType } from '../../types/_all';
@@ -199,7 +199,7 @@ export class Trip {
     return trip;
   }
 
-  public static initWithTripResultSchema(version: OJP_Next.OJP_VERSION, tripResultSchema: AnyTripResultSchema, mapPlaces: Record<string, StopPlace>, mapSituations: Record<string, SituationContent[]>): Trip | null {
+  public static initWithTripResultSchema(version: OJP.OJP_VERSION, tripResultSchema: AnyTripResultSchema, mapPlaces: Record<string, StopPlace>, mapSituations: Record<string, SituationContent[]>): Trip | null {
     if (version === '2.0') {
       const tripSchema = (tripResultSchema.trip as OJP_Types.TripSchema);
       return Trip.initWithTripSchema(tripSchema, mapPlaces, mapSituations);

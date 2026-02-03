@@ -1,6 +1,6 @@
 import * as GeoJSON from 'geojson';
 
-import * as OJP_Next from 'ojp-sdk-next';
+import * as OJP from 'ojp-sdk';
 
 import { TripLegDrawType, TripLegLineType, TripLegPropertiesEnum } from '../types/map-geometry-types';
 
@@ -56,15 +56,15 @@ export class TripGeoController {
           return;
         }
 
-        bbox.extend(new OJP_Next.GeoPosition(featureBBOX[0], featureBBOX[1]));
-        bbox.extend(new OJP_Next.GeoPosition(featureBBOX[2], featureBBOX[3]));
+        bbox.extend(new OJP.GeoPosition(featureBBOX[0], featureBBOX[1]));
+        bbox.extend(new OJP.GeoPosition(featureBBOX[2], featureBBOX[3]));
       });
     });
 
     return bbox;
   }
 
-  private computeFromGeoPosition(): OJP_Next.GeoPosition | null {
+  private computeFromGeoPosition(): OJP.GeoPosition | null {
     if (this.trip.legs.length === 0) {
       return null;
     }
@@ -85,7 +85,7 @@ export class TripGeoController {
     return null;
   }
 
-  public computeToGeoPosition(): OJP_Next.GeoPosition | null {
+  public computeToGeoPosition(): OJP.GeoPosition | null {
     if (this.trip.legs.length === 0) {
       return null;
     }
@@ -225,8 +225,8 @@ export class TripLegGeoController {
     return beelineFeature;
   }
 
-  private computeBeelineGeoPositions(): OJP_Next.GeoPosition[] {
-    const geoPositions: OJP_Next.GeoPosition[] = [];
+  private computeBeelineGeoPositions(): OJP.GeoPosition[] {
+    const geoPositions: OJP.GeoPosition[] = [];
 
     if (this.leg.fromPlace?.geoPosition) {
       geoPositions.push(this.leg.fromPlace?.geoPosition);
@@ -280,7 +280,7 @@ export class TripLegGeoController {
     return features;
   }
 
-  private positionAsFeature(geoPosition: OJP_Next.GeoPosition): GeoJSON.Feature<GeoJSON.Point> {
+  private positionAsFeature(geoPosition: OJP.GeoPosition): GeoJSON.Feature<GeoJSON.Point> {
     const feature: GeoJSON.Feature<GeoJSON.Point> = {
       type: 'Feature',
       properties: {},

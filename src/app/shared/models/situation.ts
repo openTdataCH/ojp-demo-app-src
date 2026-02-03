@@ -1,7 +1,7 @@
 import { DomSanitizer, SafeHtml } from "@angular/platform-browser";
 
 import * as OJP_Types from 'ojp-shared-types';
-import * as OJP_Next from 'ojp-sdk-next';
+import * as OJP from 'ojp-sdk';
 
 import { AnyPtSituationElement } from "../types/_all";
 
@@ -25,7 +25,7 @@ export class SituationContent {
     return situationContent;
   }
 
-  public static initWithAnySituationSchema(sanitizer: DomSanitizer, version: OJP_Next.OJP_VERSION, schema: AnyPtSituationElement): SituationContent[] {
+  public static initWithAnySituationSchema(sanitizer: DomSanitizer, version: OJP.OJP_VERSION, schema: AnyPtSituationElement): SituationContent[] {
     if (version === '2.0') {
       return SituationContent.initWithSituationSchema(sanitizer, schema as OJP_Types.PtSituationElement);
     } else {

@@ -1,5 +1,5 @@
 import * as OJP_Types from 'ojp-shared-types';
-import * as OJP_Next from 'ojp-sdk-next';
+import * as OJP from 'ojp-sdk';
 
 export type StopEventType = 'arrival' | 'departure';
 
@@ -45,11 +45,11 @@ export type AnyTripResultSchema = OJP_Types.TripResultSchema | OJP_Types.OJPv1_T
 export type AnyResponseContextSchema = OJP_Types.ResponseContextSchema | OJP_Types.OJPv1_ResponseContextSchema;
 export type AnyPtSituationElement = OJP_Types.PtSituationElement | OJP_Types.OJPv1_PtSituationElement;
 
-export type AnyLocationInformationRequest = OJP_Next.LocationInformationRequest | OJP_Next.OJPv1_LocationInformationRequest;
-export type AnyLocationInformationRequestResponse = OJP_Next.LocationInformationRequestResponse | OJP_Next.OJPv1_LocationInformationRequestResponse;
-export type AnyStopEventRequestResponse = OJP_Next.StopEventRequestResponse | OJP_Next.OJPv1_StopEventRequestResponse;
-export type AnyTripInfoRequestResponse = OJP_Next.TripInfoRequestResponse | OJP_Next.OJPv1_TripInfoRequestResponse;
-export type AnyTripRequestResponse = OJP_Next.TripRequestResponse | OJP_Next.OJPv1_TripRequestResponse;
+export type AnyLocationInformationRequest = OJP.LocationInformationRequest | OJP.OJPv1_LocationInformationRequest;
+export type AnyLocationInformationRequestResponse = OJP.LocationInformationRequestResponse | OJP.OJPv1_LocationInformationRequestResponse;
+export type AnyStopEventRequestResponse = OJP.StopEventRequestResponse | OJP.OJPv1_StopEventRequestResponse;
+export type AnyTripInfoRequestResponse = OJP.TripInfoRequestResponse | OJP.OJPv1_TripInfoRequestResponse;
+export type AnyTripRequestResponse = OJP.TripRequestResponse | OJP.OJPv1_TripRequestResponse;
 
 export type JourneyPointType = 'From' | 'To' | 'Via';
 export type TripRequestBoardingType = 'Dep' | 'Arr';

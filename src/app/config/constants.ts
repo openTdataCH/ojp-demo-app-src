@@ -1,7 +1,7 @@
 import { RasterLayerType } from '../shared/types/_all';
 
 import * as OJP_Types from 'ojp-shared-types';
-import * as OJP_Next from 'ojp-sdk-next';
+import * as OJP from 'ojp-sdk';
 
 import { POI_Restriction } from '../shared/models/place/poi';
 
@@ -21,7 +21,7 @@ export const DEBUG_LEVEL: DEBUG_LEVEL_Type = (() => {
 
 const queryParams = new URLSearchParams(document.location.search);
 
-export const OJP_VERSION: OJP_Next.OJP_VERSION = (() => {
+export const OJP_VERSION: OJP.OJP_VERSION = (() => {
   const userVersion = queryParams.get('v');
   if (userVersion === '1') {
     return '1.0';
@@ -254,7 +254,7 @@ export const MAP_RASTER_LAYERS: RasterLayerType[] = [
 
 export const TRIP_REQUEST_DEFAULT_NUMBER_OF_RESULTS = 5;
 
-export const EMPTY_HTTPConfig: OJP_Next.HTTPConfig = {
+export const EMPTY_HTTPConfig: OJP.HTTPConfig = {
   url: 'na-URL',
   authToken: null
 };

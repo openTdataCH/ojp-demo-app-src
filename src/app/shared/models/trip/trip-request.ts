@@ -1,6 +1,6 @@
 import { DomSanitizer } from '@angular/platform-browser';
 
-import * as OJP_Next from 'ojp-sdk-next';
+import * as OJP from 'ojp-sdk';
 
 import { TripPlace } from "../trip-place";
 import { StopPlace } from '../place/stop-place';
@@ -12,7 +12,7 @@ import { OJPHelpers } from '../../../helpers/ojp-helpers';
 import { AnyTripRequestResponse } from '../../types/_all';
 
 export class TripRequestBuilder {
-  public static computeTripRequest(userTripService: UserTripService, sdk: OJP_Next.AnySDK, includeLegProjection: boolean = false) {
+  public static computeTripRequest(userTripService: UserTripService, sdk: OJP.AnySDK, includeLegProjection: boolean = false) {
     if ((!userTripService.fromTripPlace) || (!userTripService.toTripPlace)) {
       return null;
     }
@@ -58,7 +58,7 @@ export class TripRequestBuilder {
     }
 
     if (isOJPv2) {
-      const requestOJPv2 = request as OJP_Next.TripRequest;
+      const requestOJPv2 = request as OJP.TripRequest;
 
       // NumberOfResults = 0 for sharing / walking in OJP v2.0
       if (isSharingMode || isWalking) {
@@ -98,8 +98,8 @@ export class TripRequestBuilder {
     return request;
   }
 
-  private static convertTripPlaceToSDKPlace(tripPlace: TripPlace): OJP_Next.Place {
-    const place = OJP_Next.Place.initWithCoords(tripPlace.place.geoPosition.longitude, tripPlace.place.geoPosition.latitude);
+  private static convertTripPlaceToSDKPlace(tripPlace: TripPlace): OJP.Place {
+    const place = OJP.Place.initWithCoords(tripPlace.place.geoPosition.longitude, tripPlace.place.geoPosition.latitude);
     
     if (tripPlace.place.type === 'stop') {
       const stopPlace = tripPlace.place as StopPlace;
@@ -119,7 +119,7 @@ export class TripRequestBuilder {
     return place;
   }
 
-  private static initWithTripPlaces(sdk: OJP_Next.AnySDK, fromTripPlace: TripPlace, toTripPlace: TripPlace) {
+  private static initWithTripPlaces(sdk: OJP.AnySDK, fromTripPlace: TripPlace, toTripPlace: TripPlace) {
     const fromRequestPlace = TripRequestBuilder.convertTripPlaceToSDKPlace(fromTripPlace);
     const toRequestPlace = TripRequestBuilder.convertTripPlaceToSDKPlace(toTripPlace);
 

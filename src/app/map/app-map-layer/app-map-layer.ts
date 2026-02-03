@@ -2,7 +2,7 @@ import * as GeoJSON from 'geojson';
 import mapboxgl from "mapbox-gl";
 
 import * as OJP_Types from 'ojp-shared-types';
-import * as OJP_Next from 'ojp-sdk-next';
+import * as OJP from 'ojp-sdk';
 
 import { AppMapLayerOptions, DEBUG_LEVEL, MAP_APP_MAP_LAYERS, OJP_VERSION } from '../../config/constants'
 
@@ -15,7 +15,7 @@ import { OJPHelpers } from '../../helpers/ojp-helpers';
 import { AnyLocationInformationRequest, JourneyPointType } from '../../shared/types/_all';
 
 export class AppMapLayer {
-    private language: OJP_Next.Language;
+    private language: OJP.Language;
     private layerKey: string;
 
     private map: mapboxgl.Map;
@@ -32,7 +32,7 @@ export class AppMapLayer {
 
     protected mapCurrentPlaces: Record<string, AnyPlace>;
 
-    constructor(language: OJP_Next.Language, layerKey: string, map: mapboxgl.Map, appMapLayerOptions: AppMapLayerOptions, userTripService: UserTripService) {
+    constructor(language: OJP.Language, layerKey: string, map: mapboxgl.Map, appMapLayerOptions: AppMapLayerOptions, userTripService: UserTripService) {
         this.language = language;
         this.layerKey = layerKey;
 
@@ -132,8 +132,8 @@ export class AppMapLayer {
             }
         })();
 
-        const ojpSDK_Next = this.userTripService.createOJP_SDK_Instance(this.language);
-        const request = ojpSDK_Next.requests.LocationInformationRequest.initWithBBOX(bboxData, restrictionTypes, featuresLimit);
+        const ojpSDK = this.userTripService.createOJP_SDK_Instance(this.language);
+        const request = ojpSDK.requests.LocationInformationRequest.initWithBBOX(bboxData, restrictionTypes, featuresLimit);
 
         if (request.payload.restrictions) {
             if (this.restrictionType === 'poi') {
@@ -189,7 +189,7 @@ export class AppMapLayer {
             }
         }
         
-        const response = await request.fetchResponse(ojpSDK_Next);
+        const response = await request.fetchResponse(ojpSDK);
 
         this.lastOJPRequest = request;
 

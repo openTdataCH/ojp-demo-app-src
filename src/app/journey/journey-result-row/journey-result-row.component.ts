@@ -3,7 +3,7 @@ import { DomSanitizer } from '@angular/platform-browser';
 
 import { SbbExpansionPanel } from '@sbb-esta/angular/accordion';
 
-import * as OJP_Next from 'ojp-sdk-next';
+import * as OJP from 'ojp-sdk';
 import * as OJP_Types from 'ojp-shared-types';
 
 import { REQUESTOR_REF, OJP_VERSION, FLAG_USE_2nd_SHAPE_PROVIDER } from '../../config/constants';
@@ -46,7 +46,7 @@ export class JourneyResultRowComponent implements OnInit {
 
   public tripHeaderStats: TripHeaderStats;
 
-  public trrRequestInfo: OJP_Next.RequestInfo | null;
+  public trrRequestInfo: OJP.RequestInfo | null;
 
   constructor(private userTripService: UserTripService, private mapService: MapService, private languageService: LanguageService, private shapeProviderService: ShapeProviderService, private sanitizer: DomSanitizer) {
     this.tripHeaderStats = <TripHeaderStats>{};
@@ -145,9 +145,9 @@ export class JourneyResultRowComponent implements OnInit {
       this.tripHeaderStats.tripChangesInfo = trip.transfers + ' transfers';
     }
 
-    this.tripHeaderStats.tripFromTime = OJP_Next.DateHelpers.formatTimeHHMM(trip.startDateTime);
+    this.tripHeaderStats.tripFromTime = OJP.DateHelpers.formatTimeHHMM(trip.startDateTime);
     
-    this.tripHeaderStats.tripToTime = OJP_Next.DateHelpers.formatTimeHHMM(trip.endDateTime);
+    this.tripHeaderStats.tripToTime = OJP.DateHelpers.formatTimeHHMM(trip.endDateTime);
     const dayDiff = JourneyResultRowComponent.getDayOffset(trip.startDateTime, trip.endDateTime);
     if(dayDiff > 0){
       this.tripHeaderStats.tripToTime = '(+' + dayDiff + 'd) ' + this.tripHeaderStats.tripToTime;
@@ -204,10 +204,10 @@ export class JourneyResultRowComponent implements OnInit {
     });
 
     const stageConfig = this.userTripService.getStageConfig();
-    const ojpSDK_Next = OJP_Next.SDK.create(REQUESTOR_REF, stageConfig, this.languageService.language);
-    const trrRequest = ojpSDK_Next.requests.TripRefineRequest.initWithTrip(tripSchema);
+    const ojpSDK = OJP.SDK.create(REQUESTOR_REF, stageConfig, this.languageService.language);
+    const trrRequest = ojpSDK.requests.TripRefineRequest.initWithTrip(tripSchema);
 
-    const trrResponse = await trrRequest.fetchResponse(ojpSDK_Next);
+    const trrResponse = await trrRequest.fetchResponse(ojpSDK);
     if (!trrResponse.ok) {
       console.error('ERROR - fetchTripRefineRequestResponse');
       console.log(trrRequest);

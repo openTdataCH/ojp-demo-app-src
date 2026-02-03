@@ -1,5 +1,5 @@
 import * as OJP_Types from 'ojp-shared-types';
-import * as OJP_Next from 'ojp-sdk-next';
+import * as OJP from 'ojp-sdk';
 
 import { MapHelpers } from '../../map/helpers/map.helpers';
 
@@ -84,10 +84,10 @@ export class DistanceHelpers {
     }
 
     if ((legDistance.source === '0.unknown') && (linkProjections.length > 0)) {
-      const geoPositions: OJP_Next.GeoPosition[] = [];
+      const geoPositions: OJP.GeoPosition[] = [];
       linkProjections.forEach(linkProjection => {
         linkProjection.position.forEach(position => {
-          const geoPosition = new OJP_Next.GeoPosition(position.longitude, position.latitude);
+          const geoPosition = new OJP.GeoPosition(position.longitude, position.latitude);
           geoPositions.push(geoPosition);
         });
       });

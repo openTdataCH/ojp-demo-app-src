@@ -1,16 +1,16 @@
 import * as GeoJSON from 'geojson';
 
 import * as OJP_Types from 'ojp-shared-types';
-import * as OJP_Next from 'ojp-sdk-next';
+import * as OJP from 'ojp-sdk';
 
 export abstract class BasePlace {
-  public geoPosition: OJP_Next.GeoPosition;
+  public geoPosition: OJP.GeoPosition;
   public type: OJP_Types.PlaceTypeEnum;
   public placeName: string;
   public properties: Record<string, any>;
 
   constructor(longitude: number, latitude: number, type: OJP_Types.PlaceTypeEnum, placeName: string) {
-    this.geoPosition = new OJP_Next.GeoPosition(longitude, latitude);
+    this.geoPosition = new OJP.GeoPosition(longitude, latitude);
     this.type = type;
     this.placeName = placeName;
     this.properties = {};
