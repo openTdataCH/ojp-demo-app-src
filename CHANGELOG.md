@@ -5,6 +5,8 @@ OJP-Demo URL: https://opentdatach.github.io/ojp-demo-app/
 ----
 
 04.February 2025
+- Fix transfer legs display on map - [PR #349](https://github.com/openTdataCH/ojp-demo-app-src/pull/349)
+  - use same logic for ContinuousLeg/TransferLeg
 - Optimize requests - [PR #348](https://github.com/openTdataCH/ojp-demo-app-src/pull/348)
   - use only one TR request, simplify logic
   - correct serialize of the Trip back to XML, fix for https://github.com/openTdataCH/ojp-sdk/issues/352
