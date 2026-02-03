@@ -70,14 +70,22 @@ export class TransferLeg extends Leg {
     };
 
     if (schema.transferLeg) {
-      if (this.fromPlace) {
-        schema.transferLeg.legStart.stopPlaceRef = this.fromPlaceRef?.ref;
-        schema.transferLeg.legStart.geoPosition = this.fromPlace.geoPosition.asGeoPositionSchema();
+      if (this.fromPlaceRef) {
+        schema.transferLeg.legStart = this.fromPlaceRef.asOJP_Schema();
+      } else {
+        if (this.fromPlace) {
+          schema.transferLeg.legStart.geoPosition = this.fromPlace.geoPosition.asGeoPositionSchema();
+        }
       }
-      if (this.toPlace) {
-        schema.transferLeg.legEnd.stopPlaceRef = this.toPlaceRef?.ref;
-        schema.transferLeg.legEnd.geoPosition = this.toPlace.geoPosition.asGeoPositionSchema();
+
+      if (this.toPlaceRef) {
+        schema.transferLeg.legEnd = this.toPlaceRef.asOJP_Schema();
+      } else {
+        if (this.toPlace) {
+          schema.transferLeg.legEnd.geoPosition = this.toPlace.geoPosition.asGeoPositionSchema();
+        }
       }
+
       if (this.pathGuidance.sections.length > 0) {
         schema.transferLeg.pathGuidance = {
           pathGuidanceSection: this.pathGuidance.sections.map(el => el.asOJP_Schema())
@@ -109,14 +117,22 @@ export class TransferLeg extends Leg {
     };
 
     if (schema.transferLeg) {
-      if (this.fromPlace) {
-        schema.transferLeg.legStart.stopPlaceRef = this.fromPlaceRef?.ref;
-        schema.transferLeg.legStart.geoPosition = this.fromPlace.geoPosition.asGeoPositionSchema();
+      if (this.fromPlaceRef) {
+        schema.transferLeg.legStart = this.fromPlaceRef.asLegacyOJP_Schema();
+      } else {
+        if (this.fromPlace) {
+          schema.transferLeg.legStart.geoPosition = this.fromPlace.geoPosition.asGeoPositionSchema();
+        }
       }
-      if (this.toPlace) {
-        schema.transferLeg.legEnd.stopPlaceRef = this.toPlaceRef?.ref;
-        schema.transferLeg.legEnd.geoPosition = this.toPlace.geoPosition.asGeoPositionSchema();
+
+      if (this.toPlaceRef) {
+        schema.transferLeg.legEnd = this.toPlaceRef.asLegacyOJP_Schema();
+      } else {
+        if (this.toPlace) {
+          schema.transferLeg.legEnd.geoPosition = this.toPlace.geoPosition.asGeoPositionSchema();
+        }
       }
+      
       if (this.pathGuidance.sections.length > 0) {
         schema.transferLeg.pathGuidance = {
           pathGuidanceSection: this.pathGuidance.sections.map(el => el.asLegacyOJP_Schema())
