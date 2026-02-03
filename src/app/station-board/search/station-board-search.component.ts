@@ -461,10 +461,10 @@ export class StationBoardSearchComponent implements OnInit {
   private async lookupStopPlaceRef(stopPlaceRef: string) {
     stopPlaceRef = DataHelpers.convertStopPointToStopPlace(stopPlaceRef);
 
-    const ojpSDK_Next = this.userTripService.createOJP_SDK_Instance(this.languageService.language);
-    const request = ojpSDK_Next.requests.LocationInformationRequest.initWithPlaceRef(stopPlaceRef, 10);
+    const ojpSDK = this.userTripService.createOJP_SDK_Instance(this.languageService.language);
+    const request = ojpSDK.requests.LocationInformationRequest.initWithPlaceRef(stopPlaceRef, 10);
 
-    const response = await request.fetchResponse(ojpSDK_Next);
+    const response = await request.fetchResponse(ojpSDK);
     if (!response.ok) {
       console.log('ERROR - LIR - initWithPlaceRef');
       console.log(response);

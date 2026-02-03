@@ -191,13 +191,13 @@ export class TripInfoSearchComponent implements OnInit {
   }
 
   private async fetchTripInfo() {
-    const ojpSDK_Next = this.userTripService.createOJP_SDK_Instance(this.languageService.language);
+    const ojpSDK = this.userTripService.createOJP_SDK_Instance(this.languageService.language);
 
-    const request = ojpSDK_Next.requests.TripInfoRequest.initWithJourneyRef(this.model.journeyRef, this.model.journeyDateTime);
+    const request = ojpSDK.requests.TripInfoRequest.initWithJourneyRef(this.model.journeyRef, this.model.journeyDateTime);
     request.enableTrackProjection();
 
     this.model.isSearching = true;
-    const response = await request.fetchResponse(ojpSDK_Next);
+    const response = await request.fetchResponse(ojpSDK);
     this.model.isSearching = false;
 
     if (response.ok) {
@@ -274,12 +274,12 @@ export class TripInfoSearchComponent implements OnInit {
   }
 
   private async handleCustomResponse(responseXML: string) {
-    const ojpSDK_Next = this.userTripService.createOJP_SDK_Instance(this.languageService.language);
+    const ojpSDK = this.userTripService.createOJP_SDK_Instance(this.languageService.language);
 
-    const request = ojpSDK_Next.requests.TripInfoRequest.initWithResponseMock(responseXML);
+    const request = ojpSDK.requests.TripInfoRequest.initWithResponseMock(responseXML);
     request.enableTrackProjection();
     
-    const response = await request.fetchResponse(ojpSDK_Next);
+    const response = await request.fetchResponse(ojpSDK);
     if (response.ok) {
       const tripInfoResult = TripInfoResult.initWithTripInfoResponse(OJP_VERSION, response);
       this.parseTripInfo(request.requestInfo, tripInfoResult);

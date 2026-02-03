@@ -29,11 +29,11 @@ export class CustomTripInfoXMLPopoverComponent {
   public async parseCustomRequestXML() {
     this.isRunningRequest = true
 
-    const ojpSDK_Next = this.userTripService.createOJP_SDK_Instance(this.languageService.language);
-    const request = ojpSDK_Next.requests.TripInfoRequest.initWithRequestMock(this.customRequestXMLs);
+    const ojpSDK = this.userTripService.createOJP_SDK_Instance(this.languageService.language);
+    const request = ojpSDK.requests.TripInfoRequest.initWithRequestMock(this.customRequestXMLs);
     
     this.isRunningRequest = true;
-    await request.fetchResponse(ojpSDK_Next);
+    await request.fetchResponse(ojpSDK);
     this.isRunningRequest = false;
 
     if (request.requestInfo.responseXML !== null) {

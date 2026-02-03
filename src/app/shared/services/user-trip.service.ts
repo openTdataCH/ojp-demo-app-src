@@ -140,7 +140,7 @@ export class UserTripService {
     const fromPlaceRef = this.queryParams.get('from') ?? defaultLocationsPlaceRef[fromPlaceName];
     const toPlaceRef = this.queryParams.get('to') ?? defaultLocationsPlaceRef[toPlaceName];
 
-    const ojpSDK_Next = this.createOJP_SDK_Instance(language, appStage);
+    const ojpSDK = this.createOJP_SDK_Instance(language, appStage);
 
     const endpointTypes: JourneyPointType[] = ['From', 'To'];
     for (const endpointType of endpointTypes) {
@@ -169,12 +169,12 @@ export class UserTripService {
       if (coordsPlace) {
         place = coordsPlace;
       } else {
-        let request = ojpSDK_Next.requests.LocationInformationRequest.initWithPlaceRef(stopPlaceRef, 10);
+        let request = ojpSDK.requests.LocationInformationRequest.initWithPlaceRef(stopPlaceRef, 10);
         // Check if is location name instead of stopId / sloid
         if (typeof stopPlaceRef === 'string' && /^[A-Z]/.test(stopPlaceRef)) {
-          request = ojpSDK_Next.requests.LocationInformationRequest.initWithLocationName(stopPlaceRef, ['stop'], 10);
+          request = ojpSDK.requests.LocationInformationRequest.initWithLocationName(stopPlaceRef, ['stop'], 10);
         }
-        const response = await request.fetchResponse(ojpSDK_Next);
+        const response = await request.fetchResponse(ojpSDK);
 
         place = this.parsePlace(response);
       }
@@ -201,8 +201,8 @@ export class UserTripService {
       if (coordsPlace) {
         place = coordsPlace;
       } else {
-        const request = ojpSDK_Next.requests.LocationInformationRequest.initWithPlaceRef(viaKey, 10);
-        const response = await request.fetchResponse(ojpSDK_Next);
+        const request = ojpSDK.requests.LocationInformationRequest.initWithPlaceRef(viaKey, 10);
+        const response = await request.fetchResponse(ojpSDK);
         place = this.parsePlace(response);
       }
 
@@ -305,7 +305,7 @@ export class UserTripService {
   }
 
   public async refetchEndpointsByName(language: OJP.Language) {
-    const ojpSDK_Next = this.createOJP_SDK_Instance(language);
+    const ojpSDK = this.createOJP_SDK_Instance(language);
 
     const endpointTypes: JourneyPointType[] = ['From', 'To'];
     for (const endpointType of endpointTypes) {
@@ -321,9 +321,9 @@ export class UserTripService {
       // Search nearby locations, in a bbox of 200x200m
       const bbox = GeoPositionBBOX.initFromGeoPosition(tripPlaceLocation.geoPosition, 200, 200);
       const bboxData = bbox.asFeatureBBOX();
-      const request = ojpSDK_Next.requests.LocationInformationRequest.initWithBBOX(bboxData, ['stop'], 300);
+      const request = ojpSDK.requests.LocationInformationRequest.initWithBBOX(bboxData, ['stop'], 300);
 
-      const response = await request.fetchResponse(ojpSDK_Next);
+      const response = await request.fetchResponse(ojpSDK);
 
       if (!response.ok) {
           console.log('ERROR - failed to bbox lookup locations for "' + bboxData.join(', ') + '"');
@@ -800,13 +800,13 @@ export class UserTripService {
 
   public async fetchFaresForTrips(language: OJP.Language, trips: Trip[]): Promise<OJP_Types.FareResultSchema[]> {
     const fareHttpConfig = this.getStageConfig('NOVA-INT');
-    const ojpSDK_Next = OJP.SDK.v1(REQUESTOR_REF, fareHttpConfig, language);
+    const ojpSDK = OJP.SDK.v1(REQUESTOR_REF, fareHttpConfig, language);
     
     const ojpV1Trips = trips.map(trip => trip.asLegacyOJP_Schema());
-    const fareRequest = ojpSDK_Next.requests.FareRequest.initWithOJPv1Trips(ojpV1Trips);
+    const fareRequest = ojpSDK.requests.FareRequest.initWithOJPv1Trips(ojpV1Trips);
 
     try {
-      const response = await fareRequest.fetchResponse(ojpSDK_Next);
+      const response = await fareRequest.fetchResponse(ojpSDK);
       if (!response.ok) {
         console.log('ERROR: fetchFareRequestResponse');
         console.log(response);

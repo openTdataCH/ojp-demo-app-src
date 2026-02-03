@@ -204,10 +204,10 @@ export class JourneyResultRowComponent implements OnInit {
     });
 
     const stageConfig = this.userTripService.getStageConfig();
-    const ojpSDK_Next = OJP.SDK.create(REQUESTOR_REF, stageConfig, this.languageService.language);
-    const trrRequest = ojpSDK_Next.requests.TripRefineRequest.initWithTrip(tripSchema);
+    const ojpSDK = OJP.SDK.create(REQUESTOR_REF, stageConfig, this.languageService.language);
+    const trrRequest = ojpSDK.requests.TripRefineRequest.initWithTrip(tripSchema);
 
-    const trrResponse = await trrRequest.fetchResponse(ojpSDK_Next);
+    const trrResponse = await trrRequest.fetchResponse(ojpSDK);
     if (!trrResponse.ok) {
       console.error('ERROR - fetchTripRefineRequestResponse');
       console.log(trrRequest);
