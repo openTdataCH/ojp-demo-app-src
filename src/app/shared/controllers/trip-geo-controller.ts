@@ -13,6 +13,7 @@ import { TransferLeg } from '../models/trip/leg/transfer-leg';
 import { TimedLeg } from '../models/trip/leg/timed-leg';
 import { AnyPlace } from '../models/place/place-builder';
 import { ContinuousLeg } from '../models/trip/leg/continuous-leg';
+import { Leg } from '../models/trip/leg/leg';
 
 type StopCallType = 'From' | 'To' | 'Intermediate';
 
@@ -368,9 +369,8 @@ export class TripLegGeoController {
   }
 
   private computeLegLineGeoJSONFeatures(): GeoJSON.Feature[] {
-    if (this.leg.type === 'ContinuousLeg') {
-      const continuousLeg = this.leg as ContinuousLeg;
-      return this.computeContinousLegGeoJSONFeatures(continuousLeg);
+    if ((this.leg.type === 'ContinuousLeg') || (this.leg.type === 'TransferLeg')) {
+      return this.computeContinousTransferLegLineGeoJSONFeatures(this.leg);
     }
 
     if (this.leg.type === 'TimedLeg') {
@@ -381,7 +381,7 @@ export class TripLegGeoController {
     return [];
   }
 
-  private computeContinousLegGeoJSONFeatures(continuousLeg: ContinuousLeg): GeoJSON.Feature[] {
+  private computeContinousTransferLegLineGeoJSONFeatures(leg: Leg): GeoJSON.Feature[] {
     const features: GeoJSON.Feature[] = [];
 
     const lineType: TripLegLineType = (() => {
@@ -406,7 +406,7 @@ export class TripLegGeoController {
       return defaultMode;
     })();
 
-    continuousLeg.pathGuidance.sections.forEach((pathGuidanceSection, guidanceIDx) => {
+    leg.pathGuidance.sections.forEach((pathGuidanceSection, guidanceIDx) => {
       const feature = pathGuidanceSection.trackSection.linkProjection?.asGeoJSONFeature() ?? null;
       if (!feature?.properties) {
         return;
@@ -436,7 +436,7 @@ export class TripLegGeoController {
     });
 
     if (features.length === 0) {
-      continuousLeg.legTrack?.trackSections.forEach(trackSection => {
+      leg.legTrack.trackSections.forEach(trackSection => {
         const feature = trackSection.linkProjection?.asGeoJSONFeature()
         if (feature?.properties) {
           const drawType: TripLegDrawType = 'WalkLine';
