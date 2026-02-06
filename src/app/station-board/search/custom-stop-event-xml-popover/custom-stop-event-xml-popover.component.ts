@@ -15,7 +15,7 @@ export class CustomStopEventXMLPopoverComponent {
 
   public isRunningRequest: boolean
 
-  @Output() customRequestSaved = new EventEmitter<string>()
+  @Output() customRequestSaved = new EventEmitter<OJP.RequestInfo>()
   @Output() customResponseSaved = new EventEmitter<string>()
 
   constructor(private userTripService: UserTripService, private languageService: LanguageService) {
@@ -40,7 +40,7 @@ export class CustomStopEventXMLPopoverComponent {
       return;
     }
 
-    this.customRequestSaved.emit(request.requestInfo.requestXML ?? 'n/a');
+    this.customRequestSaved.emit(request.requestInfo);
   }
 
   public parseCustomResponseXML() {
