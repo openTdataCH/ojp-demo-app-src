@@ -26,7 +26,7 @@ export class InputXmlPopoverComponent {
     this.userTripService.mapActiveTripSelected.emit(null);
 
     const sdk = this.userTripService.createOJP_SDK_Instance(this.languageService.language);
-    const request = sdk.requests.TripRequest.initWithResponseMock(this.inputTripRequestXML);
+    const request = sdk.requests.TripRequest.initWithRequestMock(this.inputTripRequestXML);
 
     this.isRunningTripRequest = true;
     const response = await request.fetchResponse(sdk);

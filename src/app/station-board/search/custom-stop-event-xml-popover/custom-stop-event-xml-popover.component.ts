@@ -3,7 +3,6 @@ import { UserTripService } from 'src/app/shared/services/user-trip.service';
 
 import * as OJP from 'ojp-sdk';
 
-import { OJP_VERSION } from '../../../config/constants';
 import { LanguageService } from '../../../shared/services/language.service';
 
 @Component({
@@ -16,7 +15,7 @@ export class CustomStopEventXMLPopoverComponent {
 
   public isRunningRequest: boolean
 
-  @Output() customRequestSaved = new EventEmitter<string>()
+  @Output() customRequestSaved = new EventEmitter<OJP.RequestInfo>()
   @Output() customResponseSaved = new EventEmitter<string>()
 
   constructor(private userTripService: UserTripService, private languageService: LanguageService) {
@@ -27,13 +26,12 @@ export class CustomStopEventXMLPopoverComponent {
   }
 
   public async parseCustomRequestXML() {
-    this.isRunningRequest = true;
-    const isOJPv2 = OJP_VERSION === '2.0';
-    const xmlConfig = isOJPv2 ? OJP.DefaultXML_Config : OJP.XML_BuilderConfigOJPv1;
-
     const sdk = this.userTripService.createOJP_SDK_Instance(this.languageService.language);
     const request = sdk.requests.StopEventRequest.initWithRequestMock(this.customRequestXMLs);
+    
+    this.isRunningRequest = true;
     const response = await request.fetchResponse(sdk);
+    this.isRunningRequest = false;
 
     if (!response.ok) {
       console.log('ERROR - no response from StopEventRequest');
@@ -41,10 +39,10 @@ export class CustomStopEventXMLPopoverComponent {
       return;
     }
 
-    this.customRequestSaved.emit(request.requestInfo.requestXML ?? 'n/a');
+    this.customRequestSaved.emit(request.requestInfo);
   }
 
   public parseCustomResponseXML() {
-    this.customResponseSaved.emit(this.customResponseXMLs)
+    this.customResponseSaved.emit(this.customResponseXMLs);
   }
 }

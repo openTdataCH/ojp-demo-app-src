@@ -258,13 +258,13 @@ export class TripInfoSearchComponent implements OnInit {
       popover.customRequestXMLs = this.currentRequestInfo?.requestXML ?? 'n/a';
 
       popover.customRequestSaved.subscribe(async requestInfo => {
-        dialogRef.close()
+        dialogRef.close();
         this.currentRequestInfo = requestInfo;
 
-        if (requestInfo.requestXML) {
-          await this.handleCustomResponse(requestInfo.requestXML);
+        if (requestInfo.responseXML) {
+          await this.handleCustomResponse(requestInfo.responseXML);
         }
-      })
+      });
 
       popover.customResponseSaved.subscribe((responseXML) => {
         dialogRef.close()
@@ -278,6 +278,8 @@ export class TripInfoSearchComponent implements OnInit {
 
     const request = ojpSDK.requests.TripInfoRequest.initWithResponseMock(responseXML);
     request.enableTrackProjection();
+   
+    this.currentRequestInfo = request.requestInfo;
     
     const response = await request.fetchResponse(ojpSDK);
     if (response.ok) {

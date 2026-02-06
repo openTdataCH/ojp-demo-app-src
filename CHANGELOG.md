@@ -4,6 +4,10 @@ OJP-Demo URL: https://opentdatach.github.io/ojp-demo-app/
 
 ----
 
+06.February 2025
+- Fix CustomXML request/response - [PR #351](https://github.com/openTdataCH/ojp-demo-app-src/pull/351)
+  - fix handling of custom request XML in TR, SER, TIR - [#326 Bug: Station Board custom XML request doesnt work](https://github.com/openTdataCH/ojp-demo-app-src/issues/326)
+
 04.February 2025
 - Fix transfer legs display on map - [PR #349](https://github.com/openTdataCH/ojp-demo-app-src/pull/349)
   - use same logic for ContinuousLeg/TransferLeg

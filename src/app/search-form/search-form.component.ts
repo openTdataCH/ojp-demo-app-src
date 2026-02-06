@@ -386,7 +386,7 @@ export class SearchFormComponent implements OnInit {
       width: '50vw',
     });
     dialogRef.afterOpened().subscribe(() => {
-      const popover = dialogRef.componentInstance as InputXmlPopoverComponent
+      const popover = dialogRef.componentInstance as InputXmlPopoverComponent;
       const sdk = this.userTripService.createOJP_SDK_Instance(this.languageService.language);
       const currentTR = TripRequestBuilder.computeTripRequest(this.userTripService, sdk);
       if (currentTR) {
