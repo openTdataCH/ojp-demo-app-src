@@ -11,7 +11,7 @@ import * as GeoJSON from 'geojson';
 import * as OJP_Types from 'ojp-shared-types';
 import * as OJP from 'ojp-sdk';
 
-import { APP_STAGE, APP_STAGEs, DEFAULT_APP_STAGE, OJP_VERSION } from '../../config/constants';
+import { APP_STAGE, APP_STAGEs, DEFAULT_APP_STAGE, OJP_VERSION, REQUESTOR_REF } from '../../config/constants';
 
 import { OJPHelpers } from '../../helpers/ojp-helpers';
 
@@ -584,18 +584,31 @@ export class StationBoardSearchComponent implements OnInit {
 
       const popover = dialogRef.componentInstance as CustomStopEventXMLPopoverComponent;
 
-      if (this.currentRequestInfo === null) {
+      const requestXML: string = (() => {
+        if (this.currentRequestInfo?.requestXML) {
+          return this.currentRequestInfo.requestXML;
+        }
+
         const stopPlaceRefZH = '8503000';
         const stopEventRequest = this.computeStopEventRequest(stopPlaceRefZH);
-        this.currentRequestInfo = stopEventRequest.requestInfo;
-      }
 
-      popover.customRequestXMLs = this.currentRequestInfo?.requestXML ?? 'n/a';
+        const isOJPv2 = OJP_VERSION === '2.0';
+        const xmlConfig = isOJPv2 ? OJP.DefaultXML_Config : OJP.XML_BuilderConfigOJPv1;
+        const defaultRequestXML = stopEventRequest.buildRequestXML(this.languageService.language, REQUESTOR_REF, xmlConfig);
 
-      popover.customRequestSaved.subscribe(async (responseXML) => {
-        dialogRef.close()
-        await this.handleCustomResponse(responseXML);
-      })
+        return defaultRequestXML;
+      })();
+
+      popover.customRequestXMLs = requestXML;
+
+      popover.customRequestSaved.subscribe(async requestInfo => {
+        dialogRef.close();
+        this.currentRequestInfo = requestInfo;
+
+        if (requestInfo.responseXML) {
+          await this.handleCustomResponse(requestInfo.responseXML);
+        }
+      });
 
       popover.customResponseSaved.subscribe(async (responseXML) => {
         dialogRef.close()
