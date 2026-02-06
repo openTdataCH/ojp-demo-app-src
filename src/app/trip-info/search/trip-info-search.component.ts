@@ -258,13 +258,13 @@ export class TripInfoSearchComponent implements OnInit {
       popover.customRequestXMLs = this.currentRequestInfo?.requestXML ?? 'n/a';
 
       popover.customRequestSaved.subscribe(async requestInfo => {
-        dialogRef.close()
+        dialogRef.close();
         this.currentRequestInfo = requestInfo;
 
         if (requestInfo.requestXML) {
           await this.handleCustomResponse(requestInfo.requestXML);
         }
-      })
+      });
 
       popover.customResponseSaved.subscribe((responseXML) => {
         dialogRef.close()

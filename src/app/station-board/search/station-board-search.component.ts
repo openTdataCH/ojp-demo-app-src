@@ -45,20 +45,20 @@ export class StationBoardSearchComponent implements OnInit {
 
   public stopPlace: StopPlace | null;
   
-  public searchTime: string
+  public searchTime: string;
   
   public appStageOptions: APP_STAGE[];
   public stationBoardTypes: StationBoardType[];
-  public isSearching: boolean
+  public isSearching: boolean;
 
-  private queryParams: URLSearchParams
+  private queryParams: URLSearchParams;
 
   public permalinkRelativeURL: string;
   public otherVersionURL: string | null;
 
   public currentRequestInfo: OJP.RequestInfo | null;
 
-  public headerText: string = 'Search'
+  public headerText: string = 'Search';
 
   private useMocks = false;
   public isEmbed: boolean;
@@ -600,7 +600,7 @@ export class StationBoardSearchComponent implements OnInit {
       popover.customResponseSaved.subscribe(async (responseXML) => {
         dialogRef.close()
         await this.handleCustomResponse(responseXML);
-      })
+      });
     });
   }
 

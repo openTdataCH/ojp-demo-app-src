@@ -3,7 +3,6 @@ import { UserTripService } from 'src/app/shared/services/user-trip.service';
 
 import * as OJP from 'ojp-sdk';
 
-import { OJP_VERSION } from '../../../config/constants';
 import { LanguageService } from '../../../shared/services/language.service';
 
 @Component({
@@ -45,6 +44,6 @@ export class CustomStopEventXMLPopoverComponent {
   }
 
   public parseCustomResponseXML() {
-    this.customResponseSaved.emit(this.customResponseXMLs)
+    this.customResponseSaved.emit(this.customResponseXMLs);
   }
 }
