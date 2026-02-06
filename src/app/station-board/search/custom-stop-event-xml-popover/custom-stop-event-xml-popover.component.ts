@@ -26,13 +26,12 @@ export class CustomStopEventXMLPopoverComponent {
   }
 
   public async parseCustomRequestXML() {
-    this.isRunningRequest = true;
-    const isOJPv2 = OJP_VERSION === '2.0';
-    const xmlConfig = isOJPv2 ? OJP.DefaultXML_Config : OJP.XML_BuilderConfigOJPv1;
-
     const sdk = this.userTripService.createOJP_SDK_Instance(this.languageService.language);
     const request = sdk.requests.StopEventRequest.initWithRequestMock(this.customRequestXMLs);
+    
+    this.isRunningRequest = true;
     const response = await request.fetchResponse(sdk);
+    this.isRunningRequest = false;
 
     if (!response.ok) {
       console.log('ERROR - no response from StopEventRequest');

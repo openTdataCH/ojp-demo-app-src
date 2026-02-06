@@ -625,9 +625,6 @@ export class StationBoardSearchComponent implements OnInit {
     this.currentRequestInfo.responseDateTime = new Date();
     this.currentRequestInfo.responseXML = responseXML;
 
-    const isOJPv2 = OJP_VERSION === '2.0';
-    const xmlConfig = isOJPv2 ? OJP.DefaultXML_Config : OJP.XML_BuilderConfigOJPv1;
-
     const sdk = this.userTripService.createOJP_SDK_Instance(this.languageService.language);
 
     const request = sdk.requests.StopEventRequest.initWithResponseMock(responseXML);
