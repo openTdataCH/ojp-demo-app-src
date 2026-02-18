@@ -68,5 +68,11 @@ export const APP_CONFIG: AppConfig = {
       url: 'https://api.geops.io/routing/v1/',
       authToken: 'PLACEHOLDER_REPLACE__SHAPE_PROVIDER',
     },
+
+    'MAPBOX_MAP': {
+      // style URL
+      url: 'mapbox://styles/mapbox/light-v10',
+      authToken: 'PLACEHOLDER_REPLACE__MAPBOX_TOKEN',
+    }
   }
 }

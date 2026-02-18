@@ -45,6 +45,9 @@ npm install
 ...
 ```
 
+- get a Mapbox token - https://docs.mapbox.com/help/dive-deeper/access-tokens/
+    - or use [this one](https://gist.github.com/vasile/4079ce112128f5bb691b23110525e09a)
+
 - serve local development server
 
 ```
