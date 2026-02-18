@@ -437,7 +437,7 @@ export class TripLegGeoController {
 
     if (features.length === 0) {
       leg.legTrack.trackSections.forEach(trackSection => {
-        const feature = trackSection.linkProjection?.asGeoJSONFeature()
+        const feature = trackSection.linkProjection?.asGeoJSONFeature();
         if (feature?.properties) {
           const drawType: TripLegDrawType = 'WalkLine';
           feature.properties[TripLegPropertiesEnum.DrawType] = drawType;
