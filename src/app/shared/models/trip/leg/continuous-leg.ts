@@ -171,6 +171,14 @@ export class ContinuousLeg extends Leg {
   }
 
   public override asLegacyOJP_Schema(): OJP_Types.OJPv1_TripLegSchema {
+    const serviceIndividuaMode: string = (() => {
+      if (this,this.service.personalMode === 'car') {
+        return 'self-drive-car';
+      }
+
+      return 'n/a';
+    })(); 
+
     const schema: OJP_Types.OJPv1_TripLegSchema = {
       legId: this.id,
       duration: this.duration?.asOjpDurationText() ?? undefined,
@@ -185,7 +193,9 @@ export class ContinuousLeg extends Leg {
             text: this.toPlaceRef?.name ?? 'n/a',
           },
         },
-        service: this.service,
+        service: {
+          individualMode: serviceIndividuaMode,
+        },
         duration: this.duration?.asOjpDurationText() ?? '',
       }
     };
