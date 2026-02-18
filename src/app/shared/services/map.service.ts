@@ -13,6 +13,7 @@ import { TripGeoController } from '../controllers/trip-geo-controller';
 import { MAP_RASTER_LAYERS } from '../../config/constants';
 import { AnyPlace } from '../models/place/place-builder';
 import { Trip } from '../models/trip/trip';
+import { APP_CONFIG } from '../../config/app-config';
 
 export interface IMapBoundsData {
   bounds: mapboxgl.LngLatBounds
@@ -42,11 +43,12 @@ export class MapService {
   public createMap(elementID: string): mapboxgl.Map {
     const mapBounds = new mapboxgl.LngLatBounds([[5.9559,45.818], [10.4921,47.8084]]);
 
+    const mapStageConfig = APP_CONFIG['stages']['MAPBOX_MAP'];
     const map = new mapboxgl.Map({
       container: elementID,
-      style: 'mapbox://styles/mapbox/light-v10',
+      style: mapStageConfig.url,
       bounds: mapBounds,
-      accessToken: 'pk.eyJ1IjoidmFzaWxlIiwiYSI6ImNra2k2dWFkeDFrbG0ycXF0Nmg0Z2tsNXAifQ.nK-i-3cpWmji7HvK1Ilynw',
+      accessToken: mapStageConfig.authToken ?? 'n/a',
     });
 
     if (this.initialMapCenter) {
