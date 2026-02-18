@@ -9,6 +9,9 @@ OJP-Demo URL: https://opentdatach.github.io/ojp-demo-app/
   - set CarRequest when for monomodal car requests
   - use ContinuousLeg  new methods to compute fallback for Place
   - use ContinuousLeg OJPv1 spec
+- Extract Mapbox secrets - [PR #356](https://github.com/openTdataCH/ojp-demo-app-src/pull/356)
+  - keep mapbox token in config (or in repo secrets)
+  - adapt deploy pipeline to use mapbox repo secret
 
 06.February 2025
 - Fix CustomXML request/response - [PR #351](https://github.com/openTdataCH/ojp-demo-app-src/pull/351)
