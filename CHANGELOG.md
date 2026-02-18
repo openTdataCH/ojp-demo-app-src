@@ -4,6 +4,12 @@ OJP-Demo URL: https://opentdatach.github.io/ojp-demo-app/
 
 ----
 
+18.February 2025
+- Fix OJP TR car request - [PR #355](https://github.com/openTdataCH/ojp-demo-app-src/pull/355)
+  - set CarRequest when for monomodal car requests
+  - use ContinuousLeg  new methods to compute fallback for Place
+  - use ContinuousLeg OJPv1 spec
+
 06.February 2025
 - Fix CustomXML request/response - [PR #351](https://github.com/openTdataCH/ojp-demo-app-src/pull/351)
   - fix handling of custom request XML in TR, SER, TIR - [#326 Bug: Station Board custom XML request doesnt work](https://github.com/openTdataCH/ojp-demo-app-src/issues/326)

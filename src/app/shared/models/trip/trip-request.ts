@@ -45,6 +45,9 @@ export class TripRequestBuilder {
     const isWalking = userTripService.tripTransportMode === 'walk' || userTripService.tripTransportMode === 'foot';
     const isPublicTransport = userTripService.tripTransportMode === 'public_transport';
 
+    const carModes: IndividualTransportMode[] = ['car', 'car-ferry', 'car-shuttle-train', 'car_sharing', 'others-drive-car', 'self-drive-car'];
+    const isCar = carModes.indexOf(userTripService.tripTransportMode) !== -1;
+
     request.setNumberOfResults(userTripService.numberOfResults);
     if (userTripService.numberOfResultsBefore !== null) {
       request.setNumberOfResultsBefore(userTripService.numberOfResultsBefore);
@@ -76,7 +79,7 @@ export class TripRequestBuilder {
           requestOJPv2.payload.params.optimisationMethod = userTripService.trOptimisationMethod;
         }
       }
-    } 
+    }
 
     request.setOriginDurationDistanceRestrictions(
       userTripService.fromTripPlace?.minDuration, 
@@ -93,6 +96,11 @@ export class TripRequestBuilder {
 
     if (userTripService.walkSpeedDeviation !== null) {
       request.setWalkSpeedDeviation(userTripService.walkSpeedDeviation);
+    }
+
+    if (isCar) {
+      request.setCarRequest();
+      request.setNumberOfResults(null);
     }
 
     return request;

@@ -65,13 +65,16 @@ export class ContinuousLeg extends Leg {
     continuousLeg.computeLegTrack(continuousLegSchema.legTrack?.trackSection ?? [], mapPlaces);
     continuousLeg.computePathGuidance(continuousLegSchema.pathGuidance?.pathGuidanceSection ?? [], mapPlaces);
 
+    if (continuousLeg.fromPlace === null) {
+      continuousLeg.fromPlace = continuousLeg.legTrack.computeBestFromPlace();
+    }
+    if (continuousLeg.toPlace === null) {
+      continuousLeg.toPlace = continuousLeg.legTrack.computeBestToPlace();
+    }
+
     return continuousLeg;
   }
 
-  // TODOTRIPMIGRATION
-  // public isDriveCarLeg(): boolean {
-  //   return this.legTransportMode === 'self-drive-car';
-  // } 
   public isDriveCarLeg(): boolean {
     return this.service.personalMode === 'car';
   }
@@ -168,6 +171,14 @@ export class ContinuousLeg extends Leg {
   }
 
   public override asLegacyOJP_Schema(): OJP_Types.OJPv1_TripLegSchema {
+    const serviceIndividuaMode: string = (() => {
+      if (this,this.service.personalMode === 'car') {
+        return 'self-drive-car';
+      }
+
+      return 'n/a';
+    })(); 
+
     const schema: OJP_Types.OJPv1_TripLegSchema = {
       legId: this.id,
       duration: this.duration?.asOjpDurationText() ?? undefined,
@@ -182,7 +193,9 @@ export class ContinuousLeg extends Leg {
             text: this.toPlaceRef?.name ?? 'n/a',
           },
         },
-        service: this.service,
+        service: {
+          individualMode: serviceIndividuaMode,
+        },
         duration: this.duration?.asOjpDurationText() ?? '',
       }
     };

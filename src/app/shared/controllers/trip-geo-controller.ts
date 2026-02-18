@@ -1,5 +1,6 @@
 import * as GeoJSON from 'geojson';
 
+import * as OJP_Types from 'ojp-shared-types';
 import * as OJP from 'ojp-sdk';
 
 import { TripLegDrawType, TripLegLineType, TripLegPropertiesEnum } from '../types/map-geometry-types';
@@ -14,6 +15,7 @@ import { TimedLeg } from '../models/trip/leg/timed-leg';
 import { AnyPlace } from '../models/place/place-builder';
 import { ContinuousLeg } from '../models/trip/leg/continuous-leg';
 import { Leg } from '../models/trip/leg/leg';
+import { IndividualTransportMode } from '../types/transport-mode';
 
 type StopCallType = 'From' | 'To' | 'Intermediate';
 
@@ -396,14 +398,29 @@ export class TripLegGeoController {
       //   return 'Shared Mobility';
       // }
 
-      // const autoModes: IndividualTransportMode[] = ['car', 'car_sharing', 'self-drive-car', 'taxi', 'others-drive-car', 'car-shuttle-train', 'car-ferry'];
-      // if (autoModes.includes(continuousLeg.legTransportMode)) {
-      //   return 'Self-Drive Car';
-      // }
+      if (leg.type === 'ContinuousLeg') {
+        const autoModes: OJP_Types.PersonalModesEnum[] = ['car'];
+
+        const continousLeg = leg as ContinuousLeg;
+        if (autoModes.includes(continousLeg.service.personalMode)) {
+          return 'Self-Drive Car';
+        }
+      }
 
       const defaultMode: TripLegLineType = 'Walk';
 
       return defaultMode;
+    })();
+
+    const drawType: TripLegDrawType = (() => {
+      if (this.leg.type === 'ContinuousLeg') {
+        const continousLeg = this.leg as ContinuousLeg;
+        if (continousLeg.service.personalMode !== 'foot') {
+          return 'LegLine';
+        }
+      }
+
+      return 'WalkLine';
     })();
 
     leg.pathGuidance.sections.forEach((pathGuidanceSection, guidanceIDx) => {
@@ -412,16 +429,6 @@ export class TripLegGeoController {
         return;
       }
 
-      const drawType: TripLegDrawType = (() => {
-        if (this.leg.type === 'ContinuousLeg') {
-          const continousLeg = this.leg as ContinuousLeg;
-          if (continousLeg.service.personalMode !== 'foot') {
-            return 'LegLine';
-          }
-        }
-
-        return 'WalkLine';
-      })();
       feature.properties[TripLegPropertiesEnum.DrawType] = drawType;
       feature.properties[TripLegPropertiesEnum.LineColor] = MapLegLineTypeColor[lineType];
 
@@ -437,9 +444,8 @@ export class TripLegGeoController {
 
     if (features.length === 0) {
       leg.legTrack.trackSections.forEach(trackSection => {
-        const feature = trackSection.linkProjection?.asGeoJSONFeature()
+        const feature = trackSection.linkProjection?.asGeoJSONFeature();
         if (feature?.properties) {
-          const drawType: TripLegDrawType = 'WalkLine';
           feature.properties[TripLegPropertiesEnum.DrawType] = drawType;
           feature.properties[TripLegPropertiesEnum.LineColor] = MapLegLineTypeColor[lineType];
           

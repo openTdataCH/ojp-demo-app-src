@@ -137,10 +137,19 @@ export class Trip {
           name: legacyTripLeg.continuousLeg.legEnd.locationName,
         };
 
+        const continuousLegService: OJP_Types.ContinuousServiceSchema = {
+          personalModeOfOperation: 'own',
+          personalMode: 'foot'
+        };
+
+        if (legacyTripLeg.continuousLeg.service.individualMode === 'self-drive-car') {
+          continuousLegService.personalMode = 'car';
+        }
+
         leg.continuousLeg = {
           legStart: legStart,
           legEnd: legEnd,
-          service: legacyTripLeg.continuousLeg.service,
+          service: continuousLegService,
           duration: legacyTripLeg.continuousLeg.duration,
           length: legacyTripLeg.continuousLeg.length,
           legTrack: legacyTripLeg.continuousLeg.legTrack,
