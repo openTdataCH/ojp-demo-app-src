@@ -75,10 +75,6 @@ export class ContinuousLeg extends Leg {
     return continuousLeg;
   }
 
-  // TODOTRIPMIGRATION
-  // public isDriveCarLeg(): boolean {
-  //   return this.legTransportMode === 'self-drive-car';
-  // } 
   public isDriveCarLeg(): boolean {
     return this.service.personalMode === 'car';
   }
