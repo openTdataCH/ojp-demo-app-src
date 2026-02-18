@@ -42,6 +42,9 @@ jobs:
           sed -i "s|PLACEHOLDER_REPLACE__SHAPE_PROVIDER|${{ secrets.OJP_DEMO_APP_GEOPS_KEY }}|g" \
             src/app/config/app-config.ts
 
+          sed -i "s|PLACEHOLDER_REPLACE__MAPBOX_TOKEN|${{ secrets.MAPBOX_KEY }}|g" \
+            src/app/config/app-config.ts
+
       - name: Build
         run: npm run build -- --configuration production --base-href=/ojp-demo-app/
 
