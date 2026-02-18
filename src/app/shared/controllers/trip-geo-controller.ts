@@ -406,22 +406,23 @@ export class TripLegGeoController {
       return defaultMode;
     })();
 
+    const drawType: TripLegDrawType = (() => {
+      if (this.leg.type === 'ContinuousLeg') {
+        const continousLeg = this.leg as ContinuousLeg;
+        if (continousLeg.service.personalMode !== 'foot') {
+          return 'LegLine';
+        }
+      }
+
+      return 'WalkLine';
+    })();
+
     leg.pathGuidance.sections.forEach((pathGuidanceSection, guidanceIDx) => {
       const feature = pathGuidanceSection.trackSection.linkProjection?.asGeoJSONFeature() ?? null;
       if (!feature?.properties) {
         return;
       }
 
-      const drawType: TripLegDrawType = (() => {
-        if (this.leg.type === 'ContinuousLeg') {
-          const continousLeg = this.leg as ContinuousLeg;
-          if (continousLeg.service.personalMode !== 'foot') {
-            return 'LegLine';
-          }
-        }
-
-        return 'WalkLine';
-      })();
       feature.properties[TripLegPropertiesEnum.DrawType] = drawType;
       feature.properties[TripLegPropertiesEnum.LineColor] = MapLegLineTypeColor[lineType];
 
@@ -439,7 +440,6 @@ export class TripLegGeoController {
       leg.legTrack.trackSections.forEach(trackSection => {
         const feature = trackSection.linkProjection?.asGeoJSONFeature();
         if (feature?.properties) {
-          const drawType: TripLegDrawType = 'WalkLine';
           feature.properties[TripLegPropertiesEnum.DrawType] = drawType;
           feature.properties[TripLegPropertiesEnum.LineColor] = MapLegLineTypeColor[lineType];
           
