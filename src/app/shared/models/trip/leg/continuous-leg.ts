@@ -65,6 +65,13 @@ export class ContinuousLeg extends Leg {
     continuousLeg.computeLegTrack(continuousLegSchema.legTrack?.trackSection ?? [], mapPlaces);
     continuousLeg.computePathGuidance(continuousLegSchema.pathGuidance?.pathGuidanceSection ?? [], mapPlaces);
 
+    if (continuousLeg.fromPlace === null) {
+      continuousLeg.fromPlace = continuousLeg.legTrack.computeBestFromPlace();
+    }
+    if (continuousLeg.toPlace === null) {
+      continuousLeg.toPlace = continuousLeg.legTrack.computeBestToPlace();
+    }
+
     return continuousLeg;
   }
 
