@@ -111,6 +111,8 @@ export class UserTripService {
   }
 
   public async initDefaults(language: OJP.Language): Promise<void> {
+    const isOJPv2 = OJP_VERSION === '2.0';
+
     const appStage = OJPHelpers.computeAppStage();
 
     setTimeout(() => {
@@ -226,6 +228,14 @@ export class UserTripService {
     const tripTransportModesS = this.queryParams.get('transport_modes') ?? null;
     if (tripTransportModesS !== null) {
       this.tripTransportMode = tripTransportModesS.split(';')[0] as IndividualTransportMode;
+
+      // handle v=1|2 cases when OJPv1 has different modes than OJPv2
+      if (isOJPv2 && (this.tripTransportMode === 'self-drive-car')) {
+        this.tripTransportMode = 'car';
+      }
+      if (!isOJPv2 && (this.tripTransportMode === 'car')) {
+        this.tripTransportMode = 'self-drive-car';
+      }
     }
 
     this.publicTransportModesFilter = (() => {
