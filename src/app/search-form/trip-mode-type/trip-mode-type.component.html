@@ -1,18 +1,20 @@
 <div class="trip-mot-type-container">
 
   <div class="d-flex gap-1 align-items-center via-mot">
-    <div>
-      <sbb-form-field>
-        <sbb-label>Mono-/Multi-modal</sbb-label>
-        <sbb-select
-          [(ngModel)]="this.userTripService.tripModeType"
-          (selectionChange)="onTripModeChange()">
-          <sbb-option
-            *ngFor="let tripTransportMode of this.tripTransportModeData"
-            [value]="tripTransportMode.modeType">{{ computeTripModeTypeText(tripTransportMode.modeType) }}</sbb-option>
-        </sbb-select>
-      </sbb-form-field>
-    </div>
+    <ng-container *ngIf="this.isV1">
+      <div>
+        <sbb-form-field>
+          <sbb-label>Mono-/Multi-modal</sbb-label>
+          <sbb-select
+            [(ngModel)]="this.userTripService.tripModeType"
+            (selectionChange)="onTripModeChange()">
+            <sbb-option
+              *ngFor="let tripTransportMode of this.tripTransportModeData"
+              [value]="tripTransportMode.modeType">{{ computeTripModeTypeText(tripTransportMode.modeType) }}</sbb-option>
+          </sbb-select>
+        </sbb-form-field>
+      </div>
+    </ng-container>
 
     <div class="flex-grow-1">
       <sbb-form-field class="w-100">
