@@ -4,6 +4,10 @@ OJP-Demo URL: https://opentdatach.github.io/ojp-demo-app/
 
 ----
 
+9.March 2026
+- display Mono-/Multi-modal only for OJP v1
+- for OJP v2 use only a small version of monomodal types
+
 18.February 2026
 - Fix OJP TR car request - [PR #355](https://github.com/openTdataCH/ojp-demo-app-src/pull/355)
   - set CarRequest when for monomodal car requests
