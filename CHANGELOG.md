@@ -5,7 +5,9 @@ OJP-Demo URL: https://opentdatach.github.io/ojp-demo-app/
 ----
 
 10.March 2026
-- Improves errors handling - [PR #360](https://github.com/openTdataCH/ojp-demo-app-src/pull/350)
+- Fix places init - [PR #361](https://github.com/openTdataCH/ojp-demo-app-src/pull/361)
+  - allow correct place init when using custom backends
+- Improves errors handling - [PR #360](https://github.com/openTdataCH/ojp-demo-app-src/pull/360)
   - catch errors for TR, TIR and SER requests and harmonize display
 - Differentiate mono/multi modal between OJP versions - [PR #359](https://github.com/openTdataCH/ojp-demo-app-src/pull/359)
   - display Mono-/Multi-modal only for OJP v1

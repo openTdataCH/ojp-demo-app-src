@@ -391,11 +391,15 @@ export class UserTripService {
     if (endpointType === 'From') {
       if (this.fromTripPlace) {
         this.fromTripPlace = this.patchTripPlace(this.fromTripPlace, place);
+      } else {
+        this.fromTripPlace = TripPlace.initWithPlace(place);
       }
     }
     if (endpointType === 'To') {
       if (this.toTripPlace) {
         this.toTripPlace = this.patchTripPlace(this.toTripPlace, place);
+      } else {
+        this.toTripPlace = TripPlace.initWithPlace(place);
       }
     }
 
