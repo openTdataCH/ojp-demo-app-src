@@ -124,20 +124,6 @@ export class TripInfoSearchComponent implements OnInit {
     }
   }
 
-  private computeAppStageFromString(appStageS: string): APP_STAGE | null {
-    const availableStagesLower: string[] = this.model.appStageOptions.map(stage => {
-      return stage.toLowerCase();
-    });
-
-    const appStage = appStageS.trim() as APP_STAGE;
-    const stageIDX = availableStagesLower.indexOf(appStage.toLowerCase());
-    if (stageIDX !== -1) {
-      return this.model.appStageOptions[stageIDX];
-    }
-
-    return null;
-  }
-
   public onDateTimeChanged() {
     this.updateURLs();
   }
