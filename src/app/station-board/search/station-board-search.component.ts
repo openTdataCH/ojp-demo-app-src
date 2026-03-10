@@ -335,12 +335,26 @@ export class StationBoardSearchComponent implements OnInit {
     const sdk = this.userTripService.createOJP_SDK_Instance(this.languageService.language);
     
     const stopEventRequest = this.computeStopEventRequest(stopPlaceRef);
-
-    const response = await stopEventRequest.fetchResponse(sdk);
-    this.currentRequestInfo = stopEventRequest.requestInfo;
     
-    const stopEventResults = this.parseStopEventRequestResponse(response);
-    this.parseStopEvents(stopEventResults);
+    this.isSearching = true;
+    try {
+      const response = await stopEventRequest.fetchResponse(sdk);
+      const stopEventResults = this.parseStopEventRequestResponse(response);
+      this.parseStopEvents(stopEventResults);
+    } catch (err: any) {
+      this.isSearching = false;
+
+      console.error('SDK response error:');
+      console.log(err);
+
+      this.notificationToast.open('Response XML Error', {
+        type: 'error',
+        verticalPosition: 'top',
+      });
+    }
+    this.isSearching = false;
+
+    this.currentRequestInfo = stopEventRequest.requestInfo;
   }
 
   private async fetchStopEventFromMocks() {
