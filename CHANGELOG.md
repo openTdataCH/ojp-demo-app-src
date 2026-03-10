@@ -4,7 +4,12 @@ OJP-Demo URL: https://opentdatach.github.io/ojp-demo-app/
 
 ----
 
-18.February 2025
+10.March 2026
+- Differentiate mono/multi modal between OJP versions - [PR #359](https://github.com/openTdataCH/ojp-demo-app-src/pull/359)
+  - display Mono-/Multi-modal only for OJP v1
+  - for OJP v2 use only a small version of monomodal types
+
+18.February 2026
 - Fix OJP TR car request - [PR #355](https://github.com/openTdataCH/ojp-demo-app-src/pull/355)
   - set CarRequest when for monomodal car requests
   - use ContinuousLeg  new methods to compute fallback for Place
@@ -13,22 +18,22 @@ OJP-Demo URL: https://opentdatach.github.io/ojp-demo-app/
   - keep mapbox token in config (or in repo secrets)
   - adapt deploy pipeline to use mapbox repo secret
 
-06.February 2025
+06.February 2026
 - Fix CustomXML request/response - [PR #351](https://github.com/openTdataCH/ojp-demo-app-src/pull/351)
   - fix handling of custom request XML in TR, SER, TIR - [#326 Bug: Station Board custom XML request doesnt work](https://github.com/openTdataCH/ojp-demo-app-src/issues/326)
 
-04.February 2025
+04.February 2026
 - Fix transfer legs display on map - [PR #349](https://github.com/openTdataCH/ojp-demo-app-src/pull/349)
   - use same logic for ContinuousLeg/TransferLeg
 - Optimize requests - [PR #348](https://github.com/openTdataCH/ojp-demo-app-src/pull/348)
   - use only one TR request, simplify logic
   - correct serialize of the Trip back to XML, fix for https://github.com/openTdataCH/ojp-sdk/issues/352
 
-03.February 2025
+03.February 2026
 - Updates ojp-js - [PR #347](https://github.com/openTdataCH/ojp-demo-app-src/pull/347)
   - use `ojp-sdk` SDK package, use `OJP` as SDK name
 
-02.February 2025
+02.February 2026
 - TR - patch trips with merged timed legs - [PR #345](https://github.com/openTdataCH/ojp-demo-app-src/pull/345)
   - adds departure data for intermediary points
 - Migrate TR to use ojp-sdk-next - [PR #337](https://github.com/openTdataCH/ojp-demo-app-src/pull/337)
@@ -40,22 +45,22 @@ OJP-Demo URL: https://opentdatach.github.io/ojp-demo-app/
     - fix via feature
     - catch `A__BU` Service attribute
 
-28.January 2025
+28.January 2026
 - TR shapes provider - adds floors - [PR #343](https://github.com/openTdataCH/ojp-demo-app-src/pull/343)
   - adds mapping file for sloids-floors to improve routing
   - improves shape provider results
 
-23.January 2025
+23.January 2026
 - updates TRR - [PR #342](https://github.com/openTdataCH/ojp-demo-app-src/pull/342)
   - remove the initial hack that discarded nonTimedLegs
 
-22.January 2025
+22.January 2026
 - updates TRR - [PR #338](https://github.com/openTdataCH/ojp-demo-app-src/pull/338)
   - includes LinkProjection for TRR calls
 - updates TR - [PR #339](https://github.com/openTdataCH/ojp-demo-app-src/pull/339)
   - adds TripRequest `OptimisationMethod`
 
-12.January 2025
+12.January 2026
 - updates Shared Mobility Bicyles - [PR #336](https://github.com/openTdataCH/ojp-demo-app-src/pull/336)
 
 30.December 2025

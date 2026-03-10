@@ -22,8 +22,16 @@ const isOJPv2 = OJP_VERSION === '2.0';
 const walkTransportMode: IndividualTransportMode = isOJPv2 ? 'foot' : 'walk'; 
 const carTransportMode: IndividualTransportMode = isOJPv2 ? 'car' : 'self-drive-car';
 
-const appTripTransportModeData: TripTransportModeData[] = [
-  {
+const monomodalData: TripTransportModeData = (() => {
+  const monomodalDataOJPv2: TripTransportModeData = {
+    modeType: 'monomodal',
+    transportModes: [
+      'public_transport',
+      walkTransportMode,
+      carTransportMode,
+    ],
+  };
+  const monomodalDataOJPv1: TripTransportModeData = {
     modeType: 'monomodal',
     transportModes: [
       'public_transport',
@@ -35,8 +43,14 @@ const appTripTransportModeData: TripTransportModeData[] = [
       'car_sharing',
       'taxi',
       'others-drive-car',
-    ]
-  },
+    ],
+  };
+
+  return isOJPv2 ? monomodalDataOJPv2 : monomodalDataOJPv1;
+})();
+
+const appTripTransportModeData: TripTransportModeData[] = [
+  monomodalData,
   {
     modeType: 'mode_at_start',
     transportModes: [
