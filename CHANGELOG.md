@@ -4,7 +4,7 @@ OJP-Demo URL: https://opentdatach.github.io/ojp-demo-app/
 
 ----
 
-9.March 2026
+10.March 2026
 - Differentiate mono/multi modal between OJP versions - [PR #359](https://github.com/openTdataCH/ojp-demo-app-src/pull/359)
   - display Mono-/Multi-modal only for OJP v1
   - for OJP v2 use only a small version of monomodal types
