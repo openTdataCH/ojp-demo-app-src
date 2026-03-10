@@ -124,20 +124,6 @@ export class TripInfoSearchComponent implements OnInit {
     }
   }
 
-  private computeAppStageFromString(appStageS: string): APP_STAGE | null {
-    const availableStagesLower: string[] = this.model.appStageOptions.map(stage => {
-      return stage.toLowerCase();
-    });
-
-    const appStage = appStageS.trim() as APP_STAGE;
-    const stageIDX = availableStagesLower.indexOf(appStage.toLowerCase());
-    if (stageIDX !== -1) {
-      return this.model.appStageOptions[stageIDX];
-    }
-
-    return null;
-  }
-
   public onDateTimeChanged() {
     this.updateURLs();
   }
@@ -197,21 +183,20 @@ export class TripInfoSearchComponent implements OnInit {
     request.enableTrackProjection();
 
     this.model.isSearching = true;
-    const response = await request.fetchResponse(ojpSDK);
-    this.model.isSearching = false;
-
-    if (response.ok) {
+    try {
+      const response = await request.fetchResponse(ojpSDK);
       const tripInfoResult = TripInfoResult.initWithTripInfoResponse(OJP_VERSION, response);
       this.parseTripInfo(request.requestInfo, tripInfoResult);
-    } else {
-      this.notificationToast.open('Invalid TripInfoRequest result: ' + response.error.message, {
+    } catch (err: any) {
+      this.notificationToast.open('Response XML Error', {
         type: 'error',
         verticalPosition: 'top',
       });
 
-      console.log(this.model.journeyRef);
-      console.log(response);
+      console.error('SDK response error:');
+      console.log(err);
     }
+    this.model.isSearching = false;
   }
 
   private async fetchTripInfoRequestFromMocks() {

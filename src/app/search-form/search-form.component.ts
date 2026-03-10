@@ -26,7 +26,7 @@ import { ReportIssueComponent } from '../shared/components/report-issue.componen
 
 import { OJPHelpers } from '../helpers/ojp-helpers';
 import { AnyPlace } from '../shared/models/place/place-builder';
-import { JourneyPointType, TripRequestBoardingType } from '../shared/types/_all';
+import { AnyTripRequestResponse, JourneyPointType, TripRequestBoardingType } from '../shared/types/_all';
 import { TripRequestBuilder } from '../shared/models/trip/trip-request';
 import { Trip } from '../shared/models/trip/trip';
 
@@ -319,14 +319,17 @@ export class SearchFormComponent implements OnInit {
 
     this.notificationToast.dismiss();
 
+    let responseStep1: AnyTripRequestResponse | null = null;
     this.isSearching = true;
-    const responseStep1 = await tripRequestStep1.fetchResponse(sdk);
-    this.isSearching = false;
+    try {
+      responseStep1 = await tripRequestStep1.fetchResponse(sdk);
+    } catch (err: any) {
+      this.isSearching = false;
 
-    this.logResponseTime(tripRequestStep1.requestInfo, 'DEBUG TR - 1st request');
+      console.error('SDK response error:');
+      console.log(err);
 
-    if (!responseStep1.ok) {
-      this.notificationToast.open('ParseTripsXMLError', {
+      this.notificationToast.open('Response XML Error', {
         type: 'error',
         verticalPosition: 'top',
       });
@@ -338,6 +341,9 @@ export class SearchFormComponent implements OnInit {
 
       return;
     }
+    this.isSearching = false;
+
+    this.logResponseTime(tripRequestStep1.requestInfo, 'DEBUG TR - 1st request');
     
     const trips = TripRequestBuilder.parseTrips(this.sanitizer, responseStep1);
 
