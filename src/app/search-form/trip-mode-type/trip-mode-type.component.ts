@@ -28,7 +28,6 @@ const monomodalData: TripTransportModeData = (() => {
     transportModes: [
       'public_transport',
       walkTransportMode,
-      'cycle',
       carTransportMode,
     ],
   };
