@@ -78,6 +78,10 @@ export class TripRequestBuilder {
         if (userTripService.trOptimisationMethod !== null) {
           requestOJPv2.payload.params.optimisationMethod = userTripService.trOptimisationMethod;
         }
+
+        if (userTripService.useBikeTransport) {
+          requestOJPv2.payload.params.bikeTransport = true;
+        }
       }
     }
 

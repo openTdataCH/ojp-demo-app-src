@@ -39,6 +39,7 @@ export class UserTripService {
   public railSubmodesFilter: OJP_Types.RailSubmodeEnum[];
   public useRealTimeDataType: OJP_Types.UseRealtimeDataEnum;
   public trOptimisationMethod: OJP_Types.OptimisationMethodEnum | null;
+  public useBikeTransport: boolean | null;
   public walkSpeedDeviation: number | null;
 
   public currentBoardingType: TripRequestBoardingType;
@@ -89,6 +90,7 @@ export class UserTripService {
     this.railSubmodesFilter = [];
     this.useRealTimeDataType = 'explanatory';
     this.trOptimisationMethod = null;
+    this.useBikeTransport = null;
     this.walkSpeedDeviation = null;
     
     this.isViaEnabled = false;
@@ -294,6 +296,8 @@ export class UserTripService {
     if (userOptimisationMethod) {
       this.trOptimisationMethod = userOptimisationMethod as OJP_Types.OptimisationMethodEnum;
     }
+
+    this.useBikeTransport = ['yes', 'true', '1'].includes(this.queryParams.get('biketransport') ?? 'n/a');
 
     this._initialLocationsChanges.next(true);
   }

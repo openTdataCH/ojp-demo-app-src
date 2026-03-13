@@ -4,6 +4,10 @@ OJP-Demo URL: https://opentdatach.github.io/ojp-demo-app/
 
 ----
 
+13.March 2026
+- TR BikeTransport - [PR #363](https://github.com/openTdataCH/ojp-demo-app-src/pull/363), [TR - biketransport param in GUI #357](https://github.com/openTdataCH/ojp-demo-app-src/issues/357)
+  - allow in GUI / via request param `biketransport=yes` to set TR `BikeTransport` request param
+
 10.March 2026
 - Fix places init - [PR #361](https://github.com/openTdataCH/ojp-demo-app-src/pull/361)
   - allow correct place init when using custom backends

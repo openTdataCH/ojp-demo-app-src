@@ -130,6 +130,18 @@
 
       <hr />
 
+      <div class="d-flex align-items-center mb-2">
+        <div class="flex-grow-1 d-flex align-items-center">
+          <sbb-checkbox value="single-checkbox" [(ngModel)]="this.isBikeTransportEnabled" (change)="updateAdditionalRestrictions()">
+            BikeTransport
+          </sbb-checkbox>
+          <div class="mx-2">-</div>
+          <a href="https://vdvde.github.io/OJP/develop/documentation-tables/ojp.html#group_ojp__TripMobilityFilterGroup" target="_blank">XSD.TripMobilityFilterGroup</a>
+        </div>
+      </div>
+
+      <hr />
+
       <ng-container *ngIf="!this.isV1;">
         <div class="d-flex gap-2 align-items-center mb-3">
           <div>UseRealTimeData</div>
