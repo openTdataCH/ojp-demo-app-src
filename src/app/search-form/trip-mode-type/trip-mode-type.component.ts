@@ -208,7 +208,6 @@ export class TripModeTypeComponent implements OnInit {
     this.tripTransportModes = JSON.parse(JSON.stringify(tripTransportModeData.transportModes));
     this.prevTransportMode = this.userTripService.tripTransportMode;
 
-
     this.userTripService.initialLocationsChanges$.pipe(takeUntil(this.destroyed$)).subscribe(change => {
       if (change === null) {
         return;
