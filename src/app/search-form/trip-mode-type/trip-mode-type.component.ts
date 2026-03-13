@@ -109,6 +109,8 @@ export class TripModeTypeComponent implements OnInit {
   public isNumberOfResultsEnabled: boolean;
   public isNumberOfResultsBeforeEnabled: boolean;
   public isNumberOfResultsAfterEnabled: boolean;
+  public isBikeTransportEnabled: boolean;
+
   public numberOfResults: number;
   public numberOfResultsBefore: number;
   public numberOfResultsAfter: number;
@@ -166,6 +168,7 @@ export class TripModeTypeComponent implements OnInit {
     this.isNumberOfResultsEnabled = true;
     this.isNumberOfResultsBeforeEnabled = false;
     this.isNumberOfResultsAfterEnabled = false;
+    this.isBikeTransportEnabled = false;
     
     this.numberOfResults = TRIP_REQUEST_DEFAULT_NUMBER_OF_RESULTS;
     if (this.userTripService.tripModeType !== 'monomodal') {
@@ -278,6 +281,8 @@ export class TripModeTypeComponent implements OnInit {
       });
     }
 
+    this.isBikeTransportEnabled = this.userTripService.useBikeTransport === null ? false : this.userTripService.useBikeTransport;
+
     this.updateAdditionalRestrictions();
 
     this.userTripService.searchFormAfterDefaultsInited.emit();
@@ -306,6 +311,8 @@ export class TripModeTypeComponent implements OnInit {
     
     this.userTripService.publicTransportModesFilter = [];
     this.userTripService.walkSpeedDeviation = null;
+
+    this.userTripService.useBikeTransport = null;
 
     if (this.userTripService.isAdditionalRestrictionsEnabled) {
       if (this.isFilterMinDurationEnabled) {
@@ -348,6 +355,10 @@ export class TripModeTypeComponent implements OnInit {
             this.userTripService.railSubmodesFilter.push(railSubmode);
           }
         });
+      }
+
+      if (this.isBikeTransportEnabled) {
+        this.userTripService.useBikeTransport = true;
       }
 
       this.userTripService.walkSpeedDeviation = this.walkSpeedDeviation;
