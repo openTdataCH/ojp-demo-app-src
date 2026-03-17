@@ -35,6 +35,8 @@ export class TripRequestBuilder {
     }
 
     const isOJPv2 = OJP_VERSION === '2.0';
+    
+    const isAdvanced = userTripService.isAdditionalRestrictionsEnabled === true;
 
     const sharingModes: IndividualTransportMode[] = [
       "bicycle_rental",
@@ -64,7 +66,7 @@ export class TripRequestBuilder {
       const requestOJPv2 = request as OJP.TripRequest;
 
       // NumberOfResults = 0 for sharing / walking in OJP v2.0
-      if (isSharingMode || isWalking) {
+      if (!isAdvanced && (isSharingMode || isWalking)) {
         requestOJPv2.setNumberOfResults(0);
       }
 
@@ -89,18 +91,35 @@ export class TripRequestBuilder {
       }
     }
 
-    request.setOriginDurationDistanceRestrictions(
-      userTripService.fromTripPlace?.minDuration, 
-      userTripService.fromTripPlace?.maxDuration, 
-      userTripService.fromTripPlace?.minDistance, 
-      userTripService.fromTripPlace?.maxDistance
-    );
-    request.setDestinationDurationDistanceRestrictions(
-      userTripService.toTripPlace?.minDuration, 
-      userTripService.toTripPlace?.maxDuration, 
-      userTripService.toTripPlace?.minDistance, 
-      userTripService.toTripPlace?.maxDistance
-    );
+    if (isAdvanced) {
+      // in advanced mode, set Origin/Destination with what is enabled in the GUI
+      request.setOriginDurationDistanceRestrictions(
+        userTripService.fromTripPlace?.minDuration, 
+        userTripService.fromTripPlace?.maxDuration, 
+        userTripService.fromTripPlace?.minDistance, 
+        userTripService.fromTripPlace?.maxDistance
+      );
+      // dont set Destination for Walk monomodal
+      if (!isWalking) {
+        request.setDestinationDurationDistanceRestrictions(
+          userTripService.toTripPlace?.minDuration, 
+          userTripService.toTripPlace?.maxDuration, 
+          userTripService.toTripPlace?.minDistance, 
+          userTripService.toTripPlace?.maxDistance
+        );
+      }
+    } else {
+      // in simple-mode, for walking, set max walk time
+      if (isWalking) {
+        const maxDuration = 60 * 5; // 5 hrs
+        request.setOriginDurationDistanceRestrictions(
+          null, 
+          maxDuration, 
+          null, 
+          null,
+        );
+      }
+    }
 
     if (userTripService.walkSpeedDeviation !== null) {
       request.setWalkSpeedDeviation(userTripService.walkSpeedDeviation);
