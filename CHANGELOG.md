@@ -5,6 +5,10 @@ OJP-Demo URL: https://opentdatach.github.io/ojp-demo-app/
 ----
 
 17.March 2026
+- Extend linked URLs - [PR #367](https://github.com/openTdataCH/ojp-demo-app-src/pull/367)
+  - fix SBB linked URL
+  - adds BLS, ZVV compare urls
+  - link to OJP v1,v2 goes to same URL with different `v` param
 - Improve TR params - [PR #366](https://github.com/openTdataCH/ojp-demo-app-src/pull/366)
   - set `NumberOfResults` 0 only in "simple" mode (no advanced panel)
   - set the origin/destination min/max duration/distance only in advanced mode

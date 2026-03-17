@@ -7,7 +7,8 @@ import * as OJP from 'ojp-sdk';
 import { APP_CONFIG } from '../../config/app-config';
 import { APP_STAGE, DEFAULT_APP_STAGE, REQUESTOR_REF, TRIP_REQUEST_DEFAULT_NUMBER_OF_RESULTS, OJP_VERSION, EMPTY_HTTPConfig } from '../../config/constants';
 
-import { MapService } from './map.service';
+import { LanguageService } from './language.service';
+
 import { TripData } from '../types/trip';
 import { AnyPlace, PlaceBuilder, sortPlaces } from '../models/place/place-builder';
 import { PlaceLocation } from '../models/place/location';
@@ -18,6 +19,7 @@ import { IndividualTransportMode } from '../types/transport-mode';
 import { TripPlace } from '../models/trip-place';
 import { StopPlace } from '../models/place/stop-place';
 import { Trip } from '../models/trip/trip';
+import { DataHelpers } from 'src/app/helpers/data-helpers';
 
 type LocationUpdateSource = 'SearchForm' | 'MapDragend' | 'MapPopupClick';
 
@@ -52,9 +54,13 @@ export class UserTripService {
   public currentAppStage: APP_STAGE;
 
   public permalinkRelativeURL: string | null;
+  
   public otherVersionURL: string | null;
   public otherVersionURLText: string | null;
   public sbbURL: string | null;
+  public blsURL: string | null;
+  public zvvURL: string | null;
+  
   public embedQueryParams = new URLSearchParams();
 
   public searchFormAfterDefaultsInited = new EventEmitter<void>();
@@ -76,7 +82,7 @@ export class UserTripService {
   private readonly _initialLocationsChanges = new BehaviorSubject<boolean | null>(null);
   readonly initialLocationsChanges$: Observable<boolean | null> = this._initialLocationsChanges.asObservable();
 
-  constructor(private mapService: MapService) {
+  constructor(private languageService: LanguageService) {
     this.queryParams = new URLSearchParams(document.location.search);
 
     this.fromTripPlace = null;
@@ -109,7 +115,10 @@ export class UserTripService {
     this.permalinkRelativeURL = null;
     this.otherVersionURL = null;
     this.otherVersionURLText = null;
+    
     this.sbbURL = null;
+    this.blsURL = null;
+    this.zvvURL = null;
   }
 
   public async initDefaults(language: OJP.Language): Promise<void> {
@@ -459,7 +468,7 @@ export class UserTripService {
     this.tripFaresUpdated.emit(fareResults);
   }
 
-  public updateURLs() {
+  private computeQueryParams(): URLSearchParams {
     const queryParams = new URLSearchParams();
 
     const endpointTypes: JourneyPointType[] = ['From', 'To'];
@@ -554,6 +563,12 @@ export class UserTripService {
       queryParams.append('optimisation_method', this.trOptimisationMethod);
     }
 
+    return queryParams;
+  }
+
+  public updateURLs() {
+    const queryParams = this.computeQueryParams();
+
     const permalinkQueryParams = new URLSearchParams(queryParams);
     const currentQueryParams = new URLSearchParams(document.location.search);
     const userVersion = currentQueryParams.get('v');
@@ -583,45 +598,151 @@ export class UserTripService {
     this.updateStageLinkedURL(otherVersionQueryParams, isOJPv2);
     if (isOJPv2) {
       // v1
-      this.otherVersionURL = 'https://tools.odpch.ch/beta-ojp-demo/search?' + otherVersionQueryParams.toString();
-      this.otherVersionURLText = 'BETA (OJP 1.0)';
+      otherVersionQueryParams.set('v', '1');
+      this.otherVersionURLText = 'OJP 1.0';
     } else {
       // v2
-      this.otherVersionURL = 'https://opentdatach.github.io/ojp-demo-app/search?' + otherVersionQueryParams.toString();
-      this.otherVersionURLText = 'PROD (OJP 2.0)';
-    }
-
-    const sbbURLStopsData: {[key: string]: string}[] = [];
-    const stopKeys = ['from', 'to'];
-    stopKeys.forEach(key => {
-      const value = queryParams.get(key);
-      if (value === null) {
-        return;
+      if (otherVersionQueryParams.get('v') === '1') {
+        otherVersionQueryParams.set('v', '2');
       }
-      const label: string = (() => {
-        const defaultLabel = key.charAt(0).toUpperCase() + key.slice(1) + ' placeholder';
+      this.otherVersionURLText = 'OJP 2.0';
+    }
+    this.otherVersionURL = 'https://opentdatach.github.io/ojp-demo-app/search?' + otherVersionQueryParams.toString();
 
-        const isFrom = key === 'from';
-        const tripPoint = isFrom ? this.fromTripPlace : this.toTripPlace;
-        if (tripPoint === null) {
-          return defaultLabel;
+    const dateF = OJP.DateHelpers.formatDate(this.departureDate);
+
+    this.sbbURL = (() => {
+      const stopsData: string[] = [];
+      const endpointTypes: JourneyPointType[] = ['From', 'To'];
+      endpointTypes.forEach(endpointType => {
+        const isFrom = endpointType === 'From';
+        const tripPlace = isFrom ? this.fromTripPlace : this.toTripPlace;
+        if (tripPlace === null) {
+          return;
         }
-        const label = tripPoint.place.computeName();
 
-        return label + ' (OJP Demo)';
-      })();
+        const place = tripPlace.place;
+        if (place.type !== 'stop') {
+          return;
+        }
+
+        const stopPlace = place as StopPlace;
+        const stopPlaceRef = DataHelpers.convertStopPointToStopPlace(stopPlace.placeRef.ref);
+
+        const stopPart = place.computeName() + ' (OJP Demo)' + '_I' + stopPlaceRef;
+        stopsData.push(stopPart);
+      });
+
+      const dayF = dateF.substring(0, 10);
+
+      const queryTime = dateF.substring(11, 16).replace(':', '_');
+      const queryMoment = this.currentBoardingType === 'Dep' ? 'dep' : 'arr';
+
+      const params = new URLSearchParams({
+        stops: stopsData.join('~'),
+        day: dayF,
+        moment: queryMoment,
+        time: queryTime,
+        ref: 'OJP_DemoApp',
+      });
+
+      // https://www.sbb.ch/de?stops=FOOBART+Nene_I8592588~Thun,+Arena+Thun_I8594535&day=2026-03-13&moment=dep&time=23_08
+      const url = 'https://www.sbb.ch/' + this.languageService.language + '?' + params.toString();
+
+      return url;
+    })();
+
+    this.blsURL = (() => {
+      // 14.03.2026
+      const queryDate = dateF.substring(8, 10) + '.' + dateF.substring(5, 7) + '.' + dateF.substring(0, 4);
+      const queryTime = dateF.substring(11, 16);
+
+      const queryDatetimeType = this.currentBoardingType === 'Dep' ? 'departure' : 'arrival';
+
+      const params = new URLSearchParams({
+        date: queryDate,
+        time: queryTime,
+        datetimeType: queryDatetimeType,
+        selectCluster: '0',
+        timeSel: '1',
+      });
+
+      const endpointTypes: JourneyPointType[] = ['From', 'To'];
+      endpointTypes.forEach(endpointType => {
+        const isFrom = endpointType === 'From';
+        const tripPlace = isFrom ? this.fromTripPlace : this.toTripPlace;
+        if (tripPlace === null) {
+          return;
+        }
+
+        const place = tripPlace.place;
+        if (place.type !== 'stop') {
+          return;
+        }
+
+        const stopPlace = place as StopPlace;
+        const stopPlaceRef = DataHelpers.convertStopPointToStopPlace(stopPlace.placeRef.ref);
+
+        if (isFrom) {
+          params.set('S', stopPlaceRef);
+        } else {
+          params.set('Z', stopPlaceRef);
+        }
+      });
+
+      const url = 'https://www.bls.ch/en/fahren/fahrplan#/?' + params.toString();
+
+      return url;
+    })();
+
+    this.zvvURL = (() => {
+      const dayF = dateF.substring(0, 10);
+      const queryTime = dateF.substring(11, 16);
+
+      const params = new URLSearchParams({
+        tab: 'connections',
+        date: dayF,
+        time: queryTime,
+      });
+
+      const endpointTypes: JourneyPointType[] = ['From', 'To'];
+      endpointTypes.forEach(endpointType => {
+        const isFrom = endpointType === 'From';
+        const tripPlace = isFrom ? this.fromTripPlace : this.toTripPlace;
+        if (tripPlace === null) {
+          return;
+        }
+
+        const place = tripPlace.place;
+        if (place.type !== 'stop') {
+          return;
+        }
+
+        const stopPlace = place as StopPlace;
+        const stopPlaceRef = DataHelpers.convertStopPointToStopPlace(stopPlace.placeRef.ref);
+
+        // A=1@O=Gurten Kulm@X=7439751@Y=46919610@U=90@L=8507099@p=1773077090@
+        const idParts: string[] = [
+          'A=1',
+          'O=' + stopPlace.computeName(),
+          'X=' + stopPlace.geoPosition.longitude.toString().replace('.', ''),
+          'Y=' + stopPlace.geoPosition.latitude.toString().replace('.', ''),
+          'L=' + stopPlaceRef,
+          'p=1773077090',
+          ''
+        ];
+
+        const queryParamPrefix = endpointType.toLowerCase();
+        params.set(queryParamPrefix + 'id', idParts.join('@'));
+        params.set(queryParamPrefix + 'lat', stopPlace.geoPosition.latitude.toString());
+        params.set(queryParamPrefix + 'lon', stopPlace.geoPosition.longitude.toString());
+        params.set(queryParamPrefix + 'name', stopPlace.computeName());
+      });
+
+      const url = 'https://www.zvv.ch/en/timetable-and-information/timetable.html?' + params.toString();
       
-      const stopData = {
-        "value": value,
-        "type": "ID",
-        "label": label,
-      };
-      sbbURLStopsData.push(stopData);
-    });
-    const sbbURLQueryParams = new URLSearchParams();
-    sbbURLQueryParams.set('stops', JSON.stringify(sbbURLStopsData));
-    sbbURLQueryParams.set('ref', 'OJP Demo');
-    this.sbbURL = 'https://www.sbb.ch/en?' + sbbURLQueryParams.toString();
+      return url;
+    })();
   }
 
   public updateStageLinkedURL(queryParams: URLSearchParams, isOJPv2: boolean) {

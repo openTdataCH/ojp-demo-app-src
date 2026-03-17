@@ -9,6 +9,11 @@ export class LanguageService {
   public language: OJP.Language;
 
   constructor() {
+    this.language = 'en';
+  }
+
+  public init(): void {
+    // init() is called by APP_INITIALIZER
     this.language = this.guessLanguage();
   }
 
@@ -18,16 +23,16 @@ export class LanguageService {
     if (langQueryParam !== null) {
       langQueryParam = langQueryParam.trim().toLowerCase();
       if (langQueryParam === 'de') {
-        return 'de'
+        return 'de';
       }
       if (langQueryParam === 'en') {
-        return 'en'
+        return 'en';
       }
       if (langQueryParam === 'fr') {
-        return 'fr'
+        return 'fr';
       }
       if (langQueryParam === 'it') {
-        return 'it'
+        return 'it';
       }
     }
 

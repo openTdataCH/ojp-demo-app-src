@@ -1,4 +1,4 @@
-import { NgModule } from '@angular/core';
+import { APP_INITIALIZER, NgModule } from '@angular/core';
 
 import { CommonModule } from '@angular/common';
 import { BrowserModule } from '@angular/platform-browser';
@@ -49,6 +49,11 @@ import { WebFooterComponent } from './shared/components/web-footer';
 import { WebHeaderComponent } from './shared/components/web-header';
 
 import { StopClickPropagationDirective } from './shared/components/stop-click-propagation.directive';
+import { LanguageService } from './shared/services/language.service';
+
+export function initLanguage(languageService: LanguageService): () => void {
+  return () => languageService.init();
+}
 
 @NgModule({
   declarations: [
@@ -106,7 +111,14 @@ import { StopClickPropagationDirective } from './shared/components/stop-click-pr
 
     SbbModule,
   ],
-  providers: [],
+  providers: [
+    {
+      provide: APP_INITIALIZER,
+      useFactory: initLanguage,
+      deps: [LanguageService],
+      multi: true,
+    },
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
