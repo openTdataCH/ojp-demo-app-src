@@ -19,6 +19,7 @@ import { IndividualTransportMode } from '../types/transport-mode';
 import { TripPlace } from '../models/trip-place';
 import { StopPlace } from '../models/place/stop-place';
 import { Trip } from '../models/trip/trip';
+import { DataHelpers } from 'src/app/helpers/data-helpers';
 
 type LocationUpdateSource = 'SearchForm' | 'MapDragend' | 'MapPopupClick';
 
@@ -53,6 +54,7 @@ export class UserTripService {
   public currentAppStage: APP_STAGE;
 
   public permalinkRelativeURL: string | null;
+  
   public otherVersionURL: string | null;
   public otherVersionURLText: string | null;
   public sbbURL: string | null;
@@ -460,7 +462,7 @@ export class UserTripService {
     this.tripFaresUpdated.emit(fareResults);
   }
 
-  public updateURLs() {
+  private computeQueryParams(): URLSearchParams {
     const queryParams = new URLSearchParams();
 
     const endpointTypes: JourneyPointType[] = ['From', 'To'];
@@ -555,6 +557,12 @@ export class UserTripService {
       queryParams.append('optimisation_method', this.trOptimisationMethod);
     }
 
+    return queryParams;
+  }
+
+  public updateURLs() {
+    const queryParams = this.computeQueryParams();
+
     const permalinkQueryParams = new URLSearchParams(queryParams);
     const currentQueryParams = new URLSearchParams(document.location.search);
     const userVersion = currentQueryParams.get('v');
@@ -595,37 +603,48 @@ export class UserTripService {
     }
     this.otherVersionURL = 'https://opentdatach.github.io/ojp-demo-app/search?' + otherVersionQueryParams.toString();
 
-    const sbbURLStopsData: {[key: string]: string}[] = [];
-    const stopKeys = ['from', 'to'];
-    stopKeys.forEach(key => {
-      const value = queryParams.get(key);
-      if (value === null) {
-        return;
-      }
-      const label: string = (() => {
-        const defaultLabel = key.charAt(0).toUpperCase() + key.slice(1) + ' placeholder';
+    const dateF = OJP.DateHelpers.formatDate(this.departureDate);
 
-        const isFrom = key === 'from';
-        const tripPoint = isFrom ? this.fromTripPlace : this.toTripPlace;
-        if (tripPoint === null) {
-          return defaultLabel;
+    this.sbbURL = (() => {
+      const stopsData: string[] = [];
+      const endpointTypes: JourneyPointType[] = ['From', 'To'];
+      endpointTypes.forEach(endpointType => {
+        const isFrom = endpointType === 'From';
+        const tripPlace = isFrom ? this.fromTripPlace : this.toTripPlace;
+        if (tripPlace === null) {
+          return;
         }
-        const label = tripPoint.place.computeName();
 
-        return label + ' (OJP Demo)';
-      })();
-      
-      const stopData = {
-        "value": value,
-        "type": "ID",
-        "label": label,
-      };
-      sbbURLStopsData.push(stopData);
-    });
-    const sbbURLQueryParams = new URLSearchParams();
-    sbbURLQueryParams.set('stops', JSON.stringify(sbbURLStopsData));
-    sbbURLQueryParams.set('ref', 'OJP Demo');
-    this.sbbURL = 'https://www.sbb.ch/en?' + sbbURLQueryParams.toString();
+        const place = tripPlace.place;
+        if (place.type !== 'stop') {
+          return;
+        }
+
+        const stopPlace = place as StopPlace;
+        const stopPlaceRef = DataHelpers.convertStopPointToStopPlace(stopPlace.placeRef.ref);
+
+        const stopPart = place.computeName() + ' (OJP Demo)' + '_I' + stopPlaceRef;
+        stopsData.push(stopPart);
+      });
+
+      const dayF = dateF.substring(0, 10);
+
+      const queryTime = dateF.substring(11, 16).replace(':', '_');
+      const queryMoment = this.currentBoardingType === 'Dep' ? 'dep' : 'arr';
+
+      const params = new URLSearchParams({
+        stops: stopsData.join('~'),
+        day: dayF,
+        moment: queryMoment,
+        time: queryTime,
+        ref: 'OJP_DemoApp',
+      });
+
+      // https://www.sbb.ch/de?stops=FOOBART+Nene_I8592588~Thun,+Arena+Thun_I8594535&day=2026-03-13&moment=dep&time=23_08
+      const url = 'https://www.sbb.ch/' + this.languageService.language + '?' + params.toString();
+
+      return url;
+    })();
   }
 
   public updateStageLinkedURL(queryParams: URLSearchParams, isOJPv2: boolean) {
