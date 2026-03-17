@@ -9,6 +9,11 @@ export class LanguageService {
   public language: OJP.Language;
 
   constructor() {
+    this.language = 'en';
+  }
+
+  public init(): void {
+    // init() is called by APP_INITIALIZER
     this.language = this.guessLanguage();
   }
 
