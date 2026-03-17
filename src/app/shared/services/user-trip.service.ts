@@ -7,7 +7,6 @@ import * as OJP from 'ojp-sdk';
 import { APP_CONFIG } from '../../config/app-config';
 import { APP_STAGE, DEFAULT_APP_STAGE, REQUESTOR_REF, TRIP_REQUEST_DEFAULT_NUMBER_OF_RESULTS, OJP_VERSION, EMPTY_HTTPConfig } from '../../config/constants';
 
-import { MapService } from './map.service';
 import { LanguageService } from './language.service';
 
 import { TripData } from '../types/trip';
