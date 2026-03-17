@@ -91,18 +91,24 @@ export class TripRequestBuilder {
       }
     }
 
-    request.setOriginDurationDistanceRestrictions(
-      userTripService.fromTripPlace?.minDuration, 
-      userTripService.fromTripPlace?.maxDuration, 
-      userTripService.fromTripPlace?.minDistance, 
-      userTripService.fromTripPlace?.maxDistance
-    );
-    request.setDestinationDurationDistanceRestrictions(
-      userTripService.toTripPlace?.minDuration, 
-      userTripService.toTripPlace?.maxDuration, 
-      userTripService.toTripPlace?.minDistance, 
-      userTripService.toTripPlace?.maxDistance
-    );
+    if (isAdvanced) {
+      // in advanced mode, set Origin/Destination with what is enabled in the GUI
+      request.setOriginDurationDistanceRestrictions(
+        userTripService.fromTripPlace?.minDuration, 
+        userTripService.fromTripPlace?.maxDuration, 
+        userTripService.fromTripPlace?.minDistance, 
+        userTripService.fromTripPlace?.maxDistance
+      );
+      // dont set Destination for Walk monomodal
+      if (!isWalking) {
+        request.setDestinationDurationDistanceRestrictions(
+          userTripService.toTripPlace?.minDuration, 
+          userTripService.toTripPlace?.maxDuration, 
+          userTripService.toTripPlace?.minDistance, 
+          userTripService.toTripPlace?.maxDistance
+        );
+      }
+    }
 
     if (userTripService.walkSpeedDeviation !== null) {
       request.setWalkSpeedDeviation(userTripService.walkSpeedDeviation);
