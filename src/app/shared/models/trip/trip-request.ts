@@ -35,6 +35,8 @@ export class TripRequestBuilder {
     }
 
     const isOJPv2 = OJP_VERSION === '2.0';
+    
+    const isAdvanced = userTripService.isAdditionalRestrictionsEnabled === true;
 
     const sharingModes: IndividualTransportMode[] = [
       "bicycle_rental",
@@ -64,7 +66,7 @@ export class TripRequestBuilder {
       const requestOJPv2 = request as OJP.TripRequest;
 
       // NumberOfResults = 0 for sharing / walking in OJP v2.0
-      if (isSharingMode || isWalking) {
+      if (!isAdvanced && (isSharingMode || isWalking)) {
         requestOJPv2.setNumberOfResults(0);
       }
 
