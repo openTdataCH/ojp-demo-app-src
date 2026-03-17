@@ -108,6 +108,17 @@ export class TripRequestBuilder {
           userTripService.toTripPlace?.maxDistance
         );
       }
+    } else {
+      // in simple-mode, for walking, set max walk time
+      if (isWalking) {
+        const maxDuration = 60 * 5; // 5 hrs
+        request.setOriginDurationDistanceRestrictions(
+          null, 
+          maxDuration, 
+          null, 
+          null,
+        );
+      }
     }
 
     if (userTripService.walkSpeedDeviation !== null) {
