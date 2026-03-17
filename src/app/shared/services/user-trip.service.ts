@@ -8,6 +8,8 @@ import { APP_CONFIG } from '../../config/app-config';
 import { APP_STAGE, DEFAULT_APP_STAGE, REQUESTOR_REF, TRIP_REQUEST_DEFAULT_NUMBER_OF_RESULTS, OJP_VERSION, EMPTY_HTTPConfig } from '../../config/constants';
 
 import { MapService } from './map.service';
+import { LanguageService } from './language.service';
+
 import { TripData } from '../types/trip';
 import { AnyPlace, PlaceBuilder, sortPlaces } from '../models/place/place-builder';
 import { PlaceLocation } from '../models/place/location';
@@ -76,7 +78,7 @@ export class UserTripService {
   private readonly _initialLocationsChanges = new BehaviorSubject<boolean | null>(null);
   readonly initialLocationsChanges$: Observable<boolean | null> = this._initialLocationsChanges.asObservable();
 
-  constructor(private mapService: MapService) {
+  constructor(private languageService: LanguageService) {
     this.queryParams = new URLSearchParams(document.location.search);
 
     this.fromTripPlace = null;
