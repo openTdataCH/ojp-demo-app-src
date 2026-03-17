@@ -584,13 +584,16 @@ export class UserTripService {
     this.updateStageLinkedURL(otherVersionQueryParams, isOJPv2);
     if (isOJPv2) {
       // v1
-      this.otherVersionURL = 'https://tools.odpch.ch/beta-ojp-demo/search?' + otherVersionQueryParams.toString();
-      this.otherVersionURLText = 'BETA (OJP 1.0)';
+      otherVersionQueryParams.set('v', '1');
+      this.otherVersionURLText = 'OJP 1.0';
     } else {
       // v2
-      this.otherVersionURL = 'https://opentdatach.github.io/ojp-demo-app/search?' + otherVersionQueryParams.toString();
-      this.otherVersionURLText = 'PROD (OJP 2.0)';
+      if (otherVersionQueryParams.get('v') === '1') {
+        otherVersionQueryParams.set('v', '2');
+      }
+      this.otherVersionURLText = 'OJP 2.0';
     }
+    this.otherVersionURL = 'https://opentdatach.github.io/ojp-demo-app/search?' + otherVersionQueryParams.toString();
 
     const sbbURLStopsData: {[key: string]: string}[] = [];
     const stopKeys = ['from', 'to'];
