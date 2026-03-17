@@ -58,6 +58,9 @@ export class UserTripService {
   public otherVersionURL: string | null;
   public otherVersionURLText: string | null;
   public sbbURL: string | null;
+  public blsURL: string | null;
+  public zvvURL: string | null;
+  
   public embedQueryParams = new URLSearchParams();
 
   public searchFormAfterDefaultsInited = new EventEmitter<void>();
@@ -112,7 +115,10 @@ export class UserTripService {
     this.permalinkRelativeURL = null;
     this.otherVersionURL = null;
     this.otherVersionURLText = null;
+    
     this.sbbURL = null;
+    this.blsURL = null;
+    this.zvvURL = null;
   }
 
   public async initDefaults(language: OJP.Language): Promise<void> {
@@ -643,6 +649,98 @@ export class UserTripService {
       // https://www.sbb.ch/de?stops=FOOBART+Nene_I8592588~Thun,+Arena+Thun_I8594535&day=2026-03-13&moment=dep&time=23_08
       const url = 'https://www.sbb.ch/' + this.languageService.language + '?' + params.toString();
 
+      return url;
+    })();
+
+    this.blsURL = (() => {
+      // 14.03.2026
+      const queryDate = dateF.substring(8, 10) + '.' + dateF.substring(5, 7) + '.' + dateF.substring(0, 4);
+      const queryTime = dateF.substring(11, 16);
+
+      const queryDatetimeType = this.currentBoardingType === 'Dep' ? 'departure' : 'arrival';
+
+      const params = new URLSearchParams({
+        date: queryDate,
+        time: queryTime,
+        datetimeType: queryDatetimeType,
+        selectCluster: '0',
+        timeSel: '1',
+      });
+
+      const endpointTypes: JourneyPointType[] = ['From', 'To'];
+      endpointTypes.forEach(endpointType => {
+        const isFrom = endpointType === 'From';
+        const tripPlace = isFrom ? this.fromTripPlace : this.toTripPlace;
+        if (tripPlace === null) {
+          return;
+        }
+
+        const place = tripPlace.place;
+        if (place.type !== 'stop') {
+          return;
+        }
+
+        const stopPlace = place as StopPlace;
+        const stopPlaceRef = DataHelpers.convertStopPointToStopPlace(stopPlace.placeRef.ref);
+
+        if (isFrom) {
+          params.set('S', stopPlaceRef);
+        } else {
+          params.set('Z', stopPlaceRef);
+        }
+      });
+
+      const url = 'https://www.bls.ch/en/fahren/fahrplan#/?' + params.toString();
+
+      return url;
+    })();
+
+    this.zvvURL = (() => {
+      const dayF = dateF.substring(0, 10);
+      const queryTime = dateF.substring(11, 16);
+
+      const params = new URLSearchParams({
+        tab: 'connections',
+        date: dayF,
+        time: queryTime,
+      });
+
+      const endpointTypes: JourneyPointType[] = ['From', 'To'];
+      endpointTypes.forEach(endpointType => {
+        const isFrom = endpointType === 'From';
+        const tripPlace = isFrom ? this.fromTripPlace : this.toTripPlace;
+        if (tripPlace === null) {
+          return;
+        }
+
+        const place = tripPlace.place;
+        if (place.type !== 'stop') {
+          return;
+        }
+
+        const stopPlace = place as StopPlace;
+        const stopPlaceRef = DataHelpers.convertStopPointToStopPlace(stopPlace.placeRef.ref);
+
+        // A=1@O=Gurten Kulm@X=7439751@Y=46919610@U=90@L=8507099@p=1773077090@
+        const idParts: string[] = [
+          'A=1',
+          'O=' + stopPlace.computeName(),
+          'X=' + stopPlace.geoPosition.longitude.toString().replace('.', ''),
+          'Y=' + stopPlace.geoPosition.latitude.toString().replace('.', ''),
+          'L=' + stopPlaceRef,
+          'p=1773077090',
+          ''
+        ];
+
+        const queryParamPrefix = endpointType.toLowerCase();
+        params.set(queryParamPrefix + 'id', idParts.join('@'));
+        params.set(queryParamPrefix + 'lat', stopPlace.geoPosition.latitude.toString());
+        params.set(queryParamPrefix + 'lon', stopPlace.geoPosition.longitude.toString());
+        params.set(queryParamPrefix + 'name', stopPlace.computeName());
+      });
+
+      const url = 'https://www.zvv.ch/en/timetable-and-information/timetable.html?' + params.toString();
+      
       return url;
     })();
   }
