@@ -4,6 +4,12 @@ OJP-Demo URL: https://opentdatach.github.io/ojp-demo-app/
 
 ----
 
+17.March 2026
+- Improve TR params - [PR #366](https://github.com/openTdataCH/ojp-demo-app-src/pull/366)
+  - set `NumberOfResults` 0 only in "simple" mode (no advanced panel)
+  - set the origin/destination min/max duration/distance only in advanced mode
+  - set for walk monomodal (no advanced mode) a maxDuration of 5hrs
+
 16.March 2026
 - Fix TR walk - [PR #365](https://github.com/openTdataCH/ojp-demo-app-src/pull/365)
   - use `setWalkRequest()` payload modifier to send the TR params for walk requests 
