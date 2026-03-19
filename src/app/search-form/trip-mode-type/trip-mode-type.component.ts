@@ -203,6 +203,14 @@ export class TripModeTypeComponent implements OnInit {
     })();
 
     this.isBikeTransportEnabled = false;
+    this.walkSpeedDeviation = (() => {
+      const userWalkSpeedDeviationS = queryParams.get('walk_speed_deviation');
+      if (userWalkSpeedDeviationS !== null) {
+        return parseInt(userWalkSpeedDeviationS);
+      }
+
+      return 100;
+    })();
     this.walkSpeedDeviationValues = [50, 75, 100, 150, 200, 400];
 
     this.mapPublicTransportModesFilter = <Record<ModeOfTransportType, boolean>>{};
