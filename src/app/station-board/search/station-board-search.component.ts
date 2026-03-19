@@ -330,13 +330,14 @@ export class StationBoardSearchComponent implements OnInit {
     this.userTripService.updateStageLinkedURL(otherVersionQueryParams, isOJPv2);
     if (isOJPv2) {
       // v1
-      this.otherVersionURL = 'https://tools.odpch.ch/beta-ojp-demo/board?' + otherVersionQueryParams.toString();
-      this.userTripService.otherVersionURLText = 'BETA (OJP 1.0)';
+      otherVersionQueryParams.set('v', '1');
+      this.userTripService.otherVersionURLText = 'OJP 1.0';
     } else {
-      // v2
-      this.otherVersionURL = 'https://opentdatach.github.io/ojp-demo-app/board?' + otherVersionQueryParams.toString();
-      this.userTripService.otherVersionURLText = 'PROD (OJP 2.0)';
+      otherVersionQueryParams.delete('v');
+      this.userTripService.otherVersionURLText = 'OJP 2.0';
     }
+
+    this.otherVersionURL = 'board?' + otherVersionQueryParams.toString();
   }
 
   private async fetchStopEventsForStopRef(stopPlaceRef: string) {

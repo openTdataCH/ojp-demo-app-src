@@ -167,13 +167,15 @@ export class TripInfoSearchComponent implements OnInit {
     this.userTripService.updateStageLinkedURL(otherVersionQueryParams, isOJPv2);
     if (isOJPv2) {
       // v1
-      this.model.otherVersionURL = 'https://tools.odpch.ch/beta-ojp-demo/trip?' + otherVersionQueryParams.toString();
-      this.userTripService.otherVersionURLText = 'BETA (OJP 1.0)';
+      otherVersionQueryParams.set('v', '1');
+      this.userTripService.otherVersionURLText = 'OJP 1.0';
     } else {
       // v2
-      this.model.otherVersionURL = 'https://opentdatach.github.io/ojp-demo-app/trip?' + otherVersionQueryParams.toString();
-      this.userTripService.otherVersionURLText = 'PROD (OJP 2.0)';
+      otherVersionQueryParams.delete('v');
+      this.userTripService.otherVersionURLText = 'OJP 2.0';
     }
+
+    this.model.otherVersionURL = 'trip?' + otherVersionQueryParams.toString();
   }
 
   private async fetchTripInfo() {

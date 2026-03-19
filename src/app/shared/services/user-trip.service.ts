@@ -698,9 +698,7 @@ export class UserTripService {
       this.otherVersionURLText = 'OJP 1.0';
     } else {
       // v2
-      if (otherVersionQueryParams.get('v') === '1') {
-        otherVersionQueryParams.set('v', '2');
-      }
+      otherVersionQueryParams.delete('v');
       this.otherVersionURLText = 'OJP 2.0';
     }
     this.otherVersionURL = 'search?' + otherVersionQueryParams.toString();
