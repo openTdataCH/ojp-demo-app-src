@@ -1,11 +1,12 @@
 import { EventEmitter, Injectable } from '@angular/core'
+import { ActivatedRoute, Params, Route, Router } from '@angular/router';
 import { BehaviorSubject, Observable } from 'rxjs';
 
 import * as OJP_Types from 'ojp-shared-types';
 import * as OJP from 'ojp-sdk';
 
 import { APP_CONFIG } from '../../config/app-config';
-import { APP_STAGE, DEFAULT_APP_STAGE, REQUESTOR_REF, TRIP_REQUEST_DEFAULT_NUMBER_OF_RESULTS, OJP_VERSION, EMPTY_HTTPConfig } from '../../config/constants';
+import { APP_STAGE, DEFAULT_APP_STAGE, REQUESTOR_REF, TRIP_REQUEST_DEFAULT_NUMBER_OF_RESULTS, OJP_VERSION, EMPTY_HTTPConfig, FLAG_USE_2nd_SHAPE_PROVIDER } from '../../config/constants';
 
 import { LanguageService } from './language.service';
 
@@ -206,8 +207,31 @@ export class UserTripService {
     this.viaTripLocations = [];
 
     const viaPartsS = this.queryParams.get('via') ?? null;
-    const viaParts: string[] = viaPartsS === null ? [] : viaPartsS.split(';');
-    for (const viaKey of viaParts) {
+    const viaParts: string[] = (() => {
+      if (viaPartsS === null) {
+        return [];
+      }
+      const parts = viaPartsS.split(';');
+      return parts;
+    })();
+
+    const defaultViaDwellTime = '0';
+
+    const viaDwellTimes: number[] = (() => {
+      const parts = new Array(viaParts.length).fill(defaultViaDwellTime);
+      
+      const viaDwellTimePartsS = this.queryParams.get('via_dwell_time') ?? null;
+      const viaDwellTimeParts = viaDwellTimePartsS === null ? [] : viaDwellTimePartsS.split(';');
+
+      for (const [index, viaDwellValue] of viaDwellTimeParts.entries()) {
+        if (index in viaParts) {
+          parts[index] = parseInt(viaDwellValue, 10);
+        }
+      }
+      return parts;
+    })();
+
+    for (const [index, viaKey] of viaParts.entries()) {
       let place: AnyPlace | null = null;
 
       const coordsPlace = PlaceLocation.initFromLiteralCoords(viaKey);
@@ -226,6 +250,10 @@ export class UserTripService {
       this.isViaEnabled = true;
       
       const viaTripLocation = TripPlace.initWithPlace(place);
+
+      const dwellTime = viaDwellTimes[index] ?? defaultViaDwellTime;
+      viaTripLocation.dwellTimeMinutes = dwellTime;
+
       this.viaTripLocations.push(viaTripLocation);
     };
     
@@ -282,6 +310,18 @@ export class UserTripService {
       const userRailSubmodes = railSubmodesS.split(',').map(el => el.toLowerCase().trim()) as OJP_Types.RailSubmodeEnum[];
       return userRailSubmodes;
     })();
+    
+    this.useRealTimeDataType = (() => {
+      const userRealRealTimeDataTypeS = this.queryParams.get('real_time_data') ?? null;
+      if (userRealRealTimeDataTypeS === 'full') {
+        return 'full';
+      }
+      if (userRealRealTimeDataTypeS === 'none') {
+        return 'none';
+      }
+
+      return 'explanatory';
+    })();
 
     this.locationsUpdated.emit();
     this.updateURLs();
@@ -289,16 +329,16 @@ export class UserTripService {
     this.isAdditionalRestrictionsEnabled = ['yes', 'true', '1'].includes(this.queryParams.get('advanced') ?? 'n/a');
 
     this.currentBoardingType = (() => {
-      const userTimeTypeS = this.queryParams.get('time_type') ?? null;
-      if (userTimeTypeS === null) {
-        return 'Dep';
-      }
+      const userArrivalValue = this.queryParams.get('arrival') ?? 'n/a';
 
-      if (['arrival', 'arr'].includes(userTimeTypeS.toLowerCase())) {
+      if (['yes', 'true', '1'].includes(userArrivalValue)) {
+        return 'Arr';
+      }
+      if (['yes', 'true', '1'].includes(userArrivalValue)) {
         return 'Arr';
       }
 
-      return 'Dep' as TripRequestBoardingType;
+      return 'Dep';
     })();
 
     const userOptimisationMethod = this.queryParams.get('optimisation_method');
@@ -306,7 +346,7 @@ export class UserTripService {
       this.trOptimisationMethod = userOptimisationMethod as OJP_Types.OptimisationMethodEnum;
     }
 
-    this.useBikeTransport = ['yes', 'true', '1'].includes(this.queryParams.get('biketransport') ?? 'n/a');
+    this.useBikeTransport = ['yes', 'true', '1'].includes(this.queryParams.get('bike_transport') ?? 'n/a');
 
     this._initialLocationsChanges.next(true);
   }
@@ -418,8 +458,11 @@ export class UserTripService {
 
     if (location && endpointType === 'Via') {
       const viaTripLocation = TripPlace.initWithPlace(place);
-      this.viaTripLocations = [viaTripLocation];
+      if (this.viaTripLocations.length > 0) {
+        viaTripLocation.dwellTimeMinutes = this.viaTripLocations[0].dwellTimeMinutes;
+      }
 
+      this.viaTripLocations = [viaTripLocation];
       this.isViaEnabled = true;
     }
 
@@ -468,6 +511,15 @@ export class UserTripService {
     this.tripFaresUpdated.emit(fareResults);
   }
 
+  public updateCurrentURL(router: Router, route: ActivatedRoute) {
+    const queryParams = Object.fromEntries(this.computeQueryParams().entries());
+
+    router.navigate([], {
+      relativeTo: route,
+      queryParams: queryParams,
+    });
+  }
+
   private computeQueryParams(): URLSearchParams {
     const queryParams = new URLSearchParams();
 
@@ -493,25 +545,30 @@ export class UserTripService {
       if (stopPlaceRef) {
         queryParams.append(queryParamKey, stopPlaceRef);
       } else {
-        const placeName = place.computeName();
-        const placeCoordsWithName = place.geoPosition.asLatLngString(true) + '(' + placeName + ')';
+        const placeCoordsWithName = place.geoPosition.asLatLngString(true);
         queryParams.append(queryParamKey, placeCoordsWithName);
       }
     });
 
-    const viaParamParts: string[] = []
-    this.viaTripLocations.forEach(viaTripLocation => {
-      const place = viaTripLocation.place;
-      if (place.type === 'stop') {
-        const stopPlace = place as StopPlace;
-        viaParamParts.push(stopPlace.placeRef.ref);
-      } else {
-        const geoPositionLngLatS = place.geoPosition.asLatLngString(true);
-        viaParamParts.push(geoPositionLngLatS);
+    if (this.isViaEnabled) {
+      const viaParamParts: string[] = [];
+      const viaDwellTimeParts: string[] = [];
+      this.viaTripLocations.forEach(viaTripLocation => {
+        const place = viaTripLocation.place;
+        if (place.type === 'stop') {
+          const stopPlace = place as StopPlace;
+          viaParamParts.push(stopPlace.placeRef.ref);
+        } else {
+          const geoPositionLngLatS = place.geoPosition.asLatLngString(true);
+          viaParamParts.push(geoPositionLngLatS);
+        }
+
+        viaDwellTimeParts.push(viaTripLocation.dwellTimeMinutes?.toString() ?? '0');
+      });
+      if (viaParamParts.length > 0) {
+        queryParams.append('via', viaParamParts.join(';'));
+        queryParams.append('via_dwell_time', viaDwellTimeParts.join(';'));
       }
-    });
-    if (viaParamParts.length > 0) {
-      queryParams.append('via', viaParamParts.join(';'));
     }
     
     if (this.tripModeType !== 'monomodal') {
@@ -526,15 +583,20 @@ export class UserTripService {
       queryParams.append('public_transport_modes', this.publicTransportModesFilter.join(','));
     }
 
-    if (this.railSubmodesFilter.length > 0) {
-      queryParams.append('rail_submodes', this.railSubmodesFilter.join(','));
+    if (this.currentBoardingType === 'Arr') {
+      queryParams.append('arr', 'yes');
     }
 
     const now = new Date();
     const deltaNowMinutes = Math.abs((now.getTime() - this.departureDate.getTime()) / 1000 / 60);
     if (deltaNowMinutes > 5) {
       const dateTimeS = OJP.DateHelpers.formatDate(this.departureDate);
-      queryParams.append('trip_datetime', dateTimeS.substring(0, 16));
+      
+      const dayF = dateTimeS.substring(0, 10);
+      queryParams.append('day', dayF);
+
+      const hmF = dateTimeS.substring(11, 16);
+      queryParams.append('time', hmF);
     }
 
     if (this.currentAppStage !== DEFAULT_APP_STAGE) {
@@ -546,21 +608,55 @@ export class UserTripService {
       queryParams.append('advanced', 'yes');
 
       if (this.fromTripPlace?.minDistance !== null) {
-        queryParams.append('minDistance', String(this.fromTripPlace?.minDistance));
+        queryParams.append('min_distance', String(this.fromTripPlace?.minDistance));
       }
       if (this.fromTripPlace?.maxDistance !== null) {
-        queryParams.append('maxDistance', String(this.fromTripPlace?.maxDistance));
+        queryParams.append('max_distance', String(this.fromTripPlace?.maxDistance));
       }
       if (this.fromTripPlace?.minDuration !== null) {
-        queryParams.append('minDuration', String(this.fromTripPlace?.minDuration));
+        queryParams.append('min_duration', String(this.fromTripPlace?.minDuration));
       }
       if (this.fromTripPlace?.maxDuration !== null) {
-        queryParams.append('maxDuration', String(this.fromTripPlace?.maxDuration));
+        queryParams.append('max_duration', String(this.fromTripPlace?.maxDuration));
+      }
+
+      if (this.numberOfResults !== null) {
+        queryParams.append('number_results', String((this.numberOfResults)));
+      }
+      if (this.numberOfResultsBefore !== null) {
+        queryParams.append('number_results_before', String((this.numberOfResultsBefore)));
+      }
+      if (this.numberOfResultsAfter !== null) {
+        queryParams.append('number_results_after', String((this.numberOfResultsAfter)));
+      }
+
+      if (this.useBikeTransport) {
+        queryParams.append('bike_transport', 'yes');
+      }
+
+      if (this.useRealTimeDataType !== 'explanatory') {
+        queryParams.append('real_time_data', this.useRealTimeDataType);
+      }
+
+      if (this.railSubmodesFilter.length > 0) {
+        queryParams.append('rail_submodes', this.railSubmodesFilter.join(','));
+      }
+
+      if (this.trOptimisationMethod) {
+        queryParams.append('optimisation_method', this.trOptimisationMethod);
+      }
+
+      if ((this.walkSpeedDeviation !== null) && (this.walkSpeedDeviation !== 100)) {
+        queryParams.append('walk_speed_deviation', this.walkSpeedDeviation.toString());
       }
     }
 
-    if (this.trOptimisationMethod) {
-      queryParams.append('optimisation_method', this.trOptimisationMethod);
+    if (OJP_VERSION === '1.0') {
+      queryParams.append('v', '1');
+    }
+
+    if (FLAG_USE_2nd_SHAPE_PROVIDER) {
+      queryParams.append('shapes', 'yes');
     }
 
     return queryParams;
@@ -602,12 +698,10 @@ export class UserTripService {
       this.otherVersionURLText = 'OJP 1.0';
     } else {
       // v2
-      if (otherVersionQueryParams.get('v') === '1') {
-        otherVersionQueryParams.set('v', '2');
-      }
+      otherVersionQueryParams.delete('v');
       this.otherVersionURLText = 'OJP 2.0';
     }
-    this.otherVersionURL = 'https://opentdatach.github.io/ojp-demo-app/search?' + otherVersionQueryParams.toString();
+    this.otherVersionURL = 'search?' + otherVersionQueryParams.toString();
 
     const dateF = OJP.DateHelpers.formatDate(this.departureDate);
 
@@ -800,20 +894,36 @@ export class UserTripService {
   private computeInitialDate(): Date {
     const defaultDate = new Date();
 
-    const tripDateTimeS = this.queryParams.get('trip_datetime') ?? null
-    if (tripDateTimeS === null) {
+    const userDateTimeS: string | null = (() => {
+      const userDay = this.queryParams.get('day');
+      const userTime = this.queryParams.get('time');
+      if (userDay && userTime) {
+        // 2026-03-19 12:21:00
+        const userDateTimeF = userDay + ' ' + userTime + ':00';
+        return userDateTimeF;
+      }
+
+      // following string dates are matched
+      // 2025-08-01 10:00
+      // 2025-08-01 10:00:00
+      // 2025-08-01
+      // 2025-09-17T11:15:00
+      // 29.Dec.2025 10:00
+      const userLegacyDateTime = this.queryParams.get('trip_datetime');
+      if (userLegacyDateTime) {
+        return userLegacyDateTime;
+      }
+
+      return null;
+    })();
+
+    if (userDateTimeS === null) {
       return defaultDate;
     }
 
-    // following types are working
-    // 2025-08-01 10:00
-    // 2025-08-01 10:00:00
-    // 2025-08-01
-    // 2025-09-17T11:15:00
-    // 29.Dec.2025 10:00
-    const dateTS = Date.parse(tripDateTimeS);
+    const dateTS = Date.parse(userDateTimeS);
     if (isNaN(dateTS)) {
-      console.error('CANT parse custom date string: ' + tripDateTimeS + ', using current datetime instead');
+      console.error('CANT parse custom date string: ' + userDateTimeS + ', using current datetime instead');
       return defaultDate;
     }
 

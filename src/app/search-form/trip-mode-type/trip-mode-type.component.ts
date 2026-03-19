@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { FormControl } from '@angular/forms';
+import { ActivatedRoute, Router } from '@angular/router';
 import { debounceTime, Subject, takeUntil } from 'rxjs';
 
 import * as OJP_Types from 'ojp-shared-types';
@@ -130,7 +131,7 @@ export class TripModeTypeComponent implements OnInit {
 
   private destroyed$ = new Subject<void>();
 
-  constructor(public userTripService: UserTripService, private languageService: LanguageService) {
+  constructor(public userTripService: UserTripService, private languageService: LanguageService, private router: Router, private route: ActivatedRoute) {
     const queryParams = new URLSearchParams(document.location.search);
 
     this.tripTransportModeData = appTripTransportModeData;
@@ -140,10 +141,10 @@ export class TripModeTypeComponent implements OnInit {
 
     this.settingsCollapseID = 'mode_custom_mode_settings_NOT_READY_YET';
 
-    const userMinDuration = queryParams.get('minDuration');
-    const userMaxDuration = queryParams.get('maxDuration');
-    const userMinDistance = queryParams.get('minDistance');
-    const userMaxDistance = queryParams.get('maxDistance');
+    const userMinDuration = queryParams.get('min_duration');
+    const userMaxDuration = queryParams.get('max_duration');
+    const userMinDistance = queryParams.get('min_distance');
+    const userMaxDistance = queryParams.get('max_distance');
     
     this.filterMinDurationControl.setValue(userMinDuration ?? '2', { emitEvent: false });
     this.filterMaxDurationControl.setValue(userMaxDuration ?? '30', { emitEvent: false });
@@ -165,19 +166,52 @@ export class TripModeTypeComponent implements OnInit {
       this.isFilterMaxDistanceEnabled = true;
     }
 
+    const userNumberOfResults = queryParams.get('number_results');
+    const userNumberOfResultsBefore = queryParams.get('number_results_before');
+    const userNumberOfResultsAfter = queryParams.get('number_results_after');
+
     this.isNumberOfResultsEnabled = true;
-    this.isNumberOfResultsBeforeEnabled = false;
-    this.isNumberOfResultsAfterEnabled = false;
+    this.isNumberOfResultsBeforeEnabled = userNumberOfResultsBefore !== null;
+    this.isNumberOfResultsAfterEnabled = userNumberOfResultsAfter !== null;
+
+    this.numberOfResults = (() => {
+      if (userNumberOfResults !== null) {
+        return parseInt(userNumberOfResults);
+      }
+
+      if (this.userTripService.tripModeType !== 'monomodal') {
+        return 1;
+      }
+
+      const defaultValue = TRIP_REQUEST_DEFAULT_NUMBER_OF_RESULTS;
+      return defaultValue;
+    })();
+
+    this.numberOfResultsBefore = (() => {
+      if (userNumberOfResultsBefore !== null) {
+        return parseInt(userNumberOfResultsBefore);
+      }
+
+      return 1;
+    })();
+
+    this.numberOfResultsAfter = (() => {
+      if (userNumberOfResultsAfter !== null) {
+        return parseInt(userNumberOfResultsAfter);
+      }
+
+      return 4;
+    })();
+
     this.isBikeTransportEnabled = false;
-    
-    this.numberOfResults = TRIP_REQUEST_DEFAULT_NUMBER_OF_RESULTS;
-    if (this.userTripService.tripModeType !== 'monomodal') {
-      this.numberOfResults = 1;
-    }
-    
-    this.numberOfResultsBefore = 1;
-    this.numberOfResultsAfter = 4;
-    this.walkSpeedDeviation = 100;
+    this.walkSpeedDeviation = (() => {
+      const userWalkSpeedDeviationS = queryParams.get('walk_speed_deviation');
+      if (userWalkSpeedDeviationS !== null) {
+        return parseInt(userWalkSpeedDeviationS);
+      }
+
+      return 100;
+    })();
     this.walkSpeedDeviationValues = [50, 75, 100, 150, 200, 400];
 
     this.mapPublicTransportModesFilter = <Record<ModeOfTransportType, boolean>>{};
@@ -371,6 +405,7 @@ export class TripModeTypeComponent implements OnInit {
     this.userTripService.useRealTimeDataType = this.selectedUseRealTimeDataType;
 
     this.userTripService.updateURLs();
+    this.userTripService.updateCurrentURL(this.router, this.route);
   }
 
   public onTripModeChange() {
@@ -422,6 +457,7 @@ export class TripModeTypeComponent implements OnInit {
     this.userTripService.updateTripLocationCustomMode();
 
     this.prevTransportMode = this.userTripService.tripTransportMode;
+    this.userTripService.updateCurrentURL(this.router, this.route);
   }
 
   public computeTripModeTypeText(tripModeType: TripModeType): string {

@@ -1,5 +1,5 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { FormControl } from '@angular/forms';
 import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
 import { DomSanitizer } from '@angular/platform-browser';
@@ -43,6 +43,7 @@ export class SearchFormComponent implements OnInit {
   public fromPlace: AnyPlace | null;
   public toPlace: AnyPlace | null;
   public viaPlaces: AnyPlace[];
+  
   public viaDwellTime = new FormControl('');
 
   public appStageOptions: APP_STAGE[] = [];
@@ -71,6 +72,7 @@ export class SearchFormComponent implements OnInit {
     private notificationToast: SbbNotificationToast,
     private popover: SbbDialog,
     private router: Router,
+    private route: ActivatedRoute,
     private languageService: LanguageService,
     public userTripService: UserTripService,
     private breakpointObserver: BreakpointObserver,
@@ -115,8 +117,8 @@ export class SearchFormComponent implements OnInit {
 
     this.userTripService.locationsUpdated.subscribe(nothing => {
       this.updateLocationTexts();
-      this.updateViaDwellTime();
-    })
+      this.userTripService.updateCurrentURL(this.router, this.route);
+    });
 
     this.userTripService.tripsDataUpdated.subscribe(tripsData => {
       const hasTrips = tripsData.length > 0;
@@ -151,6 +153,13 @@ export class SearchFormComponent implements OnInit {
 
     await this.userTripService.initDefaults(this.languageService.language);
 
+    if (this.userTripService.viaTripLocations.length > 0) {
+      const firstVia = this.userTripService.viaTripLocations[0];
+      if (firstVia.dwellTimeMinutes !== null) {
+        this.viaDwellTime.setValue(firstVia.dwellTimeMinutes.toString());
+      }
+    }
+
     this.breakpointObserver.observe([Breakpoints.Small, Breakpoints.XSmall])
       .subscribe(result => {
         this.isSmallScreen = result.matches;
@@ -167,6 +176,8 @@ export class SearchFormComponent implements OnInit {
     
     const firstVia = this.userTripService.viaTripLocations[0];
     firstVia.dwellTimeMinutes = viaDwellTimeValue;
+
+    this.userTripService.updateCurrentURL(this.router, this.route);
   }
 
   private async customInitFromParams() {
@@ -270,12 +281,26 @@ export class SearchFormComponent implements OnInit {
   public async onChangeStageAPI(ev: SbbRadioChange) {
     const newAppStage = ev.value as APP_STAGE;
     this.userTripService.updateAppStage(newAppStage);
+    this.notificationToast.dismiss();
 
-    await this.userTripService.refetchEndpointsByName(this.languageService.language);
+    try {
+      await this.userTripService.refetchEndpointsByName(this.languageService.language);
+    } catch (error: any) {
+      this.notificationToast.open('Error switching stage', {
+        type: 'error',
+        verticalPosition: 'top',
+      });
+    }
+  }
+
+  public async onChangeBoardingType(ev: SbbRadioChange) {
+    this.userTripService.currentBoardingType = ev.value;
+    this.userTripService.updateCurrentURL(this.router, this.route);
   }
 
   onChangeDateTime() {
-    this.userTripService.updateDepartureDateTime(this.computeFormDepartureDate())
+    this.userTripService.updateDepartureDateTime(this.computeFormDepartureDate());
+    this.userTripService.updateCurrentURL(this.router, this.route);
   }
 
   private computeFormDepartureDate(): Date {
@@ -470,6 +495,7 @@ export class SearchFormComponent implements OnInit {
     this.searchDate = nowDateTime;
     this.searchTime = OJP.DateHelpers.formatTimeHHMM(nowDateTime);
     this.userTripService.updateDepartureDateTime(this.computeFormDepartureDate());
+    this.userTripService.updateCurrentURL(this.router, this.route);
   }
 
   public showRequestXMLPopover() {

@@ -1,7 +1,8 @@
 import { Component, OnInit } from '@angular/core';
+
 import { AppService } from '../shared/services/app.service';
-import { UserTripService } from '../shared/services/user-trip.service';
-import { DEFAULT_APP_STAGE } from '../config/constants';
+import { DEFAULT_APP_STAGE, OJP_VERSION } from '../config/constants';
+import { StationBoardService } from './station-board.service';
 
 @Component({
   selector: 'station-board',
@@ -9,25 +10,38 @@ import { DEFAULT_APP_STAGE } from '../config/constants';
   styleUrls: ['./station-board.component.scss'],
 })
 export class StationBoardComponent implements OnInit {
-  public queryParams: Record<string, string>;
+  public routeQueryParams: Record<string, string>;
 
-  constructor(private appService: AppService, public userTripService: UserTripService) {
-    this.queryParams = {};
+  constructor(private appService: AppService, private stationBoardService: StationBoardService) {
+    this.routeQueryParams = {};
   }
 
   ngOnInit(): void {
     this.appService.setTitle('StopEventRequest');
 
-    this.userTripService.stageChanged.subscribe(newStage => {
-      if (newStage !== DEFAULT_APP_STAGE) {
-        this.queryParams['stage'] = newStage;
+    this.stationBoardService.stageChanged.subscribe(newStage => {
+      const queryParams = new URLSearchParams(this.routeQueryParams);
+
+      if (newStage === DEFAULT_APP_STAGE) {
+        if (queryParams.get('stage') !== null) {
+          queryParams.delete('stage');
+        }
+      } else {
+        queryParams.set('stage', newStage);
       }
 
-      const currentQueryParams = new URLSearchParams(document.location.search);
-      const userVersion = currentQueryParams.get('v');
-      if (userVersion) {
-        this.queryParams['v'] = userVersion;
-      }
+      this.updateRouteQueryParams(queryParams);
     });
+
+    this.updateRouteQueryParams(new URLSearchParams());
+  }
+
+  private updateRouteQueryParams(queryParams: URLSearchParams) {
+    const isOJPv1 = OJP_VERSION === '1.0';
+    if (isOJPv1) {
+      queryParams.set('v', '1');
+    }
+
+    this.routeQueryParams = Object.fromEntries(queryParams.entries());
   }
 }

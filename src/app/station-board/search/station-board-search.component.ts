@@ -1,5 +1,5 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { DomSanitizer } from '@angular/platform-browser';
 
 import { SbbExpansionPanel } from '@sbb-esta/angular/accordion';
@@ -64,6 +64,8 @@ export class StationBoardSearchComponent implements OnInit {
   public isEmbed: boolean;
 
   public isV1: boolean;
+  
+  public useRealTimeDataType: OJP_Types.UseRealtimeDataEnum;
   public useRealTimeDataTypes: OJP_Types.UseRealtimeDataEnum[];
 
   get searchDate() {
@@ -78,14 +80,17 @@ export class StationBoardSearchComponent implements OnInit {
     private debugXmlPopover: SbbDialog,
     private customXmlPopover: SbbDialog,
     private mapService: MapService, 
-    public stationBoardService: StationBoardService,
+    private stationBoardService: StationBoardService,
     private languageService: LanguageService,
     public userTripService: UserTripService,
     private embedHTMLPopover: SbbDialog,
     private router: Router,
+    private route: ActivatedRoute,
     private sanitizer: DomSanitizer,
   ) {
-    this.currentAppStage = DEFAULT_APP_STAGE;
+    const queryParams = new URLSearchParams(document.location.search);
+
+    this.currentAppStage = OJPHelpers.computeAppStage();
 
     this.queryParams = new URLSearchParams(document.location.search);
 
@@ -104,34 +109,34 @@ export class StationBoardSearchComponent implements OnInit {
 
     this.permalinkRelativeURL = '';
     this.otherVersionURL = null;
-    this.updateURLs();
 
     this.currentRequestInfo = null;
 
-    const queryParams = new URLSearchParams(document.location.search);
     this.useMocks = queryParams.get('use_mocks') === 'yes';
 
     this.isEmbed = this.router.url.indexOf('/embed/') !== -1;
     this.headerText = this.stationBoardType;
 
     this.isV1 = OJP_VERSION === '1.0';
+
+    this.useRealTimeDataType = (() => {
+      const userValue = queryParams.get('real_time_data');
+      if (userValue === 'full') {
+        return 'full';
+      }
+      if (userValue === 'none') {
+        return 'none';
+      }
+
+      return 'explanatory';
+    })();
     this.useRealTimeDataTypes = ['full', 'explanatory', 'none'];
+
+    this.updateURLs();
   }
 
   async ngOnInit(): Promise<void> {
-    const appStage = OJPHelpers.computeAppStage();
-
-    setTimeout(() => {
-      // HACK 
-      // without the setTimeout , the parent src/app/station-board/station-board.component.html template 
-      // gives following errors core.mjs:9157 ERROR RuntimeError: NG0100: ExpressionChangedAfterItHasBeenCheckedError: 
-      // Expression has changed after it was checked. Previous value: 'PROD'. Current value: 'INT'. 
-      // Find more at https://angular.io/errors/NG0100
-      this.userTripService.currentAppStage = appStage;
-    });
-
-    this.currentAppStage = appStage;
-    this.userTripService.updateAppStage(appStage);
+    this.currentAppStage = OJPHelpers.computeAppStage();
 
     const userStopID = this.queryParams.get('stop_id');
     if (userStopID) {
@@ -143,9 +148,10 @@ export class StationBoardSearchComponent implements OnInit {
 
     this.stationBoardService.stationOnMapClicked.subscribe(feature => {
       this.handleMapClick(feature);
-    })
+    });
 
     this.customInitFromParams();
+    this.stationBoardService.stageChanged.emit(this.currentAppStage);
   }
 
   private customInitFromParams() {
@@ -186,8 +192,9 @@ export class StationBoardSearchComponent implements OnInit {
 
     this.mapService.tryToCenterAndZoomToPlace(stopPlace);
 
-    this.updateURLs();
     this.updateHeaderText();
+
+    this.updateURLs();
     
     this.resetResultList();
   }
@@ -273,9 +280,9 @@ export class StationBoardSearchComponent implements OnInit {
     return defaultValue;
   }
 
-  private updateURLs() {
+  private computeQueryParams(): URLSearchParams {
     const queryParams = new URLSearchParams();
-    
+
     if (this.stationBoardType === 'Arrivals') {
       queryParams.set('type', 'arr');
     }
@@ -306,13 +313,37 @@ export class StationBoardSearchComponent implements OnInit {
       }
     }
 
+    if (this.useRealTimeDataType !== 'explanatory') {
+      queryParams.append('real_time_data', this.useRealTimeDataType);
+    }
+
     if (this.currentAppStage !== DEFAULT_APP_STAGE) {
       const stageS = this.currentAppStage.toLowerCase();
       queryParams.append('stage', stageS);
     }
 
+    if (OJP_VERSION === '1.0') {
+      queryParams.append('v', '1');
+    }
+
+    return queryParams;
+  }
+
+  private updateURLs() {
+    const queryParams = this.computeQueryParams();
+    this.updateCurrentURL(this.router, this.route, queryParams);
+
     this.permalinkRelativeURL = document.location.pathname.replace('/embed', '') + '?' + queryParams.toString();
     this.updateLinkedURLs(queryParams);
+  }
+
+  private updateCurrentURL(router: Router, route: ActivatedRoute, urlSearchParams: URLSearchParams) {
+    const queryParams = Object.fromEntries(urlSearchParams.entries());
+
+    router.navigate([], {
+      relativeTo: route,
+      queryParams: queryParams,
+    });
   }
 
   private updateLinkedURLs(queryParams: URLSearchParams) {
@@ -322,13 +353,14 @@ export class StationBoardSearchComponent implements OnInit {
     this.userTripService.updateStageLinkedURL(otherVersionQueryParams, isOJPv2);
     if (isOJPv2) {
       // v1
-      this.otherVersionURL = 'https://tools.odpch.ch/beta-ojp-demo/board?' + otherVersionQueryParams.toString();
-      this.userTripService.otherVersionURLText = 'BETA (OJP 1.0)';
+      otherVersionQueryParams.set('v', '1');
+      this.userTripService.otherVersionURLText = 'OJP 1.0';
     } else {
-      // v2
-      this.otherVersionURL = 'https://opentdatach.github.io/ojp-demo-app/board?' + otherVersionQueryParams.toString();
-      this.userTripService.otherVersionURLText = 'PROD (OJP 2.0)';
+      otherVersionQueryParams.delete('v');
+      this.userTripService.otherVersionURLText = 'OJP 2.0';
     }
+
+    this.otherVersionURL = 'board?' + otherVersionQueryParams.toString();
   }
 
   private async fetchStopEventsForStopRef(stopPlaceRef: string) {
@@ -446,7 +478,7 @@ export class StationBoardSearchComponent implements OnInit {
     const stopEventDate = this.computeStopBoardDate();
     const request = sdk.requests.StopEventRequest.initWithPlaceRefAndDate(stopPlaceRef, stopEventDate);
     if (request.payload.params) {
-      request.payload.params.useRealtimeData = this.userTripService.useRealTimeDataType;
+      request.payload.params.useRealtimeData = this.useRealTimeDataType;
       if (this.stationBoardType === 'Arrivals') {
         request.payload.params.stopEventType = 'arrival';
       } else {
@@ -585,7 +617,9 @@ export class StationBoardSearchComponent implements OnInit {
 
   onChangeStageAPI(ev: any) {
     const newAppStage = ev.value as APP_STAGE;
-    this.userTripService.updateAppStage(newAppStage);
+    this.currentAppStage = newAppStage;
+    this.stationBoardService.stageChanged.emit(newAppStage);
+    
     this.updateURLs();
   }
 
@@ -687,5 +721,11 @@ export class StationBoardSearchComponent implements OnInit {
     this.searchDate = nowDateTime;
     this.searchTime = OJP.DateHelpers.formatTimeHHMM(nowDateTime);
     this.stationBoardService.searchDate = nowDateTime;
+
+    this.updateURLs();
+  }
+
+  public onChangeUseRealTimeData() {
+    this.updateURLs();
   }
 }

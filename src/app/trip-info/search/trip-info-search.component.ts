@@ -15,6 +15,7 @@ import { CustomTripInfoXMLPopoverComponent } from './custom-trip-info-xml-popove
 import { LanguageService } from '../../shared/services/language.service';
 import { TripInfoResult } from '../../shared/models/trip-info-result';
 import { OJPHelpers } from '../../helpers/ojp-helpers';
+import { ActivatedRoute, Router } from '@angular/router';
 
 interface PagelModel {
   currentAppStage: APP_STAGE,
@@ -53,11 +54,13 @@ export class TripInfoSearchComponent implements OnInit {
     private tripInfoService: TripInfoService,
     private languageService: LanguageService,
     public userTripService: UserTripService,
+    private router: Router,
+    private route: ActivatedRoute,
   ) {
     this.queryParams = new URLSearchParams(document.location.search);
 
     this.model = {
-      currentAppStage: DEFAULT_APP_STAGE,
+      currentAppStage: OJPHelpers.computeAppStage(),
 
       journeyRef: '',
       journeyDateTime: new Date(),
@@ -78,19 +81,7 @@ export class TripInfoSearchComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    const appStage = OJPHelpers.computeAppStage();
-
-    setTimeout(() => {
-      // HACK 
-      // without the setTimeout , the parent src/app/station-board/station-board.component.html template 
-      // gives following errors core.mjs:9157 ERROR RuntimeError: NG0100: ExpressionChangedAfterItHasBeenCheckedError: 
-      // Expression has changed after it was checked. Previous value: 'PROD'. Current value: 'INT'. 
-      // Find more at https://angular.io/errors/NG0100
-      this.userTripService.currentAppStage = appStage;
-    });
-
-    this.model.currentAppStage = appStage;
-    this.userTripService.updateAppStage(appStage);
+    this.model.currentAppStage = OJPHelpers.computeAppStage();
 
     this.tripInfoService.tripInfoResultUpdated.subscribe(tripInfoResult => {
       if (tripInfoResult !== null) {
@@ -99,6 +90,7 @@ export class TripInfoSearchComponent implements OnInit {
     });
     
     this.initFromUserVars();
+    this.tripInfoService.stageChanged.emit(this.model.currentAppStage);
   }
 
   private initFromUserVars() {
@@ -142,17 +134,42 @@ export class TripInfoSearchComponent implements OnInit {
     this.fetchTripInfo();
   }
 
-  private updateURLs() {
+  private computeQueryParams(): URLSearchParams {
     const queryParams = new URLSearchParams();
-    queryParams.set('ref', this.model.journeyRef);
+    if (this.model.journeyRef !== '') {
+      queryParams.set('ref', this.model.journeyRef);
+    }
     
     const dayS = OJP.DateHelpers.formatDate(this.model.journeyDateTime).substring(0, 10);
-    queryParams.set('day', dayS);
+    const nowDayS = OJP.DateHelpers.formatDate(new Date()).substring(0, 10);
+    if (dayS !== nowDayS) {
+      queryParams.set('day', dayS);
+    }
 
     if (this.model.currentAppStage !== DEFAULT_APP_STAGE) {
       const stageS = this.model.currentAppStage.toLowerCase();
       queryParams.append('stage', stageS);
     }
+
+    if (OJP_VERSION === '1.0') {
+      queryParams.append('v', '1');
+    }
+
+    return queryParams;
+  }
+
+  private updateCurrentURL(router: Router, route: ActivatedRoute, urlSearchParams: URLSearchParams) {
+    const queryParams = Object.fromEntries(urlSearchParams.entries());
+
+    router.navigate([], {
+      relativeTo: route,
+      queryParams: queryParams,
+    });
+  }
+
+  private updateURLs() {
+    const queryParams = this.computeQueryParams();
+    this.updateCurrentURL(this.router, this.route, queryParams);
 
     const urlAddress = document.location.pathname + '?' + queryParams.toString();
     
@@ -167,13 +184,15 @@ export class TripInfoSearchComponent implements OnInit {
     this.userTripService.updateStageLinkedURL(otherVersionQueryParams, isOJPv2);
     if (isOJPv2) {
       // v1
-      this.model.otherVersionURL = 'https://tools.odpch.ch/beta-ojp-demo/trip?' + otherVersionQueryParams.toString();
-      this.userTripService.otherVersionURLText = 'BETA (OJP 1.0)';
+      otherVersionQueryParams.set('v', '1');
+      this.userTripService.otherVersionURLText = 'OJP 1.0';
     } else {
       // v2
-      this.model.otherVersionURL = 'https://opentdatach.github.io/ojp-demo-app/trip?' + otherVersionQueryParams.toString();
-      this.userTripService.otherVersionURLText = 'PROD (OJP 2.0)';
+      otherVersionQueryParams.delete('v');
+      this.userTripService.otherVersionURLText = 'OJP 2.0';
     }
+
+    this.model.otherVersionURL = 'trip?' + otherVersionQueryParams.toString();
   }
 
   private async fetchTripInfo() {
@@ -278,5 +297,9 @@ export class TripInfoSearchComponent implements OnInit {
       console.log(this.model);
       console.log(response);
     }
+  }
+
+  public onJourneyRefChanged() {
+    this.updateURLs();
   }
 }

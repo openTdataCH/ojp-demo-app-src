@@ -1,9 +1,10 @@
-import { EventEmitter, Injectable, Output } from "@angular/core";
+import { EventEmitter, Injectable } from "@angular/core";
 
 import mapboxgl from "mapbox-gl";
 
 import { StationBoardType } from "./types/stop-event";
 import { StopEventResult } from "../shared/models/stop-event-result";
+import { APP_STAGE } from "../config/constants";
 
 export type StationBoardData = {
     type: StationBoardType,
@@ -12,9 +13,10 @@ export type StationBoardData = {
 
 @Injectable( {providedIn: 'root'} )
 export class StationBoardService {
-    @Output() stationBoardDataUpdated = new EventEmitter<StationBoardData>();
-    @Output() stationBoardEntrySelected = new EventEmitter<StopEventResult | null>();
-    @Output() stationOnMapClicked = new EventEmitter<mapboxgl.GeoJSONFeature>();
+    public stationBoardDataUpdated = new EventEmitter<StationBoardData>();
+    public stationBoardEntrySelected = new EventEmitter<StopEventResult | null>();
+    public stationOnMapClicked = new EventEmitter<mapboxgl.GeoJSONFeature>();
+    public stageChanged = new EventEmitter<APP_STAGE>();
 
     public searchDate = new Date();
 
