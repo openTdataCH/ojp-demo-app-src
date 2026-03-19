@@ -457,8 +457,11 @@ export class UserTripService {
 
     if (location && endpointType === 'Via') {
       const viaTripLocation = TripPlace.initWithPlace(place);
-      this.viaTripLocations = [viaTripLocation];
+      if (this.viaTripLocations.length > 0) {
+        viaTripLocation.dwellTimeMinutes = this.viaTripLocations[0].dwellTimeMinutes;
+      }
 
+      this.viaTripLocations = [viaTripLocation];
       this.isViaEnabled = true;
     }
 
