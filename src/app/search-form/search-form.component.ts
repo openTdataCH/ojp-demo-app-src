@@ -1,5 +1,5 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { FormControl } from '@angular/forms';
 import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
 import { DomSanitizer } from '@angular/platform-browser';
@@ -72,6 +72,7 @@ export class SearchFormComponent implements OnInit {
     private notificationToast: SbbNotificationToast,
     private popover: SbbDialog,
     private router: Router,
+    private route: ActivatedRoute,
     private languageService: LanguageService,
     public userTripService: UserTripService,
     private breakpointObserver: BreakpointObserver,
@@ -116,6 +117,7 @@ export class SearchFormComponent implements OnInit {
 
     this.userTripService.locationsUpdated.subscribe(nothing => {
       this.updateLocationTexts();
+      this.userTripService.updateCurrentURL(this.router, this.route);
     });
 
     this.userTripService.tripsDataUpdated.subscribe(tripsData => {
@@ -174,6 +176,8 @@ export class SearchFormComponent implements OnInit {
     
     const firstVia = this.userTripService.viaTripLocations[0];
     firstVia.dwellTimeMinutes = viaDwellTimeValue;
+
+    this.userTripService.updateCurrentURL(this.router, this.route);
   }
 
   private async customInitFromParams() {
@@ -291,10 +295,12 @@ export class SearchFormComponent implements OnInit {
 
   public async onChangeBoardingType(ev: SbbRadioChange) {
     this.userTripService.currentBoardingType = ev.value;
+    this.userTripService.updateCurrentURL(this.router, this.route);
   }
 
   onChangeDateTime() {
     this.userTripService.updateDepartureDateTime(this.computeFormDepartureDate());
+    this.userTripService.updateCurrentURL(this.router, this.route);
   }
 
   private computeFormDepartureDate(): Date {
@@ -489,6 +495,7 @@ export class SearchFormComponent implements OnInit {
     this.searchDate = nowDateTime;
     this.searchTime = OJP.DateHelpers.formatTimeHHMM(nowDateTime);
     this.userTripService.updateDepartureDateTime(this.computeFormDepartureDate());
+    this.userTripService.updateCurrentURL(this.router, this.route);
   }
 
   public showRequestXMLPopover() {
