@@ -11,7 +11,7 @@ import { DEFAULT_APP_STAGE } from '../config/constants';
 export class TripInfoComponent implements OnInit {
   public routeQueryParams: Record<string, string>;
 
-  constructor(private appService: AppService, public userTripService: UserTripService) {
+  constructor(private appService: AppService, private tripInfoService: TripInfoService) {
     this.routeQueryParams = {};
   }
 
