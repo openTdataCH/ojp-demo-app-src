@@ -108,6 +108,7 @@
         [(ngModel)]="this.userTripService.currentBoardingType">
         <sbb-radio-button 
           *ngFor="let boardingType of this.tripRequestBoardingTypes"
+          (change)="onChangeBoardingType($event)"
           [value]="boardingType">{{ boardingType }}</sbb-radio-button>
       </sbb-radio-group>
     </div>

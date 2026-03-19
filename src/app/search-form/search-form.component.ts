@@ -289,6 +289,14 @@ export class SearchFormComponent implements OnInit {
     }
   }
 
+  public async onChangeBoardingType(ev: SbbRadioChange) {
+    this.userTripService.currentBoardingType = ev.value;
+  }
+
+  onChangeDateTime() {
+    this.userTripService.updateDepartureDateTime(this.computeFormDepartureDate());
+  }
+
   private computeFormDepartureDate(): Date {
     const departureDate = this.searchDate;
     
