@@ -78,7 +78,7 @@ export class StationBoardSearchComponent implements OnInit {
     private debugXmlPopover: SbbDialog,
     private customXmlPopover: SbbDialog,
     private mapService: MapService, 
-    public stationBoardService: StationBoardService,
+    private stationBoardService: StationBoardService,
     private languageService: LanguageService,
     public userTripService: UserTripService,
     private embedHTMLPopover: SbbDialog,
