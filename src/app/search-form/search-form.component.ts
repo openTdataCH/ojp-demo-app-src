@@ -271,12 +271,16 @@ export class SearchFormComponent implements OnInit {
   public async onChangeStageAPI(ev: SbbRadioChange) {
     const newAppStage = ev.value as APP_STAGE;
     this.userTripService.updateAppStage(newAppStage);
+    this.notificationToast.dismiss();
 
-    await this.userTripService.refetchEndpointsByName(this.languageService.language);
-  }
-
-  onChangeDateTime() {
-    this.userTripService.updateDepartureDateTime(this.computeFormDepartureDate());
+    try {
+      await this.userTripService.refetchEndpointsByName(this.languageService.language);
+    } catch (error: any) {
+      this.notificationToast.open('Error switching stage', {
+        type: 'error',
+        verticalPosition: 'top',
+      });
+    }
   }
 
   private computeFormDepartureDate(): Date {
