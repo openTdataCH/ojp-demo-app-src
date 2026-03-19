@@ -150,6 +150,7 @@ export class StationBoardSearchComponent implements OnInit {
     });
 
     this.customInitFromParams();
+    this.stationBoardService.stageChanged.emit(this.currentAppStage);
   }
 
   private customInitFromParams() {
@@ -605,7 +606,9 @@ export class StationBoardSearchComponent implements OnInit {
 
   onChangeStageAPI(ev: any) {
     const newAppStage = ev.value as APP_STAGE;
-    this.userTripService.updateAppStage(newAppStage);
+    this.currentAppStage = newAppStage;
+    this.stationBoardService.stageChanged.emit(newAppStage);
+    
     this.updateURLs();
   }
 
