@@ -535,8 +535,7 @@ export class UserTripService {
       if (stopPlaceRef) {
         queryParams.append(queryParamKey, stopPlaceRef);
       } else {
-        const placeName = place.computeName();
-        const placeCoordsWithName = place.geoPosition.asLatLngString(true) + '(' + placeName + ')';
+        const placeCoordsWithName = place.geoPosition.asLatLngString(true);
         queryParams.append(queryParamKey, placeCoordsWithName);
       }
     });
