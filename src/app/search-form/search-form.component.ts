@@ -116,8 +116,7 @@ export class SearchFormComponent implements OnInit {
 
     this.userTripService.locationsUpdated.subscribe(nothing => {
       this.updateLocationTexts();
-      this.updateViaDwellTime();
-    })
+    });
 
     this.userTripService.tripsDataUpdated.subscribe(tripsData => {
       const hasTrips = tripsData.length > 0;
