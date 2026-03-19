@@ -60,7 +60,10 @@
           <div class="d-flex gap-2 align-items-center mb-3">
             <div>UseRealTimeData</div>
             <div>
-              <sbb-radio-group class="sbb-radio-group-horizontal" [(ngModel)]="this.userTripService.useRealTimeDataType">
+              <sbb-radio-group 
+                class="sbb-radio-group-horizontal" 
+                [(ngModel)]="this.useRealTimeDataType"
+                (change)="onChangeUseRealTimeData()">
                 <sbb-radio-button *ngFor="let useRealTimeDataType of this.useRealTimeDataTypes"
                   [value]="useRealTimeDataType">
                   {{ useRealTimeDataType }}

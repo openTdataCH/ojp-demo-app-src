@@ -689,4 +689,7 @@ export class StationBoardSearchComponent implements OnInit {
     this.searchTime = OJP.DateHelpers.formatTimeHHMM(nowDateTime);
     this.stationBoardService.searchDate = nowDateTime;
   }
+
+  public onChangeUseRealTimeData() {
+  }
 }
