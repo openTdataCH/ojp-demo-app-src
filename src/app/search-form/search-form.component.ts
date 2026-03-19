@@ -152,6 +152,13 @@ export class SearchFormComponent implements OnInit {
 
     await this.userTripService.initDefaults(this.languageService.language);
 
+    if (this.userTripService.viaTripLocations.length > 0) {
+      const firstVia = this.userTripService.viaTripLocations[0];
+      if (firstVia.dwellTimeMinutes !== null) {
+        this.viaDwellTime.setValue(firstVia.dwellTimeMinutes.toString());
+      }
+    }
+
     this.breakpointObserver.observe([Breakpoints.Small, Breakpoints.XSmall])
       .subscribe(result => {
         this.isSmallScreen = result.matches;
