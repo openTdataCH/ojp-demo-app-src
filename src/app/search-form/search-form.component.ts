@@ -43,6 +43,7 @@ export class SearchFormComponent implements OnInit {
   public fromPlace: AnyPlace | null;
   public toPlace: AnyPlace | null;
   public viaPlaces: AnyPlace[];
+  
   public viaDwellTime = new FormControl('');
 
   public appStageOptions: APP_STAGE[] = [];
@@ -275,7 +276,7 @@ export class SearchFormComponent implements OnInit {
   }
 
   onChangeDateTime() {
-    this.userTripService.updateDepartureDateTime(this.computeFormDepartureDate())
+    this.userTripService.updateDepartureDateTime(this.computeFormDepartureDate());
   }
 
   private computeFormDepartureDate(): Date {

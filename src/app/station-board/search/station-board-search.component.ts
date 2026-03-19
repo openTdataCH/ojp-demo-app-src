@@ -143,7 +143,7 @@ export class StationBoardSearchComponent implements OnInit {
 
     this.stationBoardService.stationOnMapClicked.subscribe(feature => {
       this.handleMapClick(feature);
-    })
+    });
 
     this.customInitFromParams();
   }
@@ -186,8 +186,9 @@ export class StationBoardSearchComponent implements OnInit {
 
     this.mapService.tryToCenterAndZoomToPlace(stopPlace);
 
-    this.updateURLs();
     this.updateHeaderText();
+
+    this.updateURLs();
     
     this.resetResultList();
   }

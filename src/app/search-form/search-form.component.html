@@ -103,7 +103,9 @@
       </button>
     </div>
     <div>
-      <sbb-radio-group class="sbb-radio-group-horizontal" [(ngModel)]="this.userTripService.currentBoardingType">
+      <sbb-radio-group 
+        class="sbb-radio-group-horizontal" 
+        [(ngModel)]="this.userTripService.currentBoardingType">
         <sbb-radio-button 
           *ngFor="let boardingType of this.tripRequestBoardingTypes"
           [value]="boardingType">{{ boardingType }}</sbb-radio-button>

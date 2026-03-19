@@ -74,7 +74,8 @@
           <div>
             <sbb-radio-group class="sbb-radio-group-horizontal" [(ngModel)]="this.currentAppStage">
               <sbb-radio-button *ngFor="let appStageOption of this.appStageOptions" 
-                [value]="appStageOption" (change)="onChangeStageAPI($event)">
+                [value]="appStageOption" 
+                (change)="onChangeStageAPI($event)">
                 {{ appStageOption }}
               </sbb-radio-button>
             </sbb-radio-group>
@@ -125,7 +126,7 @@
 
 <div class="row mb-2" *ngIf="!this.isEmbed">
   <div class="col">
-    <div class="d-flex flex-row-reverse gap-2">
+    <div class="d-flex flex-row-reverse gap-1">
       <ng-container *ngIf="this.currentRequestInfo?.requestXML && !this.isEmbed">
         <div class="xml-info" (click)="showRequestXmlPopover()">
           <span class="layer-xml-info badge bg-info text-dark">XML</span>
