@@ -206,8 +206,31 @@ export class UserTripService {
     this.viaTripLocations = [];
 
     const viaPartsS = this.queryParams.get('via') ?? null;
-    const viaParts: string[] = viaPartsS === null ? [] : viaPartsS.split(';');
-    for (const viaKey of viaParts) {
+    const viaParts: string[] = (() => {
+      if (viaPartsS === null) {
+        return [];
+      }
+      const parts = viaPartsS.split(';');
+      return parts;
+    })();
+
+    const defaultViaDwellTime = '0';
+
+    const viaDwellTimes: number[] = (() => {
+      const parts = new Array(viaParts.length).fill(defaultViaDwellTime);
+      
+      const viaDwellTimePartsS = this.queryParams.get('via_dwell_time') ?? null;
+      const viaDwellTimeParts = viaDwellTimePartsS === null ? [] : viaDwellTimePartsS.split(';');
+
+      for (const [index, viaDwellValue] of viaDwellTimeParts.entries()) {
+        if (index in viaParts) {
+          parts[index] = parseInt(viaDwellValue, 10);
+        }
+      }
+      return parts;
+    })();
+
+    for (const [index, viaKey] of viaParts.entries()) {
       let place: AnyPlace | null = null;
 
       const coordsPlace = PlaceLocation.initFromLiteralCoords(viaKey);
@@ -226,6 +249,10 @@ export class UserTripService {
       this.isViaEnabled = true;
       
       const viaTripLocation = TripPlace.initWithPlace(place);
+
+      const dwellTime = viaDwellTimes[index] ?? defaultViaDwellTime;
+      viaTripLocation.dwellTimeMinutes = dwellTime;
+
       this.viaTripLocations.push(viaTripLocation);
     };
     
