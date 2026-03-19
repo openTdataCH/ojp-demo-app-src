@@ -540,19 +540,25 @@ export class UserTripService {
       }
     });
 
-    const viaParamParts: string[] = []
-    this.viaTripLocations.forEach(viaTripLocation => {
-      const place = viaTripLocation.place;
-      if (place.type === 'stop') {
-        const stopPlace = place as StopPlace;
-        viaParamParts.push(stopPlace.placeRef.ref);
-      } else {
-        const geoPositionLngLatS = place.geoPosition.asLatLngString(true);
-        viaParamParts.push(geoPositionLngLatS);
+    if (this.isViaEnabled) {
+      const viaParamParts: string[] = [];
+      const viaDwellTimeParts: string[] = [];
+      this.viaTripLocations.forEach(viaTripLocation => {
+        const place = viaTripLocation.place;
+        if (place.type === 'stop') {
+          const stopPlace = place as StopPlace;
+          viaParamParts.push(stopPlace.placeRef.ref);
+        } else {
+          const geoPositionLngLatS = place.geoPosition.asLatLngString(true);
+          viaParamParts.push(geoPositionLngLatS);
+        }
+
+        viaDwellTimeParts.push(viaTripLocation.dwellTimeMinutes?.toString() ?? '0');
+      });
+      if (viaParamParts.length > 0) {
+        queryParams.append('via', viaParamParts.join(';'));
+        queryParams.append('via_dwell_time', viaDwellTimeParts.join(';'));
       }
-    });
-    if (viaParamParts.length > 0) {
-      queryParams.append('via', viaParamParts.join(';'));
     }
     
     if (this.tripModeType !== 'monomodal') {
