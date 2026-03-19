@@ -64,6 +64,8 @@ export class StationBoardSearchComponent implements OnInit {
   public isEmbed: boolean;
 
   public isV1: boolean;
+  
+  public useRealTimeDataType: OJP_Types.UseRealtimeDataEnum;
   public useRealTimeDataTypes: OJP_Types.UseRealtimeDataEnum[];
 
   get searchDate() {
@@ -86,6 +88,7 @@ export class StationBoardSearchComponent implements OnInit {
     private sanitizer: DomSanitizer,
   ) {
     this.currentAppStage = DEFAULT_APP_STAGE;
+    const queryParams = new URLSearchParams(document.location.search);
 
     this.queryParams = new URLSearchParams(document.location.search);
 
@@ -108,13 +111,24 @@ export class StationBoardSearchComponent implements OnInit {
 
     this.currentRequestInfo = null;
 
-    const queryParams = new URLSearchParams(document.location.search);
     this.useMocks = queryParams.get('use_mocks') === 'yes';
 
     this.isEmbed = this.router.url.indexOf('/embed/') !== -1;
     this.headerText = this.stationBoardType;
 
     this.isV1 = OJP_VERSION === '1.0';
+
+    this.useRealTimeDataType = (() => {
+      const userValue = queryParams.get('real_time_data');
+      if (userValue === 'full') {
+        return 'full';
+      }
+      if (userValue === 'none') {
+        return 'none';
+      }
+
+      return 'explanatory';
+    })();
     this.useRealTimeDataTypes = ['full', 'explanatory', 'none'];
   }
 
@@ -307,6 +321,10 @@ export class StationBoardSearchComponent implements OnInit {
       }
     }
 
+    if (this.useRealTimeDataType !== 'explanatory') {
+      queryParams.append('real_time_data', this.useRealTimeDataType);
+    }
+
     if (this.currentAppStage !== DEFAULT_APP_STAGE) {
       const stageS = this.currentAppStage.toLowerCase();
       queryParams.append('stage', stageS);
@@ -447,7 +465,7 @@ export class StationBoardSearchComponent implements OnInit {
     const stopEventDate = this.computeStopBoardDate();
     const request = sdk.requests.StopEventRequest.initWithPlaceRefAndDate(stopPlaceRef, stopEventDate);
     if (request.payload.params) {
-      request.payload.params.useRealtimeData = this.userTripService.useRealTimeDataType;
+      request.payload.params.useRealtimeData = this.useRealTimeDataType;
       if (this.stationBoardType === 'Arrivals') {
         request.payload.params.stopEventType = 'arrival';
       } else {
