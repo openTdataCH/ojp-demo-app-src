@@ -87,6 +87,7 @@ export class TripInfoSearchComponent implements OnInit {
     });
     
     this.initFromUserVars();
+    this.tripInfoService.stageChanged.emit(this.model.currentAppStage);
   }
 
   private initFromUserVars() {
