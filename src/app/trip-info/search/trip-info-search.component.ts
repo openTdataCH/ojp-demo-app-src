@@ -57,7 +57,7 @@ export class TripInfoSearchComponent implements OnInit {
     this.queryParams = new URLSearchParams(document.location.search);
 
     this.model = {
-      currentAppStage: DEFAULT_APP_STAGE,
+      currentAppStage: OJPHelpers.computeAppStage(),
 
       journeyRef: '',
       journeyDateTime: new Date(),
@@ -78,19 +78,7 @@ export class TripInfoSearchComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    const appStage = OJPHelpers.computeAppStage();
-
-    setTimeout(() => {
-      // HACK 
-      // without the setTimeout , the parent src/app/station-board/station-board.component.html template 
-      // gives following errors core.mjs:9157 ERROR RuntimeError: NG0100: ExpressionChangedAfterItHasBeenCheckedError: 
-      // Expression has changed after it was checked. Previous value: 'PROD'. Current value: 'INT'. 
-      // Find more at https://angular.io/errors/NG0100
-      this.userTripService.currentAppStage = appStage;
-    });
-
-    this.model.currentAppStage = appStage;
-    this.userTripService.updateAppStage(appStage);
+    this.model.currentAppStage = OJPHelpers.computeAppStage();
 
     this.tripInfoService.tripInfoResultUpdated.subscribe(tripInfoResult => {
       if (tripInfoResult !== null) {
