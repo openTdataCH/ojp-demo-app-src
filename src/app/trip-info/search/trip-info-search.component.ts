@@ -144,7 +144,9 @@ export class TripInfoSearchComponent implements OnInit {
 
   private updateURLs() {
     const queryParams = new URLSearchParams();
-    queryParams.set('ref', this.model.journeyRef);
+    if (this.model.journeyRef !== '') {
+      queryParams.set('ref', this.model.journeyRef);
+    }
     
     const dayS = OJP.DateHelpers.formatDate(this.model.journeyDateTime).substring(0, 10);
     queryParams.set('day', dayS);
