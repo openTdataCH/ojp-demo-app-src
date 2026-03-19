@@ -140,10 +140,10 @@ export class TripModeTypeComponent implements OnInit {
 
     this.settingsCollapseID = 'mode_custom_mode_settings_NOT_READY_YET';
 
-    const userMinDuration = queryParams.get('minDuration');
-    const userMaxDuration = queryParams.get('maxDuration');
-    const userMinDistance = queryParams.get('minDistance');
-    const userMaxDistance = queryParams.get('maxDistance');
+    const userMinDuration = queryParams.get('min_duration');
+    const userMaxDuration = queryParams.get('max_duration');
+    const userMinDistance = queryParams.get('min_distance');
+    const userMaxDistance = queryParams.get('max_distance');
     
     this.filterMinDurationControl.setValue(userMinDuration ?? '2', { emitEvent: false });
     this.filterMaxDurationControl.setValue(userMaxDuration ?? '30', { emitEvent: false });

@@ -546,16 +546,16 @@ export class UserTripService {
       queryParams.append('advanced', 'yes');
 
       if (this.fromTripPlace?.minDistance !== null) {
-        queryParams.append('minDistance', String(this.fromTripPlace?.minDistance));
+        queryParams.append('min_distance', String(this.fromTripPlace?.minDistance));
       }
       if (this.fromTripPlace?.maxDistance !== null) {
-        queryParams.append('maxDistance', String(this.fromTripPlace?.maxDistance));
+        queryParams.append('max_distance', String(this.fromTripPlace?.maxDistance));
       }
       if (this.fromTripPlace?.minDuration !== null) {
-        queryParams.append('minDuration', String(this.fromTripPlace?.minDuration));
+        queryParams.append('min_duration', String(this.fromTripPlace?.minDuration));
       }
       if (this.fromTripPlace?.maxDuration !== null) {
-        queryParams.append('maxDuration', String(this.fromTripPlace?.maxDuration));
+        queryParams.append('max_duration', String(this.fromTripPlace?.maxDuration));
       }
     }
 
