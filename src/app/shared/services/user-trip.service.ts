@@ -1,4 +1,5 @@
 import { EventEmitter, Injectable } from '@angular/core'
+import { ActivatedRoute, Params, Route, Router } from '@angular/router';
 import { BehaviorSubject, Observable } from 'rxjs';
 
 import * as OJP_Types from 'ojp-shared-types';
@@ -508,6 +509,15 @@ export class UserTripService {
 
   private updateFares(fareResults: OJP_Types.FareResultSchema[]) {
     this.tripFaresUpdated.emit(fareResults);
+  }
+
+  public updateCurrentURL(router: Router, route: ActivatedRoute) {
+    const queryParams = Object.fromEntries(this.computeQueryParams().entries());
+
+    router.navigate([], {
+      relativeTo: route,
+      queryParams: queryParams,
+    });
   }
 
   private computeQueryParams(): URLSearchParams {
