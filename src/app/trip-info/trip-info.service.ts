@@ -5,6 +5,6 @@ import { TripInfoResult } from "../shared/models/trip-info-result";
 
 @Injectable( {providedIn: 'root'} )
 export class TripInfoService {
-    public tripInfoResultUpdated = new EventEmitter<TripInfoResult | null>()
-    public locationSelected = new EventEmitter<LegStopPointData>()
+  public tripInfoResultUpdated = new EventEmitter<TripInfoResult | null>();
+  public locationSelected = new EventEmitter<LegStopPointData>();
 }
