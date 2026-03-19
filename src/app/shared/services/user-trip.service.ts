@@ -345,7 +345,7 @@ export class UserTripService {
       this.trOptimisationMethod = userOptimisationMethod as OJP_Types.OptimisationMethodEnum;
     }
 
-    this.useBikeTransport = ['yes', 'true', '1'].includes(this.queryParams.get('biketransport') ?? 'n/a');
+    this.useBikeTransport = ['yes', 'true', '1'].includes(this.queryParams.get('bike_transport') ?? 'n/a');
 
     this._initialLocationsChanges.next(true);
   }
