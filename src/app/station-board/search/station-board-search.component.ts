@@ -320,6 +320,9 @@ export class StationBoardSearchComponent implements OnInit {
       queryParams.append('stage', stageS);
     }
 
+    if (OJP_VERSION === '1.0') {
+      queryParams.append('v', '1');
+    }
 
     return queryParams;
   }
