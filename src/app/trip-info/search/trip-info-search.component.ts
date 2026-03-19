@@ -15,6 +15,7 @@ import { CustomTripInfoXMLPopoverComponent } from './custom-trip-info-xml-popove
 import { LanguageService } from '../../shared/services/language.service';
 import { TripInfoResult } from '../../shared/models/trip-info-result';
 import { OJPHelpers } from '../../helpers/ojp-helpers';
+import { ActivatedRoute, Router } from '@angular/router';
 
 interface PagelModel {
   currentAppStage: APP_STAGE,
@@ -53,6 +54,8 @@ export class TripInfoSearchComponent implements OnInit {
     private tripInfoService: TripInfoService,
     private languageService: LanguageService,
     public userTripService: UserTripService,
+    private router: Router,
+    private route: ActivatedRoute,
   ) {
     this.queryParams = new URLSearchParams(document.location.search);
 
@@ -155,8 +158,18 @@ export class TripInfoSearchComponent implements OnInit {
     return queryParams;
   }
 
+  private updateCurrentURL(router: Router, route: ActivatedRoute, urlSearchParams: URLSearchParams) {
+    const queryParams = Object.fromEntries(urlSearchParams.entries());
+
+    router.navigate([], {
+      relativeTo: route,
+      queryParams: queryParams,
+    });
+  }
+
   private updateURLs() {
     const queryParams = this.computeQueryParams();
+    this.updateCurrentURL(this.router, this.route, queryParams);
 
     const urlAddress = document.location.pathname + '?' + queryParams.toString();
     
