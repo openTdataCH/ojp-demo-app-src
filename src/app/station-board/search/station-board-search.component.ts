@@ -1,5 +1,5 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { DomSanitizer } from '@angular/platform-browser';
 
 import { SbbExpansionPanel } from '@sbb-esta/angular/accordion';
@@ -85,6 +85,7 @@ export class StationBoardSearchComponent implements OnInit {
     public userTripService: UserTripService,
     private embedHTMLPopover: SbbDialog,
     private router: Router,
+    private route: ActivatedRoute,
     private sanitizer: DomSanitizer,
   ) {
     const queryParams = new URLSearchParams(document.location.search);
@@ -330,9 +331,19 @@ export class StationBoardSearchComponent implements OnInit {
 
   private updateURLs() {
     const queryParams = this.computeQueryParams();
+    this.updateCurrentURL(this.router, this.route, queryParams);
 
     this.permalinkRelativeURL = document.location.pathname.replace('/embed', '') + '?' + queryParams.toString();
     this.updateLinkedURLs(queryParams);
+  }
+
+  private updateCurrentURL(router: Router, route: ActivatedRoute, urlSearchParams: URLSearchParams) {
+    const queryParams = Object.fromEntries(urlSearchParams.entries());
+
+    router.navigate([], {
+      relativeTo: route,
+      queryParams: queryParams,
+    });
   }
 
   private updateLinkedURLs(queryParams: URLSearchParams) {
