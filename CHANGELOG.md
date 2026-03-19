@@ -4,6 +4,12 @@ OJP-Demo URL: https://opentdatach.github.io/ojp-demo-app/
 
 ----
 
+19.March 2026
+- Updates query params - [PR #368](https://github.com/openTdataCH/ojp-demo-app-src/pull/368)
+  - the GUI changes are reflected now directly in the URL query params
+  - unify code to handle feature flags (OJP version, shapes provider, etc)
+  - updates query params to support GUI changes (advanced features as well)
+
 17.March 2026
 - Extend linked URLs - [PR #367](https://github.com/openTdataCH/ojp-demo-app-src/pull/367)
   - fix SBB linked URL
