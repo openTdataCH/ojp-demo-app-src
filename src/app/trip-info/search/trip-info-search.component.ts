@@ -149,7 +149,10 @@ export class TripInfoSearchComponent implements OnInit {
     }
     
     const dayS = OJP.DateHelpers.formatDate(this.model.journeyDateTime).substring(0, 10);
-    queryParams.set('day', dayS);
+    const nowDayS = OJP.DateHelpers.formatDate(new Date()).substring(0, 10);
+    if (dayS !== nowDayS) {
+      queryParams.set('day', dayS);
+    }
 
     if (this.model.currentAppStage !== DEFAULT_APP_STAGE) {
       const stageS = this.model.currentAppStage.toLowerCase();
