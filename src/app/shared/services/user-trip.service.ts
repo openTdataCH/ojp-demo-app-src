@@ -309,6 +309,18 @@ export class UserTripService {
       const userRailSubmodes = railSubmodesS.split(',').map(el => el.toLowerCase().trim()) as OJP_Types.RailSubmodeEnum[];
       return userRailSubmodes;
     })();
+    
+    this.useRealTimeDataType = (() => {
+      const userRealRealTimeDataTypeS = this.queryParams.get('real_time_data') ?? null;
+      if (userRealRealTimeDataTypeS === 'full') {
+        return 'full';
+      }
+      if (userRealRealTimeDataTypeS === 'none') {
+        return 'none';
+      }
+
+      return 'explanatory';
+    })();
 
     this.locationsUpdated.emit();
     this.updateURLs();
