@@ -9,10 +9,10 @@ import { DEFAULT_APP_STAGE } from '../config/constants';
   styleUrls: ['./trip-info.component.scss'],
 })
 export class TripInfoComponent implements OnInit {
-  public queryParams: Record<string, string>;
+  public routeQueryParams: Record<string, string>;
 
   constructor(private appService: AppService, public userTripService: UserTripService) {
-    this.queryParams = {};
+    this.routeQueryParams = {};
   }
 
   ngOnInit(): void {
