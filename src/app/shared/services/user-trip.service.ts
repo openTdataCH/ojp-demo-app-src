@@ -609,10 +609,36 @@ export class UserTripService {
       if (this.fromTripPlace?.maxDuration !== null) {
         queryParams.append('max_duration', String(this.fromTripPlace?.maxDuration));
       }
-    }
 
-    if (this.trOptimisationMethod) {
-      queryParams.append('optimisation_method', this.trOptimisationMethod);
+      if (this.numberOfResults !== null) {
+        queryParams.append('number_results', String((this.numberOfResults)));
+      }
+      if (this.numberOfResultsBefore !== null) {
+        queryParams.append('number_results_before', String((this.numberOfResultsBefore)));
+      }
+      if (this.numberOfResultsAfter !== null) {
+        queryParams.append('number_results_after', String((this.numberOfResultsAfter)));
+      }
+
+      if (this.useBikeTransport) {
+        queryParams.append('bike_transport', 'yes');
+      }
+
+      if (this.useRealTimeDataType !== 'explanatory') {
+        queryParams.append('real_time_data', this.useRealTimeDataType);
+      }
+
+      if (this.railSubmodesFilter.length > 0) {
+        queryParams.append('rail_submodes', this.railSubmodesFilter.join(','));
+      }
+
+      if (this.trOptimisationMethod) {
+        queryParams.append('optimisation_method', this.trOptimisationMethod);
+      }
+
+      if ((this.walkSpeedDeviation !== null) && (this.walkSpeedDeviation !== 100)) {
+        queryParams.append('walk_speed_deviation', this.walkSpeedDeviation.toString());
+      }
     }
 
     return queryParams;
