@@ -800,20 +800,36 @@ export class UserTripService {
   private computeInitialDate(): Date {
     const defaultDate = new Date();
 
-    const tripDateTimeS = this.queryParams.get('trip_datetime') ?? null
-    if (tripDateTimeS === null) {
+    const userDateTimeS: string | null = (() => {
+      const userDay = this.queryParams.get('day');
+      const userTime = this.queryParams.get('time');
+      if (userDay && userTime) {
+        // 2026-03-19 12:21:00
+        const userDateTimeF = userDay + ' ' + userTime + ':00';
+        return userDateTimeF;
+      }
+
+      // following string dates are matched
+      // 2025-08-01 10:00
+      // 2025-08-01 10:00:00
+      // 2025-08-01
+      // 2025-09-17T11:15:00
+      // 29.Dec.2025 10:00
+      const userLegacyDateTime = this.queryParams.get('trip_datetime');
+      if (userLegacyDateTime) {
+        return userLegacyDateTime;
+      }
+
+      return null;
+    })();
+
+    if (userDateTimeS === null) {
       return defaultDate;
     }
 
-    // following types are working
-    // 2025-08-01 10:00
-    // 2025-08-01 10:00:00
-    // 2025-08-01
-    // 2025-09-17T11:15:00
-    // 29.Dec.2025 10:00
-    const dateTS = Date.parse(tripDateTimeS);
+    const dateTS = Date.parse(userDateTimeS);
     if (isNaN(dateTS)) {
-      console.error('CANT parse custom date string: ' + tripDateTimeS + ', using current datetime instead');
+      console.error('CANT parse custom date string: ' + userDateTimeS + ', using current datetime instead');
       return defaultDate;
     }
 
