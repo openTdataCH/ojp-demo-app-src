@@ -142,7 +142,7 @@ export class TripInfoSearchComponent implements OnInit {
     this.fetchTripInfo();
   }
 
-  private updateURLs() {
+  private computeQueryParams(): URLSearchParams {
     const queryParams = new URLSearchParams();
     if (this.model.journeyRef !== '') {
       queryParams.set('ref', this.model.journeyRef);
@@ -158,6 +158,16 @@ export class TripInfoSearchComponent implements OnInit {
       const stageS = this.model.currentAppStage.toLowerCase();
       queryParams.append('stage', stageS);
     }
+
+    if (OJP_VERSION === '1.0') {
+      queryParams.append('v', '1');
+    }
+
+    return queryParams;
+  }
+
+  private updateURLs() {
+    const queryParams = this.computeQueryParams();
 
     const urlAddress = document.location.pathname + '?' + queryParams.toString();
     
@@ -288,5 +298,6 @@ export class TripInfoSearchComponent implements OnInit {
   }
 
   public onJourneyRefChanged() {
+    this.updateURLs();
   }
 }
