@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+
 import { AppService } from '../shared/services/app.service';
 import { DEFAULT_APP_STAGE, OJP_VERSION } from '../config/constants';
 import { StationBoardService } from './station-board.service';
