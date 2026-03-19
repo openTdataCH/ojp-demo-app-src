@@ -87,8 +87,9 @@ export class StationBoardSearchComponent implements OnInit {
     private router: Router,
     private sanitizer: DomSanitizer,
   ) {
-    this.currentAppStage = DEFAULT_APP_STAGE;
     const queryParams = new URLSearchParams(document.location.search);
+
+    this.currentAppStage = OJPHelpers.computeAppStage();
 
     this.queryParams = new URLSearchParams(document.location.search);
 
@@ -133,19 +134,7 @@ export class StationBoardSearchComponent implements OnInit {
   }
 
   async ngOnInit(): Promise<void> {
-    const appStage = OJPHelpers.computeAppStage();
-
-    setTimeout(() => {
-      // HACK 
-      // without the setTimeout , the parent src/app/station-board/station-board.component.html template 
-      // gives following errors core.mjs:9157 ERROR RuntimeError: NG0100: ExpressionChangedAfterItHasBeenCheckedError: 
-      // Expression has changed after it was checked. Previous value: 'PROD'. Current value: 'INT'. 
-      // Find more at https://angular.io/errors/NG0100
-      this.userTripService.currentAppStage = appStage;
-    });
-
-    this.currentAppStage = appStage;
-    this.userTripService.updateAppStage(appStage);
+    this.currentAppStage = OJPHelpers.computeAppStage();
 
     const userStopID = this.queryParams.get('stop_id');
     if (userStopID) {
