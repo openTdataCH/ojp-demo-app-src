@@ -108,7 +108,6 @@ export class StationBoardSearchComponent implements OnInit {
 
     this.permalinkRelativeURL = '';
     this.otherVersionURL = null;
-    this.updateURLs();
 
     this.currentRequestInfo = null;
 
@@ -131,6 +130,8 @@ export class StationBoardSearchComponent implements OnInit {
       return 'explanatory';
     })();
     this.useRealTimeDataTypes = ['full', 'explanatory', 'none'];
+
+    this.updateURLs();
   }
 
   async ngOnInit(): Promise<void> {
@@ -277,9 +278,9 @@ export class StationBoardSearchComponent implements OnInit {
     return defaultValue;
   }
 
-  private updateURLs() {
+  private computeQueryParams(): URLSearchParams {
     const queryParams = new URLSearchParams();
-    
+
     if (this.stationBoardType === 'Arrivals') {
       queryParams.set('type', 'arr');
     }
@@ -318,6 +319,13 @@ export class StationBoardSearchComponent implements OnInit {
       const stageS = this.currentAppStage.toLowerCase();
       queryParams.append('stage', stageS);
     }
+
+
+    return queryParams;
+  }
+
+  private updateURLs() {
+    const queryParams = this.computeQueryParams();
 
     this.permalinkRelativeURL = document.location.pathname.replace('/embed', '') + '?' + queryParams.toString();
     this.updateLinkedURLs(queryParams);
@@ -696,8 +704,11 @@ export class StationBoardSearchComponent implements OnInit {
     this.searchDate = nowDateTime;
     this.searchTime = OJP.DateHelpers.formatTimeHHMM(nowDateTime);
     this.stationBoardService.searchDate = nowDateTime;
+
+    this.updateURLs();
   }
 
   public onChangeUseRealTimeData() {
+    this.updateURLs();
   }
 }
