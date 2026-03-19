@@ -573,8 +573,8 @@ export class UserTripService {
       queryParams.append('public_transport_modes', this.publicTransportModesFilter.join(','));
     }
 
-    if (this.railSubmodesFilter.length > 0) {
-      queryParams.append('rail_submodes', this.railSubmodesFilter.join(','));
+    if (this.currentBoardingType === 'Arr') {
+      queryParams.append('arr', 'yes');
     }
 
     const now = new Date();
