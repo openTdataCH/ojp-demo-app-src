@@ -581,7 +581,12 @@ export class UserTripService {
     const deltaNowMinutes = Math.abs((now.getTime() - this.departureDate.getTime()) / 1000 / 60);
     if (deltaNowMinutes > 5) {
       const dateTimeS = OJP.DateHelpers.formatDate(this.departureDate);
-      queryParams.append('trip_datetime', dateTimeS.substring(0, 16));
+      
+      const dayF = dateTimeS.substring(0, 10);
+      queryParams.append('day', dayF);
+
+      const hmF = dateTimeS.substring(11, 16);
+      queryParams.append('time', hmF);
     }
 
     if (this.currentAppStage !== DEFAULT_APP_STAGE) {
