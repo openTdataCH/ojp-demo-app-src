@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { FormControl } from '@angular/forms';
+import { ActivatedRoute, Router } from '@angular/router';
 import { debounceTime, Subject, takeUntil } from 'rxjs';
 
 import * as OJP_Types from 'ojp-shared-types';
@@ -130,7 +131,7 @@ export class TripModeTypeComponent implements OnInit {
 
   private destroyed$ = new Subject<void>();
 
-  constructor(public userTripService: UserTripService, private languageService: LanguageService) {
+  constructor(public userTripService: UserTripService, private languageService: LanguageService, private router: Router, private route: ActivatedRoute) {
     const queryParams = new URLSearchParams(document.location.search);
 
     this.tripTransportModeData = appTripTransportModeData;
@@ -404,6 +405,7 @@ export class TripModeTypeComponent implements OnInit {
     this.userTripService.useRealTimeDataType = this.selectedUseRealTimeDataType;
 
     this.userTripService.updateURLs();
+    this.userTripService.updateCurrentURL(this.router, this.route);
   }
 
   public onTripModeChange() {
@@ -455,6 +457,7 @@ export class TripModeTypeComponent implements OnInit {
     this.userTripService.updateTripLocationCustomMode();
 
     this.prevTransportMode = this.userTripService.tripTransportMode;
+    this.userTripService.updateCurrentURL(this.router, this.route);
   }
 
   public computeTripModeTypeText(tripModeType: TripModeType): string {
