@@ -607,7 +607,7 @@ export class UserTripService {
       }
       this.otherVersionURLText = 'OJP 2.0';
     }
-    this.otherVersionURL = 'https://opentdatach.github.io/ojp-demo-app/search?' + otherVersionQueryParams.toString();
+    this.otherVersionURL = 'search?' + otherVersionQueryParams.toString();
 
     const dateF = OJP.DateHelpers.formatDate(this.departureDate);
 
