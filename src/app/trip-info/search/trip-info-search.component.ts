@@ -281,4 +281,7 @@ export class TripInfoSearchComponent implements OnInit {
       console.log(response);
     }
   }
+
+  public onJourneyRefChanged() {
+  }
 }

@@ -8,7 +8,11 @@
           <div class="flex-grow-1">
             <sbb-form-field class="sbb-form-field-long">
               <sbb-label>Journey Ref</sbb-label>
-              <input sbbInput placeholder="type a JourneyRef" value="" [(ngModel)]="this.model.journeyRef" />
+              <input 
+                sbbInput placeholder="type a JourneyRef" 
+                value="" 
+                [(ngModel)]="this.model.journeyRef"
+                (change)="this.onJourneyRefChanged()" />
             </sbb-form-field>
           </div>
         </div>
