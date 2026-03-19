@@ -1,4 +1,4 @@
-import { EventEmitter, Injectable, Output } from "@angular/core";
+import { EventEmitter, Injectable } from "@angular/core";
 
 import mapboxgl from "mapbox-gl";
 
@@ -12,9 +12,9 @@ export type StationBoardData = {
 
 @Injectable( {providedIn: 'root'} )
 export class StationBoardService {
-    @Output() stationBoardDataUpdated = new EventEmitter<StationBoardData>();
-    @Output() stationBoardEntrySelected = new EventEmitter<StopEventResult | null>();
-    @Output() stationOnMapClicked = new EventEmitter<mapboxgl.GeoJSONFeature>();
+    public stationBoardDataUpdated = new EventEmitter<StationBoardData>();
+    public stationBoardEntrySelected = new EventEmitter<StopEventResult | null>();
+    public stationOnMapClicked = new EventEmitter<mapboxgl.GeoJSONFeature>();
 
     public searchDate = new Date();
 
