@@ -5,7 +5,7 @@ import * as OJP_Types from 'ojp-shared-types';
 import * as OJP from 'ojp-sdk';
 
 import { APP_CONFIG } from '../../config/app-config';
-import { APP_STAGE, DEFAULT_APP_STAGE, REQUESTOR_REF, TRIP_REQUEST_DEFAULT_NUMBER_OF_RESULTS, OJP_VERSION, EMPTY_HTTPConfig } from '../../config/constants';
+import { APP_STAGE, DEFAULT_APP_STAGE, REQUESTOR_REF, TRIP_REQUEST_DEFAULT_NUMBER_OF_RESULTS, OJP_VERSION, EMPTY_HTTPConfig, FLAG_USE_2nd_SHAPE_PROVIDER } from '../../config/constants';
 
 import { LanguageService } from './language.service';
 
@@ -639,6 +639,14 @@ export class UserTripService {
       if ((this.walkSpeedDeviation !== null) && (this.walkSpeedDeviation !== 100)) {
         queryParams.append('walk_speed_deviation', this.walkSpeedDeviation.toString());
       }
+    }
+
+    if (OJP_VERSION === '1.0') {
+      queryParams.append('v', '1');
+    }
+
+    if (FLAG_USE_2nd_SHAPE_PROVIDER) {
+      queryParams.append('shapes', 'yes');
     }
 
     return queryParams;
