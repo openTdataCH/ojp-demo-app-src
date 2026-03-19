@@ -328,16 +328,16 @@ export class UserTripService {
     this.isAdditionalRestrictionsEnabled = ['yes', 'true', '1'].includes(this.queryParams.get('advanced') ?? 'n/a');
 
     this.currentBoardingType = (() => {
-      const userTimeTypeS = this.queryParams.get('time_type') ?? null;
-      if (userTimeTypeS === null) {
-        return 'Dep';
-      }
+      const userArrivalValue = this.queryParams.get('arrival') ?? 'n/a';
 
-      if (['arrival', 'arr'].includes(userTimeTypeS.toLowerCase())) {
+      if (['yes', 'true', '1'].includes(userArrivalValue)) {
+        return 'Arr';
+      }
+      if (['yes', 'true', '1'].includes(userArrivalValue)) {
         return 'Arr';
       }
 
-      return 'Dep' as TripRequestBoardingType;
+      return 'Dep';
     })();
 
     const userOptimisationMethod = this.queryParams.get('optimisation_method');
