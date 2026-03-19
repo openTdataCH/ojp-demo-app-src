@@ -165,22 +165,44 @@ export class TripModeTypeComponent implements OnInit {
       this.isFilterMaxDistanceEnabled = true;
     }
 
+    const userNumberOfResults = queryParams.get('number_results');
     const userNumberOfResultsBefore = queryParams.get('number_results_before');
     const userNumberOfResultsAfter = queryParams.get('number_results_after');
 
     this.isNumberOfResultsEnabled = true;
     this.isNumberOfResultsBeforeEnabled = userNumberOfResultsBefore !== null;
     this.isNumberOfResultsAfterEnabled = userNumberOfResultsAfter !== null;
+
+    this.numberOfResults = (() => {
+      if (userNumberOfResults !== null) {
+        return parseInt(userNumberOfResults);
+      }
+
+      if (this.userTripService.tripModeType !== 'monomodal') {
+        return 1;
+      }
+
+      const defaultValue = TRIP_REQUEST_DEFAULT_NUMBER_OF_RESULTS;
+      return defaultValue;
+    })();
+
+    this.numberOfResultsBefore = (() => {
+      if (userNumberOfResultsBefore !== null) {
+        return parseInt(userNumberOfResultsBefore);
+      }
+
+      return 1;
+    })();
+
+    this.numberOfResultsAfter = (() => {
+      if (userNumberOfResultsAfter !== null) {
+        return parseInt(userNumberOfResultsAfter);
+      }
+
+      return 4;
+    })();
+
     this.isBikeTransportEnabled = false;
-    
-    this.numberOfResults = TRIP_REQUEST_DEFAULT_NUMBER_OF_RESULTS;
-    if (this.userTripService.tripModeType !== 'monomodal') {
-      this.numberOfResults = 1;
-    }
-    
-    this.numberOfResultsBefore = 1;
-    this.numberOfResultsAfter = 4;
-    this.walkSpeedDeviation = 100;
     this.walkSpeedDeviationValues = [50, 75, 100, 150, 200, 400];
 
     this.mapPublicTransportModesFilter = <Record<ModeOfTransportType, boolean>>{};
