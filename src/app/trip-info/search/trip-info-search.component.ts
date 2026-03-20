@@ -129,6 +129,14 @@ export class TripInfoSearchComponent implements OnInit {
   }
 
   public searchButtonClicked() {
+    if (this.model.journeyRef.trim() === '') {
+      this.notificationToast.open('JourneyRef cant be empty', {
+        type: 'error',
+        verticalPosition: 'top',
+      });
+      return;
+    }
+
     this.notificationToast.dismiss();
 
     this.fetchTripInfo();
