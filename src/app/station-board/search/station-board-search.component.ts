@@ -243,7 +243,7 @@ export class StationBoardSearchComponent implements OnInit {
   }
 
   private computeSearchDateTime(): Date {
-    let searchDate = new Date()
+    let searchDate = new Date();
     
     const userSearchDay = this.queryParams.get('day');
     if (userSearchDay) {

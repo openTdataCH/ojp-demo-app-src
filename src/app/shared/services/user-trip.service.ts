@@ -110,7 +110,7 @@ export class UserTripService {
 
     this.currentTrips = [];
     
-    this.departureDate = this.computeInitialDate()
+    this.departureDate = this.computeInitialDate();
     this.currentAppStage = DEFAULT_APP_STAGE;
 
     this.permalinkRelativeURL = null;
