@@ -492,6 +492,8 @@ export class SearchFormComponent implements OnInit {
 
   public resetDateTime() {
     const nowDateTime = new Date();
+    nowDateTime.setSeconds(0, 0);
+
     this.searchDate = nowDateTime;
     this.searchTime = OJP.DateHelpers.formatTimeHHMM(nowDateTime);
     this.userTripService.updateDepartureDateTime(this.computeFormDepartureDate());

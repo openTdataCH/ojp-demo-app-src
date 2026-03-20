@@ -72,6 +72,7 @@ export class StationBoardSearchComponent implements OnInit {
     return this.stationBoardService.searchDate;
   }
   set searchDate(newDate: Date) {
+    newDate.setSeconds(0, 0);
     this.stationBoardService.searchDate = newDate;
   }
 
@@ -263,6 +264,7 @@ export class StationBoardSearchComponent implements OnInit {
 
     searchDate.setHours(timeHours);
     searchDate.setMinutes(timeMinutes);
+    searchDate.setSeconds(0, 0);
 
     return searchDate;
   }
@@ -718,8 +720,11 @@ export class StationBoardSearchComponent implements OnInit {
 
   public resetDateTime() {
     const nowDateTime = new Date();
+    nowDateTime.setSeconds(0, 0);
+
     this.searchDate = nowDateTime;
     this.searchTime = OJP.DateHelpers.formatTimeHHMM(nowDateTime);
+    
     this.stationBoardService.searchDate = nowDateTime;
 
     this.updateURLs();
