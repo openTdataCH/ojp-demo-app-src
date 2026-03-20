@@ -5,6 +5,9 @@ OJP-Demo URL: https://opentdatach.github.io/ojp-demo-app/
 ----
 
 20.March 2026
+- Improve TripInfo state - [PR #371](https://github.com/openTdataCH/ojp-demo-app-src/pull/371)
+  - show error in case of empty JourneyRef
+  - build a dummy XML request even if the journeyRef is not set
 - Improve request params - [PR #370](https://github.com/openTdataCH/ojp-demo-app-src/pull/370)
   - round seconds, milliseconds for TR, SER request date
 
