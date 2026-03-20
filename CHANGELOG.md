@@ -4,6 +4,10 @@ OJP-Demo URL: https://opentdatach.github.io/ojp-demo-app/
 
 ----
 
+20.March 2026
+- Improve request params - [PR #370](https://github.com/openTdataCH/ojp-demo-app-src/pull/370)
+  - round seconds, milliseconds for TR, SER request date
+
 19.March 2026
 - Updates query params - [PR #368](https://github.com/openTdataCH/ojp-demo-app-src/pull/368)
   - the GUI changes are reflected now directly in the URL query params
