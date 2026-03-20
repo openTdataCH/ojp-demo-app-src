@@ -110,7 +110,7 @@ export class UserTripService {
 
     this.currentTrips = [];
     
-    this.departureDate = this.computeInitialDate()
+    this.departureDate = this.computeInitialDate();
     this.currentAppStage = DEFAULT_APP_STAGE;
 
     this.permalinkRelativeURL = null;
@@ -893,6 +893,7 @@ export class UserTripService {
 
   private computeInitialDate(): Date {
     const defaultDate = new Date();
+    defaultDate.setSeconds(0, 0);
 
     const userDateTimeS: string | null = (() => {
       const userDay = this.queryParams.get('day');
@@ -928,6 +929,8 @@ export class UserTripService {
     }
 
     const tripDateTime = new Date(dateTS);
+    tripDateTime.setSeconds(0, 0);
+
     return tripDateTime;
   }
 

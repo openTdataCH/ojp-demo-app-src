@@ -20,7 +20,5 @@ export class StationBoardService {
 
     public searchDate = new Date();
 
-    constructor() {
-        
-    }
+    constructor() {}
 }
