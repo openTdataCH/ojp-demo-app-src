@@ -6,7 +6,7 @@ import { SbbNotificationToast } from '@sbb-esta/angular/notification-toast';
 
 import * as OJP from 'ojp-sdk';
 
-import { APP_STAGE, APP_STAGEs, DEFAULT_APP_STAGE, OJP_VERSION } from '../../config/constants';
+import { APP_STAGE, APP_STAGEs, DEFAULT_APP_STAGE, OJP_VERSION, REQUESTOR_REF } from '../../config/constants';
 
 import { UserTripService } from '../../shared/services/user-trip.service';
 import { TripInfoService } from '../trip-info.service';
@@ -267,7 +267,18 @@ export class TripInfoSearchComponent implements OnInit {
 
       const popover = dialogRef.componentInstance as CustomTripInfoXMLPopoverComponent;
 
-      popover.customRequestXMLs = this.currentRequestInfo?.requestXML ?? 'n/a';
+      const currentRequestXML = this.currentRequestInfo?.requestXML ?? null;
+      if (currentRequestXML === null) {
+        const isOJPv2 = OJP_VERSION === '2.0';
+        const xmlConfig = isOJPv2 ? OJP.DefaultXML_Config : OJP.XML_BuilderConfigOJPv1;
+        const ojpSDK = this.userTripService.createOJP_SDK_Instance(this.languageService.language);
+        
+        const requestJourneyRef = this.model.journeyRef.trim() === '' ? 'fill_journeyRef' : this.model.journeyRef;
+        const request = ojpSDK.requests.TripInfoRequest.initWithJourneyRef(requestJourneyRef, this.model.journeyDateTime);
+        popover.customRequestXMLs = request.buildRequestXML(this.languageService.language, REQUESTOR_REF, xmlConfig);
+      } else {
+        popover.customRequestXMLs = currentRequestXML;
+      }
 
       popover.customRequestSaved.subscribe(async requestInfo => {
         dialogRef.close();
@@ -296,6 +307,12 @@ export class TripInfoSearchComponent implements OnInit {
     const response = await request.fetchResponse(ojpSDK);
     if (response.ok) {
       const tripInfoResult = TripInfoResult.initWithTripInfoResponse(OJP_VERSION, response);
+      if (tripInfoResult === null) {
+        this.notificationToast.open('Cant Parse TripInfoRequest result:', {
+          type: 'error',
+          verticalPosition: 'top',
+        });
+      }
       this.parseTripInfo(request.requestInfo, tripInfoResult);
     } else {
       this.notificationToast.open('Invalid TripInfoRequest result: ' + response.error.message, {
