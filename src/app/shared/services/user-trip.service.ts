@@ -505,6 +505,9 @@ export class UserTripService {
     this.tripsDataUpdated.emit(tripsData);
 
     this.currentTrips = trips;
+    
+    // for BLS, ZVV urls we need current trip in case we cant build these from coords-coords queries
+    this.updateURLs();
   }
 
   private updateFares(fareResults: OJP_Types.FareResultSchema[]) {
