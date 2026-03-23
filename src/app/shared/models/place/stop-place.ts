@@ -118,7 +118,7 @@ export class StopPlace extends BasePlace {
       return null;
     }
 
-    const sourceType: PlaceRefSourceType = stopPlaceSchema === null ? 'stop-point' : 'stop-point';
+    const sourceType: PlaceRefSourceType = stopPlaceSchema === null ? 'stop-place' : 'stop-point';
     const placeRef = new PlaceRef(stopPlaceName, stopPlaceRef, sourceType);
 
     const stopPlace = new StopPlace(geoPosition.longitude, geoPosition.latitude, placeName, placeRef);
