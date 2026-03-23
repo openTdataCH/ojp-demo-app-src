@@ -248,7 +248,7 @@ export class SearchFormComponent implements OnInit {
   }
 
   private async initFromMockXML(mockText: string) {
-    const sdk = this.userTripService.createOJP_SDK_Instance(this.languageService.language, this.userTripService.currentAppStage);
+    const sdk = this.userTripService.createOJP_SDK_Instance(this.languageService.language);
     const request2 = sdk.requests.TripRequest.initWithResponseMock(mockText);
     const response = await request2.fetchResponse(sdk);
 
@@ -329,7 +329,7 @@ export class SearchFormComponent implements OnInit {
   public async handleTapOnSearch() {
     this.userTripService.updateDepartureDateTime(this.computeFormDepartureDate());
 
-    const sdk = this.userTripService.createOJP_SDK_Instance(this.languageService.language, this.userTripService.currentAppStage);
+    const sdk = this.userTripService.createOJP_SDK_Instance(this.languageService.language);
 
     const includeLegProjectionStep1 = true;
     const tripRequestStep1 = TripRequestBuilder.computeTripRequest(this.userTripService, sdk, includeLegProjectionStep1);
@@ -418,9 +418,8 @@ export class SearchFormComponent implements OnInit {
     });
     dialogRef.afterOpened().subscribe(() => {
       const popover = dialogRef.componentInstance as InputXmlPopoverComponent;
-      popover.appStage = this.userTripService.currentAppStage;
 
-      const sdk = this.userTripService.createOJP_SDK_Instance(this.languageService.language, this.userTripService.currentAppStage);
+      const sdk = this.userTripService.createOJP_SDK_Instance(this.languageService.language);
       const currentTR = TripRequestBuilder.computeTripRequest(this.userTripService, sdk);
       if (currentTR) {
         const isOJPv2 = OJP_VERSION === '2.0';
@@ -433,7 +432,7 @@ export class SearchFormComponent implements OnInit {
       const handleCustomXMLResponse = async (tripsResponseXML: string) => {
         this.lastCustomTripRequestXML = popover.inputTripRequestXML;
 
-        const sdk = this.userTripService.createOJP_SDK_Instance(this.languageService.language, this.userTripService.currentAppStage);
+        const sdk = this.userTripService.createOJP_SDK_Instance(this.languageService.language);
         const request = sdk.requests.TripRequest.initWithResponseMock(tripsResponseXML);
         const response = await request.fetchResponse(sdk);
 

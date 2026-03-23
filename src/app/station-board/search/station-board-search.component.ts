@@ -40,8 +40,6 @@ import { GeoPositionBBOX } from '../../shared/models/geo/geoposition-bbox';
 export class StationBoardSearchComponent implements OnInit {
   @ViewChild(SbbExpansionPanel, { static: true }) searchPanel: SbbExpansionPanel | undefined;
 
-  public currentAppStage: APP_STAGE;
-
   public stationBoardType: StationBoardType;
 
   public stopPlace: StopPlace | null;
@@ -92,8 +90,6 @@ export class StationBoardSearchComponent implements OnInit {
   ) {
     const queryParams = new URLSearchParams(document.location.search);
 
-    this.currentAppStage = OJPHelpers.computeAppStage();
-
     this.queryParams = new URLSearchParams(document.location.search);
 
     this.appStageOptions = APP_STAGEs;
@@ -134,12 +130,12 @@ export class StationBoardSearchComponent implements OnInit {
     })();
     this.useRealTimeDataTypes = ['full', 'explanatory', 'none'];
 
+    this.userTripService.currentAppStage = OJPHelpers.computeAppStage();
+
     this.updateURLs();
   }
 
   async ngOnInit(): Promise<void> {
-    this.currentAppStage = OJPHelpers.computeAppStage();
-
     const userStopID = this.queryParams.get('stop_id');
     if (userStopID) {
       this.updateCurrentRequestData(userStopID);
@@ -153,7 +149,7 @@ export class StationBoardSearchComponent implements OnInit {
     });
 
     this.customInitFromParams();
-    this.stationBoardService.stageChanged.emit(this.currentAppStage);
+    this.stationBoardService.stageChanged.emit(this.userTripService.currentAppStage);
   }
 
   private customInitFromParams() {
@@ -320,8 +316,8 @@ export class StationBoardSearchComponent implements OnInit {
       queryParams.append('real_time_data', this.useRealTimeDataType);
     }
 
-    if (this.currentAppStage !== DEFAULT_APP_STAGE) {
-      const stageS = this.currentAppStage.toLowerCase();
+    if (this.userTripService.currentAppStage !== DEFAULT_APP_STAGE) {
+      const stageS = this.userTripService.currentAppStage.toLowerCase();
       queryParams.append('stage', stageS);
     }
 
@@ -367,7 +363,7 @@ export class StationBoardSearchComponent implements OnInit {
   }
 
   private async fetchStopEventsForStopRef(stopPlaceRef: string) {
-    const sdk = this.userTripService.createOJP_SDK_Instance(this.languageService.language, this.currentAppStage);
+    const sdk = this.userTripService.createOJP_SDK_Instance(this.languageService.language);
     
     const stopEventRequest = this.computeStopEventRequest(stopPlaceRef);
     
@@ -400,7 +396,7 @@ export class StationBoardSearchComponent implements OnInit {
   }
 
   private async initFromMockXML(mockText: string) {
-    const sdk = this.userTripService.createOJP_SDK_Instance(this.languageService.language, this.currentAppStage);
+    const sdk = this.userTripService.createOJP_SDK_Instance(this.languageService.language);
 
     const request = sdk.requests.StopEventRequest.initWithResponseMock(mockText);
     const response = await request.fetchResponse(sdk);
@@ -474,7 +470,7 @@ export class StationBoardSearchComponent implements OnInit {
   }
 
   private computeStopEventRequest(stopPlaceRef: string) {
-    const sdk = this.userTripService.createOJP_SDK_Instance(this.languageService.language, this.currentAppStage);
+    const sdk = this.userTripService.createOJP_SDK_Instance(this.languageService.language);
 
     stopPlaceRef = DataHelpers.convertStopPointToStopPlace(stopPlaceRef);
 
@@ -510,7 +506,7 @@ export class StationBoardSearchComponent implements OnInit {
   private async lookupStopPlaceRef(stopPlaceRef: string) {
     stopPlaceRef = DataHelpers.convertStopPointToStopPlace(stopPlaceRef);
 
-    const ojpSDK = this.userTripService.createOJP_SDK_Instance(this.languageService.language, this.currentAppStage);
+    const ojpSDK = this.userTripService.createOJP_SDK_Instance(this.languageService.language);
     const request = ojpSDK.requests.LocationInformationRequest.initWithPlaceRef(stopPlaceRef, 10);
 
     const response = await request.fetchResponse(ojpSDK);
@@ -620,14 +616,15 @@ export class StationBoardSearchComponent implements OnInit {
 
   public async onChangeStageAPI(ev: any) {
     const newAppStage = ev.value as APP_STAGE;
-    this.currentAppStage = newAppStage;
     this.stationBoardService.stageChanged.emit(newAppStage);
+
+    this.userTripService.currentAppStage = newAppStage;
 
     if (this.stopPlace) {
       const bbox = GeoPositionBBOX.initFromGeoPosition(this.stopPlace.geoPosition, 200, 200);
       const bboxData = bbox.asFeatureBBOX();
 
-      const ojpSDK = this.userTripService.createOJP_SDK_Instance(this.languageService.language, this.currentAppStage);
+      const ojpSDK = this.userTripService.createOJP_SDK_Instance(this.languageService.language);
       const request = ojpSDK.requests.LocationInformationRequest.initWithBBOX(bboxData, ['stop'], 300);
       const response = await request.fetchResponse(ojpSDK);
 
@@ -698,7 +695,7 @@ export class StationBoardSearchComponent implements OnInit {
     this.currentRequestInfo.responseDateTime = new Date();
     this.currentRequestInfo.responseXML = responseXML;
 
-    const sdk = this.userTripService.createOJP_SDK_Instance(this.languageService.language, this.currentAppStage);
+    const sdk = this.userTripService.createOJP_SDK_Instance(this.languageService.language);
 
     const request = sdk.requests.StopEventRequest.initWithResponseMock(responseXML);
     const response = await request.fetchResponse(sdk);

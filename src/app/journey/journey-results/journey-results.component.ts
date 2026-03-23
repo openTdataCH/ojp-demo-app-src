@@ -122,7 +122,7 @@ export class JourneyResultsComponent implements OnInit {
   }
 
   private async loadTrips(numberOfResultsType: NumberOfResultsType, depArrDate: Date) {
-    const sdk = this.userTripService.createOJP_SDK_Instance(this.languageService.language, this.userTripService.currentAppStage);
+    const sdk = this.userTripService.createOJP_SDK_Instance(this.languageService.language);
     const includeLegProjection = true;
     
     const request = TripRequestBuilder.computeTripRequest(this.userTripService, sdk, includeLegProjection);
