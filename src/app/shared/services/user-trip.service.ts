@@ -708,48 +708,7 @@ export class UserTripService {
 
     const dateF = OJP.DateHelpers.formatDate(this.departureDate);
 
-    this.sbbURL = (() => {
-      const stopsData: string[] = [];
-      const endpointTypes: JourneyPointType[] = ['From', 'To'];
-      endpointTypes.forEach(endpointType => {
-        const isFrom = endpointType === 'From';
-        const tripPlace = isFrom ? this.fromTripPlace : this.toTripPlace;
-        if (tripPlace === null) {
-          return;
-        }
-
-        const place = tripPlace.place;
-        if (place.type !== 'stop') {
-          return;
-        }
-
-        const stopPlace = place as StopPlace;
-        const stopPlaceRef = DataHelpers.convertStopPointToStopPlace(stopPlace.placeRef.ref);
-
-        const stopPart = place.computeName() + ' (OJP Demo)' + '_I' + stopPlaceRef;
-        stopsData.push(stopPart);
-      });
-
-      const dayF = dateF.substring(0, 10);
-
-      const queryTime = dateF.substring(11, 16).replace(':', '_');
-      const queryMoment = this.currentBoardingType === 'Dep' ? 'dep' : 'arr';
-
-      const params = new URLSearchParams({
-        stops: stopsData.join('~'),
-        day: dayF,
-        moment: queryMoment,
-        time: queryTime,
-        ref: 'OJP_DemoApp',
-      });
-
-      // https://www.sbb.ch/de?stops=FOOBART+Nene_I8592588~Thun,+Arena+Thun_I8594535&day=2026-03-13&moment=dep&time=23_08
-      const url = 'https://www.sbb.ch/' + this.languageService.language + '?' + params.toString();
-
-      return url;
-    })();
-
-    // BLS and ZVV need stop places from from/to, try to get from the current rendered OJP trips
+    // TU linked urls need stop places from from/to, try to get from the current rendered OJP trips
     const currentTripStopPlaces: StopPlace[] = (() => {
       const stopPlaces: StopPlace[] = [];
 
@@ -782,6 +741,42 @@ export class UserTripService {
       }
 
       return stopPlaces;
+    })();
+
+    this.sbbURL = (() => {
+      if (currentTripStopPlaces.length < 2) {
+        return null;
+      }
+
+      const stopsData: string[] = [];      
+      const endpointTypes: JourneyPointType[] = ['From', 'To'];
+      endpointTypes.forEach(endpointType => {
+        const isFrom = endpointType === 'From';
+        const stopPlace = isFrom ? currentTripStopPlaces[0] : currentTripStopPlaces[currentTripStopPlaces.length - 1];
+        
+        const stopPlaceRef = DataHelpers.convertStopPointToStopPlace(stopPlace.placeRef.ref);
+
+        const stopPart = stopPlace.computeName() + ' (OJP Demo)' + '_I' + stopPlaceRef;
+        stopsData.push(stopPart);
+      });
+
+      const dayF = dateF.substring(0, 10);
+
+      const queryTime = dateF.substring(11, 16).replace(':', '_');
+      const queryMoment = this.currentBoardingType === 'Dep' ? 'dep' : 'arr';
+
+      const params = new URLSearchParams({
+        stops: stopsData.join('~'),
+        day: dayF,
+        moment: queryMoment,
+        time: queryTime,
+        ref: 'OJP_DemoApp',
+      });
+
+      // https://www.sbb.ch/de?stops=FOOBART+Nene_I8592588~Thun,+Arena+Thun_I8594535&day=2026-03-13&moment=dep&time=23_08
+      const url = 'https://www.sbb.ch/' + this.languageService.language + '?' + params.toString();
+
+      return url;
     })();
 
     this.blsURL = (() => {
