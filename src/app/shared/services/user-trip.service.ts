@@ -154,7 +154,7 @@ export class UserTripService {
     const fromPlaceRef = this.queryParams.get('from') ?? defaultLocationsPlaceRef[fromPlaceName];
     const toPlaceRef = this.queryParams.get('to') ?? defaultLocationsPlaceRef[toPlaceName];
 
-    const ojpSDK = this.createOJP_SDK_Instance(language, appStage);
+    const ojpSDK = this.createOJP_SDK_Instance(language);
 
     const endpointTypes: JourneyPointType[] = ['From', 'To'];
     for (const endpointType of endpointTypes) {
@@ -368,7 +368,7 @@ export class UserTripService {
   }
 
   public async refetchEndpointsByName(language: OJP.Language) {
-    const ojpSDK = this.createOJP_SDK_Instance(language, this.currentAppStage);
+    const ojpSDK = this.createOJP_SDK_Instance(language);
 
     const endpointTypes: JourneyPointType[] = ['From', 'To'];
     for (const endpointType of endpointTypes) {
@@ -1077,9 +1077,10 @@ export class UserTripService {
     return this.tripTransportMode === 'public_transport';
   }
 
-  public createOJP_SDK_Instance(language: OJP.Language, appStage: APP_STAGE): OJP.AnySDK {
+  public createOJP_SDK_Instance(language: OJP.Language): OJP.AnySDK {
     const isOJPv2 = OJP_VERSION === '2.0';
 
+    const appStage = this.currentAppStage;
     const stageConfig = this.getStageConfig(appStage);
     if (stageConfig.authToken === null) {
       console.error('WARNING: authorization not set for stage=' + appStage);

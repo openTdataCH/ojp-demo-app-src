@@ -186,7 +186,7 @@ export class JourneyPointInputComponent implements OnInit {
 
   private async fetchJourneyPoints(searchTerm: string) {
     const placeTypes = this.filterPlaceType === undefined ? undefined : [this.filterPlaceType];
-    const sdk = this.userTripService.createOJP_SDK_Instance(this.languageService.language, this.appStage);
+    const sdk = this.userTripService.createOJP_SDK_Instance(this.languageService.language);
     const request = sdk.requests.LocationInformationRequest.initWithLocationName(searchTerm, placeTypes, 10);
 
     await this.fetchRequest(sdk, request);
@@ -285,7 +285,7 @@ export class JourneyPointInputComponent implements OnInit {
     const bbox = GeoPositionBBOX.initFromGeoPosition(nearbyGeoPosition, 5000, 5000);
     const bboxData = bbox.asFeatureBBOX();
 
-    const sdk = this.userTripService.createOJP_SDK_Instance(this.languageService.language, this.appStage);
+    const sdk = this.userTripService.createOJP_SDK_Instance(this.languageService.language);
     const request = sdk.requests.LocationInformationRequest.initWithBBOX(bboxData, ['stop'], 300);
 
     await this.fetchRequest(sdk, request);

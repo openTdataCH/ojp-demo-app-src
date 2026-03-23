@@ -198,7 +198,7 @@ export class MapComponent implements OnInit, AfterViewInit {
     const bbox = MapHelpers.bboxFromLngLatWidthPx(map, lngLat, 20, 20);
     MapHelpers.highlightBBOXOnMap(bbox, map);
 
-    const ojpSDK = this.userTripService.createOJP_SDK_Instance(this.languageService.language, this.userTripService.currentAppStage);
+    const ojpSDK = this.userTripService.createOJP_SDK_Instance(this.languageService.language);
     const request = ojpSDK.requests.LocationInformationRequest.initWithBBOX(bbox, ['stop'], 300);
 
     const response = await request.fetchResponse(ojpSDK);

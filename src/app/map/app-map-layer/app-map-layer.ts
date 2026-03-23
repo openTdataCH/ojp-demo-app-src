@@ -132,7 +132,7 @@ export class AppMapLayer {
             }
         })();
 
-        const ojpSDK = this.userTripService.createOJP_SDK_Instance(this.language, this.userTripService.currentAppStage);
+        const ojpSDK = this.userTripService.createOJP_SDK_Instance(this.language);
         const request = ojpSDK.requests.LocationInformationRequest.initWithBBOX(bboxData, restrictionTypes, featuresLimit);
 
         if (request.payload.restrictions) {
