@@ -13,6 +13,7 @@
   <div class="d-flex align-items-center">
     <div class="flex-grow-1 journey-endpoint">
       <journey-point-input
+        [appStage]="this.userTripService.currentAppStage"
         [place]="this.fromPlace"
         [label]="'From'"
         (selectedNewPlace)="onPlaceSelected($event, 'From')">
@@ -38,6 +39,7 @@
     <div class="d-flex gap-2 align-items-center">
       <div class="flex-grow-1 journey-endpoint">
         <journey-point-input
+          [appStage]="this.userTripService.currentAppStage"
           [place]="this.viaPlaces[0]"
           [label]="'Via'"
           (selectedNewPlace)="onPlaceSelected($event, 'Via')">
@@ -61,6 +63,7 @@
   <div class="d-flex align-items-center">
     <div class="flex-grow-1 journey-endpoint">
       <journey-point-input
+        [appStage]="this.userTripService.currentAppStage"
         [place]="this.toPlace"
         [label]="'To'"
         (selectedNewPlace)="onPlaceSelected($event, 'To')">

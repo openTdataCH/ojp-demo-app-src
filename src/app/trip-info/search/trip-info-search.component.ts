@@ -204,7 +204,7 @@ export class TripInfoSearchComponent implements OnInit {
   }
 
   private async fetchTripInfo() {
-    const ojpSDK = this.userTripService.createOJP_SDK_Instance(this.languageService.language);
+    const ojpSDK = this.userTripService.createOJP_SDK_Instance(this.languageService.language, this.model.currentAppStage);
 
     const request = ojpSDK.requests.TripInfoRequest.initWithJourneyRef(this.model.journeyRef, this.model.journeyDateTime);
     request.enableTrackProjection();
@@ -255,7 +255,7 @@ export class TripInfoSearchComponent implements OnInit {
 
   onChangeStageAPI(ev: any) {
     const newAppStage = ev.value as APP_STAGE;
-    this.userTripService.updateAppStage(newAppStage)
+    this.model.currentAppStage = newAppStage;
   }
 
   public loadCustomXMLPopover() {
@@ -266,12 +266,13 @@ export class TripInfoSearchComponent implements OnInit {
       this.notificationToast.dismiss();
 
       const popover = dialogRef.componentInstance as CustomTripInfoXMLPopoverComponent;
+      popover.appStage = this.model.currentAppStage;
 
       const currentRequestXML = this.currentRequestInfo?.requestXML ?? null;
       if (currentRequestXML === null) {
         const isOJPv2 = OJP_VERSION === '2.0';
         const xmlConfig = isOJPv2 ? OJP.DefaultXML_Config : OJP.XML_BuilderConfigOJPv1;
-        const ojpSDK = this.userTripService.createOJP_SDK_Instance(this.languageService.language);
+        const ojpSDK = this.userTripService.createOJP_SDK_Instance(this.languageService.language, this.model.currentAppStage);
         
         const requestJourneyRef = this.model.journeyRef.trim() === '' ? 'fill_journeyRef' : this.model.journeyRef;
         const request = ojpSDK.requests.TripInfoRequest.initWithJourneyRef(requestJourneyRef, this.model.journeyDateTime);
@@ -297,7 +298,7 @@ export class TripInfoSearchComponent implements OnInit {
   }
 
   private async handleCustomResponse(responseXML: string) {
-    const ojpSDK = this.userTripService.createOJP_SDK_Instance(this.languageService.language);
+    const ojpSDK = this.userTripService.createOJP_SDK_Instance(this.languageService.language, this.model.currentAppStage);
 
     const request = ojpSDK.requests.TripInfoRequest.initWithResponseMock(responseXML);
     request.enableTrackProjection();

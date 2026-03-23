@@ -31,7 +31,7 @@ export class TripInfoResultPopoverComponent {
   public async fetchJourneyRef(journeyRef: string, journeyDateTime: Date) {
     this.model.title = 'JourneyRef: ' + journeyRef;
 
-    const ojpSDK = this.userTripService.createOJP_SDK_Instance(this.languageService.language);
+    const ojpSDK = this.userTripService.createOJP_SDK_Instance(this.languageService.language, this.userTripService.currentAppStage);
     const request = ojpSDK.requests.TripInfoRequest.initWithJourneyRef(journeyRef, journeyDateTime);
     request.enableTrackProjection();
 
