@@ -4,6 +4,11 @@ OJP-Demo URL: https://opentdatach.github.io/ojp-demo-app/
 
 ----
 
+23.March 2026
+- Fix station board stage changes - [PR #372](https://github.com/openTdataCH/ojp-demo-app-src/pull/372)
+  - fix station board change stage bug
+  - when changing stages do a BBOX LIR to fetch the stop nearby from the new stage
+
 20.March 2026
 - Improve TripInfo state - [PR #371](https://github.com/openTdataCH/ojp-demo-app-src/pull/371)
   - show error in case of empty JourneyRef

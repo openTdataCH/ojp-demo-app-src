@@ -29,7 +29,8 @@ import { StopEventResult } from '../../shared/models/stop-event-result';
 import { AnyStopEventRequestResponse } from '../../shared/types/_all';
 import { JourneyService } from '../../shared/models/journey-service';
 import { DataHelpers } from '../../helpers/data-helpers';
-import { AnyPlace } from 'src/app/shared/models/place/place-builder';
+import { AnyPlace, PlaceBuilder } from '../../shared/models/place/place-builder';
+import { GeoPositionBBOX } from '../../shared/models/geo/geoposition-bbox';
 
 @Component({
   selector: 'station-board-search',
@@ -366,7 +367,7 @@ export class StationBoardSearchComponent implements OnInit {
   }
 
   private async fetchStopEventsForStopRef(stopPlaceRef: string) {
-    const sdk = this.userTripService.createOJP_SDK_Instance(this.languageService.language);
+    const sdk = this.userTripService.createOJP_SDK_Instance(this.languageService.language, this.currentAppStage);
     
     const stopEventRequest = this.computeStopEventRequest(stopPlaceRef);
     
@@ -399,7 +400,7 @@ export class StationBoardSearchComponent implements OnInit {
   }
 
   private async initFromMockXML(mockText: string) {
-    const sdk = this.userTripService.createOJP_SDK_Instance(this.languageService.language);
+    const sdk = this.userTripService.createOJP_SDK_Instance(this.languageService.language, this.currentAppStage);
 
     const request = sdk.requests.StopEventRequest.initWithResponseMock(mockText);
     const response = await request.fetchResponse(sdk);
@@ -473,7 +474,7 @@ export class StationBoardSearchComponent implements OnInit {
   }
 
   private computeStopEventRequest(stopPlaceRef: string) {
-    const sdk = this.userTripService.createOJP_SDK_Instance(this.languageService.language);
+    const sdk = this.userTripService.createOJP_SDK_Instance(this.languageService.language, this.currentAppStage);
 
     stopPlaceRef = DataHelpers.convertStopPointToStopPlace(stopPlaceRef);
 
@@ -509,7 +510,7 @@ export class StationBoardSearchComponent implements OnInit {
   private async lookupStopPlaceRef(stopPlaceRef: string) {
     stopPlaceRef = DataHelpers.convertStopPointToStopPlace(stopPlaceRef);
 
-    const ojpSDK = this.userTripService.createOJP_SDK_Instance(this.languageService.language);
+    const ojpSDK = this.userTripService.createOJP_SDK_Instance(this.languageService.language, this.currentAppStage);
     const request = ojpSDK.requests.LocationInformationRequest.initWithPlaceRef(stopPlaceRef, 10);
 
     const response = await request.fetchResponse(ojpSDK);
@@ -617,11 +618,33 @@ export class StationBoardSearchComponent implements OnInit {
     });
   }
 
-  onChangeStageAPI(ev: any) {
+  public async onChangeStageAPI(ev: any) {
     const newAppStage = ev.value as APP_STAGE;
     this.currentAppStage = newAppStage;
     this.stationBoardService.stageChanged.emit(newAppStage);
-    
+
+    if (this.stopPlace) {
+      const bbox = GeoPositionBBOX.initFromGeoPosition(this.stopPlace.geoPosition, 200, 200);
+      const bboxData = bbox.asFeatureBBOX();
+
+      const ojpSDK = this.userTripService.createOJP_SDK_Instance(this.languageService.language, this.currentAppStage);
+      const request = ojpSDK.requests.LocationInformationRequest.initWithBBOX(bboxData, ['stop'], 300);
+      const response = await request.fetchResponse(ojpSDK);
+
+      if (response.ok) {
+        const placeResults = OJPHelpers.parseAnyPlaceResult(OJP_VERSION, response);
+        const places = placeResults.map(placeResult => {
+          const place = PlaceBuilder.initWithPlaceResultSchema(OJP_VERSION, placeResult);
+          return place;
+        }).filter(Boolean) as AnyPlace[];
+        if (places.length > 0) {
+          const firstPlace = places[0];
+          this.onStopPlaceSelected(firstPlace);
+          return;
+        }
+      }
+    }
+
     this.updateURLs();
   }
 
@@ -675,7 +698,7 @@ export class StationBoardSearchComponent implements OnInit {
     this.currentRequestInfo.responseDateTime = new Date();
     this.currentRequestInfo.responseXML = responseXML;
 
-    const sdk = this.userTripService.createOJP_SDK_Instance(this.languageService.language);
+    const sdk = this.userTripService.createOJP_SDK_Instance(this.languageService.language, this.currentAppStage);
 
     const request = sdk.requests.StopEventRequest.initWithResponseMock(responseXML);
     const response = await request.fetchResponse(sdk);

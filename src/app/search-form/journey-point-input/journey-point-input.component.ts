@@ -8,7 +8,7 @@ import { SbbErrorStateMatcher } from '@sbb-esta/angular/core';
 import * as OJP_Types from 'ojp-shared-types';
 import * as OJP from 'ojp-sdk';
 
-import { OJP_VERSION } from '../../config/constants';
+import { APP_STAGE, DEFAULT_APP_STAGE, OJP_VERSION } from '../../config/constants';
 
 import { MapService } from '../../shared/services/map.service';
 import { LanguageService } from '../../shared/services/language.service'
@@ -66,6 +66,7 @@ export class JourneyPointInputComponent implements OnInit {
   @Input() label: string = '';
   @Input() placeholder: string = '... type to search';
   @Input() filterPlaceType: OJP_Types.PlaceTypeEnum | undefined;
+  @Input() appStage: APP_STAGE = DEFAULT_APP_STAGE;
   
   private _currentRenderPlaceResult: RenderPlaceResult | null = null;
   @Input() set place(place: AnyPlace | null) {
@@ -185,7 +186,7 @@ export class JourneyPointInputComponent implements OnInit {
 
   private async fetchJourneyPoints(searchTerm: string) {
     const placeTypes = this.filterPlaceType === undefined ? undefined : [this.filterPlaceType];
-    const sdk = this.userTripService.createOJP_SDK_Instance(this.languageService.language);
+    const sdk = this.userTripService.createOJP_SDK_Instance(this.languageService.language, this.appStage);
     const request = sdk.requests.LocationInformationRequest.initWithLocationName(searchTerm, placeTypes, 10);
 
     await this.fetchRequest(sdk, request);
@@ -284,7 +285,7 @@ export class JourneyPointInputComponent implements OnInit {
     const bbox = GeoPositionBBOX.initFromGeoPosition(nearbyGeoPosition, 5000, 5000);
     const bboxData = bbox.asFeatureBBOX();
 
-    const sdk = this.userTripService.createOJP_SDK_Instance(this.languageService.language);
+    const sdk = this.userTripService.createOJP_SDK_Instance(this.languageService.language, this.appStage);
     const request = sdk.requests.LocationInformationRequest.initWithBBOX(bboxData, ['stop'], 300);
 
     await this.fetchRequest(sdk, request);
