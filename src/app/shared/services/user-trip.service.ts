@@ -746,6 +746,41 @@ export class UserTripService {
       return url;
     })();
 
+    // BLS and ZVV need stop places from from/to, try to get from the current rendered OJP trips
+    const currentTripStopPlaces: StopPlace[] = (() => {
+      const stopPlaces: StopPlace[] = [];
+
+      if (this.fromTripPlace?.place.type === 'stop') {
+        // first is the FROM StoPlace if present
+        stopPlaces.push(this.fromTripPlace.place as StopPlace);
+      }
+
+      for (const trip of this.currentTrips) {
+        trip.legs.forEach(leg => {
+          if ((leg.fromPlace !== null) && (leg.fromPlace.type === 'stop')) {
+            const stopPlace = leg.fromPlace as StopPlace;
+            stopPlaces.push(stopPlace);
+          }
+          if ((leg.toPlace !== null) && (leg.toPlace.type === 'stop')) {
+            const stopPlace = leg.toPlace as StopPlace;
+            stopPlaces.push(stopPlace);
+          }
+        });
+
+        // stop at the first trip with 2+ stop places
+        if (stopPlaces.length >= 2) {
+          break;
+        }
+      }
+
+      if (this.toTripPlace?.place.type === 'stop') {
+        // last is the TO StoPlace if present
+        stopPlaces.push(this.toTripPlace.place as StopPlace);
+      }
+
+      return stopPlaces;
+    })();
+
     this.blsURL = (() => {
       // 14.03.2026
       const queryDate = dateF.substring(8, 10) + '.' + dateF.substring(5, 7) + '.' + dateF.substring(0, 4);
@@ -761,28 +796,23 @@ export class UserTripService {
         timeSel: '1',
       });
 
-      const endpointTypes: JourneyPointType[] = ['From', 'To'];
-      endpointTypes.forEach(endpointType => {
-        const isFrom = endpointType === 'From';
-        const tripPlace = isFrom ? this.fromTripPlace : this.toTripPlace;
-        if (tripPlace === null) {
-          return;
-        }
+      if (currentTripStopPlaces.length >= 2) {
+        const endpointTypes: JourneyPointType[] = ['From', 'To'];
+        endpointTypes.forEach(endpointType => {
+          const isFrom = endpointType === 'From';
+          const stopPlace = isFrom ? currentTripStopPlaces[0] : currentTripStopPlaces[currentTripStopPlaces.length - 1];
+          const stopPlaceRef = DataHelpers.convertStopPointToStopPlace(stopPlace.placeRef.ref);
+          if (isFrom) {
+            params.set('S', stopPlaceRef);
+          } else {
+            params.set('Z', stopPlaceRef);
+          }
+        });
+      }
 
-        const place = tripPlace.place;
-        if (place.type !== 'stop') {
-          return;
-        }
-
-        const stopPlace = place as StopPlace;
-        const stopPlaceRef = DataHelpers.convertStopPointToStopPlace(stopPlace.placeRef.ref);
-
-        if (isFrom) {
-          params.set('S', stopPlaceRef);
-        } else {
-          params.set('Z', stopPlaceRef);
-        }
-      });
+      if ((params.get('S') === null) || (params.get('Z') === null)) {
+        return null;
+      }
 
       const url = 'https://www.bls.ch/en/fahren/fahrplan#/?' + params.toString();
 
@@ -799,39 +829,36 @@ export class UserTripService {
         time: queryTime,
       });
 
-      const endpointTypes: JourneyPointType[] = ['From', 'To'];
-      endpointTypes.forEach(endpointType => {
-        const isFrom = endpointType === 'From';
-        const tripPlace = isFrom ? this.fromTripPlace : this.toTripPlace;
-        if (tripPlace === null) {
-          return;
-        }
+      if (currentTripStopPlaces.length >= 2) {
+        const endpointTypes: JourneyPointType[] = ['From', 'To'];
+        endpointTypes.forEach(endpointType => {
+          const isFrom = endpointType === 'From';
+          const stopPlace = isFrom ? currentTripStopPlaces[0] : currentTripStopPlaces[currentTripStopPlaces.length - 1];
+          
+          const stopPlaceRef = DataHelpers.convertStopPointToStopPlace(stopPlace.placeRef.ref);
 
-        const place = tripPlace.place;
-        if (place.type !== 'stop') {
-          return;
-        }
+          // A=1@O=Gurten Kulm@X=7439751@Y=46919610@U=90@L=8507099@p=1773077090@
+          const idParts: string[] = [
+            'A=1',
+            'O=' + stopPlace.computeName(),
+            'X=' + stopPlace.geoPosition.longitude.toString().replace('.', ''),
+            'Y=' + stopPlace.geoPosition.latitude.toString().replace('.', ''),
+            'L=' + stopPlaceRef,
+            'p=1773077090',
+            ''
+          ];
 
-        const stopPlace = place as StopPlace;
-        const stopPlaceRef = DataHelpers.convertStopPointToStopPlace(stopPlace.placeRef.ref);
+          const queryParamPrefix = endpointType.toLowerCase();
+          params.set(queryParamPrefix + 'id', idParts.join('@'));
+          params.set(queryParamPrefix + 'lat', stopPlace.geoPosition.latitude.toString());
+          params.set(queryParamPrefix + 'lon', stopPlace.geoPosition.longitude.toString());
+          params.set(queryParamPrefix + 'name', stopPlace.computeName());
+        });
+      }
 
-        // A=1@O=Gurten Kulm@X=7439751@Y=46919610@U=90@L=8507099@p=1773077090@
-        const idParts: string[] = [
-          'A=1',
-          'O=' + stopPlace.computeName(),
-          'X=' + stopPlace.geoPosition.longitude.toString().replace('.', ''),
-          'Y=' + stopPlace.geoPosition.latitude.toString().replace('.', ''),
-          'L=' + stopPlaceRef,
-          'p=1773077090',
-          ''
-        ];
-
-        const queryParamPrefix = endpointType.toLowerCase();
-        params.set(queryParamPrefix + 'id', idParts.join('@'));
-        params.set(queryParamPrefix + 'lat', stopPlace.geoPosition.latitude.toString());
-        params.set(queryParamPrefix + 'lon', stopPlace.geoPosition.longitude.toString());
-        params.set(queryParamPrefix + 'name', stopPlace.computeName());
-      });
+      if ((params.get('fromid') === null) || (params.get('toid') === null)) {
+        return null;
+      }
 
       const url = 'https://www.zvv.ch/en/timetable-and-information/timetable.html?' + params.toString();
       
