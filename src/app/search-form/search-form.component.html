@@ -177,23 +177,25 @@
       <div *ngIf="this.requestDurationF !== null">
         <span class="badge bg-success">{{ this.requestDurationF }}</span>
       </div>
-      <ng-container *ngIf="this.userTripService.permalinkRelativeURL !== null">
-        <ng-container *ngIf="this.userTripService.zvvURL !== null">
-          <div>
-            <a href="{{ this.userTripService.zvvURL }}" target="_blank">ZVV</a>
-          </div>
-          <div clas="text-center"> | </div>
-        </ng-container>
-        <ng-container *ngIf="this.userTripService.blsURL !== null">
-          <div>
-            <a href="{{ this.userTripService.blsURL }}" target="_blank">BLS</a>
-          </div>
-          <div clas="text-center"> | </div>
-        </ng-container>
+      <ng-container *ngIf="this.userTripService.zvvURL !== null">
+        <div>
+          <a href="{{ this.userTripService.zvvURL }}" target="_blank">ZVV</a>
+        </div>
+        <div clas="text-center"> | </div>
+      </ng-container>
+      <ng-container *ngIf="this.userTripService.blsURL !== null">
+        <div>
+          <a href="{{ this.userTripService.blsURL }}" target="_blank">BLS</a>
+        </div>
+        <div clas="text-center"> | </div>
+      </ng-container>
+      <ng-container *ngIf="this.userTripService.sbbURL !== null">
         <div>
           <a href="{{ this.userTripService.sbbURL }}" target="_blank">SBB</a>
         </div>
         <div clas="text-center"> | </div>
+      </ng-container>
+      <ng-container *ngIf="this.userTripService.permalinkRelativeURL !== null">
         <div>
           <a href="{{ this.userTripService.otherVersionURL }}" target="_blank">{{ this.userTripService.otherVersionURLText }}</a>
         </div>
