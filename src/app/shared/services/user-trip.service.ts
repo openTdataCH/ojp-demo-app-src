@@ -368,7 +368,7 @@ export class UserTripService {
   }
 
   public async refetchEndpointsByName(language: OJP.Language) {
-    const ojpSDK = this.createOJP_SDK_Instance(language);
+    const ojpSDK = this.createOJP_SDK_Instance(language, this.currentAppStage);
 
     const endpointTypes: JourneyPointType[] = ['From', 'To'];
     for (const endpointType of endpointTypes) {
@@ -1077,7 +1077,7 @@ export class UserTripService {
     return this.tripTransportMode === 'public_transport';
   }
 
-  public createOJP_SDK_Instance(language: OJP.Language, appStage: APP_STAGE = this.currentAppStage): OJP.AnySDK {
+  public createOJP_SDK_Instance(language: OJP.Language, appStage: APP_STAGE): OJP.AnySDK {
     const isOJPv2 = OJP_VERSION === '2.0';
 
     const stageConfig = this.getStageConfig(appStage);
