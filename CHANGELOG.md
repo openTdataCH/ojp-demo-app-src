@@ -5,6 +5,8 @@ OJP-Demo URL: https://opentdatach.github.io/ojp-demo-app/
 ----
 
 23.March 2026
+- Adds fallback for linked URLs - [PR #374](https://github.com/openTdataCH/ojp-demo-app-src/pull/374)
+  - try to use current rendered trips to extract from/to places for BLS, ZVV urls that cant be resolved (because coords-coords searches) 
 - Fix station board stage changes - [PR #372](https://github.com/openTdataCH/ojp-demo-app-src/pull/372)
   - fix station board change stage bug
   - when changing stages do a BBOX LIR to fetch the stop nearby from the new stage
