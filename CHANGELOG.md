@@ -5,7 +5,7 @@ OJP-Demo URL: https://opentdatach.github.io/ojp-demo-app/
 ----
 
 23.March 2026
-- Adds fallback for linked URLs - [PR #374](https://github.com/openTdataCH/ojp-demo-app-src/pull/374)
+- Adds fallback for linked URLs - [PR #374](https://github.com/openTdataCH/ojp-demo-app-src/pull/374), [PR #375](https://github.com/openTdataCH/ojp-demo-app-src/pull/375)
   - try to use current rendered trips to extract from/to places for linked urls that cant be resolved (because coords-coords searches) 
 - Fix station board stage changes - [PR #372](https://github.com/openTdataCH/ojp-demo-app-src/pull/372)
   - fix station board change stage bug
