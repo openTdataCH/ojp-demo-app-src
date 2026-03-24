@@ -308,74 +308,6 @@ export class OJPHelpers {
     return defaultType;
   }
 
-  // Some of the legs can be merged
-  // ex1: trains with multiple desitinaion units
-  // - check for remainInVehicle https://github.com/openTdataCH/ojp-demo-app-src/issues/125  
-  private static mergeTripLegs(tripsData: TripData[]) {
-    tripsData.forEach((tripData, tripIdx) => {
-      const newLegsData: TripLegData[] = [];
-      let skipIdx: number = -1;
-      
-      tripData.trip.legs.forEach((leg, legIdx) => {
-        const legData: TripLegData = {
-          tripId: tripData.trip.id,
-          leg: leg,
-          info: {
-            id: '' + leg.id,
-            comments: null,
-          },
-          map: tripData.legsData[legIdx].map,
-        };
-
-        if (legIdx <= skipIdx) {
-          return;
-        }
-
-        const leg2Idx = legIdx + 1;
-        const leg3Idx = legIdx + 2;
-        if (leg3Idx >= tripData.trip.legs.length) {
-          newLegsData.push(legData);
-          return;
-        }
-
-        // If TransferLeg of type 'remainInVehicle'
-        // => merge prev / next TimedLeg legs
-        let shouldMergeLegs = false;
-        const leg2 = tripData.trip.legs[leg2Idx];
-        const leg3 = tripData.trip.legs[leg3Idx];
-        if (leg.type === 'TimedLeg' && leg2.type === 'TransferLeg' && leg3.type === 'TimedLeg') {
-          const transferLeg = leg2 as TransferLeg;
-          if ((transferLeg.transferType === 'remainInVehicle') || (transferLeg.transferType === 'changeWithinVehicle')) {
-            shouldMergeLegs = true;
-            skipIdx = leg3Idx;
-          }
-        }
-
-        if (shouldMergeLegs) {
-          const leg1Timed = leg as TimedLeg;
-          const leg3Timed = leg3 as TimedLeg;
-          const newLeg = leg1Timed.mergeWithAnotherTimedLeg(leg3Timed);
-          
-          legData.leg = newLeg;
-          legData.info.id = (legIdx + 1) + '-' + (leg3Idx + 1);
-          legData.info.comments = 'Timed legs were merged: ' +  legData.info.id;
-        }
-
-        newLegsData.push(legData);
-      });
-
-      if (tripData.trip.legs.length > 0 && (tripData.trip.legs.length !== newLegsData.length)) {
-        tripData.info.comments = 'APP-HACK - mergeTripLegs - remainInVehicle usecase, before: ' + tripData.trip.legs.length + ', after: ' + newLegsData.length + ' legs';
-
-        if (DEBUG_LEVEL === 'DEBUG') {
-          // console.log(tripData.info.comments);
-        }
-
-        tripData.legsData = newLegsData;
-      }
-    });
-  }
-
   public static convertTripsToTripData(trips: Trip[]): TripData[] {
     const tripsData = trips.map((trip, tripIdx) => {
       const legsData = trip.legs.map(leg => {
@@ -407,8 +339,6 @@ export class OJPHelpers {
 
       return tripData;
     });
-    
-    OJPHelpers.mergeTripLegs(tripsData);
 
     return tripsData;
   }
