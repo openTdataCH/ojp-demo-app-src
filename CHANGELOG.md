@@ -4,6 +4,11 @@ OJP-Demo URL: https://opentdatach.github.io/ojp-demo-app/
 
 ----
 
+24.March 2026
+- Remove merged legs - [PR #376](https://github.com/openTdataCH/ojp-demo-app-src/pull/376)
+  - stop merging timed legs that have `remainInVehicle` transferType
+  - handle in-place / display transfer types that are not `walk`
+
 23.March 2026
 - Adds fallback for linked URLs - [PR #374](https://github.com/openTdataCH/ojp-demo-app-src/pull/374), [PR #375](https://github.com/openTdataCH/ojp-demo-app-src/pull/375)
   - try to use current rendered trips to extract from/to places for linked urls that cant be resolved (because coords-coords searches) 
