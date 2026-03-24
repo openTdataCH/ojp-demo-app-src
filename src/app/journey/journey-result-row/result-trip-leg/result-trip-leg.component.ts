@@ -145,15 +145,33 @@ export class ResultTripLegComponent implements OnInit {
     const legIdxS = '' + (this.legData.info.id) + '. ';
 
     if (this.legData.leg.type === 'TransferLeg') {
-      const leadingTextTitle = 'Transfer';
-      
+      const titleParts: string[] = [];
+
       const transferLeg = this.legData.leg as TransferLeg;
-      let legDurationS = '';
-      if (transferLeg.duration) {
-        legDurationS = ' - ' + transferLeg.duration.format();
+      if (transferLeg.transferType === 'walk') {
+        titleParts.push('Transfer');
+        if (transferLeg.duration) {
+          titleParts.push(' - ' + transferLeg.duration.format());
+        }
       }
+
+      if (transferLeg.transferType === 'changeWithinVehicle') {
+        titleParts.push('Change within vehicle');
+      }
+
+      if (transferLeg.transferType === 'remainInVehicle') {
+        titleParts.push('Remain in vehicle');
+      }
+
+      const leadingTextTitle: string = (() => {
+        if (titleParts.length === 0) {
+          return 'Transfer (content not handled)';
+        } else {
+          return titleParts.join('');
+        }
+      })();
       
-      return legIdxS + leadingTextTitle + legDurationS;
+      return legIdxS + leadingTextTitle;
     }
 
     if (this.legData.leg.type === 'ContinuousLeg') {
