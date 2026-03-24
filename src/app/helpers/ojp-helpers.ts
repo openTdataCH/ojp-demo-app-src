@@ -3,7 +3,7 @@ import { DomSanitizer } from '@angular/platform-browser';
 import * as OJP from 'ojp-sdk';
 import * as OJP_Types from 'ojp-shared-types';
 
-import { APP_STAGE, DEBUG_LEVEL, DEFAULT_APP_STAGE } from '../config/constants';
+import { APP_STAGE, DEFAULT_APP_STAGE } from '../config/constants';
 import { AnyLocationInformationRequestResponse, AnyPlaceResultSchema, AnyPtSituationElement, AnyResponseContextSchema } from '../shared/types/_all';
 import { JourneyService } from '../shared/models/journey-service';
 import { APP_CONFIG } from '../config/app-config';
@@ -17,7 +17,6 @@ import { Trip } from '../shared/models/trip/trip';
 import { TimedLeg } from '../shared/models/trip/leg/timed-leg';
 import { AnyLeg } from '../shared/models/trip/leg-builder';
 import { ContinuousLeg } from '../shared/models/trip/leg/continuous-leg';
-import { TransferLeg } from '../shared/models/trip/leg/transfer-leg';
 
 type PublicTransportPictogram =  'picto-bus-fallback' | 'picto-bus'
   | 'picto-railway' | 'picto-tram' | 'picto-rack-railway'
