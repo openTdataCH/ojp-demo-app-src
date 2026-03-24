@@ -200,8 +200,6 @@ export class OJPHelpers {
 
     const mapSituations: Record<string, SituationContent[]> = {};
 
-    const isOJPv2 = version === '2.0';
-
     const situationsSchema: AnyPtSituationElement[] = responseContextSchema.situations?.ptSituation ?? [];
     situationsSchema.forEach(situationsSchema => {
       const situationContentData = SituationContent.initWithAnySituationSchema(sanitizer, version, situationsSchema);
