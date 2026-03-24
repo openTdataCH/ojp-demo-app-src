@@ -120,8 +120,6 @@ export class OJPHelpers {
     return 'picto-bus-fallback';
   }
 
-
-
   public static async fetchGist(gistId: string): Promise<string | null> {
     const gistURLMatches = gistId.match(/https:\/\/gist.github.com\/[^\/]+?\/([0-9a-z]*)/);
     if (gistURLMatches !== null) {
