@@ -1,5 +1,9 @@
 export class DataHelpers {
   public static convertStopPointToStopPlace(stopPointRef: string): string {
+    if (typeof(stopPointRef) === 'number') {
+      stopPointRef = '' + stopPointRef;
+    }
+
     if (!stopPointRef.includes(':sloid:')) {
       return stopPointRef;
     }
