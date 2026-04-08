@@ -74,6 +74,8 @@ export class StationBoardSearchComponent implements OnInit {
     this.stationBoardService.searchDate = newDate;
   }
 
+  public exampleStopPlaces: StopPlace[];
+
   constructor(
     private notificationToast: SbbNotificationToast,
     private debugXmlPopover: SbbDialog,
@@ -131,6 +133,8 @@ export class StationBoardSearchComponent implements OnInit {
 
     this.userTripService.currentAppStage = OJPHelpers.computeAppStage();
 
+    this.exampleStopPlaces = [];
+
     this.updateURLs();
   }
 
@@ -141,6 +145,8 @@ export class StationBoardSearchComponent implements OnInit {
 
       await this.fetchStopEventsForStopRef(userStopID);
       this.lookupStopPlaceRef(userStopID);
+    } else {
+      await this.updateExamplePlaces();
     }
 
     this.stationBoardService.stationOnMapClicked.subscribe(feature => {
@@ -635,6 +641,8 @@ export class StationBoardSearchComponent implements OnInit {
           return;
         }
       }
+    } else {
+      this.updateExamplePlaces();
     }
 
     this.updateURLs();
@@ -747,5 +755,52 @@ export class StationBoardSearchComponent implements OnInit {
 
   public onChangeUseRealTimeData() {
     this.updateURLs();
+  }
+
+  private async updateExamplePlaces() {
+    const centerGeoPositions = [
+      // Bern Bhf,
+      new OJP.GeoPosition(7.440391, 46.947603),
+      // Zürich,
+      new OJP.GeoPosition(8.538189, 47.378463), 
+    ];
+    const bboxLocations = centerGeoPositions.map(geoPosition => {
+      const bbox = GeoPositionBBOX.initFromGeoPosition(geoPosition, 1000, 1000);
+      const featureBBOX = bbox.asFeatureBBOX();
+      return featureBBOX;
+    });
+
+    const requests: OJP.LocationInformationRequest[] = [
+      OJP.LocationInformationRequest.initWithBBOX(bboxLocations[0], ['stop'], 100),
+      OJP.LocationInformationRequest.initWithLocationName('Lu', ['stop'], 30),
+      OJP.LocationInformationRequest.initWithBBOX(bboxLocations[1], ['stop'], 100),
+      OJP.LocationInformationRequest.initWithLocationName('Th', ['stop'], 30),
+    ];
+    const randomItems = OJPHelpers.shuffleArray(requests);
+
+    const sdk = this.userTripService.createOJP_SDK_Instance(this.languageService.language);
+    const request = randomItems[0];
+    const response = await request.fetchResponse(sdk);
+    if (response.ok === false) {
+      return;
+    }
+
+    const stopPlaces = OJPHelpers.parseStopPlaces(OJP_VERSION, response);
+
+    // random X stops
+    const limitX = 10;
+    this.exampleStopPlaces = OJPHelpers.limitArray(stopPlaces, limitX);
+  }
+
+  public async onExamplePlaceSelected(stopPlace: StopPlace, event: MouseEvent) {
+    this.stopPlace = stopPlace;
+
+    this.mapService.tryToCenterAndZoomToPlace(stopPlace);
+
+    this.updateURLs();
+    this.updateHeaderText();
+
+    const stopId = stopPlace.placeRef.ref;
+    await this.fetchStopEventsForStopRef(stopId);
   }
 }
