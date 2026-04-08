@@ -385,4 +385,8 @@ export class OJPHelpers {
     const result = Array.from(map.values());
     return result;
   }
+
+  public static wait(ms: number): Promise<void> {
+    return new Promise((resolve) => setTimeout(resolve, ms));
+  }
 }
