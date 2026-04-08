@@ -30,4 +30,8 @@ export class JourneySearchComponent implements OnInit {
       }
     });
   }
+
+  public onActiveTabClick(): void {
+    window.location.href = 'search';
+  }
 }

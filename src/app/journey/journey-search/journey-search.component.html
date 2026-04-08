@@ -1,7 +1,7 @@
 <div class="d-flex flex-column vh-100 overflow-hidden">
   <web-header class="ms-2"></web-header>
   <nav sbb-tab-nav-bar>
-    <a sbb-tab-link [active]="'true'">Journey Search</a>
+    <a sbb-tab-link [active]="'true'" (click)="this.onActiveTabClick()">Journey Search</a>
     <a sbb-tab-link [active]="'false'" [routerLink]="'../board'" [queryParams]="this.queryParams">Station Board</a>
     <a sbb-tab-link [active]="'false'" [routerLink]="'../trip'" [queryParams]="this.queryParams">Trip Info</a>
   </nav>

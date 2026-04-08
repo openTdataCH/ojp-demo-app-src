@@ -28,7 +28,6 @@ import { StopPlace } from '../../shared/models/place/stop-place';
 import { StopEventResult } from '../../shared/models/stop-event-result';
 import { AnyStopEventRequestResponse } from '../../shared/types/_all';
 import { JourneyService } from '../../shared/models/journey-service';
-import { DataHelpers } from '../../helpers/data-helpers';
 import { AnyPlace, PlaceBuilder } from '../../shared/models/place/place-builder';
 import { GeoPositionBBOX } from '../../shared/models/geo/geoposition-bbox';
 
@@ -74,6 +73,8 @@ export class StationBoardSearchComponent implements OnInit {
     newDate.setSeconds(0, 0);
     this.stationBoardService.searchDate = newDate;
   }
+
+  public exampleStopPlaces: StopPlace[];
 
   constructor(
     private notificationToast: SbbNotificationToast,
@@ -132,6 +133,8 @@ export class StationBoardSearchComponent implements OnInit {
 
     this.userTripService.currentAppStage = OJPHelpers.computeAppStage();
 
+    this.exampleStopPlaces = [];
+
     this.updateURLs();
   }
 
@@ -142,6 +145,8 @@ export class StationBoardSearchComponent implements OnInit {
 
       await this.fetchStopEventsForStopRef(userStopID);
       this.lookupStopPlaceRef(userStopID);
+    } else {
+      await this.updateExamplePlaces();
     }
 
     this.stationBoardService.stationOnMapClicked.subscribe(feature => {
@@ -472,8 +477,6 @@ export class StationBoardSearchComponent implements OnInit {
   private computeStopEventRequest(stopPlaceRef: string) {
     const sdk = this.userTripService.createOJP_SDK_Instance(this.languageService.language);
 
-    stopPlaceRef = DataHelpers.convertStopPointToStopPlace(stopPlaceRef);
-
     const stopEventDate = this.computeStopBoardDate();
     const request = sdk.requests.StopEventRequest.initWithPlaceRefAndDate(stopPlaceRef, stopEventDate);
     if (request.payload.params) {
@@ -504,8 +507,6 @@ export class StationBoardSearchComponent implements OnInit {
   }
 
   private async lookupStopPlaceRef(stopPlaceRef: string) {
-    stopPlaceRef = DataHelpers.convertStopPointToStopPlace(stopPlaceRef);
-
     const ojpSDK = this.userTripService.createOJP_SDK_Instance(this.languageService.language);
     const request = ojpSDK.requests.LocationInformationRequest.initWithPlaceRef(stopPlaceRef, 10);
 
@@ -640,6 +641,8 @@ export class StationBoardSearchComponent implements OnInit {
           return;
         }
       }
+    } else {
+      this.updateExamplePlaces();
     }
 
     this.updateURLs();
@@ -752,5 +755,52 @@ export class StationBoardSearchComponent implements OnInit {
 
   public onChangeUseRealTimeData() {
     this.updateURLs();
+  }
+
+  private async updateExamplePlaces() {
+    const centerGeoPositions = [
+      // Bern Bhf,
+      new OJP.GeoPosition(7.440391, 46.947603),
+      // Zürich,
+      new OJP.GeoPosition(8.538189, 47.378463), 
+    ];
+    const bboxLocations = centerGeoPositions.map(geoPosition => {
+      const bbox = GeoPositionBBOX.initFromGeoPosition(geoPosition, 1000, 1000);
+      const featureBBOX = bbox.asFeatureBBOX();
+      return featureBBOX;
+    });
+
+    const requests: OJP.LocationInformationRequest[] = [
+      OJP.LocationInformationRequest.initWithBBOX(bboxLocations[0], ['stop'], 100),
+      OJP.LocationInformationRequest.initWithLocationName('Lu', ['stop'], 30),
+      OJP.LocationInformationRequest.initWithBBOX(bboxLocations[1], ['stop'], 100),
+      OJP.LocationInformationRequest.initWithLocationName('Th', ['stop'], 30),
+    ];
+    const randomItems = OJPHelpers.shuffleArray(requests);
+
+    const sdk = this.userTripService.createOJP_SDK_Instance(this.languageService.language);
+    const request = randomItems[0];
+    const response = await request.fetchResponse(sdk);
+    if (response.ok === false) {
+      return;
+    }
+
+    const stopPlaces = OJPHelpers.parseStopPlaces(OJP_VERSION, response);
+
+    // random X stops
+    const limitX = 10;
+    this.exampleStopPlaces = OJPHelpers.limitArray(stopPlaces, limitX);
+  }
+
+  public async onExamplePlaceSelected(stopPlace: StopPlace, event: MouseEvent) {
+    this.stopPlace = stopPlace;
+
+    this.mapService.tryToCenterAndZoomToPlace(stopPlace);
+
+    this.updateURLs();
+    this.updateHeaderText();
+
+    const stopId = stopPlace.placeRef.ref;
+    await this.fetchStopEventsForStopRef(stopId);
   }
 }

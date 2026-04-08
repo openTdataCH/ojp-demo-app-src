@@ -248,6 +248,24 @@ export class OJPHelpers {
     return placeResults;
   }
 
+  public static parseStopPlaces(version: OJP.OJP_VERSION, response: AnyLocationInformationRequestResponse): StopPlace[] {
+    const placeResults = OJPHelpers.parseAnyPlaceResult(version, response);
+    const stopPlaces: StopPlace[] = [];
+    placeResults.forEach((placeResult, idx) => {
+      const place = PlaceBuilder.initWithPlaceResultSchema(version, placeResult);
+      if (place === null) {
+        return;
+      }
+
+      if (place.type === 'stop') {
+        const stopPlace = place as StopPlace;
+        stopPlaces.push(stopPlace);
+      }
+    });
+
+    return stopPlaces;
+  }
+
   public static computeAppStage(): APP_STAGE {
     const queryParams = new URLSearchParams(document.location.search);
     const userAppStageS = queryParams.get('stage') ?? null;
@@ -340,5 +358,35 @@ export class OJPHelpers {
     });
 
     return tripsData;
+  }
+
+  public static shuffleArray<T>(items: T[]): T[] {
+    const randomItems = [...items].sort(() => Math.random() - 0.5);
+    return randomItems;
+  }
+
+  public static limitArray<T>(items: T[], limit: number): T[] {
+    const randomItems = OJPHelpers.shuffleArray(items);
+    const limitItems = randomItems.slice(0, limit);
+    return limitItems;
+  }
+
+  public static uniqueBy<T, K>(arr: T[], getKey: (item: T) => K): T[] {
+    const map = new Map<K, T>();
+
+    for (const item of arr) {
+      const key = getKey(item);
+
+      if (!map.has(key)) {
+        map.set(key, item);
+      }
+    }
+
+    const result = Array.from(map.values());
+    return result;
+  }
+
+  public static wait(ms: number): Promise<void> {
+    return new Promise((resolve) => setTimeout(resolve, ms));
   }
 }

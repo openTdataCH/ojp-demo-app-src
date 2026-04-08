@@ -44,4 +44,8 @@ export class StationBoardComponent implements OnInit {
 
     this.routeQueryParams = Object.fromEntries(queryParams.entries());
   }
+
+  public onActiveTabClick(): void {
+    window.location.href = 'board';
+  }
 }

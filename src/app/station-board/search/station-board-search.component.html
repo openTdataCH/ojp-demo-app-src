@@ -5,7 +5,7 @@
         <sbb-expansion-panel-header>{{ this.headerText }}</sbb-expansion-panel-header>
         
         <div class="d-flex align-items-center">
-          <div class="flex-grow-1">
+          <div class="flex-grow-1 mb-0">
             <journey-point-input
               [appStage]="this.userTripService.currentAppStage"
               [place]="this.stopPlace"
@@ -15,6 +15,20 @@
             </journey-point-input>
           </div>
         </div>
+
+        <ng-container *ngIf="(this.stopPlace === null) && (this.exampleStopPlaces.length > 0)">
+          <div class="mb-3">
+            <div class="d-flex flex-wrap text-muted">
+              <div class="me-2">examples:</div>
+              <ng-container *ngFor="let stopPlace of this.exampleStopPlaces; index as idx">
+                <button class="btn btn-link p-0" (click)="onExamplePlaceSelected(stopPlace, $event)">
+                  {{ stopPlace.computeName() }}
+                </button>
+                <div *ngIf="idx < (this.exampleStopPlaces.length - 1)" class="mx-1 text-muted">•</div>
+              </ng-container>
+            </div>
+          </div>
+        </ng-container>
 
         <div class="mb-3 d-flex" *ngIf="!this.isEmbed">
           <div>

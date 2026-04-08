@@ -26,22 +26,6 @@ export const OJP_VERSION: OJP.OJP_VERSION = (() => {
   if (userVersion === '1') {
     return '1.0';
   }
-  if (userVersion === '2') {
-    return '2.0';
-  }
-
-  const host = document.location.hostname;
-  if (host.includes('github.io')) {
-    return '2.0';
-  }
-
-  const path = document.location.pathname;
-  if (path.startsWith('/ojp-demo-v2')) {
-    return '2.0';
-  }
-  if (path.startsWith('/beta-ojp-demo')) {
-    return '1.0';
-  }
 
   return '2.0';
 })();
