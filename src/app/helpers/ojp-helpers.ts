@@ -359,4 +359,30 @@ export class OJPHelpers {
 
     return tripsData;
   }
+
+  public static shuffleArray<T>(items: T[]): T[] {
+    const randomItems = [...items].sort(() => Math.random() - 0.5);
+    return randomItems;
+  }
+
+  public static limitArray<T>(items: T[], limit: number): T[] {
+    const randomItems = OJPHelpers.shuffleArray(items);
+    const limitItems = randomItems.slice(0, limit);
+    return limitItems;
+  }
+
+  public static uniqueBy<T, K>(arr: T[], getKey: (item: T) => K): T[] {
+    const map = new Map<K, T>();
+
+    for (const item of arr) {
+      const key = getKey(item);
+
+      if (!map.has(key)) {
+        map.set(key, item);
+      }
+    }
+
+    const result = Array.from(map.values());
+    return result;
+  }
 }
