@@ -17,6 +17,21 @@
           </div>
         </div>
 
+        <div class="mb-3">
+          <div class="d-flex flex-wrap text-muted align-items-center">
+            <div class="me-2">examples:</div>
+            <ng-container *ngIf="this.model.loadingExampleTripServices">
+              <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+            </ng-container>
+            <ng-container *ngFor="let exampleTripService of this.model.exampleTripServices; index as idx">
+              <button class="btn btn-link p-0" (click)="onExampleTripServiceSelected(exampleTripService, $event)">
+                {{ exampleTripService.name }}
+              </button>
+              <div *ngIf="idx < (this.model.exampleTripServices.length - 1)" class="mx-1 text-muted">•</div>
+            </ng-container>
+          </div>
+        </div>
+
         <div class="d-flex">
           <div>
             <sbb-form-field label="Choose Day">

@@ -1,4 +1,6 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
+import { ActivatedRoute, Router } from '@angular/router';
+import { DomSanitizer } from '@angular/platform-browser';
 
 import { SbbExpansionPanel } from '@sbb-esta/angular/accordion';
 import { SbbDialog } from '@sbb-esta/angular/dialog';
@@ -15,7 +17,18 @@ import { CustomTripInfoXMLPopoverComponent } from './custom-trip-info-xml-popove
 import { LanguageService } from '../../shared/services/language.service';
 import { TripInfoResult } from '../../shared/models/trip-info-result';
 import { OJPHelpers } from '../../helpers/ojp-helpers';
-import { ActivatedRoute, Router } from '@angular/router';
+import { JourneyService } from '../../shared/models/journey-service';
+import { GeoPositionBBOX } from '../../shared/models/geo/geoposition-bbox';
+import { JourneyPointType } from '../../shared/types/_all';
+import { StopPlace } from '../../shared/models/place/stop-place';
+import { TripRequestBuilder } from '../../shared/models/trip/trip-request';
+import { TimedLeg } from '../../shared/models/trip/leg/timed-leg';
+
+
+interface ExampleTripService {
+  service: JourneyService;
+  name: string;
+}
 
 interface PagelModel {
   journeyRef: string
@@ -25,6 +38,9 @@ interface PagelModel {
   
   otherVersionURL: string | null,
   permalinkURLAddress: string,
+
+  exampleTripServices: ExampleTripService[],
+  loadingExampleTripServices: boolean,
 }
 
 @Component({
@@ -54,6 +70,7 @@ export class TripInfoSearchComponent implements OnInit {
     public userTripService: UserTripService,
     private router: Router,
     private route: ActivatedRoute,
+    private sanitizer: DomSanitizer,
   ) {
     this.queryParams = new URLSearchParams(document.location.search);
 
@@ -65,6 +82,9 @@ export class TripInfoSearchComponent implements OnInit {
 
       otherVersionURL: null,
       permalinkURLAddress: '',
+
+      exampleTripServices: [],
+      loadingExampleTripServices: false,
     };
 
     this.userTripService.currentAppStage = OJPHelpers.computeAppStage();
@@ -78,18 +98,18 @@ export class TripInfoSearchComponent implements OnInit {
     this.useMocks = queryParams.get('use_mocks') === 'yes';
   }
 
-  ngOnInit(): void {
+  async ngOnInit(): Promise<void> {
     this.tripInfoService.tripInfoResultUpdated.subscribe(tripInfoResult => {
       if (tripInfoResult !== null) {
         this.searchPanel?.close();
       }
     });
     
-    this.initFromUserVars();
+    await this.initFromUserVars();
     this.tripInfoService.stageChanged.emit(this.userTripService.currentAppStage);
   }
 
-  private initFromUserVars() {
+  private async initFromUserVars() {
     const journeyRef = this.queryParams.get('ref');
     if (journeyRef) {
       this.model.journeyRef = journeyRef;
@@ -102,6 +122,8 @@ export class TripInfoSearchComponent implements OnInit {
       this.updateURLs();
       
       this.fetchTripInfo();
+    } else {
+      await this.updateExampleJourneys();
     }
 
     if (this.useMocks) {
@@ -249,11 +271,17 @@ export class TripInfoSearchComponent implements OnInit {
     this.tripInfoService.tripInfoResultUpdated.emit(tripInfoResult);
   }
 
-  onChangeStageAPI(ev: any) {
+  public async onChangeStageAPI(ev: any) {
     const newAppStage = ev.value as APP_STAGE;
     this.userTripService.currentAppStage = newAppStage;
 
     this.tripInfoService.stageChanged.emit(newAppStage);
+
+    this.updateURLs();
+
+    if (!this.model.journeyRef) {
+      await this.updateExampleJourneys();
+    }
   }
 
   public loadCustomXMLPopover() {
@@ -324,5 +352,133 @@ export class TripInfoSearchComponent implements OnInit {
 
   public onJourneyRefChanged() {
     this.updateURLs();
+  }
+
+  private async updateExampleJourneys() {
+    const sdk = this.userTripService.createOJP_SDK_Instance(this.languageService.language);
+
+    const geoPositions = [
+      // Thun
+      new OJP.GeoPosition(7.629565, 46.754696),
+      // Bern
+      new OJP.GeoPosition(7.43913, 46.94883),
+      // Klusplatz
+      new OJP.GeoPosition(8.5665, 47.36404),
+      // Altstetten
+      new OJP.GeoPosition(8.489081, 47.391704),
+      // Basel
+      new OJP.GeoPosition(7.58956, 47.54741),
+      // Olten
+      new OJP.GeoPosition(7.9077, 47.35193),
+      // Lausanne
+      new OJP.GeoPosition(6.62909, 46.51679),
+      // Geneve Cirque
+      new OJP.GeoPosition(6.140675, 46.200601),
+    ];
+    const randomGeoPositions = OJPHelpers.shuffleArray(geoPositions);
+
+    if (randomGeoPositions.length < 2) {
+      return;
+    }
+
+    this.model.loadingExampleTripServices = true;
+
+    let fromStopPlaces: StopPlace[] = [];
+    let toStopPlaces: StopPlace[] = [];
+
+    const endpointTypes: JourneyPointType[] = ['From', 'To'];
+    for (const endpointType of endpointTypes) {
+      const isFrom = endpointType === 'From';
+      const geoPosition = isFrom ? randomGeoPositions[0] : randomGeoPositions[randomGeoPositions.length - 1];
+      const bbox = GeoPositionBBOX.initFromGeoPosition(geoPosition, 200, 200);
+      const request = OJP.LocationInformationRequest.initWithBBOX(bbox.asFeatureBBOX(), ['stop'], 10);
+      const response = await request.fetchResponse(sdk);
+      if (!response.ok) {
+        return;
+      }
+
+      const stopPlaces = OJPHelpers.parseStopPlaces(OJP_VERSION, response);
+      if (stopPlaces.length === 0) {
+        console.log(geoPosition);
+      }
+
+      if (isFrom) {
+        fromStopPlaces = OJPHelpers.shuffleArray(stopPlaces);
+      } else {
+        toStopPlaces = OJPHelpers.shuffleArray(stopPlaces);
+      }
+    }
+
+    let mapJourneyServices: Record<string, JourneyService> = {};
+    let foundResults = false;
+    for (const fromStopPlace of fromStopPlaces) {
+      for (const toStopPlace of toStopPlaces) {
+        const request = OJP.TripRequest.initWithPlaceRefsOrCoords(fromStopPlace.placeRef.ref, toStopPlace.placeRef.ref);
+        const response = await request.fetchResponse(sdk);
+
+        await OJPHelpers.wait(100);
+
+        if (!response.ok) {
+          continue;
+        }
+
+        const trips = TripRequestBuilder.parseTrips(this.sanitizer, response);
+        const services: JourneyService[] = [];
+        trips.forEach(trip => {
+          trip.legs.forEach(leg => {
+            if (leg.type === 'TimedLeg') {
+              const timedLeg = leg as TimedLeg;
+              const service = timedLeg.service;
+              services.push(service);
+            }
+          });
+        });
+
+        if (services.length > 0) {
+          mapJourneyServices = {};
+          services.forEach(service => {
+            mapJourneyServices[service.journeyRef] = service;
+          });
+          foundResults = true;
+        }
+
+        if (foundResults) {
+          break;
+        }
+      }
+
+      if (foundResults) {
+        break;
+      }
+    }
+
+    this.model.loadingExampleTripServices = false;
+
+    const foundServices = Object.values(mapJourneyServices);
+    if (foundServices.length === 0) {
+      return;
+    }
+
+    const exampleTripServices: ExampleTripService[] = [];
+    foundServices.forEach(service => {
+      const nameParts = [
+        service.formatServiceLineName(),
+        'to ' + (service.destinationText?.text ?? ''),
+      ];
+
+      const exampleTripService: ExampleTripService = {
+        service: service,
+        name: nameParts.join(' '),
+      };
+      exampleTripServices.push(exampleTripService);
+    });
+
+    this.model.exampleTripServices = OJPHelpers.limitArray(exampleTripServices, 5);
+  }
+
+  public async onExampleTripServiceSelected(tripService: ExampleTripService, event: MouseEvent) {
+    this.model.journeyRef = tripService.service.journeyRef;
+    this.updateURLs();
+    this.fetchTripInfo();
   }
 }
