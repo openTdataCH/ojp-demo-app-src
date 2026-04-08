@@ -5,7 +5,7 @@ OJP-Demo URL: https://opentdatach.github.io/ojp-demo-app/
 ----
 
 08.April 2026
-- Display example stops / trips - [PR #378](https://github.com/openTdataCH/ojp-demo-app-src/pull/378), [DemoApp: Add suggestions for SER / TIR pages #306](https://github.com/openTdataCH/ojp-demo-app-src/issues/306)
+- Display example stops / trips - [PR #378](https://github.com/openTdataCH/ojp-demo-app-src/pull/378), [Add suggestions for SER / TIR pages #306](https://github.com/openTdataCH/ojp-demo-app-src/issues/306)
   - show random stops if no stop_id given
   - show random trips if no ref given
 
