@@ -3,7 +3,7 @@
   <nav sbb-tab-nav-bar>
     <a sbb-tab-link [active]="'false'" [routerLink]="'../search'" [queryParams]="this.routeQueryParams">Journey Search</a>
     <a sbb-tab-link [active]="'false'" [routerLink]="'../board'" [queryParams]="this.routeQueryParams">Station Board</a>
-    <a sbb-tab-link [active]="'true'">Trip Info</a>
+    <a sbb-tab-link [active]="'true'" (click)="this.onActiveTabClick()">Trip Info</a>
   </nav>
 
   <div class="flex-grow-1 d-flex flex-column overflow-hidden p-3">

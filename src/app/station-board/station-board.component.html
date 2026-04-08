@@ -2,7 +2,7 @@
   <web-header class="ms-2"></web-header>
   <nav sbb-tab-nav-bar>
     <a sbb-tab-link [active]="'false'" [routerLink]="'../search'" [queryParams]="this.routeQueryParams">Journey Search</a>
-    <a sbb-tab-link [active]="'true'">Station Board</a>
+    <a sbb-tab-link [active]="'true'" (click)="this.onActiveTabClick()">Station Board</a>
     <a sbb-tab-link [active]="'false'" [routerLink]="'../trip'" [queryParams]="this.routeQueryParams">Trip Info</a>
   </nav>
 
