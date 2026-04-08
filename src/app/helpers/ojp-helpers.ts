@@ -248,6 +248,24 @@ export class OJPHelpers {
     return placeResults;
   }
 
+  public static parseStopPlaces(version: OJP.OJP_VERSION, response: AnyLocationInformationRequestResponse): StopPlace[] {
+    const placeResults = OJPHelpers.parseAnyPlaceResult(version, response);
+    const stopPlaces: StopPlace[] = [];
+    placeResults.forEach((placeResult, idx) => {
+      const place = PlaceBuilder.initWithPlaceResultSchema(version, placeResult);
+      if (place === null) {
+        return;
+      }
+
+      if (place.type === 'stop') {
+        const stopPlace = place as StopPlace;
+        stopPlaces.push(stopPlace);
+      }
+    });
+
+    return stopPlaces;
+  }
+
   public static computeAppStage(): APP_STAGE {
     const queryParams = new URLSearchParams(document.location.search);
     const userAppStageS = queryParams.get('stage') ?? null;
