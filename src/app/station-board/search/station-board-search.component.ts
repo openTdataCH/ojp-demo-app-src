@@ -28,7 +28,6 @@ import { StopPlace } from '../../shared/models/place/stop-place';
 import { StopEventResult } from '../../shared/models/stop-event-result';
 import { AnyStopEventRequestResponse } from '../../shared/types/_all';
 import { JourneyService } from '../../shared/models/journey-service';
-import { DataHelpers } from '../../helpers/data-helpers';
 import { AnyPlace, PlaceBuilder } from '../../shared/models/place/place-builder';
 import { GeoPositionBBOX } from '../../shared/models/geo/geoposition-bbox';
 
@@ -472,8 +471,6 @@ export class StationBoardSearchComponent implements OnInit {
   private computeStopEventRequest(stopPlaceRef: string) {
     const sdk = this.userTripService.createOJP_SDK_Instance(this.languageService.language);
 
-    stopPlaceRef = DataHelpers.convertStopPointToStopPlace(stopPlaceRef);
-
     const stopEventDate = this.computeStopBoardDate();
     const request = sdk.requests.StopEventRequest.initWithPlaceRefAndDate(stopPlaceRef, stopEventDate);
     if (request.payload.params) {
@@ -504,8 +501,6 @@ export class StationBoardSearchComponent implements OnInit {
   }
 
   private async lookupStopPlaceRef(stopPlaceRef: string) {
-    stopPlaceRef = DataHelpers.convertStopPointToStopPlace(stopPlaceRef);
-
     const ojpSDK = this.userTripService.createOJP_SDK_Instance(this.languageService.language);
     const request = ojpSDK.requests.LocationInformationRequest.initWithPlaceRef(stopPlaceRef, 10);
 
