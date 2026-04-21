@@ -262,26 +262,6 @@ export class ResultTripLegComponent implements OnInit {
     return 'PLACEHOLDER - NEW MOT?';
   }
 
-  computeLegPillClassName(): string {
-    if (!this.legData) {
-      return ''
-    }
-
-    if (this.legData.leg.type === 'ContinuousLeg') {
-      return 'continous-leg-pill'
-    }
-
-    if (this.legData.leg.type === 'TimedLeg') {
-      return 'timed-leg-pill'
-    }
-
-    if (this.legData.leg.type === 'TransferLeg') {
-      return 'transfer-leg-pill'
-    }
-
-    return ''
-  }
-
   zoomToLeg() {
     if (!this.legData) {
       return
