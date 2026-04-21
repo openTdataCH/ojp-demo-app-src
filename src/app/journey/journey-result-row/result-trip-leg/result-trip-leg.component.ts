@@ -436,8 +436,8 @@ export class ResultTripLegComponent implements OnInit {
       }
 
       if (isContinous) {
-        const continousLeg = leg as ContinuousLeg;
-        return continousLeg.isWalking();
+        const continuousLeg = leg as ContinuousLeg;
+        return continuousLeg.isWalking();
       }
 
       return false;
@@ -465,8 +465,8 @@ export class ResultTripLegComponent implements OnInit {
       const defaultLegTemplate: LegTemplate = 'walk';
       
       if (isContinous) {
-        const continousLeg = leg as ContinuousLeg;
-        if (continousLeg.isTaxi()) {
+        const continuousLeg = leg as ContinuousLeg;
+        if (continuousLeg.isTaxi()) {
           return 'taxi';
         }
       }
@@ -483,14 +483,14 @@ export class ResultTripLegComponent implements OnInit {
         return [];
       }
 
-      const continousLeg = leg as ContinuousLeg;
+      const continuousLeg = leg as ContinuousLeg;
       // TODOTRIPMIGRATION - check booking OJP 1
       // 
-      // if (continousLeg.serviceBooking === null) {
+      // if (continuousLeg.serviceBooking === null) {
       //   return [];
       // }
 
-      // return continousLeg.serviceBooking.bookingArrangements;
+      // return continuousLeg.serviceBooking.bookingArrangements;
       return [];
     })();
 

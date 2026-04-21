@@ -414,8 +414,8 @@ export class TripLegGeoController {
 
     const drawType: TripLegDrawType = (() => {
       if (this.leg.type === 'ContinuousLeg') {
-        const continousLeg = this.leg as ContinuousLeg;
-        if (continousLeg.service.personalMode !== 'foot') {
+        const continuousLeg = this.leg as ContinuousLeg;
+        if (continuousLeg.service.personalMode !== 'foot') {
           return 'LegLine';
         }
       }
