@@ -99,28 +99,27 @@ export class OJPHelpers {
     }
 
     if (leg.type === 'ContinuousLeg') {
-      const continousLeg = leg as ContinuousLeg;
-      if (continousLeg.isDriveCarLeg()) {
+      const continuousLeg = leg as ContinuousLeg;
+
+      // These are also isDriveCarLeg() - THEY NEED TO BE BEFORE
+      if (continuousLeg.isCarAutoTrain())  {
+        return 'autozug';
+      }
+      if (continuousLeg.isCarFerry()) {
+        return 'ferry';
+      }
+
+      if (continuousLeg.isDriveCarLeg()) {
         return 'car-sharing';
       }
 
-      if (continousLeg.isSharedMobility()) {
+      if (continuousLeg.isSharedMobility()) {
         return 'velo-scooter-sharing';
       }
 
-      if (continousLeg.isTaxi()) {
+      if (continuousLeg.isTaxi()) {
         return 'taxi';
       }
-
-      // TODOTRIPMIGRATION - check car-shuttle-train, car-ferry
-      // 
-      // if (continousLeg.legTransportMode === 'car-shuttle-train') {
-      //   return 'autozug';
-      // }
-
-      // if (continousLeg.legTransportMode === 'car-ferry') {
-      //   return 'ferry';
-      // }
 
       return 'picto-walk';
     }
@@ -302,24 +301,8 @@ export class OJPHelpers {
 
     if (leg.type === 'ContinuousLeg') {
       const continuousLeg = leg as ContinuousLeg;
-
-      if (continuousLeg.isDriveCarLeg()) {
-        return 'Self-Drive Car';
-      }
-  
-      if (continuousLeg.isSharedMobility()) {
-        return 'Shared Mobility';
-      }
-  
-      if (continuousLeg.isTaxi()) {
-        return 'OnDemand';
-      }
-  
-      if (continuousLeg.isWater()) {
-        return 'Water';
-      }
-
-      return 'Walk';
+      const legColorType = continuousLeg.computeLegColorType();
+      return legColorType;
     }
 
     if (leg.type === 'TransferLeg') {
