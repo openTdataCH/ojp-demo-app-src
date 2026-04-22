@@ -4,6 +4,12 @@ OJP-Demo URL: https://opentdatach.github.io/ojp-demo-app/
 
 ----
 
+22.April 2026
+- Updates TR modes - [PR #380](https://github.com/openTdataCH/ojp-demo-app-src/pull/380)
+  - adds special icon for long-distance bus, metro
+  - fix checks for auto-shuttle-train (ATZ) and ferry
+  - unify code for computing `TripLegLineType` in ContinuousLeg service
+
 08.April 2026
 - Display example stops / trips - [PR #378](https://github.com/openTdataCH/ojp-demo-app-src/pull/378), [Add suggestions for SER / TIR pages #306](https://github.com/openTdataCH/ojp-demo-app-src/issues/306)
   - show random stops if no stop_id given

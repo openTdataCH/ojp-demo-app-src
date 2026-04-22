@@ -232,6 +232,14 @@ export class ResultTripLegComponent implements OnInit {
       return 'Walk';
     }
 
+    // These are also isDriveCarLeg() - THEY NEED TO BE BEFORE
+    if (continuousLeg.isCarAutoTrain()) {
+      return 'Ride Autoverladezug';
+    }
+    if (continuousLeg.isCarFerry()) {
+      return 'Use Ferry';
+    }
+
     if (continuousLeg.isDriveCarLeg()) {
       return 'Drive';
     }
@@ -249,37 +257,7 @@ export class ResultTripLegComponent implements OnInit {
       return 'Taxi';
     }
 
-    // TODOTRIPMIGRATION - check Autoverladezug
-    // if (continuousLeg.legTransportMode === 'car-shuttle-train') {
-    //   return 'Ride Autoverladezug';
-    // }
-
-    // TODOTRIPMIGRATION - check Autoverladezug
-    // if (continuousLeg.legTransportMode === 'car-ferry') {
-    //   return 'Use Ferry';
-    // }
-
     return 'PLACEHOLDER - NEW MOT?';
-  }
-
-  computeLegPillClassName(): string {
-    if (!this.legData) {
-      return ''
-    }
-
-    if (this.legData.leg.type === 'ContinuousLeg') {
-      return 'continous-leg-pill'
-    }
-
-    if (this.legData.leg.type === 'TimedLeg') {
-      return 'timed-leg-pill'
-    }
-
-    if (this.legData.leg.type === 'TransferLeg') {
-      return 'transfer-leg-pill'
-    }
-
-    return ''
   }
 
   zoomToLeg() {
@@ -352,11 +330,14 @@ export class ResultTripLegComponent implements OnInit {
 
     if (legType === 'ContinuousLeg') {
       const leg = this.legData.leg as ContinuousLeg;
-      return this.computeContinousLegColor(leg);
+      const legColorType = leg.computeLegColorType();
+      const legColor = MapLegLineTypeColor[legColorType];
+      return legColor;
     }
 
     if (legType === 'TransferLeg') {
-      return MapLegLineTypeColor['Transfer'];
+      const legColor = MapLegLineTypeColor['Transfer'];
+      return legColor;
     }
 
     if (legType === 'TimedLeg') {
@@ -367,31 +348,6 @@ export class ResultTripLegComponent implements OnInit {
     }
 
     return defaultColor;
-  }
-
-  private computeContinousLegColor(leg: ContinuousLeg): string {
-    if (leg.isDriveCarLeg()) {
-      return MapLegLineTypeColor['Self-Drive Car'];
-    }
-
-    if (leg.isSharedMobility()) {
-      return MapLegLineTypeColor['Shared Mobility'];
-    }
-
-    if (leg.type === 'TransferLeg') {
-      return MapLegLineTypeColor.Transfer;
-    }
-
-    if (leg.isTaxi()) {
-      return MapLegLineTypeColor.OnDemand;
-    }
-
-    // TODOTRIPMIGRATION - check water
-    // if (leg.legTransportMode === 'car-ferry') {
-    //   return MapLegLineTypeColor.Water;
-    // }
-
-    return MapLegLineTypeColor.Walk;
   }
 
   private initLegInfo() {
@@ -456,8 +412,8 @@ export class ResultTripLegComponent implements OnInit {
       }
 
       if (isContinous) {
-        const continousLeg = leg as ContinuousLeg;
-        return continousLeg.isWalking();
+        const continuousLeg = leg as ContinuousLeg;
+        return continuousLeg.isWalking();
       }
 
       return false;
@@ -485,8 +441,8 @@ export class ResultTripLegComponent implements OnInit {
       const defaultLegTemplate: LegTemplate = 'walk';
       
       if (isContinous) {
-        const continousLeg = leg as ContinuousLeg;
-        if (continousLeg.isTaxi()) {
+        const continuousLeg = leg as ContinuousLeg;
+        if (continuousLeg.isTaxi()) {
           return 'taxi';
         }
       }
@@ -503,14 +459,14 @@ export class ResultTripLegComponent implements OnInit {
         return [];
       }
 
-      const continousLeg = leg as ContinuousLeg;
+      const continuousLeg = leg as ContinuousLeg;
       // TODOTRIPMIGRATION - check booking OJP 1
       // 
-      // if (continousLeg.serviceBooking === null) {
+      // if (continuousLeg.serviceBooking === null) {
       //   return [];
       // }
 
-      // return continousLeg.serviceBooking.bookingArrangements;
+      // return continuousLeg.serviceBooking.bookingArrangements;
       return [];
     })();
 

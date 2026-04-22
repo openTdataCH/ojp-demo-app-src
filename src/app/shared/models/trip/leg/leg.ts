@@ -47,8 +47,8 @@ export abstract class Leg {
       }
 
       if (legSchema.continuousLeg) {
-        const continousLegSchema = legSchema.continuousLeg as OJP_Types.ContinuousLegSchema;
-        return continousLegSchema.duration;
+        const continuousLegSchema = legSchema.continuousLeg as OJP_Types.ContinuousLegSchema;
+        return continuousLegSchema.duration;
       }
 
       if (legSchema.timedLeg) {

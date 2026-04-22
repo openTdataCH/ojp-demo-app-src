@@ -19,13 +19,18 @@ import { AnyLeg } from '../shared/models/trip/leg-builder';
 import { ContinuousLeg } from '../shared/models/trip/leg/continuous-leg';
 
 type PublicTransportPictogram =  'picto-bus-fallback' | 'picto-bus'
-  | 'picto-railway' | 'picto-tram' | 'picto-rack-railway'
+  | 'picto-railway' | 'picto-tram' | 'picto-rack-railway' | 'picto-metro'
   | 'picto-boat'
+  | 'picto-fernbus'
   | 'picto-funicular' | 'picto-cablecar' | 'picto-gondola' | 'picto-chairlift'
   | 'car-sharing' | 'autozug' | 'train-gf';
 
 export class OJPHelpers {
   public static computeIconFilenameForService(service: JourneyService): PublicTransportPictogram {
+    if (service.mode.name?.text === 'Fernbus') {
+      return 'picto-fernbus';
+    }
+
     if (service.mode.ptMode === 'bus') {
       return 'picto-bus';
     }
@@ -75,6 +80,10 @@ export class OJPHelpers {
       return 'car-sharing';
     }
 
+    if (service.mode.ptMode === 'metro') {
+      return 'picto-metro';
+    }
+
     return 'picto-bus-fallback';
   }
 
@@ -90,28 +99,27 @@ export class OJPHelpers {
     }
 
     if (leg.type === 'ContinuousLeg') {
-      const continousLeg = leg as ContinuousLeg;
-      if (continousLeg.isDriveCarLeg()) {
+      const continuousLeg = leg as ContinuousLeg;
+
+      // These are also isDriveCarLeg() - THEY NEED TO BE BEFORE
+      if (continuousLeg.isCarAutoTrain())  {
+        return 'autozug';
+      }
+      if (continuousLeg.isCarFerry()) {
+        return 'ferry';
+      }
+
+      if (continuousLeg.isDriveCarLeg()) {
         return 'car-sharing';
       }
 
-      if (continousLeg.isSharedMobility()) {
+      if (continuousLeg.isSharedMobility()) {
         return 'velo-scooter-sharing';
       }
 
-      if (continousLeg.isTaxi()) {
+      if (continuousLeg.isTaxi()) {
         return 'taxi';
       }
-
-      // TODOTRIPMIGRATION - check car-shuttle-train, car-ferry
-      // 
-      // if (continousLeg.legTransportMode === 'car-shuttle-train') {
-      //   return 'autozug';
-      // }
-
-      // if (continousLeg.legTransportMode === 'car-ferry') {
-      //   return 'ferry';
-      // }
 
       return 'picto-walk';
     }
@@ -293,24 +301,8 @@ export class OJPHelpers {
 
     if (leg.type === 'ContinuousLeg') {
       const continuousLeg = leg as ContinuousLeg;
-
-      if (continuousLeg.isDriveCarLeg()) {
-        return 'Self-Drive Car';
-      }
-  
-      if (continuousLeg.isSharedMobility()) {
-        return 'Shared Mobility';
-      }
-  
-      if (continuousLeg.isTaxi()) {
-        return 'OnDemand';
-      }
-  
-      if (continuousLeg.isWater()) {
-        return 'Water';
-      }
-
-      return 'Walk';
+      const legColorType = continuousLeg.computeLegColorType();
+      return legColorType;
     }
 
     if (leg.type === 'TransferLeg') {
@@ -319,7 +311,8 @@ export class OJPHelpers {
     
     if (leg.type === 'TimedLeg') {
       const timedLeg = leg as TimedLeg;
-      return timedLeg.service.computeLegColorType();
+      const legColorType = timedLeg.service.computeLegColorType();
+      return legColorType;
     }
 
     return defaultType;

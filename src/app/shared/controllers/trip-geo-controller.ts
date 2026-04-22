@@ -1,6 +1,5 @@
 import * as GeoJSON from 'geojson';
 
-import * as OJP_Types from 'ojp-shared-types';
 import * as OJP from 'ojp-sdk';
 
 import { TripLegDrawType, TripLegLineType, TripLegPropertiesEnum } from '../types/map-geometry-types';
@@ -15,7 +14,6 @@ import { TimedLeg } from '../models/trip/leg/timed-leg';
 import { AnyPlace } from '../models/place/place-builder';
 import { ContinuousLeg } from '../models/trip/leg/continuous-leg';
 import { Leg } from '../models/trip/leg/leg';
-import { IndividualTransportMode } from '../types/transport-mode';
 
 type StopCallType = 'From' | 'To' | 'Intermediate';
 
@@ -308,9 +306,8 @@ export class TripLegGeoController {
     }
     
     places.forEach(place => {
-      if (this.leg.type !== 'TimedLeg') {
-        // Display From/To only for TimedLeg features
-        return;
+      if (this.leg.type === 'TransferLeg') {
+        // Dont display From/To for TransferLeg features
       }
 
       const feature = place.asGeoJSONFeature();
@@ -320,7 +317,7 @@ export class TripLegGeoController {
 
       linePointsData.push({
         type: stopCallType,
-        feature: feature
+        feature: feature,
       });
     });
 
@@ -387,35 +384,25 @@ export class TripLegGeoController {
     const features: GeoJSON.Feature[] = [];
 
     const lineType: TripLegLineType = (() => {
-      // TODOTRIPMIGRATION - evaluate per continuousLeg.service.personalMode
-      
-      // if (continuousLeg.legTransportMode === null) {
-      //   return 'Guidance';
-      // }
-
       // const sharedMobilityModes: IndividualTransportMode[] = ['cycle', 'escooter_rental', 'bicycle_rental', 'charging_station'];
       // if (sharedMobilityModes.includes(continuousLeg.service.personalMode)) {
       //   return 'Shared Mobility';
       // }
 
       if (leg.type === 'ContinuousLeg') {
-        const autoModes: OJP_Types.PersonalModesEnum[] = ['car'];
-
-        const continousLeg = leg as ContinuousLeg;
-        if (autoModes.includes(continousLeg.service.personalMode)) {
-          return 'Self-Drive Car';
-        }
+        const continuousLeg = leg as ContinuousLeg;
+        const legColorType = continuousLeg.computeLegColorType();
+        return legColorType;
       }
 
       const defaultMode: TripLegLineType = 'Walk';
-
       return defaultMode;
     })();
 
     const drawType: TripLegDrawType = (() => {
       if (this.leg.type === 'ContinuousLeg') {
-        const continousLeg = this.leg as ContinuousLeg;
-        if (continousLeg.service.personalMode !== 'foot') {
+        const continuousLeg = this.leg as ContinuousLeg;
+        if (continuousLeg.service.personalMode !== 'foot') {
           return 'LegLine';
         }
       }

@@ -6,6 +6,7 @@ import { StopPlace } from '../../place/stop-place';
 import { PlaceLocation } from '../../place/location';
 import { PlaceRef } from '../../place-ref';
 import { DistanceData, DistanceHelpers } from '../../distance';
+import { TripLegLineType } from '../../../types/map-geometry-types';
 
 export class ContinuousLeg extends Leg {
   public fromPlaceRef: PlaceRef | null;
@@ -79,6 +80,16 @@ export class ContinuousLeg extends Leg {
     return this.service.personalMode === 'car';
   }
 
+  public isCarAutoTrain(): boolean {
+    const isATZ = this.service.mode?.railSubmode === 'vehicleTunnelTransportRailService';
+    return isATZ;
+  }
+
+  public isCarFerry(): boolean {
+    const isFerry = this.service.mode?.waterSubmode === 'localCarFerry';
+    return isFerry;
+  }
+
   // TODOTRIPMIGRATION
   // public isSharedMobility(): boolean {
   //   if (this.legTransportMode === null) {
@@ -108,13 +119,6 @@ export class ContinuousLeg extends Leg {
   //   return this.legTransportMode === 'taxi' || this.legTransportMode === 'others-drive-car';
   // }
   public isTaxi(): boolean {
-    // TODOTRIPMIGRATION - see Legacy logic above
-    return false;
-  }
-
-  // TODOTRIPMIGRATION
-  // if (continuousLeg.legTransportMode === 'car-ferry') {}
-  public isWater(): boolean {
     // TODOTRIPMIGRATION - see Legacy logic above
     return false;
   }
@@ -229,5 +233,33 @@ export class ContinuousLeg extends Leg {
     }
 
     return schema;
+  }
+
+  public computeLegColorType(): TripLegLineType {
+    // These are also isDriveCarLeg() - THEY NEED TO BE BEFORE
+    if (this.isCarAutoTrain()) {
+      return 'Walk';
+    }
+    if (this.isCarFerry()) {
+      return 'Water';
+    }
+
+    if (this.isDriveCarLeg()) {
+      return 'Self-Drive Car';
+    }
+
+    if (this.isSharedMobility()) {
+      return 'Shared Mobility';
+    }
+
+    if (this.type === 'TransferLeg') {
+      return 'Transfer';
+    }
+
+    if (this.isTaxi()) {
+      return 'OnDemand';
+    }
+
+    return 'Walk';
   }
 }
