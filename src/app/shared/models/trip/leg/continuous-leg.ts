@@ -123,13 +123,6 @@ export class ContinuousLeg extends Leg {
     return false;
   }
 
-  // TODOTRIPMIGRATION
-  // if (continuousLeg.legTransportMode === 'car-ferry') {}
-  public isWater(): boolean {
-    // TODOTRIPMIGRATION - see Legacy logic above
-    return false;
-  }
-
   public override asOJP_Schema(): OJP_Types.LegSchema {
     const schema: OJP_Types.LegSchema = {
       id: this.id,
