@@ -332,7 +332,9 @@ export class ResultTripLegComponent implements OnInit {
 
     if (legType === 'ContinuousLeg') {
       const leg = this.legData.leg as ContinuousLeg;
-      return this.computeContinousLegColor(leg);
+      const legColorType = leg.computeLegColorType();
+      const legColor = MapLegLineTypeColor[legColorType];
+      return legColor;
     }
 
     if (legType === 'TransferLeg') {
@@ -347,31 +349,6 @@ export class ResultTripLegComponent implements OnInit {
     }
 
     return defaultColor;
-  }
-
-  private computeContinousLegColor(leg: ContinuousLeg): string {
-    if (leg.isDriveCarLeg()) {
-      return MapLegLineTypeColor['Self-Drive Car'];
-    }
-
-    if (leg.isSharedMobility()) {
-      return MapLegLineTypeColor['Shared Mobility'];
-    }
-
-    if (leg.type === 'TransferLeg') {
-      return MapLegLineTypeColor.Transfer;
-    }
-
-    if (leg.isTaxi()) {
-      return MapLegLineTypeColor.OnDemand;
-    }
-
-    // TODOTRIPMIGRATION - check water
-    // if (leg.legTransportMode === 'car-ferry') {
-    //   return MapLegLineTypeColor.Water;
-    // }
-
-    return MapLegLineTypeColor.Walk;
   }
 
   private initLegInfo() {
