@@ -79,6 +79,16 @@ export class ContinuousLeg extends Leg {
     return this.service.personalMode === 'car';
   }
 
+  public isCarAutoTrain(): boolean {
+    const isATZ = this.service.mode?.railSubmode === 'vehicleTunnelTransportRailService';
+    return isATZ;
+  }
+
+  public isCarFerry(): boolean {
+    const isFerry = this.service.mode?.waterSubmode === 'localCarFerry';
+    return isFerry;
+  }
+
   // TODOTRIPMIGRATION
   // public isSharedMobility(): boolean {
   //   if (this.legTransportMode === null) {
