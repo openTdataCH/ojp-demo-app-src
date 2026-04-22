@@ -39,7 +39,7 @@ OJP-Demo URL: https://opentdatach.github.io/ojp-demo-app/
 | Own Car | [Bern - Zürich](https://opentdatach.github.io/ojp-demo-app/search?from=8507000&to=8503000&transport_modes=self-drive-car&v=1) | [Spiez - Bern](https://opentdatach.github.io/ojp-demo-app/search?from=8507483&to=8507000&transport_modes=car&do_search=yes) |  |
 | Own Car + ATZ train | N / A | [Spiez - Brig](https://opentdatach.github.io/ojp-demo-app/search?from=8507483&to=8501609&transport_modes=car&do_search=yes) |  |
 | Own Car + Water Ferry | N / A | [Horgen - Meilen](https://opentdatach.github.io/ojp-demo-app/search?from=8590653&to=8576083&transport_modes=car&do_search=yes) |  |
-
+| Long-Distance Bus (V2-TEST) | N / A | [CH🇨🇭 - DE🇩🇪](https://opentdatach.github.io/ojp-demo-app/search?from=ch:1:sloid:7483&to=bla:MUZ&stage=v2-test) |  |
 
 ### Multi-modal
 
