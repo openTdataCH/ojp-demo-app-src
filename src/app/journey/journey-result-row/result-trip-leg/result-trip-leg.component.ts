@@ -232,6 +232,14 @@ export class ResultTripLegComponent implements OnInit {
       return 'Walk';
     }
 
+    // These are also isDriveCarLeg() - THEY NEED TO BE BEFORE
+    if (continuousLeg.isCarAutoTrain()) {
+      return 'Ride Autoverladezug';
+    }
+    if (continuousLeg.isCarFerry()) {
+      return 'Use Ferry';
+    }
+
     if (continuousLeg.isDriveCarLeg()) {
       return 'Drive';
     }
@@ -248,16 +256,6 @@ export class ResultTripLegComponent implements OnInit {
       
       return 'Taxi';
     }
-
-    // TODOTRIPMIGRATION - check Autoverladezug
-    // if (continuousLeg.legTransportMode === 'car-shuttle-train') {
-    //   return 'Ride Autoverladezug';
-    // }
-
-    // TODOTRIPMIGRATION - check Autoverladezug
-    // if (continuousLeg.legTransportMode === 'car-ferry') {
-    //   return 'Use Ferry';
-    // }
 
     return 'PLACEHOLDER - NEW MOT?';
   }
