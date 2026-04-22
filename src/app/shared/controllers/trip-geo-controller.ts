@@ -308,9 +308,8 @@ export class TripLegGeoController {
     }
     
     places.forEach(place => {
-      if (this.leg.type !== 'TimedLeg') {
-        // Display From/To only for TimedLeg features
-        return;
+      if (this.leg.type === 'TransferLeg') {
+        // Dont display From/To for TransferLeg features
       }
 
       const feature = place.asGeoJSONFeature();
