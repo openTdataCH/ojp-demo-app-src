@@ -242,8 +242,7 @@ export class JourneyService implements OJP_Types.DatedJourneySchema  {
       return 'Tram';
     }
 
-    // TODO - add it to OJP SharedTypes ModeStructureSchema
-    if ((this.mode.ptMode as string) === 'underground') {
+    if (this.mode.ptMode === 'metro') {
       return 'Subway';
     }
 
