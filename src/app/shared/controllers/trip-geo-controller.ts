@@ -319,7 +319,7 @@ export class TripLegGeoController {
 
       linePointsData.push({
         type: stopCallType,
-        feature: feature
+        feature: feature,
       });
     });
 
