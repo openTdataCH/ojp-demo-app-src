@@ -19,13 +19,18 @@ import { AnyLeg } from '../shared/models/trip/leg-builder';
 import { ContinuousLeg } from '../shared/models/trip/leg/continuous-leg';
 
 type PublicTransportPictogram =  'picto-bus-fallback' | 'picto-bus'
-  | 'picto-railway' | 'picto-tram' | 'picto-rack-railway'
+  | 'picto-railway' | 'picto-tram' | 'picto-rack-railway' | 'picto-metro'
   | 'picto-boat'
+  | 'picto-fernbus'
   | 'picto-funicular' | 'picto-cablecar' | 'picto-gondola' | 'picto-chairlift'
   | 'car-sharing' | 'autozug' | 'train-gf';
 
 export class OJPHelpers {
   public static computeIconFilenameForService(service: JourneyService): PublicTransportPictogram {
+    if (service.mode.name?.text === 'Fernbus') {
+      return 'picto-fernbus';
+    }
+
     if (service.mode.ptMode === 'bus') {
       return 'picto-bus';
     }
@@ -73,6 +78,10 @@ export class OJPHelpers {
     const isDemandMode = (service.mode.busSubmode === 'demandAndResponseBus' || service.mode.busSubmode === 'unknown');
     if (isDemandMode) {
       return 'car-sharing';
+    }
+
+    if (service.mode.ptMode === 'metro') {
+      return 'picto-metro';
     }
 
     return 'picto-bus-fallback';
