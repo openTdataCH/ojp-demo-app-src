@@ -398,7 +398,6 @@ export class TripLegGeoController {
       }
 
       const defaultMode: TripLegLineType = 'Walk';
-
       return defaultMode;
     })();
 
