@@ -311,7 +311,8 @@ export class OJPHelpers {
     
     if (leg.type === 'TimedLeg') {
       const timedLeg = leg as TimedLeg;
-      return timedLeg.service.computeLegColorType();
+      const legColorType = timedLeg.service.computeLegColorType();
+      return legColorType;
     }
 
     return defaultType;
