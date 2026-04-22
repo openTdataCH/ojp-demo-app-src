@@ -338,7 +338,8 @@ export class ResultTripLegComponent implements OnInit {
     }
 
     if (legType === 'TransferLeg') {
-      return MapLegLineTypeColor['Transfer'];
+      const legColor = MapLegLineTypeColor['Transfer'];
+      return legColor;
     }
 
     if (legType === 'TimedLeg') {
