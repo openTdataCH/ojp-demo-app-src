@@ -386,24 +386,15 @@ export class TripLegGeoController {
     const features: GeoJSON.Feature[] = [];
 
     const lineType: TripLegLineType = (() => {
-      // TODOTRIPMIGRATION - evaluate per continuousLeg.service.personalMode
-      
-      // if (continuousLeg.legTransportMode === null) {
-      //   return 'Guidance';
-      // }
-
       // const sharedMobilityModes: IndividualTransportMode[] = ['cycle', 'escooter_rental', 'bicycle_rental', 'charging_station'];
       // if (sharedMobilityModes.includes(continuousLeg.service.personalMode)) {
       //   return 'Shared Mobility';
       // }
 
       if (leg.type === 'ContinuousLeg') {
-        const autoModes: OJP_Types.PersonalModesEnum[] = ['car'];
-
-        const continousLeg = leg as ContinuousLeg;
-        if (autoModes.includes(continousLeg.service.personalMode)) {
-          return 'Self-Drive Car';
-        }
+        const continuousLeg = leg as ContinuousLeg;
+        const legColorType = continuousLeg.computeLegColorType();
+        return legColorType;
       }
 
       const defaultMode: TripLegLineType = 'Walk';
