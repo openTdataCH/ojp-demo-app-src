@@ -1,6 +1,5 @@
 import * as GeoJSON from 'geojson';
 
-import * as OJP_Types from 'ojp-shared-types';
 import * as OJP from 'ojp-sdk';
 
 import { TripLegDrawType, TripLegLineType, TripLegPropertiesEnum } from '../types/map-geometry-types';
@@ -15,7 +14,6 @@ import { TimedLeg } from '../models/trip/leg/timed-leg';
 import { AnyPlace } from '../models/place/place-builder';
 import { ContinuousLeg } from '../models/trip/leg/continuous-leg';
 import { Leg } from '../models/trip/leg/leg';
-import { IndividualTransportMode } from '../types/transport-mode';
 
 type StopCallType = 'From' | 'To' | 'Intermediate';
 
