@@ -30,10 +30,11 @@ OJP-Demo URL: https://opentdatach.github.io/ojp-demo-app/
 
 | Example | OJP 1 | OJP 2 | Comments |
 |-|-|-|-|
-| ATZ (car transport) | [Kandersteg - Goppenestein](https://tools.odpch.ch/beta-ojp-demo/search?from=8511171&to=8519655) | [Kandersteg - Goppenestein](https://opentdatach.github.io/ojp-demo-app/search?from=8511171&to=8519655) |  |
 | PublicTransport | [Bern - Zürich](https://opentdatach.github.io/ojp-demo-app/search?from=8507000&to=8503000&v=1&do_search=yes) | [Bern - Zürich](https://opentdatach.github.io/ojp-demo-app/search?from=8507000&to=8503000&do_search=yes) |  |
 | PublicTransport, Via | [Bern - Luzern - Zürich](https://opentdatach.github.io/ojp-demo-app/search?from=8507000&to=8503000&via=8505000&v=1&do_search=yes) | [Bern - Luzern - Zürich](https://opentdatach.github.io/ojp-demo-app/search?from=8507000&to=8503000&via=8505000&do_search=yes) |  |
 | PublicTransport, Boat | [Thun - Spiez](https://opentdatach.github.io/ojp-demo-app/search?from=8507100&to=8507483&public_transport_modes=water&v=1) | [Thun - Spiez](https://opentdatach.github.io/ojp-demo-app/search?from=8507100&to=8507483&public_transport_modes=water) |  |
+| PublicTransport, Metro | [Lausanne](https://opentdatach.github.io/ojp-demo-app/search?from=8579255&to=8501075&v=1&do_search=yes) | [Lausanne](https://opentdatach.github.io/ojp-demo-app/search?from=8579255&to=8501075&do_search=yes) |  |
+| ATZ (car transport) | [Kandersteg - Goppenestein](https://opentdatach.github.io/ojp-demo-app/search?from=8511171&to=8519655&v=1) | [Kandersteg - Goppenestein](https://opentdatach.github.io/ojp-demo-app/search?from=8511171&to=8519655) |  |
 | Coords - Coords | [Croy-Romainmôtier to Glis](https://opentdatach.github.io/ojp-demo-app/search?from=46.673066,6.462309&to=46.311076,7.977560&v=1) | [Croy to Glis](https://opentdatach.github.io/ojp-demo-app/search?from=46.695176,6.479795&to=46.311076,7.977560) |  |
 | Own Car | [Bern - Zürich](https://opentdatach.github.io/ojp-demo-app/search?from=8507000&to=8503000&transport_modes=self-drive-car&v=1) | [Spiez - Bern](https://opentdatach.github.io/ojp-demo-app/search?from=8507483&to=8507000&transport_modes=car&do_search=yes) |  |
 | Own Car + ATZ train | N / A | [Spiez - Brig](https://opentdatach.github.io/ojp-demo-app/search?from=8507483&to=8501609&transport_modes=car&do_search=yes) |  |
