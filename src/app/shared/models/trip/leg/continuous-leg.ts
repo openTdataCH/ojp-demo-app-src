@@ -13,12 +13,16 @@ export class ContinuousLeg extends Leg {
   public toPlaceRef: PlaceRef | null;
   public service: OJP_Types.ContinuousServiceSchema;
 
+  public legacyIndividualMode: string | null;
+
   private constructor(id: string, duration: Duration | null, distance: DistanceData, fromPlaceRef: PlaceRef | null, toPlaceRef: PlaceRef | null, service: OJP_Types.ContinuousServiceSchema) {
     super('ContinuousLeg', id, duration, distance);
 
     this.fromPlaceRef = fromPlaceRef;
     this.toPlaceRef = toPlaceRef;
     this.service = service;
+
+    this.legacyIndividualMode = null;
   }
 
   public static initWithLegSchema(legSchema: OJP_Types.LegSchema, mapPlaces: Record<string, StopPlace>): ContinuousLeg | null {
@@ -251,5 +255,36 @@ export class ContinuousLeg extends Leg {
     }
 
     return 'Walk';
+  }
+
+  public updateLegacyIndividualMode(legacyValue: string) {
+    if (legacyValue === 'walk') {
+      this.legacyIndividualMode = legacyValue;
+      this.service.personalMode = 'foot'; // 'foot' is in OJP 2.0
+    }
+
+    if (legacyValue === 'cycle') {
+      this.legacyIndividualMode = legacyValue;
+      this.service.personalMode = 'bicycle';
+    }
+
+    if (legacyValue === 'scooter') {
+      this.legacyIndividualMode = legacyValue;
+      this.service.personalMode = 'scooter';
+    }
+
+    if (legacyValue === 'taxi') {
+      this.legacyIndividualMode = legacyValue;
+      // cant assign to this.service.personalMode - no taxi yet present
+    }
+
+    if (legacyValue === 'self-drive-car') {
+      this.legacyIndividualMode = legacyValue;
+      // cant assign to this.service.personalMode - no self-drive-car yet present
+    }
+
+    if (this.legacyIndividualMode === null) {
+      console.log('ContinuousLeg.updateLegacyIndividualMode cant handle: ' + legacyValue);
+    }
   }
 }
