@@ -462,6 +462,10 @@ export class ResultTripLegComponent implements OnInit {
       const continuousLeg = leg as ContinuousLeg;
       const bookingArrangements = continuousLeg.service.bookingArrangements?.bookingArrangement ?? [];
 
+      bookingArrangements.forEach(bookingArrangement => {
+        // strip < > from start/end of the string
+        bookingArrangement.infoUrl = bookingArrangement.infoUrl.replace(/^</, '').replace(/>$/, '');
+      });
       
       return bookingArrangements;
     })();
