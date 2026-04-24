@@ -108,13 +108,9 @@ export class ContinuousLeg extends Leg {
     return this.service.personalMode === 'foot';
   }
 
-  // TODOTRIPMIGRATION
-  // public isTaxi(): boolean {
-  //   return this.legTransportMode === 'taxi' || this.legTransportMode === 'others-drive-car';
-  // }
   public isTaxi(): boolean {
-    // TODOTRIPMIGRATION - see Legacy logic above
-    return false;
+    const isTaxi = this.legacyIndividualMode === 'taxi';
+    return isTaxi;
   }
 
   public override asOJP_Schema(): OJP_Types.LegSchema {
