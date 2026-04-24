@@ -36,7 +36,6 @@ const monomodalData: TripTransportModeData = (() => {
     modeType: 'monomodal',
     transportModes: [
       'public_transport',
-      walkTransportMode,
       'cycle',
       carTransportMode,
       'bicycle_rental',
