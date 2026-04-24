@@ -48,6 +48,17 @@ export class TripRequestBuilder {
     const isWalking = userTripService.tripTransportMode === 'walk' || userTripService.tripTransportMode === 'foot';
     const isPublicTransport = userTripService.tripTransportMode === 'public_transport';
     
+    const taxiTransportMode = (() => {
+      if (userTripService.tripTransportMode === 'others-drive-car') {
+        return 'others-drive-car';
+      }
+      if (userTripService.tripTransportMode === 'taxi') {
+        return 'taxi';
+      }
+
+      return null;
+    })();
+
     // ALL CAR modes EXCEPT car_sharing + 'others-drive-car'
     const ownCarModes: IndividualTransportMode[] = ['car', 'self-drive-car'];
     const isOwnCar = ownCarModes.indexOf(userTripService.tripTransportMode) !== -1;
