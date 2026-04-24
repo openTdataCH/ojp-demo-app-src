@@ -142,4 +142,16 @@ export class TransferLeg extends Leg {
 
     return schema;
   }
+
+  public updateLegacyTransferType(legacyValue: string) {
+    const knownModes: OJP_Types.TransferTypeEnum[] = ['walk', 'remainInVehicle', 'changeWithinVehicle'];
+    for (const knownMode of knownModes) {
+      if (knownMode === legacyValue) {
+        this.transferType = knownMode;
+        return;
+      }
+    }
+
+    console.log('TransferLeg.updateLegacyTransferType cant handle: ' + legacyValue);
+  }
 }
