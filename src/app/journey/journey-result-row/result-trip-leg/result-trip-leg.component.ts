@@ -26,7 +26,7 @@ import { JourneyService } from '../../../shared/models/journey-service';
 import { PlaceLocation } from '../../../shared/models/place/location';
 import { GeoPositionBBOX } from '../../../shared/models/geo/geoposition-bbox';
 import { SituationContent } from '../../../shared/models/situation';
-import { BookingArrangement, JourneyPointType } from '../../../shared/types/_all';
+import { JourneyPointType } from '../../../shared/types/_all';
 import { ContinuousLeg } from '../../../shared/models/trip/leg/continuous-leg';
 import { TimedLeg } from '../../../shared/models/trip/leg/timed-leg';
 import { AnyLeg } from '../../../shared/models/trip/leg-builder';
