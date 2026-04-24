@@ -438,7 +438,7 @@ export class ResultTripLegComponent implements OnInit {
     })();
 
     this.legInfoDataModel.legTemplate = (() => {
-      const defaultLegTemplate: LegTemplate = 'walk';
+      const defaultLegTemplate: LegTemplate = 'default';
       
       if (isContinous) {
         const continuousLeg = leg as ContinuousLeg;
