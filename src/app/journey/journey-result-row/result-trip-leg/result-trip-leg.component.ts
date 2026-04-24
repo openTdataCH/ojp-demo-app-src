@@ -227,10 +227,18 @@ export class ResultTripLegComponent implements OnInit {
   }
 
   private computeLegLeadingTextContinousLeg(continuousLeg: ContinuousLeg): string {
-    // TODOTRIPMIGRATION - check real example
+    if (continuousLeg.service.personalMode === 'bicycle') {
+      return 'Cycle';
+    }
+
+    if (continuousLeg.service.personalMode === 'scooter') {
+      return 'Ride Scooter';
+    }
+
     if (continuousLeg.service.personalMode === 'foot') {
       return 'Walk';
     }
+
 
     // These are also isDriveCarLeg() - THEY NEED TO BE BEFORE
     if (continuousLeg.isCarAutoTrain()) {
@@ -249,12 +257,7 @@ export class ResultTripLegComponent implements OnInit {
     }
 
     if (continuousLeg.isTaxi()) {
-      // TODOTRIPMIGRATION - check limo?
-      // if (continuousLeg.legTransportMode === 'others-drive-car') {
-      //   return 'Limo';
-      // }
-      
-      return 'Taxi';
+      return 'Book Taxi / Limo';
     }
 
     return 'PLACEHOLDER - NEW MOT?';
