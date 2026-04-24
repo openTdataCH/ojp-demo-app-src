@@ -10,6 +10,8 @@ import { StopPlace } from '../place/stop-place';
 import { JourneyService } from '../journey-service';
 import { TimedLeg } from './leg/timed-leg';
 import { SituationContent } from '../situation';
+import { ContinuousLeg } from './leg/continuous-leg';
+import { TransferLeg } from './leg/transfer-leg';
 
 interface TripRealTimeData {
   unplanned?: boolean
@@ -116,7 +118,17 @@ export class Trip {
   }
 
   public static initWithTripLegacySchema(legacyTripSchema: OJP_Types.OJPv1_TripSchema, mapPlaces: Record<string, StopPlace>, mapSituations: Record<string, SituationContent[]>): Trip | null {
-    const legs: OJP_Types.LegSchema[] = [];
+    const tripSchema: OJP_Types.TripSchema = {
+      id: legacyTripSchema.tripId,
+      duration: legacyTripSchema.duration,
+      startTime: legacyTripSchema.startTime,
+      endTime: legacyTripSchema.endTime,
+      transfers: legacyTripSchema.transfers,
+      leg: [],
+    };
+
+    const trip = Trip.initWithTripSchema(tripSchema, mapPlaces, mapSituations);
+
     legacyTripSchema.tripLeg.forEach(legacyTripLeg => {
       const legSchema: OJP_Types.LegSchema = {
         id: legacyTripLeg.legId,
@@ -137,9 +149,11 @@ export class Trip {
           name: legacyTripLeg.continuousLeg.legEnd.locationName,
         };
 
+        // set to 'other' and later check the actual value via ContinuousLeg.updateLegacyIndividualMode()
         const continuousLegService: OJP_Types.ContinuousServiceSchema = {
           personalModeOfOperation: 'own',
-          personalMode: 'foot'
+          personalMode: 'other',
+          bookingArrangements: legacyTripLeg.continuousLeg.service.bookingArrangements,
         };
 
         if (legacyTripLeg.continuousLeg.service.individualMode === 'self-drive-car') {
@@ -181,8 +195,8 @@ export class Trip {
           name: legacyTripLeg.transferLeg.legEnd.locationName,
         };
 
-        leg.transferLeg = {
-          transferType: legacyTripLeg.transferLeg.transferType,
+        legSchema.transferLeg = {
+          transferType: 'walk', // update later below based on OJP 1.0 value
           legStart: legStart,
           legEnd: legEnd,
           duration: legacyTripLeg.transferLeg.duration,
@@ -191,19 +205,21 @@ export class Trip {
         };
       }
 
-      legs.push(leg);
+      const leg = LegBuilder.initWithLegSchema(legSchema, mapPlaces, mapSituations);
+      if (leg) {
+        if (legacyTripLeg.continuousLeg && (leg.type === 'ContinuousLeg')) {
+          const continuousLeg = leg as ContinuousLeg;
+          continuousLeg.updateLegacyIndividualMode(legacyTripLeg.continuousLeg.service.individualMode);
+        }
+
+        if (legacyTripLeg.transferLeg && (leg.type === 'TransferLeg')) {
+          const transferLeg = leg as TransferLeg;
+          transferLeg.updateLegacyTransferType(legacyTripLeg.transferLeg.transferMode ?? 'n/a');
+        }
+
+        trip?.legs.push(leg);
+      }
     });
-
-    const tripSchema: OJP_Types.TripSchema = {
-      id: legacyTripSchema.tripId,
-      duration: legacyTripSchema.duration,
-      startTime: legacyTripSchema.startTime,
-      endTime: legacyTripSchema.endTime,
-      transfers: legacyTripSchema.transfers,
-      leg: legs,
-    };
-
-    const trip = Trip.initWithTripSchema(tripSchema, mapPlaces, mapSituations);
 
     return trip;
   }
