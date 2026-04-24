@@ -105,6 +105,46 @@ export class TripRequestBuilder {
       request.setWalkRequest();
     }
 
+    const personalModeRestriction: OJP_Types.PersonalModesOfOperationEnum = (() => {
+      if (isSharingMode) {
+        return 'lease';
+      }
+
+      const defaultMode: OJP_Types.PersonalModesOfOperationEnum = 'own';
+      return defaultMode;
+    })();
+
+    const transportModeRestriction: OJP_Types.PersonalModesEnum = (() => {
+      if (isWalking) {
+        return 'foot';
+      }
+
+      if (userTripService.tripTransportMode === 'cycle') {
+        return 'bicycle';
+      }
+
+      if (userTripService.tripTransportMode === 'bicycle_rental') {
+        return 'bicycle';
+      }
+
+      if (userTripService.tripTransportMode === 'escooter_rental') {
+        return 'scooter';
+      }
+
+      if (userTripService.tripTransportMode === 'car_sharing') {
+        return 'car';
+      }
+      if (userTripService.tripTransportMode === 'self-drive-car') {
+        return 'car';
+      }
+      if (userTripService.tripTransportMode === 'others-drive-car') {
+        return 'car';
+      }
+
+      const defaultMode: OJP_Types.PersonalModesEnum = 'other';
+      return defaultMode;
+    })();
+
     if (isAdvanced) {
       // in advanced mode, set Origin/Destination with what is enabled in the GUI
       request.setOriginDurationDistanceRestrictions(
