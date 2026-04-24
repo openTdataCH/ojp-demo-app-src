@@ -101,7 +101,7 @@ export class TransferLeg extends Leg {
       legId: this.id,
       duration: this.duration?.asOjpDurationText() ?? undefined,
       transferLeg: {
-        transferType: this.transferType,
+        transferMode: this.transferType,
         legStart: {
           locationName: {
             text: this.fromPlaceRef.name,
