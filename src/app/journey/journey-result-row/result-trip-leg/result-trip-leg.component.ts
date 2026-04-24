@@ -33,7 +33,7 @@ import { AnyLeg } from '../../../shared/models/trip/leg-builder';
 import { StopPointHelpers } from '../../../shared/models/stop-point-call';
 import { TransferLeg } from '../../../shared/models/trip/leg/transfer-leg';
 
-type LegTemplate = 'walk' | 'timed' | 'taxi';
+type LegTemplate = 'default' | 'timed' | 'taxi';
 
 type ServiceAttributeRenderModel = {
   icon: string,

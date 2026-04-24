@@ -128,7 +128,7 @@
     
     <div class="flex-grow-1">
       <ng-container
-        *ngIf="this.legInfoDataModel.legTemplate == 'walk' then walkingLegTemplate;">
+        *ngIf="this.legInfoDataModel.legTemplate == 'default' then defaultLegTemplate;">
       </ng-container>
       <ng-container
         *ngIf="this.legInfoDataModel.legTemplate == 'timed' then timedLegTemplate;">
@@ -269,7 +269,7 @@
   </div>
 </ng-template>
 
-<ng-template #walkingLegTemplate>
+<ng-template #defaultLegTemplate>
   <div class="d-flex flex-row align-items-center">
     <div class="flex-grow-1 leg-location">
       <div class="d-flex flex-column leg-location">
