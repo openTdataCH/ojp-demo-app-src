@@ -100,10 +100,6 @@ export class ContinuousLeg extends Leg {
     return isSharedMobility;
   }
 
-  // TODOTRIPMIGRATION
-  // public isWalking(): boolean {
-  //   return this.legTransportMode === 'walk';
-  // }
   public isWalking(): boolean {
     return this.service.personalMode === 'foot';
   }
