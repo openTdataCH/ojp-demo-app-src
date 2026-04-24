@@ -145,6 +145,8 @@ export class TripRequestBuilder {
       return defaultMode;
     })();
 
+    const isOwnBicycle = userTripService.tripTransportMode === 'cycle';
+
     if (isAdvanced) {
       if (isOJPv2) {
         // OJP 2.0
