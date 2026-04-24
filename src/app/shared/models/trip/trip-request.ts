@@ -39,12 +39,12 @@ export class TripRequestBuilder {
     
     const isAdvanced = userTripService.isAdditionalRestrictionsEnabled === true;
 
-    const sharingModes: IndividualTransportMode[] = [
+    const sharedMobilityTransportModes: IndividualTransportMode[] = [
       "bicycle_rental",
       "car_sharing",
       "escooter_rental",
     ];
-    const isSharingMode = sharingModes.indexOf(userTripService.tripTransportMode) !== -1;
+    const isSharingMode = sharedMobilityTransportModes.indexOf(userTripService.tripTransportMode) !== -1;
     const isWalking = userTripService.tripTransportMode === 'walk' || userTripService.tripTransportMode === 'foot';
     const isPublicTransport = userTripService.tripTransportMode === 'public_transport';
 
