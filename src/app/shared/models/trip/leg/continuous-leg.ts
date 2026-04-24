@@ -90,20 +90,10 @@ export class ContinuousLeg extends Leg {
     return isFerry;
   }
 
-  // TODOTRIPMIGRATION
-  // public isSharedMobility(): boolean {
-  //   if (this.legTransportMode === null) {
-  //     return false;
-  //   }
-
-  //   const sharedMobilityModes: IndividualTransportMode[] = ['cycle', 'bicycle_rental', 'car_sharing', 'escooter_rental'];
-  //   const hasSharedMobilityMode = sharedMobilityModes.indexOf(this.legTransportMode) !== -1;
-
-  //   return hasSharedMobilityMode;
-  // }
   public isSharedMobility() {
-    // TODOTRIPMIGRATION - see Legacy logic above
-    return false;
+    const sharedModes: OJP_Types.PersonalModesEnum[] = ['bicycle', 'scooter'];
+    const isSharedMobility = sharedModes.includes(this.service.personalMode);
+    return isSharedMobility;
   }
 
   // TODOTRIPMIGRATION
