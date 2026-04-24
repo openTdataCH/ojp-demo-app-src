@@ -214,7 +214,8 @@ export class Trip {
       return Trip.initWithTripSchema(tripSchema, mapPlaces, mapSituations);
     } else {
       const tripSchema = (tripResultSchema.trip as OJP_Types.OJPv1_TripSchema);
-      return Trip.initWithTripLegacySchema(tripSchema, mapPlaces, mapSituations);
+      const trip = Trip.initWithTripLegacySchema(tripSchema, mapPlaces, mapSituations);
+      return trip;
     }
   }
   
