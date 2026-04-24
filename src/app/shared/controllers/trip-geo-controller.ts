@@ -384,11 +384,6 @@ export class TripLegGeoController {
     const features: GeoJSON.Feature[] = [];
 
     const lineType: TripLegLineType = (() => {
-      // const sharedMobilityModes: IndividualTransportMode[] = ['cycle', 'escooter_rental', 'bicycle_rental', 'charging_station'];
-      // if (sharedMobilityModes.includes(continuousLeg.service.personalMode)) {
-      //   return 'Shared Mobility';
-      // }
-
       if (leg.type === 'ContinuousLeg') {
         const continuousLeg = leg as ContinuousLeg;
         const legColorType = continuousLeg.computeLegColorType();
@@ -402,6 +397,10 @@ export class TripLegGeoController {
     const drawType: TripLegDrawType = (() => {
       if (this.leg.type === 'ContinuousLeg') {
         const continuousLeg = this.leg as ContinuousLeg;
+        
+        if (continuousLeg.isSharedMobility()) {
+          return 'LegLine';
+        }
         if (continuousLeg.service.personalMode !== 'foot') {
           return 'LegLine';
         }
