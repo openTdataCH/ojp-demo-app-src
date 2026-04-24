@@ -75,6 +75,7 @@ export class TripRequestBuilder {
       request.setPublicTransportRequest(userTripService.publicTransportModesFilter);
     }
 
+    // OJP 2.0 only params
     if (isOJPv2) {
       const requestOJPv2 = request as OJP.TripRequest;
 
