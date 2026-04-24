@@ -354,7 +354,7 @@
 
         <ul class="booking-arrangement">
           <li *ngFor="let bookingArrangement of this.legInfoDataModel.bookingArrangements">
-            Book on <a href="{{ bookingArrangement.infoURL }}" target="_blank">{{ bookingArrangement.agencyName }}</a>
+            Book on <a href="{{ bookingArrangement.infoUrl }}" target="_blank">{{ bookingArrangement.bookingAgencyName.text }}</a>
           </li>
         </ul>
 

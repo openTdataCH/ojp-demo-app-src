@@ -54,7 +54,7 @@ interface LegInfoDataModel {
   leadingText: string,
   
   guidanceRows: GuidanceRow[],
-  bookingArrangements: BookingArrangement[],
+  bookingArrangements: OJP_Types.BookingArrangementStructure[],
   
   isWalking: boolean,
   durationText: string,
@@ -460,14 +460,10 @@ export class ResultTripLegComponent implements OnInit {
       }
 
       const continuousLeg = leg as ContinuousLeg;
-      // TODOTRIPMIGRATION - check booking OJP 1
-      // 
-      // if (continuousLeg.serviceBooking === null) {
-      //   return [];
-      // }
+      const bookingArrangements = continuousLeg.service.bookingArrangements?.bookingArrangement ?? [];
 
-      // return continuousLeg.serviceBooking.bookingArrangements;
-      return [];
+      
+      return bookingArrangements;
     })();
 
     this.legInfoDataModel.durationText = leg.duration?.format() ?? ''
