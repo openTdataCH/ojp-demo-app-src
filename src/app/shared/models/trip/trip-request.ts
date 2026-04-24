@@ -1,5 +1,6 @@
 import { DomSanitizer } from '@angular/platform-browser';
 
+import * as OJP_Types from 'ojp-shared-types';
 import * as OJP from 'ojp-sdk';
 
 import { TripPlace } from "../trip-place";
