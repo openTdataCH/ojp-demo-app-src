@@ -101,7 +101,7 @@ export class TransferLeg extends Leg {
       legId: this.id,
       duration: this.duration?.asOjpDurationText() ?? undefined,
       transferLeg: {
-        transferType: this.transferType,
+        transferMode: this.transferType,
         legStart: {
           locationName: {
             text: this.fromPlaceRef.name,
@@ -141,5 +141,17 @@ export class TransferLeg extends Leg {
     }
 
     return schema;
+  }
+
+  public updateLegacyTransferType(legacyValue: string) {
+    const knownModes: OJP_Types.TransferTypeEnum[] = ['walk', 'remainInVehicle', 'changeWithinVehicle'];
+    for (const knownMode of knownModes) {
+      if (knownMode === legacyValue) {
+        this.transferType = knownMode;
+        return;
+      }
+    }
+
+    console.log('TransferLeg.updateLegacyTransferType cant handle: ' + legacyValue);
   }
 }

@@ -1,5 +1,6 @@
 import { DomSanitizer } from '@angular/platform-browser';
 
+import * as OJP_Types from 'ojp-shared-types';
 import * as OJP from 'ojp-sdk';
 
 import { TripPlace } from "../trip-place";
@@ -38,17 +39,29 @@ export class TripRequestBuilder {
     
     const isAdvanced = userTripService.isAdditionalRestrictionsEnabled === true;
 
-    const sharingModes: IndividualTransportMode[] = [
+    const sharedMobilityTransportModes: IndividualTransportMode[] = [
       "bicycle_rental",
       "car_sharing",
       "escooter_rental",
     ];
-    const isSharingMode = sharingModes.indexOf(userTripService.tripTransportMode) !== -1;
+    const isSharingMode = sharedMobilityTransportModes.indexOf(userTripService.tripTransportMode) !== -1;
     const isWalking = userTripService.tripTransportMode === 'walk' || userTripService.tripTransportMode === 'foot';
     const isPublicTransport = userTripService.tripTransportMode === 'public_transport';
+    
+    const taxiTransportMode = (() => {
+      if (userTripService.tripTransportMode === 'others-drive-car') {
+        return 'others-drive-car';
+      }
+      if (userTripService.tripTransportMode === 'taxi') {
+        return 'taxi';
+      }
 
-    const carModes: IndividualTransportMode[] = ['car', 'car-ferry', 'car-shuttle-train', 'car_sharing', 'others-drive-car', 'self-drive-car'];
-    const isCar = carModes.indexOf(userTripService.tripTransportMode) !== -1;
+      return null;
+    })();
+
+    // ALL CAR modes EXCEPT car_sharing + 'others-drive-car'
+    const ownCarModes: IndividualTransportMode[] = ['car', 'self-drive-car'];
+    const isOwnCar = ownCarModes.indexOf(userTripService.tripTransportMode) !== -1;
 
     request.setNumberOfResults(userTripService.numberOfResults);
     if (userTripService.numberOfResultsBefore !== null) {
@@ -62,6 +75,7 @@ export class TripRequestBuilder {
       request.setPublicTransportRequest(userTripService.publicTransportModesFilter);
     }
 
+    // OJP 2.0 only params
     if (isOJPv2) {
       const requestOJPv2 = request as OJP.TripRequest;
 
@@ -84,40 +98,158 @@ export class TripRequestBuilder {
         if (userTripService.useBikeTransport) {
           requestOJPv2.payload.params.bikeTransport = true;
         }
-
-        if (isWalking) {
-          requestOJPv2.setWalkRequest();
-        }
       }
     }
 
+    if (isWalking) {
+      request.setWalkRequest();
+    }
+
+    const personalModeRestriction: OJP_Types.PersonalModesOfOperationEnum = (() => {
+      if (isSharingMode) {
+        return 'lease';
+      }
+
+      const defaultMode: OJP_Types.PersonalModesOfOperationEnum = 'own';
+      return defaultMode;
+    })();
+
+    const transportModeRestriction: OJP_Types.PersonalModesEnum = (() => {
+      if (isWalking) {
+        return 'foot';
+      }
+
+      if (userTripService.tripTransportMode === 'cycle') {
+        return 'bicycle';
+      }
+
+      if (userTripService.tripTransportMode === 'bicycle_rental') {
+        return 'bicycle';
+      }
+
+      if (userTripService.tripTransportMode === 'escooter_rental') {
+        return 'scooter';
+      }
+
+      if (userTripService.tripTransportMode === 'car_sharing') {
+        return 'car';
+      }
+      if (userTripService.tripTransportMode === 'self-drive-car') {
+        return 'car';
+      }
+      if (userTripService.tripTransportMode === 'others-drive-car') {
+        return 'car';
+      }
+
+      const defaultMode: OJP_Types.PersonalModesEnum = 'other';
+      return defaultMode;
+    })();
+
+    const isOwnBicycle = userTripService.tripTransportMode === 'cycle';
+
     if (isAdvanced) {
-      // in advanced mode, set Origin/Destination with what is enabled in the GUI
-      request.setOriginDurationDistanceRestrictions(
-        userTripService.fromTripPlace?.minDuration, 
-        userTripService.fromTripPlace?.maxDuration, 
-        userTripService.fromTripPlace?.minDistance, 
-        userTripService.fromTripPlace?.maxDistance
-      );
-      // dont set Destination for Walk monomodal
-      if (!isWalking) {
-        request.setDestinationDurationDistanceRestrictions(
-          userTripService.toTripPlace?.minDuration, 
-          userTripService.toTripPlace?.maxDuration, 
-          userTripService.toTripPlace?.minDistance, 
-          userTripService.toTripPlace?.maxDistance
-        );
+      if (isOJPv2) {
+        // OJP 2.0
+
+        if (userTripService.tripModeType !== 'mode_at_end') {
+          // in advanced mode, set Origin/Destination with what is enabled in the GUI
+          request.setOriginDurationDistanceRestrictions(
+            personalModeRestriction,
+            transportModeRestriction,
+            userTripService.fromTripPlace?.minDuration, 
+            userTripService.fromTripPlace?.maxDuration, 
+            userTripService.fromTripPlace?.minDistance, 
+            userTripService.fromTripPlace?.maxDistance
+          );
+        }
+
+        if (userTripService.tripModeType !== 'mode_at_start') {
+          // dont set Destination for Walk monomodal
+          if (!isWalking) {
+            request.setDestinationDurationDistanceRestrictions(
+              personalModeRestriction,
+              transportModeRestriction,
+              userTripService.toTripPlace?.minDuration, 
+              userTripService.toTripPlace?.maxDuration, 
+              userTripService.toTripPlace?.minDistance, 
+              userTripService.toTripPlace?.maxDistance
+            );
+          }
+        }
+      } else {
+        // OJP 1.0
+
+        if (isOwnBicycle || isSharingMode) {
+          if (userTripService.tripModeType !== 'mode_at_end') {
+            request.setOriginDurationDistanceRestrictions(
+              personalModeRestriction,
+              transportModeRestriction,
+              userTripService.fromTripPlace?.minDuration,
+              userTripService.fromTripPlace?.maxDuration, 
+              userTripService.fromTripPlace?.minDistance, 
+              userTripService.fromTripPlace?.maxDistance,
+            );
+          }
+          if (userTripService.tripModeType !== 'mode_at_start') {
+            request.setDestinationDurationDistanceRestrictions(
+              personalModeRestriction,
+              transportModeRestriction,
+              userTripService.toTripPlace?.minDuration,
+              userTripService.toTripPlace?.maxDuration, 
+              userTripService.toTripPlace?.minDistance, 
+              userTripService.toTripPlace?.maxDistance,
+            );
+          }
+        }
+
+        if (taxiTransportMode !== null) {
+          if (userTripService.tripModeType !== 'mode_at_end') {
+            request.setTaxiRequest(
+              taxiTransportMode,
+              'origin', 
+              userTripService.fromTripPlace?.minDuration,
+              userTripService.fromTripPlace?.maxDuration, 
+              userTripService.fromTripPlace?.minDistance, 
+              userTripService.fromTripPlace?.maxDistance,
+            );
+          }
+          
+          if (userTripService.tripModeType !== 'mode_at_start') {
+            request.setTaxiRequest(
+              taxiTransportMode,
+              'destination',
+              userTripService.toTripPlace?.minDuration,
+              userTripService.toTripPlace?.maxDuration, 
+              userTripService.toTripPlace?.minDistance, 
+              userTripService.toTripPlace?.maxDistance,
+            );
+          }
+        }
       }
     } else {
-      // in simple-mode, for walking, set max walk time
-      if (isWalking) {
-        const maxDuration = 60 * 5; // 5 hrs
-        request.setOriginDurationDistanceRestrictions(
-          null, 
-          maxDuration, 
-          null, 
-          null,
-        );
+      // simple mode (advanced == colapsed)
+
+      if (isOwnBicycle || isSharingMode) {
+        request.setMonomodalRequest(personalModeRestriction, transportModeRestriction);
+      }
+
+      if (taxiTransportMode !== null) {
+        request.setTaxiRequest(taxiTransportMode);
+      }
+
+      if (isOJPv2) {
+        // in mono-modal, for walking, set max walk time
+        if (isWalking) {
+          const maxDuration = 60 * 5; // 5 hrs
+          request.setOriginDurationDistanceRestrictions(
+            personalModeRestriction,
+            'foot',
+            null, 
+            maxDuration, 
+            null, 
+            null,
+          );
+        }
       }
     }
 
@@ -125,7 +257,8 @@ export class TripRequestBuilder {
       request.setWalkSpeedDeviation(userTripService.walkSpeedDeviation);
     }
 
-    if (isCar) {
+    // Own Car BUT NOT car sharing (handled above)
+    if (isOwnCar) {
       request.setCarRequest();
       request.setNumberOfResults(null);
     }

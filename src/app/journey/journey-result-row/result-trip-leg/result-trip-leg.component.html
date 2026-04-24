@@ -1,7 +1,7 @@
 <div class="card card-trip-leg p-3 mb-2" (click)="zoomToLeg()">
   
   <!-- Leg Header -->
-  <div class="leg-heade d-flex align-items-center">
+  <div class="d-flex align-items-center">
     <div class="flex-grow-1 d-flex gap-2">
       <div>
         <button 
@@ -128,7 +128,7 @@
     
     <div class="flex-grow-1">
       <ng-container
-        *ngIf="this.legInfoDataModel.legTemplate == 'walk' then walkingLegTemplate;">
+        *ngIf="this.legInfoDataModel.legTemplate == 'default' then defaultLegTemplate;">
       </ng-container>
       <ng-container
         *ngIf="this.legInfoDataModel.legTemplate == 'timed' then timedLegTemplate;">
@@ -269,7 +269,7 @@
   </div>
 </ng-template>
 
-<ng-template #walkingLegTemplate>
+<ng-template #defaultLegTemplate>
   <div class="d-flex flex-row align-items-center">
     <div class="flex-grow-1 leg-location">
       <div class="d-flex flex-column leg-location">
@@ -323,7 +323,7 @@
         </div>
 
         <div *ngIf="this.legInfoDataModel.guidanceRows.length === 0">
-          <div class="border-bottom" style="height: 8px; margin-left: 4px; margin-right: 8px;"></div>
+          <div class="border-bottom" style="height: 8px; margin-left: 4px; margin-right: 8px; margin-bottom: 4px;"></div>
         </div>
         
         <!-- Walking LegTo -->
@@ -354,7 +354,7 @@
 
         <ul class="booking-arrangement">
           <li *ngFor="let bookingArrangement of this.legInfoDataModel.bookingArrangements">
-            Book on <a href="{{ bookingArrangement.infoURL }}" target="_blank">{{ bookingArrangement.agencyName }}</a>
+            Book on <a href="{{ bookingArrangement.infoUrl }}" target="_blank">{{ bookingArrangement.bookingAgencyName.text }}</a>
           </li>
         </ul>
 

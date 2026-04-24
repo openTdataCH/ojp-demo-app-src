@@ -13,12 +13,16 @@ export class ContinuousLeg extends Leg {
   public toPlaceRef: PlaceRef | null;
   public service: OJP_Types.ContinuousServiceSchema;
 
+  public legacyIndividualMode: string | null;
+
   private constructor(id: string, duration: Duration | null, distance: DistanceData, fromPlaceRef: PlaceRef | null, toPlaceRef: PlaceRef | null, service: OJP_Types.ContinuousServiceSchema) {
     super('ContinuousLeg', id, duration, distance);
 
     this.fromPlaceRef = fromPlaceRef;
     this.toPlaceRef = toPlaceRef;
     this.service = service;
+
+    this.legacyIndividualMode = null;
   }
 
   public static initWithLegSchema(legSchema: OJP_Types.LegSchema, mapPlaces: Record<string, StopPlace>): ContinuousLeg | null {
@@ -39,7 +43,7 @@ export class ContinuousLeg extends Leg {
     if (fromPlaceRef === null) {
       const geoPosition = continuousLegSchema.legStart.geoPosition;
       if (geoPosition) {
-        continuousLeg.fromPlace = new PlaceLocation(geoPosition.longitude, geoPosition.latitude);
+        continuousLeg.fromPlace = new PlaceLocation(geoPosition.longitude, geoPosition.latitude, continuousLegSchema.legStart.name.text);
       } else {
         console.error('ContinuousLeg.initWithLegSchema - cant compute fromPlaceRef');
         console.log(continuousLegSchema);
@@ -52,7 +56,7 @@ export class ContinuousLeg extends Leg {
     if (toPlaceRef === null) {
       const geoPosition = continuousLegSchema.legEnd.geoPosition;
       if (geoPosition) {
-        continuousLeg.toPlace = new PlaceLocation(geoPosition.longitude, geoPosition.latitude);
+        continuousLeg.toPlace = new PlaceLocation(geoPosition.longitude, geoPosition.latitude, continuousLegSchema.legEnd.name.text);
       } else {
         console.error('ContinuousLeg.initWithLegSchema - cant compute toPlaceRef');
         console.log(continuousLegSchema);
@@ -90,37 +94,19 @@ export class ContinuousLeg extends Leg {
     return isFerry;
   }
 
-  // TODOTRIPMIGRATION
-  // public isSharedMobility(): boolean {
-  //   if (this.legTransportMode === null) {
-  //     return false;
-  //   }
-
-  //   const sharedMobilityModes: IndividualTransportMode[] = ['cycle', 'bicycle_rental', 'car_sharing', 'escooter_rental'];
-  //   const hasSharedMobilityMode = sharedMobilityModes.indexOf(this.legTransportMode) !== -1;
-
-  //   return hasSharedMobilityMode;
-  // }
   public isSharedMobility() {
-    // TODOTRIPMIGRATION - see Legacy logic above
-    return false;
+    const sharedModes: OJP_Types.PersonalModesEnum[] = ['bicycle', 'scooter'];
+    const isSharedMobility = sharedModes.includes(this.service.personalMode);
+    return isSharedMobility;
   }
 
-  // TODOTRIPMIGRATION
-  // public isWalking(): boolean {
-  //   return this.legTransportMode === 'walk';
-  // }
   public isWalking(): boolean {
     return this.service.personalMode === 'foot';
   }
 
-  // TODOTRIPMIGRATION
-  // public isTaxi(): boolean {
-  //   return this.legTransportMode === 'taxi' || this.legTransportMode === 'others-drive-car';
-  // }
   public isTaxi(): boolean {
-    // TODOTRIPMIGRATION - see Legacy logic above
-    return false;
+    const isTaxi = this.legacyIndividualMode === 'taxi';
+    return isTaxi;
   }
 
   public override asOJP_Schema(): OJP_Types.LegSchema {
@@ -260,6 +246,41 @@ export class ContinuousLeg extends Leg {
       return 'OnDemand';
     }
 
+    if (this.isSharedMobility()) {
+      return 'Shared Mobility';
+    }
+
     return 'Walk';
+  }
+
+  public updateLegacyIndividualMode(legacyValue: string) {
+    if (legacyValue === 'walk') {
+      this.legacyIndividualMode = legacyValue;
+      this.service.personalMode = 'foot'; // 'foot' is in OJP 2.0
+    }
+
+    if (legacyValue === 'cycle') {
+      this.legacyIndividualMode = legacyValue;
+      this.service.personalMode = 'bicycle';
+    }
+
+    if (legacyValue === 'scooter') {
+      this.legacyIndividualMode = legacyValue;
+      this.service.personalMode = 'scooter';
+    }
+
+    if (legacyValue === 'taxi') {
+      this.legacyIndividualMode = legacyValue;
+      // cant assign to this.service.personalMode - no taxi yet present
+    }
+
+    if (legacyValue === 'self-drive-car') {
+      this.legacyIndividualMode = legacyValue;
+      // cant assign to this.service.personalMode - no self-drive-car yet present
+    }
+
+    if (this.legacyIndividualMode === null) {
+      console.log('ContinuousLeg.updateLegacyIndividualMode cant handle: ' + legacyValue);
+    }
   }
 }

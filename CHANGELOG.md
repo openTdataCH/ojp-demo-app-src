@@ -4,6 +4,11 @@ OJP-Demo URL: https://opentdatach.github.io/ojp-demo-app/
 
 ----
 
+24.April 2026
+- Fix OJP 1.0 TR SharedMobility - [PR #381](https://github.com/openTdataCH/ojp-demo-app-src/pull/381)
+  - fix shared mobility, taxi+limo modes in OJP v1.0
+  - updates trip request build logic, use latest SDK
+
 22.April 2026
 - Updates TR modes - [PR #380](https://github.com/openTdataCH/ojp-demo-app-src/pull/380)
   - adds special icon for long-distance bus, metro

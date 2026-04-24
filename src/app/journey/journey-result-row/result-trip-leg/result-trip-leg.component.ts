@@ -26,14 +26,14 @@ import { JourneyService } from '../../../shared/models/journey-service';
 import { PlaceLocation } from '../../../shared/models/place/location';
 import { GeoPositionBBOX } from '../../../shared/models/geo/geoposition-bbox';
 import { SituationContent } from '../../../shared/models/situation';
-import { BookingArrangement, JourneyPointType } from '../../../shared/types/_all';
+import { JourneyPointType } from '../../../shared/types/_all';
 import { ContinuousLeg } from '../../../shared/models/trip/leg/continuous-leg';
 import { TimedLeg } from '../../../shared/models/trip/leg/timed-leg';
 import { AnyLeg } from '../../../shared/models/trip/leg-builder';
 import { StopPointHelpers } from '../../../shared/models/stop-point-call';
 import { TransferLeg } from '../../../shared/models/trip/leg/transfer-leg';
 
-type LegTemplate = 'walk' | 'timed' | 'taxi';
+type LegTemplate = 'default' | 'timed' | 'taxi';
 
 type ServiceAttributeRenderModel = {
   icon: string,
@@ -54,7 +54,7 @@ interface LegInfoDataModel {
   leadingText: string,
   
   guidanceRows: GuidanceRow[],
-  bookingArrangements: BookingArrangement[],
+  bookingArrangements: OJP_Types.BookingArrangementStructure[],
   
   isWalking: boolean,
   durationText: string,
@@ -165,7 +165,7 @@ export class ResultTripLegComponent implements OnInit {
 
       const leadingTextTitle: string = (() => {
         if (titleParts.length === 0) {
-          return 'Transfer (content not handled)';
+          return 'Transfer (transferType not handled)';
         } else {
           return titleParts.join('');
         }
@@ -227,10 +227,18 @@ export class ResultTripLegComponent implements OnInit {
   }
 
   private computeLegLeadingTextContinousLeg(continuousLeg: ContinuousLeg): string {
-    // TODOTRIPMIGRATION - check real example
+    if (continuousLeg.service.personalMode === 'bicycle') {
+      return 'Cycle';
+    }
+
+    if (continuousLeg.service.personalMode === 'scooter') {
+      return 'Ride Scooter';
+    }
+
     if (continuousLeg.service.personalMode === 'foot') {
       return 'Walk';
     }
+
 
     // These are also isDriveCarLeg() - THEY NEED TO BE BEFORE
     if (continuousLeg.isCarAutoTrain()) {
@@ -249,12 +257,7 @@ export class ResultTripLegComponent implements OnInit {
     }
 
     if (continuousLeg.isTaxi()) {
-      // TODOTRIPMIGRATION - check limo?
-      // if (continuousLeg.legTransportMode === 'others-drive-car') {
-      //   return 'Limo';
-      // }
-      
-      return 'Taxi';
+      return 'Book Taxi / Limo';
     }
 
     return 'PLACEHOLDER - NEW MOT?';
@@ -438,7 +441,7 @@ export class ResultTripLegComponent implements OnInit {
     })();
 
     this.legInfoDataModel.legTemplate = (() => {
-      const defaultLegTemplate: LegTemplate = 'walk';
+      const defaultLegTemplate: LegTemplate = 'default';
       
       if (isContinous) {
         const continuousLeg = leg as ContinuousLeg;
@@ -460,14 +463,14 @@ export class ResultTripLegComponent implements OnInit {
       }
 
       const continuousLeg = leg as ContinuousLeg;
-      // TODOTRIPMIGRATION - check booking OJP 1
-      // 
-      // if (continuousLeg.serviceBooking === null) {
-      //   return [];
-      // }
+      const bookingArrangements = continuousLeg.service.bookingArrangements?.bookingArrangement ?? [];
 
-      // return continuousLeg.serviceBooking.bookingArrangements;
-      return [];
+      bookingArrangements.forEach(bookingArrangement => {
+        // strip < > from start/end of the string
+        bookingArrangement.infoUrl = bookingArrangement.infoUrl.replace(/^</, '').replace(/>$/, '');
+      });
+      
+      return bookingArrangements;
     })();
 
     this.legInfoDataModel.durationText = leg.duration?.format() ?? ''
