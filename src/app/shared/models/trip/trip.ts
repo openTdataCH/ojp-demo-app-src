@@ -118,7 +118,7 @@ export class Trip {
   public static initWithTripLegacySchema(legacyTripSchema: OJP_Types.OJPv1_TripSchema, mapPlaces: Record<string, StopPlace>, mapSituations: Record<string, SituationContent[]>): Trip | null {
     const legs: OJP_Types.LegSchema[] = [];
     legacyTripSchema.tripLeg.forEach(legacyTripLeg => {
-      const leg: OJP_Types.LegSchema = {
+      const legSchema: OJP_Types.LegSchema = {
         id: legacyTripLeg.legId,
         duration: legacyTripLeg.duration,
       };
@@ -146,7 +146,7 @@ export class Trip {
           continuousLegService.personalMode = 'car';
         }
 
-        leg.continuousLeg = {
+        legSchema.continuousLeg = {
           legStart: legStart,
           legEnd: legEnd,
           service: continuousLegService,
@@ -158,7 +158,7 @@ export class Trip {
       }
 
       if (legacyTripLeg.timedLeg) {
-        leg.timedLeg = {
+        legSchema.timedLeg = {
           legBoard: legacyTripLeg.timedLeg.legBoard,
           legIntermediate: legacyTripLeg.timedLeg.legIntermediates,
           legAlight: legacyTripLeg.timedLeg.legAlight,
