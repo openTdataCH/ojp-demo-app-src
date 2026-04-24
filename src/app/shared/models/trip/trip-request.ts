@@ -177,9 +177,38 @@ export class TripRequestBuilder {
           }
         }
       } else {
+        // OJP 1.0
+
+        if (isOwnBicycle || isSharingMode) {
+          if (userTripService.tripModeType !== 'mode_at_end') {
+            request.setOriginDurationDistanceRestrictions(
+              personalModeRestriction,
+              transportModeRestriction,
+              userTripService.fromTripPlace?.minDuration,
+              userTripService.fromTripPlace?.maxDuration, 
+              userTripService.fromTripPlace?.minDistance, 
+              userTripService.fromTripPlace?.maxDistance,
+            );
+          }
+          if (userTripService.tripModeType !== 'mode_at_start') {
+            request.setDestinationDurationDistanceRestrictions(
+              personalModeRestriction,
+              transportModeRestriction,
+              userTripService.toTripPlace?.minDuration,
+              userTripService.toTripPlace?.maxDuration, 
+              userTripService.toTripPlace?.minDistance, 
+              userTripService.toTripPlace?.maxDistance,
+            );
+          }
+        }
         }
       }
     } else {
+      // simple mode (advanced == colapsed)
+
+      if (isOwnBicycle || isSharingMode) {
+        request.setMonomodalRequest(personalModeRestriction, transportModeRestriction);
+      }
 
       if (isOJPv2) {
         // in mono-modal, for walking, set max walk time
