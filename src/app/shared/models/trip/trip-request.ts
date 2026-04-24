@@ -97,11 +97,11 @@ export class TripRequestBuilder {
         if (userTripService.useBikeTransport) {
           requestOJPv2.payload.params.bikeTransport = true;
         }
-
-        if (isWalking) {
-          requestOJPv2.setWalkRequest();
-        }
       }
+    }
+
+    if (isWalking) {
+      request.setWalkRequest();
     }
 
     if (isAdvanced) {
