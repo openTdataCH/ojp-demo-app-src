@@ -21,13 +21,6 @@ export interface CreateIssueBody {
   projectKey: string
 }
 
-// TODOTRIPMIGRATION - check OJPv1 booking (limo, taxi)
-export interface BookingArrangement {
-  agencyCode: string,
-  agencyName: string,
-  infoURL: string,
-}
-
 export type TripModeType = 'monomodal' | 'mode_at_start' | 'mode_at_end' | 'mode_at_start_end';
 
 // https://vdvde.github.io/OJP/develop/documentation-tables/siri.html#type_siri__VehicleModesOfTransportEnumeration
