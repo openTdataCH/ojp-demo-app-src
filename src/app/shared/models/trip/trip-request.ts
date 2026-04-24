@@ -146,32 +146,52 @@ export class TripRequestBuilder {
     })();
 
     if (isAdvanced) {
-      // in advanced mode, set Origin/Destination with what is enabled in the GUI
-      request.setOriginDurationDistanceRestrictions(
-        userTripService.fromTripPlace?.minDuration, 
-        userTripService.fromTripPlace?.maxDuration, 
-        userTripService.fromTripPlace?.minDistance, 
-        userTripService.fromTripPlace?.maxDistance
-      );
-      // dont set Destination for Walk monomodal
-      if (!isWalking) {
-        request.setDestinationDurationDistanceRestrictions(
-          userTripService.toTripPlace?.minDuration, 
-          userTripService.toTripPlace?.maxDuration, 
-          userTripService.toTripPlace?.minDistance, 
-          userTripService.toTripPlace?.maxDistance
-        );
+      if (isOJPv2) {
+        // OJP 2.0
+
+        if (userTripService.tripModeType !== 'mode_at_end') {
+          // in advanced mode, set Origin/Destination with what is enabled in the GUI
+          request.setOriginDurationDistanceRestrictions(
+            personalModeRestriction,
+            transportModeRestriction,
+            userTripService.fromTripPlace?.minDuration, 
+            userTripService.fromTripPlace?.maxDuration, 
+            userTripService.fromTripPlace?.minDistance, 
+            userTripService.fromTripPlace?.maxDistance
+          );
+        }
+
+        if (userTripService.tripModeType !== 'mode_at_start') {
+          // dont set Destination for Walk monomodal
+          if (!isWalking) {
+            request.setDestinationDurationDistanceRestrictions(
+              personalModeRestriction,
+              transportModeRestriction,
+              userTripService.toTripPlace?.minDuration, 
+              userTripService.toTripPlace?.maxDuration, 
+              userTripService.toTripPlace?.minDistance, 
+              userTripService.toTripPlace?.maxDistance
+            );
+          }
+        }
+      } else {
+        }
       }
     } else {
-      // in simple-mode, for walking, set max walk time
-      if (isWalking) {
-        const maxDuration = 60 * 5; // 5 hrs
-        request.setOriginDurationDistanceRestrictions(
-          null, 
-          maxDuration, 
-          null, 
-          null,
-        );
+
+      if (isOJPv2) {
+        // in mono-modal, for walking, set max walk time
+        if (isWalking) {
+          const maxDuration = 60 * 5; // 5 hrs
+          request.setOriginDurationDistanceRestrictions(
+            personalModeRestriction,
+            'foot',
+            null, 
+            maxDuration, 
+            null, 
+            null,
+          );
+        }
       }
     }
 
