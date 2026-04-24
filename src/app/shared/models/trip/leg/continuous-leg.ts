@@ -246,6 +246,10 @@ export class ContinuousLeg extends Leg {
       return 'OnDemand';
     }
 
+    if (this.isSharedMobility()) {
+      return 'Shared Mobility';
+    }
+
     return 'Walk';
   }
 
