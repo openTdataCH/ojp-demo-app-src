@@ -39,7 +39,7 @@ export class ContinuousLeg extends Leg {
     if (fromPlaceRef === null) {
       const geoPosition = continuousLegSchema.legStart.geoPosition;
       if (geoPosition) {
-        continuousLeg.fromPlace = new PlaceLocation(geoPosition.longitude, geoPosition.latitude);
+        continuousLeg.fromPlace = new PlaceLocation(geoPosition.longitude, geoPosition.latitude, continuousLegSchema.legStart.name.text);
       } else {
         console.error('ContinuousLeg.initWithLegSchema - cant compute fromPlaceRef');
         console.log(continuousLegSchema);
@@ -52,7 +52,7 @@ export class ContinuousLeg extends Leg {
     if (toPlaceRef === null) {
       const geoPosition = continuousLegSchema.legEnd.geoPosition;
       if (geoPosition) {
-        continuousLeg.toPlace = new PlaceLocation(geoPosition.longitude, geoPosition.latitude);
+        continuousLeg.toPlace = new PlaceLocation(geoPosition.longitude, geoPosition.latitude, continuousLegSchema.legEnd.name.text);
       } else {
         console.error('ContinuousLeg.initWithLegSchema - cant compute toPlaceRef');
         console.log(continuousLegSchema);
