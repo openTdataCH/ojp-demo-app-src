@@ -47,9 +47,10 @@ export class TripRequestBuilder {
     const isSharingMode = sharedMobilityTransportModes.indexOf(userTripService.tripTransportMode) !== -1;
     const isWalking = userTripService.tripTransportMode === 'walk' || userTripService.tripTransportMode === 'foot';
     const isPublicTransport = userTripService.tripTransportMode === 'public_transport';
-
-    const carModes: IndividualTransportMode[] = ['car', 'car-ferry', 'car-shuttle-train', 'car_sharing', 'others-drive-car', 'self-drive-car'];
-    const isCar = carModes.indexOf(userTripService.tripTransportMode) !== -1;
+    
+    // ALL CAR modes EXCEPT car_sharing + 'others-drive-car'
+    const ownCarModes: IndividualTransportMode[] = ['car', 'self-drive-car'];
+    const isOwnCar = ownCarModes.indexOf(userTripService.tripTransportMode) !== -1;
 
     request.setNumberOfResults(userTripService.numberOfResults);
     if (userTripService.numberOfResultsBefore !== null) {
@@ -126,7 +127,8 @@ export class TripRequestBuilder {
       request.setWalkSpeedDeviation(userTripService.walkSpeedDeviation);
     }
 
-    if (isCar) {
+    // Own Car BUT NOT car sharing (handled above)
+    if (isOwnCar) {
       request.setCarRequest();
       request.setNumberOfResults(null);
     }
