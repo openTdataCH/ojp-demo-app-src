@@ -201,6 +201,29 @@ export class TripRequestBuilder {
             );
           }
         }
+
+        if (taxiTransportMode !== null) {
+          if (userTripService.tripModeType !== 'mode_at_end') {
+            request.setTaxiRequest(
+              taxiTransportMode,
+              'origin', 
+              userTripService.fromTripPlace?.minDuration,
+              userTripService.fromTripPlace?.maxDuration, 
+              userTripService.fromTripPlace?.minDistance, 
+              userTripService.fromTripPlace?.maxDistance,
+            );
+          }
+          
+          if (userTripService.tripModeType !== 'mode_at_start') {
+            request.setTaxiRequest(
+              taxiTransportMode,
+              'destination',
+              userTripService.toTripPlace?.minDuration,
+              userTripService.toTripPlace?.maxDuration, 
+              userTripService.toTripPlace?.minDistance, 
+              userTripService.toTripPlace?.maxDistance,
+            );
+          }
         }
       }
     } else {
@@ -208,6 +231,10 @@ export class TripRequestBuilder {
 
       if (isOwnBicycle || isSharingMode) {
         request.setMonomodalRequest(personalModeRestriction, transportModeRestriction);
+      }
+
+      if (taxiTransportMode !== null) {
+        request.setTaxiRequest(taxiTransportMode);
       }
 
       if (isOJPv2) {
