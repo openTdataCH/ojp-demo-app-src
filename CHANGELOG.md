@@ -4,6 +4,10 @@ OJP-Demo URL: https://opentdatach.github.io/ojp-demo-app/
 
 ----
 
+29.May 2026
+- Updates TripInfo Detail Page - [PR #383](https://github.com/openTdataCH/ojp-demo-app-src/pull/383)
+  - display service attributes + occupancy in the TripInfo detail view - [Display Attribute + Occupancy in TripInfoRequest tab #382](https://github.com/openTdataCH/ojp-demo-app-src/issues/382)
+
 24.April 2026
 - Fix OJP 1.0 TR SharedMobility - [PR #381](https://github.com/openTdataCH/ojp-demo-app-src/pull/381)
   - fix shared mobility, taxi+limo modes in OJP v1.0
