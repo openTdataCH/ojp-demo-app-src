@@ -11,7 +11,7 @@ import * as OJP from 'ojp-sdk';
 import { DEBUG_LEVEL, FLAG_USE_2nd_SHAPE_PROVIDER, OJP_VERSION } from '../../../config/constants';
 
 import { MapLegLineTypeColor } from '../../../config/map-colors';
-import { OJPHelpers } from '../../../helpers/ojp-helpers';
+import { OJPHelpers, ServiceAttributeRenderModel } from '../../../helpers/ojp-helpers';
 
 import { MapService } from '../../../shared/services/map.service';
 import { UserTripService } from '../../../shared/services/user-trip.service';
@@ -34,11 +34,6 @@ import { StopPointHelpers } from '../../../shared/models/stop-point-call';
 import { TransferLeg } from '../../../shared/models/trip/leg/transfer-leg';
 
 type LegTemplate = 'default' | 'timed' | 'taxi';
-
-type ServiceAttributeRenderModel = {
-  icon: string,
-  caption: string
-}
 
 interface GuidanceRow {
   turnDescription: string
@@ -536,8 +531,16 @@ export class ResultTripLegComponent implements OnInit {
         locationData.platformAssistanceTooltip = StopPointHelpers.computePlatformAssistanceTooltip(locationVehicleAccessType);
       });
     }
-
-    this.legInfoDataModel.serviceAttributes = this.computeServiceAttributeModel(leg);
+    
+    this.legInfoDataModel.serviceAttributes = (() => {
+      if (leg.type !== 'TimedLeg') {
+        return [];
+      }
+      
+      const timedLeg = leg as TimedLeg;
+      const serviceAttributes = OJPHelpers.computeServiceAttributeModel(timedLeg.service);
+      return serviceAttributes;
+    })();
 
     this.legInfoDataModel.serviceDestinationText = (() => {
       if (leg.type !== 'TimedLeg') {
@@ -648,50 +651,6 @@ export class ResultTripLegComponent implements OnInit {
       useOtherProvider: FLAG_USE_2nd_SHAPE_PROVIDER,
       showOtherProviderLineLabelId: 'show_provider2_line_' + legIdKey,
     };
-  }
-
-  private computeServiceAttributeModel(leg: AnyLeg): ServiceAttributeRenderModel[] {
-    const rows: ServiceAttributeRenderModel[] = [];
-
-    if (leg.type !== 'TimedLeg') {
-      return [];
-    } 
-
-    const timedLeg = leg as TimedLeg;
-    timedLeg.service.attribute.forEach(serviceAttribute => {
-      const key = serviceAttribute.code;
-      const icon: string = (() => {
-        const defaultIcon = 'kom:circle-question-mark-medium';
-        
-        if (key === 'A__BA') {
-          return defaultIcon;
-        }
-
-        if (['A__GF', 'A__HL', 'A__BU'].includes(key)) {
-          return 'kom:circle-information-large';
-        }
-
-        if (key.startsWith('A_')) {
-          const code = key.replace(/A_*/, '');
-          const standardIcon = 'fpl:sa-' + code.toLowerCase();
-          return standardIcon;
-        }
-
-        return defaultIcon;
-      })();
-
-      if (icon === null) {
-        return;
-      }
-
-      const rowData: ServiceAttributeRenderModel = {
-        icon: icon,
-        caption: serviceAttribute.userText.text,
-      };
-      rows.push(rowData);
-    });
-
-    return rows;
   }
 
   private computeLocationData(leg: AnyLeg, endpointType: JourneyPointType): LegStopPointData {

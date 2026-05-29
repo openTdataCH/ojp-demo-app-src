@@ -1,5 +1,5 @@
 import { EventEmitter, Injectable } from '@angular/core'
-import { ActivatedRoute, Params, Route, Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { BehaviorSubject, Observable } from 'rxjs';
 
 import * as OJP_Types from 'ojp-shared-types';

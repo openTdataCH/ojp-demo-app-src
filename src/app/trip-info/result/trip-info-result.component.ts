@@ -3,7 +3,7 @@ import { AfterViewInit, ChangeDetectorRef, Component, OnInit } from '@angular/co
 import * as OJP from 'ojp-sdk';
 
 import { TripInfoService } from '../trip-info.service';
-import { OJPHelpers } from '../../helpers/ojp-helpers';
+import { OJPHelpers, ServiceAttributeRenderModel } from '../../helpers/ojp-helpers';
 import { LegStopPointData } from '../../shared/components/service-stops.component';
 import { UserTripService } from '../../shared/services/user-trip.service';
 import { DEFAULT_APP_STAGE } from '../../config/constants';
@@ -27,6 +27,8 @@ interface PageModel {
   journeyExampleCaption: string,
   permalinkURL: string,
   trainFormationURL: string | null,
+
+  serviceAttributes: ServiceAttributeRenderModel[],
 }
 
 @Component({
@@ -42,6 +44,7 @@ export class TripInfoResultComponent implements OnInit, AfterViewInit {
     
     this.model.tripInfoResult = null;
     this.model.stopPointsData = [];
+    this.model.serviceAttributes = [];
   }
 
   ngOnInit(): void {
@@ -106,6 +109,8 @@ export class TripInfoResultComponent implements OnInit, AfterViewInit {
 
       return stopPointsData;
     })();
+
+    this.model.serviceAttributes = OJPHelpers.computeServiceAttributeModel(service);
 
     this.model.trainFormationURL = service.computeFormationServiceURL();
   }

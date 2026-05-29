@@ -11,7 +11,18 @@
         </div>
       </ng-container>
     </div>
-    <h2 class="mt-3">{{ this.model.serviceFromText }} → {{ this.model.serviceToText }}</h2>
+    <h2 class="mt-3 mb-2">{{ this.model.serviceFromText }} → {{ this.model.serviceToText }}</h2>
+    <div class="service-attributes mb-2">
+      <div class="d-flex gap-1 align-items-center">
+        <div class="service-attribute" *ngFor="let attrData of this.model.serviceAttributes">
+          <sbb-tooltip trigger="hover" svgIcon="{{ attrData.icon }}" class="sbb-icon-fit">
+            <div>
+              {{ attrData.caption }}
+            </div>
+          </sbb-tooltip>
+        </div>
+      </div>
+    </div>
     <div>Day: {{ this.model.operatingDayRef }}</div>
     <div>Ref: {{ this.model.journeyRef }}</div>
     <div class="mt-3 mb-2">Example Trip: <a [href]="this.model.journeyExampleURL" target="_blank">{{ this.model.journeyExampleCaption }}</a></div>
