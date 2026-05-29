@@ -89,16 +89,22 @@ export class TripInfoSearchComponent implements OnInit {
 
     this.userTripService.currentAppStage = OJPHelpers.computeAppStage();
 
+    const queryParams = new URLSearchParams(document.location.search);
+    this.useMocks = queryParams.get('use_mocks') === 'yes';
+
     this.updateURLs();
 
     this.currentRequestInfo = null;
-
-    const queryParams = new URLSearchParams(document.location.search);
-    
-    this.useMocks = queryParams.get('use_mocks') === 'yes';
   }
 
   async ngOnInit(): Promise<void> {
+    if (this.useMocks) {
+      if (this.useMocks && document.location.hostname === 'localhost') {
+        this.fetchTripInfoRequestFromMocks();
+        return;
+      }
+    }
+
     this.tripInfoService.tripInfoResultUpdated.subscribe(tripInfoResult => {
       if (tripInfoResult !== null) {
         this.searchPanel?.close();
@@ -124,13 +130,6 @@ export class TripInfoSearchComponent implements OnInit {
       this.fetchTripInfo();
     } else {
       await this.updateExampleJourneys();
-    }
-
-    if (this.useMocks) {
-      if (this.useMocks && document.location.hostname === 'localhost') {
-        this.fetchTripInfoRequestFromMocks();
-        return;
-      }
     }
   }
 
@@ -185,6 +184,10 @@ export class TripInfoSearchComponent implements OnInit {
   }
 
   private updateCurrentURL(router: Router, route: ActivatedRoute, urlSearchParams: URLSearchParams) {
+    if (this.useMocks) {
+      return;
+    }
+
     const queryParams = Object.fromEntries(urlSearchParams.entries());
 
     router.navigate([], {
@@ -245,7 +248,7 @@ export class TripInfoSearchComponent implements OnInit {
   }
 
   private async fetchTripInfoRequestFromMocks() {
-    const mockURL = '/path/to/mock.xml';
+    const mockURL = 'http://localhost:8080/Work/sbb/ojp-opendata/projects/ojp/openTdataCH--ojp-demo-app-src/_mocks/v2/tir/tir_attributes_occupancy.xml';
 
     const mockText = await (await fetch(mockURL)).text();
 
