@@ -18,6 +18,26 @@
         <td class="stop-info d-flex gap-2 align-items-center">
           <div class="flex-grow-1">
             <div>{{ stopPointData.locationText }} <span *ngIf="stopPointData.isNotServicedStop" class="badge rounded-pill bg-danger fw-bolder">not serviced</span></div>
+            <div class="ps-1 d-flex gap-1 align-items-center">
+              <ng-container *ngIf="stopPointData.occupancy.firstClassIcon">
+                <div>1.</div>
+                <div class="occupancy">
+                  <sbb-icon 
+                    svgIcon="{{ stopPointData.occupancy.firstClassIcon }}"
+                    sbbTooltip="{{ stopPointData.occupancy.firstClassText }}"
+                  ></sbb-icon>
+                </div>
+              </ng-container>
+              <ng-container *ngIf="stopPointData.occupancy.secondClassIcon">
+                <div>2.</div>
+                <div class="occupancy">
+                  <sbb-icon 
+                    svgIcon="{{ stopPointData.occupancy.secondClassIcon }}"
+                    sbbTooltip="{{ stopPointData.occupancy.secondClassText }}"
+                  ></sbb-icon>
+                </div>
+              </ng-container>
+            </div>
           </div>
 
           <div *ngIf="stopPointData.platformText !== null" class="d-flex gap-2">
