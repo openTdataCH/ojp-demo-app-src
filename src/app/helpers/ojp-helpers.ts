@@ -18,6 +18,11 @@ import { TimedLeg } from '../shared/models/trip/leg/timed-leg';
 import { AnyLeg } from '../shared/models/trip/leg-builder';
 import { ContinuousLeg } from '../shared/models/trip/leg/continuous-leg';
 
+export type ServiceAttributeRenderModel = {
+  icon: string,
+  caption: string
+}
+
 type PublicTransportPictogram =  'picto-bus-fallback' | 'picto-bus'
   | 'picto-railway' | 'picto-tram' | 'picto-rack-railway' | 'picto-metro'
   | 'picto-boat'
@@ -381,5 +386,44 @@ export class OJPHelpers {
 
   public static wait(ms: number): Promise<void> {
     return new Promise((resolve) => setTimeout(resolve, ms));
+  }
+
+  public static computeServiceAttributeModel(service: JourneyService): ServiceAttributeRenderModel[] {
+    const rows: ServiceAttributeRenderModel[] = [];
+
+    service.attribute.forEach(serviceAttribute => {
+      const key = serviceAttribute.code;
+      const icon: string = (() => {
+        const defaultIcon = 'kom:circle-question-mark-medium';
+        
+        if (key === 'A__BA') {
+          return defaultIcon;
+        }
+
+        if (['A__GF', 'A__HL', 'A__BU'].includes(key)) {
+          return 'kom:circle-information-large';
+        }
+
+        if (key.startsWith('A_')) {
+          const code = key.replace(/A_*/, '');
+          const standardIcon = 'fpl:sa-' + code.toLowerCase();
+          return standardIcon;
+        }
+
+        return defaultIcon;
+      })();
+
+      if (icon === null) {
+        return;
+      }
+
+      const rowData: ServiceAttributeRenderModel = {
+        icon: icon,
+        caption: serviceAttribute.userText.text,
+      };
+      rows.push(rowData);
+    });
+
+    return rows;
   }
 }
