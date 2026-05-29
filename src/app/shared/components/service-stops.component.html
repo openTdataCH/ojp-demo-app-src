@@ -4,39 +4,22 @@
   <table class="table table-hover mb-0">
     <thead>
       <tr>
+        <th scope="col">Stop</th>
         <th scope="col">Arr</th>
         <th scope="col">Dep</th>
-        <th scope="col">Stop</th>
-        <th scope="col">Route</th>
+        <th scope="col" class="text-end">Route</th>
       </tr>
     </thead>
     <tbody>
       <tr 
         *ngFor="let stopPointData of this.stopPointsData; index as stopIdx"
-        (click)="zoomToLocation(stopPointData)"
-      >
-        <td class="fit stop-time align-middle">
-          <div *ngIf="stopPointData.isNotServicedStop">
-            <span><del>{{ stopPointData.arrText }}</del></span>
-            <span class="time-delay"><del>{{ stopPointData.arrDelayText }}</del></span>  
-          </div>
-          <div *ngIf="!stopPointData.isNotServicedStop">
-            <span>{{ stopPointData.arrText }}</span>
-            <span class="time-delay">{{ stopPointData.arrDelayText }}</span>  
-          </div>
-        </td>
-        <td class="fit stop-time align-middle">
-          <div *ngIf="stopPointData.isNotServicedStop">
-            <span><del>{{ stopPointData.depText }}</del></span>
-            <span class="time-delay"><del>{{ stopPointData.depDelayText }}</del></span>
-          </div>
-          <div *ngIf="!stopPointData.isNotServicedStop">
-            <span>{{ stopPointData.depText }}</span>
-            <span class="time-delay">{{ stopPointData.depDelayText }}</span>
-          </div>
-        </td>
+        (click)="zoomToLocation(stopPointData)">
+        
         <td class="stop-info d-flex gap-2 align-items-center">
-          <div class="flex-grow-1">{{ stopPointData.locationText }} <span *ngIf="stopPointData.isNotServicedStop" class="badge rounded-pill bg-danger fw-bolder">not serviced</span></div>
+          <div class="flex-grow-1">
+            <div>{{ stopPointData.locationText }} <span *ngIf="stopPointData.isNotServicedStop" class="badge rounded-pill bg-danger fw-bolder">not serviced</span></div>
+          </div>
+
           <div *ngIf="stopPointData.platformText !== null" class="d-flex gap-2">
             <div *ngIf="stopPointData.actualPlatformText === null">
               <div>Pl. {{ stopPointData.platformText }}</div>
@@ -53,7 +36,30 @@
             />
           </div>
         </td>
-        <td class="text-center">
+      
+        <td class="fit stop-time align-middle">
+          <div *ngIf="stopPointData.isNotServicedStop">
+            <span><del>{{ stopPointData.arrText }}</del></span>
+            <span class="time-delay"><del>{{ stopPointData.arrDelayText }}</del></span>  
+          </div>
+          <div *ngIf="!stopPointData.isNotServicedStop">
+            <span>{{ stopPointData.arrText }}</span>
+            <span class="time-delay">{{ stopPointData.arrDelayText }}</span>  
+          </div>
+        </td>
+        
+        <td class="fit stop-time align-middle">
+          <div *ngIf="stopPointData.isNotServicedStop">
+            <span><del>{{ stopPointData.depText }}</del></span>
+            <span class="time-delay"><del>{{ stopPointData.depDelayText }}</del></span>
+          </div>
+          <div *ngIf="!stopPointData.isNotServicedStop">
+            <span>{{ stopPointData.depText }}</span>
+            <span class="time-delay">{{ stopPointData.depDelayText }}</span>
+          </div>
+        </td>
+        
+        <td class="text-end">
           <input 
             class="form-check-input" 
             type="radio" 
