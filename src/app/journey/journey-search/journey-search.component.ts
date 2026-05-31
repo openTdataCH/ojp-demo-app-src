@@ -1,7 +1,9 @@
 import { Component, OnInit } from '@angular/core';
+
 import { AppService } from '../../shared/services/app.service';
 import { UserTripService } from '../../shared/services/user-trip.service';
 import { DEFAULT_APP_STAGE } from '../../config/constants';
+import { OJPHelpers } from '../../helpers/ojp-helpers';
 
 @Component({
   selector: 'journey-search',
@@ -32,6 +34,6 @@ export class JourneySearchComponent implements OnInit {
   }
 
   public onActiveTabClick(): void {
-    window.location.href = 'search';
+    OJPHelpers.resetTabNavigation('search');
   }
 }

@@ -3,6 +3,7 @@ import { Component, OnInit } from '@angular/core';
 import { AppService } from '../shared/services/app.service';
 import { DEFAULT_APP_STAGE, OJP_VERSION } from '../config/constants';
 import { TripInfoService } from './trip-info.service';
+import { OJPHelpers } from '../helpers/ojp-helpers';
 
 @Component({
   selector: 'trip-info',
@@ -44,6 +45,6 @@ export class TripInfoComponent implements OnInit {
   }
 
   public onActiveTabClick(): void {
-    window.location.href = 'trip';
+    OJPHelpers.resetTabNavigation('trip');
   }
 }

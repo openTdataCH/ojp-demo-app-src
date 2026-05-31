@@ -3,6 +3,7 @@ import { Component, OnInit } from '@angular/core';
 import { AppService } from '../shared/services/app.service';
 import { DEFAULT_APP_STAGE, OJP_VERSION } from '../config/constants';
 import { StationBoardService } from './station-board.service';
+import { OJPHelpers } from '../helpers/ojp-helpers';
 
 @Component({
   selector: 'station-board',
@@ -46,6 +47,6 @@ export class StationBoardComponent implements OnInit {
   }
 
   public onActiveTabClick(): void {
-    window.location.href = 'board';
+    OJPHelpers.resetTabNavigation('board');
   }
 }
