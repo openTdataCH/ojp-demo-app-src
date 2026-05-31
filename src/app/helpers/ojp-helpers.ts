@@ -426,4 +426,24 @@ export class OJPHelpers {
 
     return rows;
   }
+
+  public static resetTabNavigation(path: string) {
+    const newQueryParams = new URLSearchParams();
+
+    const queryParams = new URLSearchParams(document.location.search);
+    const qsKeys = ['v', 'stage'];
+    qsKeys.forEach(key => {
+      const paramValue = queryParams.get(key);
+      if (paramValue !== null) {
+        newQueryParams.append(key, paramValue);
+      }
+    });
+
+    let newPath = path;
+    if (newQueryParams.size) {
+      newPath += '?' + newQueryParams.toString();
+    }
+    
+    window.location.href = newPath;    
+  }
 }
