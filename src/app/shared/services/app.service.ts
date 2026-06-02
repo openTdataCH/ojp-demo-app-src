@@ -1,33 +1,17 @@
 import { Injectable } from '@angular/core';
 import { Title } from '@angular/platform-browser';
 
-import { APP_STAGE, DEBUG_LEVEL, DEFAULT_APP_STAGE, OJP_VERSION } from '../../config/constants';
+import { APP_STAGE, DEFAULT_APP_STAGE, OJP_VERSION } from '../../config/constants';
 
 @Injectable({
   providedIn: 'root',
 })
 export class AppService {
-  public baseTitle: string;
+  public headerTitle: string;
   public bgMainClassName: 'ojpv2-prod' | 'ojpv1-beta' | 'ojpv2-beta';
 
   constructor(private title: Title) {
-    this.baseTitle = (() => {
-      const titleParts: string[] = [
-        'OJP Demo',
-      ];
-
-      if (DEBUG_LEVEL === 'DEBUG') {
-        titleParts.push('BETA');
-      }
-      
-      titleParts.push('OJP ' + OJP_VERSION);
-
-      const titleS = titleParts.join(' - ');
-
-      return titleS;
-    })();
-
-    this.title.setTitle(this.baseTitle);
+    this.headerTitle = '';
 
     this.bgMainClassName = (() => {
       const isBrowser = typeof window !== 'undefined' && typeof window.document !== 'undefined';
@@ -47,12 +31,9 @@ export class AppService {
     })();
   }
 
-  setTitle(title: string, baseTitle = this.baseTitle): void {
-    this.title.setTitle(title + ' | ' + baseTitle);
-  }
-
-  getTitle(): string {
-    return this.title.getTitle();
+  public updatePageTitle(sectionTitle: string, stage: APP_STAGE) {
+    this.headerTitle = this.computeHeaderTitle(stage);
+    this.title.setTitle(sectionTitle + ' | ' + this.headerTitle);
   }
 
   private computeHeaderTitle(stage: APP_STAGE): string {

@@ -18,18 +18,21 @@ export class JourneySearchComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.appService.setTitle('TripRequest');
+    const sectionTitle = 'TripRequest';
+    this.appService.updatePageTitle(sectionTitle, this.userTripService.currentAppStage);
 
     this.userTripService.stageChanged.subscribe(newStage => {
       if (newStage !== DEFAULT_APP_STAGE) {
         this.queryParams['stage'] = newStage;
       }
-
+      
       const currentQueryParams = new URLSearchParams(document.location.search);
       const userVersion = currentQueryParams.get('v');
       if (userVersion) {
         this.queryParams['v'] = userVersion;
       }
+
+      this.appService.updatePageTitle(sectionTitle, this.userTripService.currentAppStage);
     });
   }
 

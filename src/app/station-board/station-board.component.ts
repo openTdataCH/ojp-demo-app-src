@@ -4,6 +4,7 @@ import { AppService } from '../shared/services/app.service';
 import { DEFAULT_APP_STAGE, OJP_VERSION } from '../config/constants';
 import { StationBoardService } from './station-board.service';
 import { OJPHelpers } from '../helpers/ojp-helpers';
+import { UserTripService } from '../shared/services/user-trip.service';
 
 @Component({
   selector: 'station-board',
@@ -13,12 +14,13 @@ import { OJPHelpers } from '../helpers/ojp-helpers';
 export class StationBoardComponent implements OnInit {
   public routeQueryParams: Record<string, string>;
 
-  constructor(private appService: AppService, private stationBoardService: StationBoardService) {
+  constructor(private appService: AppService, private userTripService: UserTripService, private stationBoardService: StationBoardService) {
     this.routeQueryParams = {};
   }
 
   ngOnInit(): void {
-    this.appService.setTitle('StopEventRequest');
+    const sectionTitle = 'StopEventRequest';
+    this.appService.updatePageTitle(sectionTitle, this.userTripService.currentAppStage);
 
     this.stationBoardService.stageChanged.subscribe(newStage => {
       const queryParams = new URLSearchParams(this.routeQueryParams);
@@ -30,6 +32,8 @@ export class StationBoardComponent implements OnInit {
       } else {
         queryParams.set('stage', newStage);
       }
+
+      this.appService.updatePageTitle(sectionTitle, this.userTripService.currentAppStage);
 
       this.updateRouteQueryParams(queryParams);
     });
