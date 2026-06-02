@@ -167,16 +167,6 @@ export class UserTripService {
         stopPlaceRef = isFrom ? fromPlaceName : toPlaceName;
       }
       
-      // LA Beta hack, strip everything before |
-      if (appStage === 'LA Beta') {
-        const stopPlaceRefMatches = stopPlaceRef.match(/^[^\|]+?\|(.+?)$/);
-        if (stopPlaceRefMatches) {
-          stopPlaceRef = stopPlaceRefMatches[1];
-        } else {
-          console.error('ERROR LA Beta - CANT match stopPlaceRef');
-        }
-      }
-
       let place: AnyPlace | null = null;
 
       const coordsPlace = PlaceLocation.initFromLiteralCoords(stopPlaceRef);

@@ -44,7 +44,7 @@ export const FLAG_USE_2nd_SHAPE_PROVIDER = (() => {
   return false;
 })();
 
-export type APP_STAGE = 'PROD' | 'INT' | 'TEST' | 'LA Beta' | 'DEV'
+export type APP_STAGE = 'PROD' | 'INT' | 'TEST' | 'DEV'
   | 'V2-PROD' | 'V2-INT' | 'V2-TEST' | 'V2-DEV'
   | 'GR TEST'| 'PROD-LB' | 'OJP-SI' | 'NOVA-INT';
 
