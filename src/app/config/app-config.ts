@@ -43,10 +43,6 @@ export const APP_CONFIG: AppConfig = {
       url: 'https://tools.odpch.ch/tmp/cors-proxy?url=https://ojp.lb.prod.ojp.odpch.ch/ojp/ojp',
       authToken: "PLACEHOLDER_REPLACE__PROD",
     },
-    'LA Beta': {
-      url: 'https://api.opentransportdata.swiss/ojp-la-aktiv',
-      authToken: "PLACEHOLDER_REPLACE__LA_BETA",
-    },
     
     'OJP-SI': {
       url: 'https://dev.simo.si/OpenAPI/LinkingAlpsBetaPhase/OJP',

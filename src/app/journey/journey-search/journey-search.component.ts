@@ -1,7 +1,9 @@
 import { Component, OnInit } from '@angular/core';
+
 import { AppService } from '../../shared/services/app.service';
 import { UserTripService } from '../../shared/services/user-trip.service';
 import { DEFAULT_APP_STAGE } from '../../config/constants';
+import { OJPHelpers } from '../../helpers/ojp-helpers';
 
 @Component({
   selector: 'journey-search',
@@ -16,22 +18,25 @@ export class JourneySearchComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.appService.setTitle('TripRequest');
+    const sectionTitle = 'TripRequest';
+    this.appService.updatePageTitle(sectionTitle, this.userTripService.currentAppStage);
 
     this.userTripService.stageChanged.subscribe(newStage => {
       if (newStage !== DEFAULT_APP_STAGE) {
         this.queryParams['stage'] = newStage;
       }
-
+      
       const currentQueryParams = new URLSearchParams(document.location.search);
       const userVersion = currentQueryParams.get('v');
       if (userVersion) {
         this.queryParams['v'] = userVersion;
       }
+
+      this.appService.updatePageTitle(sectionTitle, this.userTripService.currentAppStage);
     });
   }
 
   public onActiveTabClick(): void {
-    window.location.href = 'search';
+    OJPHelpers.resetTabNavigation('search');
   }
 }

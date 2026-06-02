@@ -3,6 +3,8 @@ import { Component, OnInit } from '@angular/core';
 import { AppService } from '../shared/services/app.service';
 import { DEFAULT_APP_STAGE, OJP_VERSION } from '../config/constants';
 import { TripInfoService } from './trip-info.service';
+import { OJPHelpers } from '../helpers/ojp-helpers';
+import { UserTripService } from '../shared/services/user-trip.service';
 
 @Component({
   selector: 'trip-info',
@@ -12,12 +14,13 @@ import { TripInfoService } from './trip-info.service';
 export class TripInfoComponent implements OnInit {
   public routeQueryParams: Record<string, string>;
 
-  constructor(private appService: AppService, private tripInfoService: TripInfoService) {
+  constructor(private appService: AppService, private userTripService: UserTripService, private tripInfoService: TripInfoService) {
     this.routeQueryParams = {};
   }
 
   ngOnInit(): void {
-    this.appService.setTitle('TripInfoRequest');
+    const sectionTitle = 'TripInfoRequest';
+    this.appService.updatePageTitle(sectionTitle, this.userTripService.currentAppStage);
 
     this.tripInfoService.stageChanged.subscribe(newStage => {
       const queryParams = new URLSearchParams(this.routeQueryParams);
@@ -29,6 +32,8 @@ export class TripInfoComponent implements OnInit {
       } else {
         queryParams.set('stage', newStage);
       }
+
+      this.appService.updatePageTitle(sectionTitle, this.userTripService.currentAppStage);
 
       this.updateRouteQueryParams(queryParams);
     });
@@ -44,6 +49,6 @@ export class TripInfoComponent implements OnInit {
   }
 
   public onActiveTabClick(): void {
-    window.location.href = 'trip';
+    OJPHelpers.resetTabNavigation('trip');
   }
 }
