@@ -4,6 +4,11 @@ OJP-Demo URL: https://opentdatach.github.io/ojp-demo-app/
 
 ----
 
+02.June 2026
+- Updates stage display - [PR #384](https://github.com/openTdataCH/ojp-demo-app-src/pull/384)
+  - display stage in the app header / title when needed (i.e. not default OJP2.0 V2-PROD)
+  - removes `LA Beta` OJP 1.0 stage
+
 29.May 2026
 - Updates TripInfo Detail Page - [PR #383](https://github.com/openTdataCH/ojp-demo-app-src/pull/383)
   - display service attributes + occupancy in the TripInfo detail view - [Display Attribute + Occupancy in TripInfoRequest tab #382](https://github.com/openTdataCH/ojp-demo-app-src/issues/382)
