@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Title } from '@angular/platform-browser';
 
-import { DEBUG_LEVEL, OJP_VERSION } from '../../config/constants';
+import { APP_STAGE, DEBUG_LEVEL, DEFAULT_APP_STAGE, OJP_VERSION } from '../../config/constants';
 
 @Injectable({
   providedIn: 'root',
@@ -53,5 +53,30 @@ export class AppService {
 
   getTitle(): string {
     return this.title.getTitle();
+  }
+
+  private computeHeaderTitle(stage: APP_STAGE): string {
+    const titleParts: string[] = [
+      'OJP Demo',
+    ];
+
+    const isOJPv2 = OJP_VERSION === '2.0';
+    if (isOJPv2) {
+      if (stage !== DEFAULT_APP_STAGE) {
+        titleParts.push(stage);
+      }
+    } else {
+      // example: OJP Demo - OJP 1.0
+      const titlePartsV1 = ['OJP ' + OJP_VERSION];
+      if (stage !== DEFAULT_APP_STAGE) {
+        // example: OJP Demo - OJP 1.0 (INT)
+        titlePartsV1.push(' (' + stage + ')');
+      }
+      titleParts.push(titlePartsV1.join(''));
+    }
+
+    const titleS = titleParts.join(' - ');
+
+    return titleS;
   }
 }
