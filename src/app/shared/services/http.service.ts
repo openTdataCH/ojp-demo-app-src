@@ -16,7 +16,7 @@ export class HTTP_Service {
   constructor(private http: HttpClient) {}
 
   public async createIssue(issueBody: CreateIssueBody): Promise<CreateIssueResponse> {
-    const url = 'https://tools.odpch.ch/github-proxy/ojp_sdk_issue';
+    const url = 'https://tools.opentransportdata.swiss/github-proxy/ojp_sdk_issue';
 
     const params = new HttpParams()
       .set('rand', Date.now().toString());

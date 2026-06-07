@@ -4,6 +4,10 @@ OJP-Demo URL: https://opentdatach.github.io/ojp-demo-app/
 
 ----
 
+07.June 2026
+- Updates report issue URL - [PR #385](https://github.com/openTdataCH/ojp-demo-app-src/pull/385)
+  - use new host for the report issue URL
+
 02.June 2026
 - Updates stage display - [PR #384](https://github.com/openTdataCH/ojp-demo-app-src/pull/384)
   - display stage in the app header / title when needed (i.e. not default OJP2.0 V2-PROD)
