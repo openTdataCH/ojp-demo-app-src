@@ -24,10 +24,10 @@
     "bootstrap-icons": "1.9.1",
     "mapbox-gl": "^2.3.0",
     "npm": "^9.4.2",
+    "ojp-sdk": "0.9.14",
     "rxjs": "~7.5.0",
     "tslib": "^2.3.0",
-    "zone.js": "~0.11.4",
-    "ojp-sdk": "0.9.14"
+    "zone.js": "~0.11.4"
   },
   "devDependencies": {
     "@angular-devkit/build-angular": "^14.0.6",
@@ -35,6 +35,7 @@
     "@angular/compiler-cli": "^14.0.0",
     "@types/jasmine": "~4.0.0",
     "@types/mapbox-gl": "^2.1.2",
+    "@types/node": "^16.18.126",
     "@types/xmldom": "^0.1.30",
     "angular-cli-ghpages": "1.0.3",
     "jasmine-core": "~4.1.0",
