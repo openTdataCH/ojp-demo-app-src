@@ -34,7 +34,7 @@ const app_stages: OJP.StageConfig[] = [
   },
   {
     key: 'GR TEST',
-    apiEndpoint: 'https://tools.odpch.ch/ojp-gr-api',
+    apiEndpoint: 'https://tools.opentransportdata.swiss/ojp-gr-api',
     authBearerKey: 'test',
   },
 ]
