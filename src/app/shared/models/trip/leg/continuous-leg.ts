@@ -162,8 +162,12 @@ export class ContinuousLeg extends Leg {
 
   public override asLegacyOJP_Schema(): OJP_Types.OJPv1_TripLegSchema {
     const serviceIndividuaMode: string = (() => {
-      if (this,this.service.personalMode === 'car') {
+      if (this.service.personalMode === 'car') {
         return 'self-drive-car';
+      }
+
+      if (this.service.personalMode === 'foot') {
+        return 'walk';
       }
 
       return 'n/a';

@@ -158,9 +158,13 @@ export class ResultTripLegComponent implements OnInit {
         titleParts.push('Remain in vehicle');
       }
 
+      if (transferLeg.transferType === 'guaranteedConnection') {
+        titleParts.push('Guaranteed Connection');
+      }
+
       const leadingTextTitle: string = (() => {
         if (titleParts.length === 0) {
-          return 'Transfer (transferType not handled)';
+          return 'Transfer (' + transferLeg.transferType +  ' not handled)';
         } else {
           return titleParts.join('');
         }
