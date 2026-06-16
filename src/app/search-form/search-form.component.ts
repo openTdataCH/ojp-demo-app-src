@@ -460,6 +460,8 @@ export class SearchFormComponent implements OnInit {
     
     this.userTripService.updateTrips(trips);
     this.updateSearchForm(trips);
+
+    this.userTripService.fetchFares(this.languageService.language);
   }
 
   private updateSearchForm(trips: Trip[]) {
