@@ -95,7 +95,42 @@ export class JourneyService implements OJP_Types.DatedJourneySchema  {
       text: ''
     };
 
-    const service = new JourneyService(schema.operatingDayRef, schema.journeyRef, schema.lineRef, schema.mode, publishedServiceName, attributesV2, originText);
+    const railSubmode: OJP_Types.RailSubmodeEnum | undefined = (() => {
+      if (schema.mode.railSubmode === 'highSpeedRailService') {
+        return 'highSpeedRail';
+      }
+
+      if (schema.mode.railSubmode === 'interRegionalRailService') {
+        return 'interregionalRail';
+      }
+
+      if (schema.mode.railSubmode === 'carTransportRailService') {
+        return 'vehicleTunnelTransportRailService';
+      }
+
+      if (schema.mode.railSubmode === 'railShuttle') {
+        return 'railShuttle';
+      }
+
+      return undefined;
+    })();
+
+    const journeyMode: OJP_Types.ModeStructureSchema = {
+      ptMode: schema.mode.ptMode,
+      airSubmode: schema.mode.airSubmode,
+      busSubmode: schema.mode.busSubmode,
+      coachSubmode: schema.mode.coachSubmode,
+      funicularSubmode: schema.mode.funicularSubmode,
+      metroSubmode: schema.mode.metroSubmode,
+      tramSubmode: schema.mode.tramSubmode,
+      telecabinSubmode: schema.mode.telecabinSubmode,
+      railSubmode: railSubmode,
+      waterSubmode: schema.mode.waterSubmode,
+      name: schema.mode.name,
+      shortName: schema.mode.shortName,
+    };
+
+    const service = new JourneyService(schema.operatingDayRef, schema.journeyRef, schema.lineRef, journeyMode, publishedServiceName, attributesV2, originText);
 
     service.conventionalModeOfOperation = schema.conventionalModeOfOperation;
     service.publicCode = schema.publicCode;
@@ -348,6 +383,51 @@ export class JourneyService implements OJP_Types.DatedJourneySchema  {
   }
 
   public asLegacyOJP_Schema(): OJP_Types.OJPv1_DatedJourneySchema {
+    // https://laidig.github.io/siri-20-java/doc/schemas/siri_modes-v1_1_xsd/elements/RailSubmode.html
+    const ojpV1_RailSubmode: OJP_Types.OJPv1_RailSubmodeEnum | undefined = (() => {
+      if (this.mode.railSubmode === 'highSpeedRail') {
+        return 'highSpeedRailService';
+      }
+
+      if (this.mode.railSubmode === 'interregionalRail') {
+        return 'interRegionalRailService';
+      }
+
+      if (this.mode.railSubmode === 'railShuttle') {
+        return 'railShuttle';
+      }
+
+      if (this.mode.railSubmode === 'vehicleTunnelTransportRailService') {
+        return 'carTransportRailService';
+      }
+
+      return undefined;
+    })();
+
+    // https://laidig.github.io/siri-20-java/doc/schemas/siri_modes-v1_1_xsd/elements/BusSubmode.html
+    const ojpV1_BusSubmode: string | undefined = (() => {
+      if (this.mode.busSubmode === 'localBus') {
+        return 'localBusService';
+      }
+
+      return undefined;
+    })();
+
+    const journeyMode: OJP_Types.OJPv1_ModeStructureSchema = {
+      ptMode: this.mode.ptMode,
+      airSubmode: this.mode.airSubmode,
+      busSubmode: ojpV1_BusSubmode,
+      coachSubmode: this.mode.coachSubmode,
+      funicularSubmode: this.mode.funicularSubmode,
+      metroSubmode: this.mode.metroSubmode,
+      tramSubmode: this.mode.tramSubmode,
+      telecabinSubmode: this.mode.telecabinSubmode,
+      railSubmode: ojpV1_RailSubmode,
+      waterSubmode: this.mode.waterSubmode,
+      name: this.mode.name,
+      shortName: this.mode.shortName,
+    };
+
     const service: OJP_Types.OJPv1_DatedJourneySchema = {
       conventionalModeOfOperation: this.conventionalModeOfOperation,
       operatingDayRef: this.operatingDayRef,
@@ -355,7 +435,7 @@ export class JourneyService implements OJP_Types.DatedJourneySchema  {
       publicCode: this.publicCode,
       lineRef: this.lineRef,
       directionRef: this.directionRef,
-      mode: this.mode,
+      mode: journeyMode,
       productCategory: this.productCategory,
       publishedLineName: this.publishedServiceName,
       trainNumber: this.trainNumber,

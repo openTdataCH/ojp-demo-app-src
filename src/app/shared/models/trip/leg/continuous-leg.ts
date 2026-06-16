@@ -166,6 +166,10 @@ export class ContinuousLeg extends Leg {
         return 'self-drive-car';
       }
 
+      if (this.service.personalMode === 'foot') {
+        return 'walk';
+      }
+
       return 'n/a';
     })(); 
 
