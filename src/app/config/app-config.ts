@@ -55,7 +55,7 @@ export const APP_CONFIG: AppConfig = {
     
     // OJP Fare
     'NOVA-INT': {
-      url: 'https://api.opentransportdata.swiss/ojpfare',
+      url: 'https://api.opentransportdata.swiss/ojpfare?ref=[REQUESTOR_REF]',
       authToken: "PLACEHOLDER_REPLACE__FARE_INT",
     },
 

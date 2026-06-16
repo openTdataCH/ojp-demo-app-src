@@ -957,6 +957,8 @@ export class UserTripService {
       return EMPTY_HTTPConfig;
     }
 
+    stageConfig.url = stageConfig.url.replace('[REQUESTOR_REF]', REQUESTOR_REF);
+
     return stageConfig;
   }
 
