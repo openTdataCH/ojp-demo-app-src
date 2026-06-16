@@ -164,7 +164,7 @@ export class ResultTripLegComponent implements OnInit {
 
       const leadingTextTitle: string = (() => {
         if (titleParts.length === 0) {
-          return 'Transfer (transferType not handled)';
+          return 'Transfer (' + transferLeg.transferType +  ' not handled)';
         } else {
           return titleParts.join('');
         }
