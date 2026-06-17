@@ -66,7 +66,7 @@ export const APP_STAGEs: APP_STAGE[] = (() => {
   return stages;
 })();
 
-export const REQUESTOR_REF = 'OJP_DemoApp_Beta_OJP' + OJP_VERSION;
+export const REQUESTOR_REF = 'OJP_DemoApp_OJP' + OJP_VERSION;
 
 export interface AppMapLayerOptions {
   LIR_Restriction_Type: OJP_Types.PlaceTypeEnum

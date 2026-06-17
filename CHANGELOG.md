@@ -4,6 +4,11 @@ OJP-Demo URL: https://opentdatach.github.io/ojp-demo-app/
 
 ----
 
+17.June 2026
+- Updates TR defaults - [PR #387](https://github.com/openTdataCH/ojp-demo-app-src/pull/387)
+  - use sloids for endpoints
+  - remove BETA from `REQUESTOR_REF`
+
 16.June 2026
 - Updates TR OJP 1.0 - [PR #386](https://github.com/openTdataCH/ojp-demo-app-src/pull/386)
   - correct convert `RailSubmodeEnum` / `BusSubmode`, continousLeg service from OJP 2.0 to 1.0
