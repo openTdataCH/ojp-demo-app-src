@@ -139,12 +139,12 @@ export class UserTripService {
     this.updateAppStage(appStage);
 
     const defaultLocationsPlaceRef = {
-      "Bern": "8507000",
+      "Bern": "ch:1:sloid:7000",
       "Geneva": "8501008",
       "Gurten": "8507099",
       "St. Gallen": "8506302",
       "Uetliberg": "8503057",
-      "Zurich": "8503000",
+      "Zurich": "ch:1:sloid:3000",
       "_DemandLegFrom": "46.674360,6.460966",
       "_DemandLegTo": "46.310963,7.977509",
     }
