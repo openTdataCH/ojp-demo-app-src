@@ -429,10 +429,6 @@ export class OJPHelpers {
         return defaultIcon;
       })();
 
-      if (icon === null) {
-        return;
-      }
-
       const rowData: ServiceAttributeRenderModel = {
         icon: icon,
         caption: serviceAttribute.userText.text,
