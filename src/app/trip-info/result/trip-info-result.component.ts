@@ -1,4 +1,7 @@
 import { AfterViewInit, ChangeDetectorRef, Component, OnInit } from '@angular/core';
+import { DomSanitizer } from '@angular/platform-browser';
+
+import { SbbIconRegistry } from '@sbb-esta/angular/icon';
 
 import * as OJP from 'ojp-sdk';
 
@@ -39,12 +42,20 @@ interface PageModel {
 export class TripInfoResultComponent implements OnInit, AfterViewInit {
   public model: PageModel;
 
-  constructor(private tripInfoService: TripInfoService, private userTripService: UserTripService, private cdr: ChangeDetectorRef) {
+  constructor(
+    private tripInfoService: TripInfoService, 
+    private userTripService: UserTripService, 
+    private cdr: ChangeDetectorRef, 
+    private iconRegistry: SbbIconRegistry, 
+    private sanitizer: DomSanitizer
+  ) {
     this.model = <PageModel>{}
     
     this.model.tripInfoResult = null;
     this.model.stopPointsData = [];
     this.model.serviceAttributes = [];
+
+    OJPHelpers.registerIconResolver(iconRegistry, sanitizer);
   }
 
   ngOnInit(): void {
