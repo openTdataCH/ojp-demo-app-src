@@ -4,6 +4,10 @@ OJP-Demo URL: https://opentdatach.github.io/ojp-demo-app/
 
 ----
 
+29.June 2026
+- Improve Service Attributes icons - [PR #388](https://github.com/openTdataCH/ojp-demo-app-src/pull/388)
+  - adds SBB Angular custom icon resolver to use latest icons from http://icons.app.sbb.ch/
+
 17.June 2026
 - Updates TR defaults - [PR #387](https://github.com/openTdataCH/ojp-demo-app-src/pull/387)
   - use sloids for endpoints
