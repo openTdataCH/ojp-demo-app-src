@@ -416,7 +416,7 @@ export class OJPHelpers {
           return defaultIcon;
         }
 
-        if (['A__GF', 'A__HL', 'A__BU'].includes(key)) {
+        if (['A__GF'].includes(key)) {
           return 'kom:circle-information-large';
         }
 
