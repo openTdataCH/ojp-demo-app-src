@@ -17,6 +17,7 @@ import { Trip } from '../shared/models/trip/trip';
 import { TimedLeg } from '../shared/models/trip/leg/timed-leg';
 import { AnyLeg } from '../shared/models/trip/leg-builder';
 import { ContinuousLeg } from '../shared/models/trip/leg/continuous-leg';
+import { SbbIconRegistry } from '@sbb-esta/angular/icon';
 
 export type ServiceAttributeRenderModel = {
   icon: string,
@@ -388,6 +389,21 @@ export class OJPHelpers {
     return new Promise((resolve) => setTimeout(resolve, ms));
   }
 
+  public static registerIconResolver(iconRegistry: SbbIconRegistry, sanitizer: DomSanitizer) {
+    iconRegistry.addSvgIconResolver((name, namespace) => {
+      // Current esta-SBB angular app (v14) is using a different URL for icons
+      // -> use the latest one instead
+      if (namespace === 'fpl') {
+        const iconURL = 'https://icons.app.sbb.ch/icons/' + name + '.svg'
+        const sanitizedIconURL = sanitizer.bypassSecurityTrustResourceUrl(iconURL);
+        return sanitizedIconURL;
+      }
+
+      // Allow next icon resolver should try to resolve the icon.
+      return null;
+    });
+  }
+
   public static computeServiceAttributeModel(service: JourneyService): ServiceAttributeRenderModel[] {
     const rows: ServiceAttributeRenderModel[] = [];
 
@@ -400,7 +416,7 @@ export class OJPHelpers {
           return defaultIcon;
         }
 
-        if (['A__GF', 'A__HL', 'A__BU'].includes(key)) {
+        if (['A__GF'].includes(key)) {
           return 'kom:circle-information-large';
         }
 
@@ -412,10 +428,6 @@ export class OJPHelpers {
 
         return defaultIcon;
       })();
-
-      if (icon === null) {
-        return;
-      }
 
       const rowData: ServiceAttributeRenderModel = {
         icon: icon,

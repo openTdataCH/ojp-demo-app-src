@@ -1,9 +1,11 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { Router } from '@angular/router';
+import { DomSanitizer } from '@angular/platform-browser';
 
 import mapboxgl from 'mapbox-gl';
 
 import { SbbDialog } from "@sbb-esta/angular/dialog";
+import { SbbIconRegistry } from '@sbb-esta/angular/icon';
 
 import * as OJP_Types from 'ojp-shared-types';
 import * as OJP from 'ojp-sdk';
@@ -114,13 +116,17 @@ export class ResultTripLegComponent implements OnInit {
     private mapService: MapService, 
     private router: Router, 
     private popover: SbbDialog, 
-    private userTripService: UserTripService
+    private userTripService: UserTripService,
+    private iconRegistry: SbbIconRegistry, 
+    private sanitizer: DomSanitizer
   ) {
     this.legInfoDataModel = <LegInfoDataModel>{};
     this.isEmbed = this.router.url.indexOf('/embed/') !== -1;
 
     const isOJPv2 = OJP_VERSION === '2.0';
     this.enableTRR = isOJPv2;
+
+    OJPHelpers.registerIconResolver(iconRegistry, sanitizer);
   }
 
   async ngOnInit() {
