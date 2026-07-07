@@ -698,7 +698,11 @@ export class UserTripService {
 
     const dateF = OJP.DateHelpers.formatDate(this.departureDate);
 
-    // TU linked urls need stop places from from/to, try to get from the current rendered OJP trips
+    // TU linked urls need stop places from from/to
+    // => build an array of stop places in this order
+    //  - fromTripPlace if 'stop'
+    //  - take all trip legs endpoints that are 'stop'
+    //  - toTripPlace if 'stop'
     const currentTripStopPlaces: StopPlace[] = (() => {
       const stopPlaces: StopPlace[] = [];
 
@@ -707,8 +711,9 @@ export class UserTripService {
         stopPlaces.push(this.fromTripPlace.place as StopPlace);
       }
 
-      for (const trip of this.currentTrips) {
-        trip.legs.forEach(leg => {
+      if (this.currentTrips.length > 0) {
+        const firstTrip = this.currentTrips[0];
+        firstTrip.legs.forEach(leg => {
           if ((leg.fromPlace !== null) && (leg.fromPlace.type === 'stop')) {
             const stopPlace = leg.fromPlace as StopPlace;
             stopPlaces.push(stopPlace);
