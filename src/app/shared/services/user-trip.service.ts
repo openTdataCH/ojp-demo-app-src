@@ -835,6 +835,14 @@ export class UserTripService {
           params.set(queryParamPrefix + 'lon', endpointPlace.geoPosition.longitude.toString());
           params.set(queryParamPrefix + 'name', endpointPlace.computeName());
         }
+
+        if (endpointPlace.type === 'location') {
+          const locationPlace = endpointPlace as PlaceLocation;
+          const queryParamPrefix = endpointType.toLowerCase();
+          params.set(queryParamPrefix + 'lat', locationPlace.geoPosition.latitude.toString());
+          params.set(queryParamPrefix + 'lon', locationPlace.geoPosition.longitude.toString());
+          params.set(queryParamPrefix + 'name', locationPlace.computeName());
+        }
       });
 
       if ((params.get('fromlat') === null) || (params.get('tolat') === null)) {
