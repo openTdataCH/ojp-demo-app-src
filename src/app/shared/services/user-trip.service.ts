@@ -723,11 +723,6 @@ export class UserTripService {
             stopPlaces.push(stopPlace);
           }
         });
-
-        // stop at the first trip with 2+ stop places
-        if (stopPlaces.length >= 2) {
-          break;
-        }
       }
 
       if (this.toTripPlace?.place.type === 'stop') {
