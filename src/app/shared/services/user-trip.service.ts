@@ -698,7 +698,11 @@ export class UserTripService {
 
     const dateF = OJP.DateHelpers.formatDate(this.departureDate);
 
-    // TU linked urls need stop places from from/to, try to get from the current rendered OJP trips
+    // TU linked urls need stop places from from/to
+    // => build an array of stop places in this order
+    //  - fromTripPlace if 'stop'
+    //  - take all trip legs endpoints that are 'stop'
+    //  - toTripPlace if 'stop'
     const currentTripStopPlaces: StopPlace[] = (() => {
       const stopPlaces: StopPlace[] = [];
 
@@ -707,8 +711,9 @@ export class UserTripService {
         stopPlaces.push(this.fromTripPlace.place as StopPlace);
       }
 
-      for (const trip of this.currentTrips) {
-        trip.legs.forEach(leg => {
+      if (this.currentTrips.length > 0) {
+        const firstTrip = this.currentTrips[0];
+        firstTrip.legs.forEach(leg => {
           if ((leg.fromPlace !== null) && (leg.fromPlace.type === 'stop')) {
             const stopPlace = leg.fromPlace as StopPlace;
             stopPlaces.push(stopPlace);
@@ -718,11 +723,6 @@ export class UserTripService {
             stopPlaces.push(stopPlace);
           }
         });
-
-        // stop at the first trip with 2+ stop places
-        if (stopPlaces.length >= 2) {
-          break;
-        }
       }
 
       if (this.toTripPlace?.place.type === 'stop') {
@@ -817,34 +817,35 @@ export class UserTripService {
         time: queryTime,
       });
 
-      if (currentTripStopPlaces.length >= 2) {
-        const endpointTypes: JourneyPointType[] = ['From', 'To'];
-        endpointTypes.forEach(endpointType => {
-          const isFrom = endpointType === 'From';
-          const stopPlace = isFrom ? currentTripStopPlaces[0] : currentTripStopPlaces[currentTripStopPlaces.length - 1];
+      const endpointTypes: JourneyPointType[] = ['From', 'To'];
+      endpointTypes.forEach(endpointType => {
+        const isFrom = endpointType === 'From';
+        const endpointPlace = isFrom ? this.fromTripPlace?.place : this.toTripPlace?.place;
+        if (endpointPlace === undefined) {
+          return;
+        }
+
+        if (endpointPlace.type === 'stop') {
+          const stopPlace = endpointPlace as StopPlace;
+          const zvvId = DataHelpers.generateZVV_Id(stopPlace);
           
-          const stopPlaceRef = DataHelpers.convertStopPointToStopPlace(stopPlace.placeRef.ref);
-
-          // A=1@O=Gurten Kulm@X=7439751@Y=46919610@U=90@L=8507099@p=1773077090@
-          const idParts: string[] = [
-            'A=1',
-            'O=' + stopPlace.computeName(),
-            'X=' + stopPlace.geoPosition.longitude.toString().replace('.', ''),
-            'Y=' + stopPlace.geoPosition.latitude.toString().replace('.', ''),
-            'L=' + stopPlaceRef,
-            'p=1773077090',
-            ''
-          ];
-
           const queryParamPrefix = endpointType.toLowerCase();
-          params.set(queryParamPrefix + 'id', idParts.join('@'));
-          params.set(queryParamPrefix + 'lat', stopPlace.geoPosition.latitude.toString());
-          params.set(queryParamPrefix + 'lon', stopPlace.geoPosition.longitude.toString());
-          params.set(queryParamPrefix + 'name', stopPlace.computeName());
-        });
-      }
+          params.set(queryParamPrefix + 'id', zvvId);
+          params.set(queryParamPrefix + 'lat', endpointPlace.geoPosition.latitude.toString());
+          params.set(queryParamPrefix + 'lon', endpointPlace.geoPosition.longitude.toString());
+          params.set(queryParamPrefix + 'name', endpointPlace.computeName());
+        }
 
-      if ((params.get('fromid') === null) || (params.get('toid') === null)) {
+        if (endpointPlace.type === 'location') {
+          const locationPlace = endpointPlace as PlaceLocation;
+          const queryParamPrefix = endpointType.toLowerCase();
+          params.set(queryParamPrefix + 'lat', locationPlace.geoPosition.latitude.toString());
+          params.set(queryParamPrefix + 'lon', locationPlace.geoPosition.longitude.toString());
+          params.set(queryParamPrefix + 'name', locationPlace.computeName());
+        }
+      });
+
+      if ((params.get('fromlat') === null) || (params.get('tolat') === null)) {
         return null;
       }
 

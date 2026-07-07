@@ -152,6 +152,13 @@
         <div>|</div>
       </ng-container>
 
+      <ng-container *ngIf="this.zvvURL !== null">
+        <div>
+          <a href="{{ this.zvvURL }}" target="_blank">ZVV</a>
+        </div>
+        <div>|</div>
+      </ng-container>
+
       <ng-container *ngIf="this.stopPlace !== null">
         <div>
           <a href="{{ this.otherVersionURL }}" target="_blank">{{ this.userTripService.otherVersionURLText }}</a>

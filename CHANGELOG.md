@@ -4,6 +4,11 @@ OJP-Demo URL: https://opentdatach.github.io/ojp-demo-app/
 
 ----
 
+7.July 2026
+- Extend linked URLs - [PR #389](https://github.com/openTdataCH/ojp-demo-app-src/pull/389)
+  - adds support to call ZVV url with plain coordinates
+  - adds ZVV equivalent URL to station board
+
 29.June 2026
 - Improve Service Attributes icons - [PR #388](https://github.com/openTdataCH/ojp-demo-app-src/pull/388)
   - adds SBB Angular custom icon resolver to use latest icons from http://icons.app.sbb.ch/

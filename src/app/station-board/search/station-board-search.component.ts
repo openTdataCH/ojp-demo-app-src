@@ -30,6 +30,7 @@ import { AnyStopEventRequestResponse } from '../../shared/types/_all';
 import { JourneyService } from '../../shared/models/journey-service';
 import { AnyPlace, PlaceBuilder } from '../../shared/models/place/place-builder';
 import { GeoPositionBBOX } from '../../shared/models/geo/geoposition-bbox';
+import { DataHelpers } from '../../helpers/data-helpers';
 
 @Component({
   selector: 'station-board-search',
@@ -53,6 +54,7 @@ export class StationBoardSearchComponent implements OnInit {
 
   public permalinkRelativeURL: string;
   public otherVersionURL: string | null;
+  public zvvURL: string | null;
 
   public currentRequestInfo: OJP.RequestInfo | null;
 
@@ -108,6 +110,7 @@ export class StationBoardSearchComponent implements OnInit {
 
     this.permalinkRelativeURL = '';
     this.otherVersionURL = null;
+    this.zvvURL = null;
 
     this.currentRequestInfo = null;
 
@@ -365,6 +368,30 @@ export class StationBoardSearchComponent implements OnInit {
     }
 
     this.otherVersionURL = 'board?' + otherVersionQueryParams.toString();
+
+    this.zvvURL = (() => {
+      if (this.stopPlace === null) {
+        return null;
+      }
+
+      const zvvId = DataHelpers.generateZVV_Id(this.stopPlace);
+
+      const dateF = OJP.DateHelpers.formatDate(this.stationBoardService.searchDate);
+      const dayF = dateF.substring(0, 10);
+      const queryTime = dateF.substring(11, 16);
+
+      const params = new URLSearchParams({
+        tab: 'departures',
+        date: dayF,
+        time: queryTime,
+        id: zvvId,
+        name: this.stopPlace.computeName(),
+      });
+
+      const url = 'https://www.zvv.ch/en/timetable-and-information/timetable.html?' + params.toString();
+
+      return url;
+    })();
   }
 
   private async fetchStopEventsForStopRef(stopPlaceRef: string) {
