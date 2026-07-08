@@ -4,6 +4,10 @@ OJP-Demo URL: https://opentdatach.github.io/ojp-demo-app/
 
 ----
 
+8.July 2026
+- Patch situations - [PR #390](https://github.com/openTdataCH/ojp-demo-app-src/pull/390)
+  - use temp hack to allow parsing of the new SIRI-SX situations
+
 7.July 2026
 - Extend linked URLs - [PR #389](https://github.com/openTdataCH/ojp-demo-app-src/pull/389)
   - adds support to call ZVV url with plain coordinates
