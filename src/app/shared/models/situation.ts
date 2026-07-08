@@ -96,6 +96,10 @@ export class SituationContent {
   private static computeSafeItems(sanitizer: DomSanitizer, items: string[]) {
     const safeItems = items.map(detailS => {
       // HACK: always open in a new tab/window
+      if (Array.isArray(detailS)) {
+        // HACK - wait until correct model is rolled
+        detailS = detailS[0];
+      }
       detailS = detailS.replace('<a href', '<a target="_blank" href');
 
       const textarea = document.createElement('textarea');
