@@ -466,6 +466,7 @@ export class JourneyService implements OJP_Types.DatedJourneySchema  {
     return service;
   }
 
+  // TODO - make SituationContent[] a member of JourneyService
   public parseSituationsContent(mapSituations: Record<string, SituationContent[]>): SituationContent[] {
     let situationsContent: SituationContent[] = [];
 
