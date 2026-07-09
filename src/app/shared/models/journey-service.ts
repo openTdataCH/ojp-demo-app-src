@@ -1,6 +1,16 @@
 import * as OJP_Types from 'ojp-shared-types';
 
 import { TripLegLineType } from '../types/map-geometry-types';
+import { SituationContent } from './situation';
+
+interface ServiceSituationFullRef {
+  participantRef: string;
+  situationNumber: string;
+}
+
+interface ServiceSituationFullRefs {
+  situationFullRef: ServiceSituationFullRef[];
+}
 
 export class JourneyService implements OJP_Types.DatedJourneySchema  {
   public conventionalModeOfOperation?: string;
@@ -22,12 +32,7 @@ export class JourneyService implements OJP_Types.DatedJourneySchema  {
   public cancelled?: boolean;
   public deviation?: boolean;
 
-  public situationFullRefs?: {
-    situationFullRef: {
-      participantRef: string;
-      situationNumber: string;
-    }[]
-  }
+  public situationFullRefs?: ServiceSituationFullRefs;
   
   private constructor(operatingDayRef: string, journeyRef: string, lineRef: string, mode: OJP_Types.ModeStructureSchema, publishedServiceName: OJP_Types.InternationalTextSchema, attribute: OJP_Types.GeneralAttributeSchema[], originText: OJP_Types.InternationalTextSchema) {
     this.conventionalModeOfOperation = undefined;
@@ -459,5 +464,18 @@ export class JourneyService implements OJP_Types.DatedJourneySchema  {
     });
 
     return service;
+  }
+
+  // TODO - make SituationContent[] a member of JourneyService
+  public parseSituationsContent(mapSituations: Record<string, SituationContent[]>): SituationContent[] {
+    let situationsContent: SituationContent[] = [];
+
+    this.situationFullRefs?.situationFullRef.forEach(item => {
+      if (item.situationNumber in mapSituations) {
+        situationsContent = situationsContent.concat(mapSituations[item.situationNumber]);
+      }
+    });
+
+    return situationsContent;
   }
 }

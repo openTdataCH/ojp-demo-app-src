@@ -13,6 +13,7 @@ import { DEFAULT_APP_STAGE } from '../../config/constants';
 import { TripInfoResult } from '../../shared/models/trip-info-result';
 import { JourneyService } from '../../shared/models/journey-service';
 import { StopPointHelpers } from '../../shared/models/stop-point-call';
+import { SituationContent } from '../../shared/models/situation';
 
 interface PageModel {
   tripInfoResult: TripInfoResult | null
@@ -32,6 +33,8 @@ interface PageModel {
   trainFormationURL: string | null,
 
   serviceAttributes: ServiceAttributeRenderModel[],
+
+  situations: SituationContent[],
 }
 
 @Component({
@@ -124,6 +127,8 @@ export class TripInfoResultComponent implements OnInit, AfterViewInit {
     this.model.serviceAttributes = OJPHelpers.computeServiceAttributeModel(service);
 
     this.model.trainFormationURL = service.computeFormationServiceURL();
+
+    this.model.situations = tripInfoResult.situations;
   }
 
   public onLocationSelected(locationData: LegStopPointData) {

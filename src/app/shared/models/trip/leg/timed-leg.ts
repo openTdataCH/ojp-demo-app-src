@@ -53,13 +53,7 @@ export class TimedLeg extends Leg {
     });
 
     const service = JourneyService.initWithDatedJourneySchema(timedLegSchema.service);
-
-    let situationsContent: SituationContent[] = [];
-    service.situationFullRefs?.situationFullRef.forEach(item => {
-      if (item.situationNumber in mapSituations) {
-        situationsContent = situationsContent.concat(mapSituations[item.situationNumber]);
-      }
-    });
+    const situationsContent = service.parseSituationsContent(mapSituations);
 
     const distance = DistanceHelpers.initWithLegSchema(legSchema);
 

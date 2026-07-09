@@ -1,27 +1,31 @@
+import { DomSanitizer } from '@angular/platform-browser';
+
 import * as OJP_Types from 'ojp-shared-types';
 import * as OJP from 'ojp-sdk';
 
 import { OJP_VERSION } from '../../config/constants';
 
-import { AnyTripInfoRequestResponse, StopEventType } from '../types/_all';
+import { AnyTripInfoRequestResponse } from '../types/_all';
 import { OJPHelpers } from '../../helpers/ojp-helpers';
 import { JourneyService } from './journey-service';
 import { StopPointCall } from './stop-point-call';
-
-const stopEventTypes: StopEventType[] = ['arrival', 'departure'];
+import { SituationContent } from './situation';
 
 export class TripInfoResult {
   public calls: StopPointCall[];
   public service: JourneyService;
   public trackSectionsGeoPositions: OJP.GeoPosition[][];
 
+  public situations: SituationContent[];
+
   private constructor(calls: StopPointCall[], service: JourneyService) {
     this.calls = calls;
     this.service = service;
     this.trackSectionsGeoPositions = [];
+    this.situations = [];
   }
 
-  public static initWithTripInfoResponse(ojpVersion: OJP.OJP_VERSION, response: AnyTripInfoRequestResponse | null): TripInfoResult | null {
+  public static initWithTripInfoResponse(sanitizer: DomSanitizer, ojpVersion: OJP.OJP_VERSION, response: AnyTripInfoRequestResponse | null): TripInfoResult | null {
     if (response === null || !response.ok) {
       return null;
     }
@@ -48,6 +52,7 @@ export class TripInfoResult {
     }
 
     const mapPlaces = OJPHelpers.parseAnyPlaceContext(ojpVersion, response.value.tripInfoResponseContext);
+    const mapSituations = OJPHelpers.parseAnySituationsContext(sanitizer, OJP_VERSION, response.value.tripInfoResponseContext);
 
     const calls: StopPointCall[] = [];
     const callsSchema = firstTripInfoResultSchema.previousCall.concat(firstTripInfoResultSchema.onwardCall);
@@ -82,6 +87,7 @@ export class TripInfoResult {
     }
 
     const tripInfoResult = new TripInfoResult(calls, journeyService);
+    tripInfoResult.situations = journeyService.parseSituationsContent(mapSituations);
 
     tripInfoResult.trackSectionsGeoPositions = [];
     const trackSections = firstTripInfoResultSchema.journeyTrack?.trackSection ?? [];

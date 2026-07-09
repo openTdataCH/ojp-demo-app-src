@@ -233,7 +233,7 @@ export class TripInfoSearchComponent implements OnInit {
     this.model.isSearching = true;
     try {
       const response = await request.fetchResponse(ojpSDK);
-      const tripInfoResult = TripInfoResult.initWithTripInfoResponse(OJP_VERSION, response);
+      const tripInfoResult = TripInfoResult.initWithTripInfoResponse(this.sanitizer, OJP_VERSION, response);
       this.parseTripInfo(request.requestInfo, tripInfoResult);
     } catch (err: any) {
       this.notificationToast.open('Response XML Error', {
@@ -248,7 +248,7 @@ export class TripInfoSearchComponent implements OnInit {
   }
 
   private async fetchTripInfoRequestFromMocks() {
-    const mockURL = 'http://localhost:8080/Work/sbb/ojp-opendata/projects/ojp/openTdataCH--ojp-demo-app-src/_mocks/v2/tir/tir_attributes_occupancy.xml';
+    const mockURL = 'http://localhost/path/to/mock';
 
     const mockText = await (await fetch(mockURL)).text();
 
@@ -335,7 +335,7 @@ export class TripInfoSearchComponent implements OnInit {
     
     const response = await request.fetchResponse(ojpSDK);
     if (response.ok) {
-      const tripInfoResult = TripInfoResult.initWithTripInfoResponse(OJP_VERSION, response);
+      const tripInfoResult = TripInfoResult.initWithTripInfoResponse(this.sanitizer, OJP_VERSION, response);
       if (tripInfoResult === null) {
         this.notificationToast.open('Cant Parse TripInfoRequest result:', {
           type: 'error',
@@ -343,6 +343,7 @@ export class TripInfoSearchComponent implements OnInit {
         });
       }
       this.parseTripInfo(request.requestInfo, tripInfoResult);
+      this.searchPanel?.close();
     } else {
       this.notificationToast.open('Invalid TripInfoRequest result: ' + response.error.message, {
         type: 'error',

@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { DomSanitizer } from '@angular/platform-browser';
 
 import { OJP_VERSION } from '../../../../config/constants';
 
@@ -20,7 +21,7 @@ interface PageModel {
 export class TripInfoResultPopoverComponent {
   public model: PageModel
 
-  constructor(private userTripService: UserTripService, private tripInfoService: TripInfoService, private languageService: LanguageService) {
+  constructor(private userTripService: UserTripService, private tripInfoService: TripInfoService, private languageService: LanguageService, private sanitizer: DomSanitizer) {
     this.model = <PageModel>{};
 
     this.model.title = 'TripInfoResult';
@@ -40,7 +41,7 @@ export class TripInfoResultPopoverComponent {
     this.model.isFetching = false;
 
     if (response.ok) {
-      const tripInfoResult = TripInfoResult.initWithTripInfoResponse(OJP_VERSION, response);
+      const tripInfoResult = TripInfoResult.initWithTripInfoResponse(this.sanitizer, OJP_VERSION, response);
       this.tripInfoService.tripInfoResultUpdated.emit(tripInfoResult);
     } else {
       console.error('fetchJourneyRef - error');
