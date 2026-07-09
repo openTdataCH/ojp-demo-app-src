@@ -4,6 +4,10 @@ OJP-Demo URL: https://opentdatach.github.io/ojp-demo-app/
 
 ----
 
+9.July 2026
+- Updates TripInfo - [PR #391](https://github.com/openTdataCH/ojp-demo-app-src/pull/391)
+  - shows situations in TripInfo result
+
 8.July 2026
 - Patch situations - [PR #390](https://github.com/openTdataCH/ojp-demo-app-src/pull/390)
   - use temp hack to allow parsing of the new SIRI-SX situations
