@@ -3,12 +3,10 @@ import * as OJP from 'ojp-sdk';
 
 import { OJP_VERSION } from '../../config/constants';
 
-import { AnyTripInfoRequestResponse, StopEventType } from '../types/_all';
+import { AnyTripInfoRequestResponse } from '../types/_all';
 import { OJPHelpers } from '../../helpers/ojp-helpers';
 import { JourneyService } from './journey-service';
 import { StopPointCall } from './stop-point-call';
-
-const stopEventTypes: StopEventType[] = ['arrival', 'departure'];
 
 export class TripInfoResult {
   public calls: StopPointCall[];
