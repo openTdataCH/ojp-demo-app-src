@@ -248,7 +248,7 @@ export class TripInfoSearchComponent implements OnInit {
   }
 
   private async fetchTripInfoRequestFromMocks() {
-    const mockURL = 'http://localhost:8080/Work/sbb/ojp-opendata/projects/ojp/openTdataCH--ojp-demo-app-src/_mocks/v2/tir/tir_attributes_occupancy.xml';
+    const mockURL = 'http://localhost/path/to/mock';
 
     const mockText = await (await fetch(mockURL)).text();
 
