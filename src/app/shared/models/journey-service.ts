@@ -1,6 +1,8 @@
 import * as OJP_Types from 'ojp-shared-types';
 
 import { TripLegLineType } from '../types/map-geometry-types';
+import { SituationContent } from './situation';
+
 interface ServiceSituationFullRef {
   participantRef: string;
   situationNumber: string;
@@ -462,5 +464,17 @@ export class JourneyService implements OJP_Types.DatedJourneySchema  {
     });
 
     return service;
+  }
+
+  public parseSituationsContent(mapSituations: Record<string, SituationContent[]>): SituationContent[] {
+    let situationsContent: SituationContent[] = [];
+
+    this.situationFullRefs?.situationFullRef.forEach(item => {
+      if (item.situationNumber in mapSituations) {
+        situationsContent = situationsContent.concat(mapSituations[item.situationNumber]);
+      }
+    });
+
+    return situationsContent;
   }
 }
