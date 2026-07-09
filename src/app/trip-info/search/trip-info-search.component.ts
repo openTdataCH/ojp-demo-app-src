@@ -343,6 +343,7 @@ export class TripInfoSearchComponent implements OnInit {
         });
       }
       this.parseTripInfo(request.requestInfo, tripInfoResult);
+      this.searchPanel?.close();
     } else {
       this.notificationToast.open('Invalid TripInfoRequest result: ' + response.error.message, {
         type: 'error',
