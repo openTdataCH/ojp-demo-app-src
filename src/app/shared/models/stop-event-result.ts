@@ -48,13 +48,7 @@ export class StopEventResult {
     }
 
     const service = JourneyService.initWithDatedJourneySchema(serviceSchema);
-
-    let situationsContent: SituationContent[] = [];
-    service.situationFullRefs?.situationFullRef.forEach(item => {
-      if (item.situationNumber in mapSituations) {
-        situationsContent = situationsContent.concat(mapSituations[item.situationNumber]);
-      }
-    });
+    const situationsContent = service.parseSituationsContent(mapSituations);
 
     const stopEventResult = new StopEventResult(prevStopCalls, thisStopCall, nextStopCalls, service, situationsContent);
     
