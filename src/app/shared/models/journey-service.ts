@@ -1,6 +1,14 @@
 import * as OJP_Types from 'ojp-shared-types';
 
 import { TripLegLineType } from '../types/map-geometry-types';
+interface ServiceSituationFullRef {
+  participantRef: string;
+  situationNumber: string;
+}
+
+interface ServiceSituationFullRefs {
+  situationFullRef: ServiceSituationFullRef[];
+}
 
 export class JourneyService implements OJP_Types.DatedJourneySchema  {
   public conventionalModeOfOperation?: string;
@@ -22,12 +30,7 @@ export class JourneyService implements OJP_Types.DatedJourneySchema  {
   public cancelled?: boolean;
   public deviation?: boolean;
 
-  public situationFullRefs?: {
-    situationFullRef: {
-      participantRef: string;
-      situationNumber: string;
-    }[]
-  }
+  public situationFullRefs?: ServiceSituationFullRefs;
   
   private constructor(operatingDayRef: string, journeyRef: string, lineRef: string, mode: OJP_Types.ModeStructureSchema, publishedServiceName: OJP_Types.InternationalTextSchema, attribute: OJP_Types.GeneralAttributeSchema[], originText: OJP_Types.InternationalTextSchema) {
     this.conventionalModeOfOperation = undefined;
