@@ -233,7 +233,7 @@ export class TripInfoSearchComponent implements OnInit {
     this.model.isSearching = true;
     try {
       const response = await request.fetchResponse(ojpSDK);
-      const tripInfoResult = TripInfoResult.initWithTripInfoResponse(OJP_VERSION, response);
+      const tripInfoResult = TripInfoResult.initWithTripInfoResponse(this.sanitizer, OJP_VERSION, response);
       this.parseTripInfo(request.requestInfo, tripInfoResult);
     } catch (err: any) {
       this.notificationToast.open('Response XML Error', {
@@ -335,7 +335,7 @@ export class TripInfoSearchComponent implements OnInit {
     
     const response = await request.fetchResponse(ojpSDK);
     if (response.ok) {
-      const tripInfoResult = TripInfoResult.initWithTripInfoResponse(OJP_VERSION, response);
+      const tripInfoResult = TripInfoResult.initWithTripInfoResponse(this.sanitizer, OJP_VERSION, response);
       if (tripInfoResult === null) {
         this.notificationToast.open('Cant Parse TripInfoRequest result:', {
           type: 'error',
