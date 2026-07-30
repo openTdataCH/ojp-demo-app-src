@@ -1,7 +1,7 @@
 <sbb-expansion-panel [hideToggle]="true" class="mb-2">
   <sbb-expansion-panel-header>
     <div class="d-flex justify-content-between w-100 trip-info">
-      <div>
+      <div class="flex-grow-1">
         <div class="trip-info-header d-flex gap-1 align-items-center">
           <div>{{ this.tripHeaderStats.title }}</div>
           <div *ngIf="this.tripHeaderStats.isCancelled === true">
@@ -19,10 +19,13 @@
         </div>
         <div>{{ this.tripHeaderStats.tripDurationS }} - {{ this.tripHeaderStats.tripDistanceS }}</div>
       </div>
-      <div class="trip-info-header">
-        <div>{{ this.tripHeaderStats.tripFromTime }}</div>
-        <div>{{ this.tripHeaderStats.tripToTime }}</div>
+      <div class="d-flex gap-2 align-items-center">
+        <div class="trip-info-header">
+          <div>{{ this.tripHeaderStats.tripFromTime }}</div>
+          <div>{{ this.tripHeaderStats.tripToTime }}</div>
+        </div>
       </div>
+      
     </div>
   </sbb-expansion-panel-header>
   <div>
