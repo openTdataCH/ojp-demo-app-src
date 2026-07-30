@@ -8,7 +8,10 @@ OJP-Demo URL: https://opentdatach.github.io/ojp-demo-app/
 - Improves ShapesProvider - [geOps with SLOID-LegProjection
  #377](https://github.com/openTdataCH/ojp-demo-app-src/issues/377), [PR #393](https://github.com/openTdataCH/ojp-demo-app-src/pull/393)
  - use StopPlace refs (sloids) when available
-- Updates gh-pages deployment
+- Fix shared bicycles count - [PR #395](https://github.com/openTdataCH/ojp-demo-app-src/pull/395)
+  - adds workarounds for handling shared bicycles vehicles count
+  - counts also the number of electric vehicles, uses suffix-based approach to determine that
+  - updates provider handlers for OJP v1.0
 
 9.July 2026
 - Updates TripInfo - [PR #391](https://github.com/openTdataCH/ojp-demo-app-src/pull/391)
