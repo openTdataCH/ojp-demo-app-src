@@ -41,6 +41,16 @@ export class SharedMobilityAppMapLayer extends AppMapLayer {
     }
   }
 
+  private formatVehiclesNo(attr: number, vehicle: SharedMobility) {
+    const suffix = attr === 1 ? '' : 's';
+    let vehicleTypeS = attr + ' ' + vehicle.vehicleType + suffix;
+    if (vehicle.vehicleName !== null) {
+      vehicleTypeS += ' - ' + vehicle.vehicleName;
+    }
+
+    return vehicleTypeS;
+  }
+
   protected override computePopupHTML(places: AnyPlace[]): string | null {
     if (places.length === 0) {
       return null;
@@ -98,13 +108,10 @@ export class SharedMobilityAppMapLayer extends AppMapLayer {
     if (firstVehicle.isFixedStation) {
       const vehicleTypeRows: string[] = [];
       vehicles.forEach(vehicle => {
-        const suffix = vehicle.vehiclesNo === 1 ? '' : 's';
-        let vehicleTypeS = vehicle.vehiclesNo + ' ' + vehicle.vehicleType + suffix;
-        if (vehicle.vehicleName !== null) {
-          vehicleTypeS += ' - ' + vehicle.vehicleName;
+        if (vehicle.vehiclesNo !== null) {
+          const vehicleTypeS = this.formatVehiclesNo(vehicle.vehiclesNo, vehicle);
+          vehicleTypeRows.push('<li>' + vehicleTypeS + '</li>');
         }
-
-        vehicleTypeRows.push('<li>' + vehicleTypeS + '</li>');
       });
 
       tableTRs.push('<tr><td class="align-middle">Vehicles</td><td><ul>' + vehicleTypeRows.join('') + '</ul></td></tr>');
