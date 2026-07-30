@@ -8,6 +8,7 @@ OJP-Demo URL: https://opentdatach.github.io/ojp-demo-app/
 - Improves ShapesProvider - [geOps with SLOID-LegProjection
  #377](https://github.com/openTdataCH/ojp-demo-app-src/issues/377), [PR #393](https://github.com/openTdataCH/ojp-demo-app-src/pull/393)
  - use StopPlace refs (sloids) when available
+- Updates gh-pages deployment
 
 9.July 2026
 - Updates TripInfo - [PR #391](https://github.com/openTdataCH/ojp-demo-app-src/pull/391)
