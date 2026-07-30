@@ -64,18 +64,8 @@
                     <li>
                       <div>via</div>
                       <ul>
-                        <ng-container *ngFor="let viaPart of this.legData?.map?.legShapeResult?.requestData?.viaParts">
-                          <li>
-                            <div class="d-flex">
-                              <div>{{ viaPart.geoPosition.latitude }}</div>
-                              <div>,</div>
-                              <div>{{ viaPart.geoPosition.longitude }}</div>
-                              <ng-container *ngIf="viaPart.platform !== null">
-                                <div>:</div>
-                                <div>{{ viaPart.platform }}</div>
-                              </ng-container>
-                            </div>
-                          </li>
+                        <ng-container *ngFor="let apiViaPart of this.legData?.map?.legShapeResult?.requestData?.apiViaParts">
+                          <li>{{ apiViaPart }}</li>
                         </ng-container>
                       </ul>
                     </li>

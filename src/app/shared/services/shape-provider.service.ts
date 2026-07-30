@@ -21,6 +21,7 @@ type RequestMotType = 'rail' | 'bus' | 'coach' | 'foot' | 'tram' | 'subway' | 'g
 
 interface ViaPart {
   geoPosition: OJP.GeoPosition,
+  stopId: string | null,
   floor: string | null,
   platform: string | null,
 }
@@ -30,6 +31,7 @@ interface RequestData {
   viaParts: ViaPart[],
   url: string,
   demoURL: string,
+  apiViaParts: string[],
 };
 
 export interface LegShapeResult {
@@ -51,34 +53,44 @@ const apiConfig = APP_CONFIG['stages']['SHAPE_PROVIDER'];
 })
 export class ShapeProviderService {
   private cache = new Map<string, Observable<GeoJSON.FeatureCollection>>();
+  private useCache = true;
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) {
+    // this.useCache = false;
+  }
 
   private getLegShape$(leg: AnyLeg): Observable<LegShapeResult> {
     const viaParts = this.computeLegViaParts(leg);
-    
+
     const viaKey = viaParts.map(el => {
-      const key = el.geoPosition.asLatLngString() + '_' + (el.platform ?? '');
-      return key;
+      if (el.stopId) {
+        const stopKey = '!' + el.stopId;
+        return stopKey;
+      }
+
+      const defaultKey = el.geoPosition.asLatLngString() + '_' + (el.platform ?? '');
+      return defaultKey;
     }).join('__');
 
     const requestData = this.computeRequestData(leg, viaParts);
 
     // 🚀 Cache hit → NO delay
-    const cached$ = this.cache.get(viaKey);
-    if (cached$) {
-      const legShapeResult = cached$.pipe(
-          map(value => {
-            const result: LegShapeResult = {
-              source: 'cache',
-              requestData: requestData,
-              fc: value,
-            };
-            return result;
-          })
-        );
+    if (this.useCache) {
+      const cached$ = this.cache.get(viaKey);
+      if (cached$) {
+        const legShapeResult = cached$.pipe(
+            map(value => {
+              const result: LegShapeResult = {
+                source: 'cache',
+                requestData: requestData,
+                fc: value,
+              };
+              return result;
+            })
+          );
 
-      return legShapeResult;
+        return legShapeResult;
+      }
     }
 
     if (apiConfig.authToken === null) {
@@ -159,6 +171,7 @@ export class ShapeProviderService {
 
       const legEndpointViaPart: ViaPart = {
         geoPosition: geoPosition,
+        stopId: null,
         floor: null,
         platform: null,
       };
@@ -179,6 +192,11 @@ export class ShapeProviderService {
             legEndpointViaPart.floor = floor.toString();
           }
         }
+      }
+
+      if (place.type === 'stop') {
+        const stopPlace = place as StopPlace;
+        legEndpointViaPart.stopId = stopPlace.placeRef.ref;
       }
 
       legEndpointViaParts.push(legEndpointViaPart);
@@ -202,13 +220,16 @@ export class ShapeProviderService {
       const timedLeg = leg as TimedLeg;
 
       timedLeg.intermediateStopCalls.forEach(stopCall => {
-        const geoPosition = stopCall.place?.geoPosition ?? null;
-        if (geoPosition === null) {
+        const place = stopCall.place;
+        if (place === null) {
           return;
         }
 
+        const geoPosition = place.geoPosition;
+
         const viaPart: ViaPart = {
           geoPosition: geoPosition,
+          stopId: null,
           platform: null,
           floor: null,
         };
@@ -216,6 +237,11 @@ export class ShapeProviderService {
         const platform = stopCall.platform.realtime ?? stopCall.platform.timetable;
         if (platform !== null) {
           viaPart.platform = platform;
+        }
+
+        if (place.type === 'stop') {
+          const stopPlace = place as StopPlace;
+          viaPart.stopId = stopPlace.placeRef.ref;
         }
 
         viaParts.push(viaPart);
@@ -266,27 +292,38 @@ export class ShapeProviderService {
       return 'bus';
     })();
 
+    const viaPartsStopIds = viaParts.filter(el => el.stopId !== null);
+    const useStopIds = (motType !== 'foot') && (viaParts.length >= 2) && (viaParts.length === viaPartsStopIds.length);
+
+    const apiViaParts: string[] = [];
+
     const apiURL = (() => {
       const viaParam: string = (() => {
-        const viaKeyParts: string[] = [];
         viaParts.forEach(viaPart => {
-          // in API the hops are in lat,long format
-          let viaKeyPart = viaPart.geoPosition.latitude + ',' + viaPart.geoPosition.longitude;
-
-          if (viaPart.floor !== null) {
-            viaKeyPart = viaKeyPart + '$' + viaPart.floor;
+          if (useStopIds) {
+            let viaKeyPart = '!' + viaPart.stopId;
+            if (viaPart.platform !== null) {
+              // viaKeyPart = viaKeyPart + '$' + viaPart.platform;
+            }
+            apiViaParts.push(viaKeyPart);
           } else {
-            // TODO: platform works ONLY with !DIDOK
-            // if (viaPart.platform !== null) {
-            //   viaKeyPart = '@' + viaKeyPart + '$' + viaPart.platform;
-            // }
-          }
+            // in API the hops are in lat,long format
+            let viaKeyPart = viaPart.geoPosition.latitude + ',' + viaPart.geoPosition.longitude;
 
-          viaKeyParts.push(viaKeyPart);
+            if (viaPart.floor !== null) {
+              viaKeyPart = viaKeyPart + '$' + viaPart.floor;
+            } else {
+              // TODO: platform works ONLY with !DIDOK
+              // if (viaPart.platform !== null) {
+              //   viaKeyPart = '@' + viaKeyPart + '$' + viaPart.platform;
+              // }
+            }
+
+            apiViaParts.push(viaKeyPart);
+          }
         });
 
-        const param = viaKeyParts.join('|');
-
+        const param = apiViaParts.join('|');
         return param;
       })();
 
@@ -333,14 +370,19 @@ export class ShapeProviderService {
       const viaParam: string = (() => {
         const viaKeyParts: string[] = [];
         viaParts.forEach(viaPart => {
-          // in GUI the hops are in long,lat format - also no @ prefix when we have stops
-          let viaKeyPart = viaPart.geoPosition.longitude + ',' + viaPart.geoPosition.latitude;
+          if (useStopIds) {
+            const viaKeyPart = '!' + viaPart.stopId;
+            viaKeyParts.push(viaKeyPart);
+          } else {
+            // in GUI the hops are in long,lat format - also no @ prefix when we have stops
+            let viaKeyPart = viaPart.geoPosition.longitude + ',' + viaPart.geoPosition.latitude;
 
-          // TODO: PLATFORM doesnt work with coords, only with !DIDOK|platform
-          // if (viaPart.platform !== null) {
-          //   viaKeyPart = viaKeyPart + '$' + viaPart.platform;
-          // }
-          viaKeyParts.push(viaKeyPart);
+            // TODO: PLATFORM doesnt work with coords, only with !DIDOK|platform
+            // if (viaPart.platform !== null) {
+            //   viaKeyPart = viaKeyPart + '$' + viaPart.platform;
+            // }
+            viaKeyParts.push(viaKeyPart);
+          }
         });
 
         const param = viaKeyParts.join('|');
@@ -382,6 +424,7 @@ export class ShapeProviderService {
       viaParts: viaParts,
       url: apiURL,
       demoURL: demoURL,
+      apiViaParts: apiViaParts,
     };
     
     return requestData;
