@@ -19,6 +19,7 @@ export class SharedMobility {
   public hireFacility: string | null
   public isFixedStation: boolean
   public docksNo: number | null
+  public electricVehiclesNo: number | null
   public vehiclesNo: number | null
   public vehicleName: string | null
 
@@ -38,6 +39,7 @@ export class SharedMobility {
     this.hireFacility = null
     this.isFixedStation = false
     this.docksNo = null
+    this.electricVehiclesNo = null;
     this.vehiclesNo = null
     this.vehicleName = null
   }
@@ -168,6 +170,9 @@ export class SharedMobility {
           if (placeNameLC.includes('2em')) {
             return '2EM Car Sharing';
           }
+          if (placeNameLC.includes('velospot')) {
+            return 'Velospot';
+          }
 
           const infoURL: string = poi.properties['infoURL'] ?? 'n/a';
           if (infoURL.includes('dnky.bike')) {
@@ -222,6 +227,11 @@ export class SharedMobility {
     if (vehiclesNoS !== null) {
       vehicle.isFixedStation = true;
       vehicle.vehiclesNo = parseInt(vehiclesNoS, 10);
+    }
+    const electricVehiclesNoS = mapAdditionalInformation['numElectricVehiclesAvailable'] ?? null;
+    if (electricVehiclesNoS !== null) {
+      vehicle.isFixedStation = true;
+      vehicle.electricVehiclesNo = parseInt(electricVehiclesNoS, 10);
     }
 
     vehicle.hireFacility = mapAdditionalInformation['hireFacility'] ?? null;

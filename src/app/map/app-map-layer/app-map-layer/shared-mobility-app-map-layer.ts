@@ -1,5 +1,6 @@
 import * as GeoJSON from 'geojson'
 
+import { OJP_VERSION } from '../../../config/constants';
 import { AppMapLayer } from "../app-map-layer";
 import { SharedMobility } from './shared-mobility/shared-mobility';
 
@@ -15,6 +16,8 @@ export class SharedMobilityAppMapLayer extends AppMapLayer {
       return;
     }
 
+    const isOJPv2 = OJP_VERSION === '2.0';
+
     let itemsNo: number | null = null;
     places.forEach(location => {
       const vehicle = SharedMobility.initFromPlace(location);
@@ -22,12 +25,25 @@ export class SharedMobilityAppMapLayer extends AppMapLayer {
         return;
       }
 
-      if (vehicle.vehiclesNo !== null) {
+      if ((vehicle.vehiclesNo === null) && (vehicle.electricVehiclesNo === null)) {
+        if (isOJPv2) {
+          if (vehicle.poiType === 'bicycle_rental') {
+            // HACK - for publibike bicycle rental show always 1 vehicle if vehiclesNo attr is missing
+            itemsNo = 1;
+          }
+        }
+      } else {
         if (itemsNo === null) {
           itemsNo = 0;
         }
 
-        itemsNo += vehicle.vehiclesNo;
+        if (vehicle.vehiclesNo !== null) {
+          itemsNo += vehicle.vehiclesNo;
+        }
+
+        if (vehicle.electricVehiclesNo !== null) {
+          itemsNo += vehicle.electricVehiclesNo;
+        }
       }
     });
 
@@ -39,6 +55,16 @@ export class SharedMobilityAppMapLayer extends AppMapLayer {
     if (vehicle) {
       feature.properties['sharedVehicle.provider'] = vehicle.computeProviderLabel();
     }
+  }
+
+  private formatVehiclesNo(attr: number, vehicle: SharedMobility) {
+    const suffix = attr === 1 ? '' : 's';
+    let vehicleTypeS = attr + ' ' + vehicle.vehicleType + suffix;
+    if (vehicle.vehicleName !== null) {
+      vehicleTypeS += ' - ' + vehicle.vehicleName;
+    }
+
+    return vehicleTypeS;
   }
 
   protected override computePopupHTML(places: AnyPlace[]): string | null {
@@ -98,13 +124,15 @@ export class SharedMobilityAppMapLayer extends AppMapLayer {
     if (firstVehicle.isFixedStation) {
       const vehicleTypeRows: string[] = [];
       vehicles.forEach(vehicle => {
-        const suffix = vehicle.vehiclesNo === 1 ? '' : 's';
-        let vehicleTypeS = vehicle.vehiclesNo + ' ' + vehicle.vehicleType + suffix;
-        if (vehicle.vehicleName !== null) {
-          vehicleTypeS += ' - ' + vehicle.vehicleName;
+        if (vehicle.electricVehiclesNo !== null) {
+          const vehicleTypeS = this.formatVehiclesNo(vehicle.electricVehiclesNo, vehicle);
+          vehicleTypeRows.push('<li>' + vehicleTypeS + '</li>');
         }
 
-        vehicleTypeRows.push('<li>' + vehicleTypeS + '</li>');
+        if (vehicle.vehiclesNo !== null) {
+          const vehicleTypeS = this.formatVehiclesNo(vehicle.vehiclesNo, vehicle);
+          vehicleTypeRows.push('<li>' + vehicleTypeS + '</li>');
+        }
       });
 
       tableTRs.push('<tr><td class="align-middle">Vehicles</td><td><ul>' + vehicleTypeRows.join('') + '</ul></td></tr>');
