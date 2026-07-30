@@ -124,6 +124,11 @@ export class SharedMobilityAppMapLayer extends AppMapLayer {
     if (firstVehicle.isFixedStation) {
       const vehicleTypeRows: string[] = [];
       vehicles.forEach(vehicle => {
+        if (vehicle.electricVehiclesNo !== null) {
+          const vehicleTypeS = this.formatVehiclesNo(vehicle.electricVehiclesNo, vehicle);
+          vehicleTypeRows.push('<li>' + vehicleTypeS + '</li>');
+        }
+
         if (vehicle.vehiclesNo !== null) {
           const vehicleTypeS = this.formatVehiclesNo(vehicle.vehiclesNo, vehicle);
           vehicleTypeRows.push('<li>' + vehicleTypeS + '</li>');
