@@ -51,8 +51,11 @@ const apiConfig = APP_CONFIG['stages']['SHAPE_PROVIDER'];
 })
 export class ShapeProviderService {
   private cache = new Map<string, Observable<GeoJSON.FeatureCollection>>();
+  private useCache = true;
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) {
+    // this.useCache = false;
+  }
 
   private getLegShape$(leg: AnyLeg): Observable<LegShapeResult> {
     const viaParts = this.computeLegViaParts(leg);
@@ -65,20 +68,22 @@ export class ShapeProviderService {
     const requestData = this.computeRequestData(leg, viaParts);
 
     // 🚀 Cache hit → NO delay
-    const cached$ = this.cache.get(viaKey);
-    if (cached$) {
-      const legShapeResult = cached$.pipe(
-          map(value => {
-            const result: LegShapeResult = {
-              source: 'cache',
-              requestData: requestData,
-              fc: value,
-            };
-            return result;
-          })
-        );
+    if (this.useCache) {
+      const cached$ = this.cache.get(viaKey);
+      if (cached$) {
+        const legShapeResult = cached$.pipe(
+            map(value => {
+              const result: LegShapeResult = {
+                source: 'cache',
+                requestData: requestData,
+                fc: value,
+              };
+              return result;
+            })
+          );
 
-      return legShapeResult;
+        return legShapeResult;
+      }
     }
 
     if (apiConfig.authToken === null) {
