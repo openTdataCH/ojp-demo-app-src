@@ -168,6 +168,9 @@ export class SharedMobility {
           if (placeNameLC.includes('2em')) {
             return '2EM Car Sharing';
           }
+          if (placeNameLC.includes('velospot')) {
+            return 'Velospot';
+          }
 
           const infoURL: string = poi.properties['infoURL'] ?? 'n/a';
           if (infoURL.includes('dnky.bike')) {
