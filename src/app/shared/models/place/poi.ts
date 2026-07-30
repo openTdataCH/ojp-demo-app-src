@@ -175,6 +175,19 @@ export class Poi extends BasePlace {
       poiAdditionalInformationItems.forEach(item => {
         // Use same mechanism as the XML parser to transform the tag names (i.e. snake_case to camelCase) 
         const newKey = OJP.XmlSerializer.transformTagName(item.key);
+        
+        // HACK - handle counts of vehicles counting 'availableVehicle' keys
+        if (newKey === 'availableVehicle') {
+          // HACK - e-bikes ends with 'e'
+          const isElectric = item.value.endsWith('e');
+          const numKey = isElectric ? 'numElectricVehiclesAvailable' : 'numVehiclesAvailable';
+          if (!(numKey in poi.properties)) {
+            poi.properties[numKey] = 0;
+          }
+
+          poi.properties[numKey] += 1;
+        }
+        
         poi.properties[newKey] = item.value;
       });
 
