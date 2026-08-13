@@ -327,6 +327,7 @@ export class ShapeProviderService {
         return param;
       })();
 
+      // https://developer.geops.io/apis/routing
       const url = new URL(apiConfig['url']);
       url.searchParams.set('via', viaParam);
       url.searchParams.set('mot', motType);
