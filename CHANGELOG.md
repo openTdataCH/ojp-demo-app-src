@@ -5,6 +5,8 @@ OJP-Demo URL: https://opentdatach.github.io/ojp-demo-app/
 ----
 
 13.August 2026
+- Order stages - [PR #399](https://github.com/openTdataCH/ojp-demo-app-src/pull/399)
+  - `PROD`, `INT`, `TEST`, `DEV`
 - Improve leg endpoint names - [geOps with SLOID-LegProjection #377](https://github.com/openTdataCH/ojp-demo-app-src/issues/377), [PR #397](https://github.com/openTdataCH/ojp-demo-app-src/pull/397)
   - unify handling of endpoint names for Continuous / Transfer legs
 - Improve shapes provider - [PR #398](Improve shapes provider API- #398)

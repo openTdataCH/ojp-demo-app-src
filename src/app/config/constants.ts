@@ -55,9 +55,9 @@ export const APP_STAGEs: APP_STAGE[] = (() => {
   let stages: APP_STAGE[] = [];
 
   if (isOJPv2) {
-    stages = ['V2-PROD', 'V2-INT', 'V2-DEV', 'V2-TEST'];
+    stages = ['V2-PROD', 'V2-INT', 'V2-TEST', 'V2-DEV'];
   } else {
-    stages = ['PROD', 'INT', 'DEV', 'TEST'];
+    stages = ['PROD', 'INT', 'TEST', 'DEV'];
     if (DEBUG_LEVEL === 'DEBUG') {
       stages.push('OJP-SI');
     }
