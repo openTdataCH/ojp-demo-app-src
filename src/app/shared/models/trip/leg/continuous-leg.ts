@@ -71,10 +71,10 @@ export class ContinuousLeg extends Leg {
     continuousLeg.computePathGuidance(continuousLegSchema.pathGuidance?.pathGuidanceSection ?? [], mapPlaces);
 
     if (continuousLeg.fromPlace === null) {
-      continuousLeg.fromPlace = continuousLeg.legTrack.computeBestFromPlace();
+      continuousLeg.fromPlace = continuousLeg.computeBestPlaceCandidate('From', fromPlaceRef?.name ?? null);
     }
     if (continuousLeg.toPlace === null) {
-      continuousLeg.toPlace = continuousLeg.legTrack.computeBestToPlace();
+      continuousLeg.toPlace = continuousLeg.computeBestPlaceCandidate('To', toPlaceRef?.name ?? null);
     }
 
     return continuousLeg;

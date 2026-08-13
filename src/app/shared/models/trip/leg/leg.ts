@@ -5,6 +5,8 @@ import { AnyPlace } from '../../place/place-builder';
 import { LegTrack, PathGuidance } from '../../leg-track';
 import { StopPlace } from '../../place/stop-place';
 import { DistanceData } from '../../distance';
+import { JourneyPointType } from '../../../../shared/types/_all';
+import { PlaceLocation } from '../../place/location';
 
 type LegType = 'ContinuousLeg' | 'TimedLeg' | 'TransferLeg';
 
@@ -78,6 +80,32 @@ export abstract class Leg {
 
   protected computePathGuidance(pathGuidanceSectionsSchema: OJP_Types.PathGuidanceSectionSchema[], mapPlaces: Record<string, StopPlace>) {
     this.pathGuidance = PathGuidance.initWithPathGuidanceSectionsSchema(pathGuidanceSectionsSchema, mapPlaces);
+  }
+
+  protected computeBestPlaceCandidate(endpointType: JourneyPointType, placeName: string | null): AnyPlace | null {
+    const isFrom = endpointType === 'From';
+
+    const place: AnyPlace | null = (() => {
+      const legTrack = this.legTrack;
+      if (legTrack.trackSections.length === 0) {
+        return null;
+      }
+
+      const trackSectionIdx = isFrom ? 0 : legTrack.trackSections.length - 1;
+      const trackSection = legTrack.trackSections[trackSectionIdx];
+      const coordsPairs = trackSection.linkProjection?.geoPositions ?? [];
+      if (coordsPairs.length === 0) {
+        return null;
+      }
+
+      const coordsPairIdx = isFrom ? 0 : coordsPairs.length - 1;
+      const coordsPair = coordsPairs[coordsPairIdx];
+      const place = new PlaceLocation(coordsPair.longitude, coordsPair.latitude, placeName);
+
+      return place;
+    })();
+
+    return place;
   }
 
   public abstract asOJP_Schema(): OJP_Types.LegSchema;
