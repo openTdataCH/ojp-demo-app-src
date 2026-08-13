@@ -293,7 +293,7 @@ export class ShapeProviderService {
     })();
 
     const viaPartsStopIds = viaParts.filter(el => el.stopId !== null);
-    const useStopIds = (motType !== 'foot') && (viaParts.length >= 2) && (viaParts.length === viaPartsStopIds.length);
+    const useAtlas = (motType !== 'foot') && (viaParts.length >= 2) && (viaParts.length === viaPartsStopIds.length);
 
     const apiViaParts: string[] = [];
 
@@ -322,6 +322,10 @@ export class ShapeProviderService {
       const url = new URL(apiConfig['url']);
       url.searchParams.set('via', viaParam);
       url.searchParams.set('mot', motType);
+
+      if (useAtlas) {
+        url.searchParams.set('atlas', 'true');
+      }
 
       return url.toString();
     })();
