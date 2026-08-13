@@ -374,38 +374,4 @@ export class LegTrack {
 
     return schema;
   };
-
-  public computeBestFromPlace(): AnyPlace | null {
-    if (this.trackSections.length === 0) {
-      return null;
-    }
-
-    const trackSection = this.trackSections[0];
-    const coordsPairs = trackSection.linkProjection?.geoPositions ?? [];
-    if (coordsPairs.length === 0) {
-      return null;
-    }
-
-    const coordsPair = coordsPairs[0];
-    const place = new PlaceLocation(coordsPair.longitude, coordsPair.latitude);
-
-    return place;
-  }
-
-  public computeBestToPlace(): AnyPlace | null {
-    if (this.trackSections.length === 0) {
-      return null;
-    }
-
-    const trackSection = this.trackSections[this.trackSections.length - 1];
-    const coordsPairs = trackSection.linkProjection?.geoPositions ?? [];
-    if (coordsPairs.length === 0) {
-      return null;
-    }
-
-    const coordsPair = coordsPairs[coordsPairs.length - 1];
-    const place = new PlaceLocation(coordsPair.longitude, coordsPair.latitude);
-
-    return place;
-  }
 }
