@@ -797,15 +797,17 @@ export class StationBoardSearchComponent implements OnInit {
       return featureBBOX;
     });
 
-    const requests: OJP.LocationInformationRequest[] = [
-      OJP.LocationInformationRequest.initWithBBOX(bboxLocations[0], ['stop'], 100),
-      OJP.LocationInformationRequest.initWithLocationName('Lu', ['stop'], 30),
-      OJP.LocationInformationRequest.initWithBBOX(bboxLocations[1], ['stop'], 100),
-      OJP.LocationInformationRequest.initWithLocationName('Th', ['stop'], 30),
+    const sdk = this.userTripService.createOJP_SDK_Instance(this.languageService.language);
+
+    // prevent this in OJP SDK when using LocationInformationRequest.initWithLocationName with OJP 1.0 (or other)
+    const requests: (OJP.LocationInformationRequest | OJP.OJPv1_LocationInformationRequest)[] = [
+      sdk.requests.LocationInformationRequest.initWithBBOX(bboxLocations[0], ['stop'], 100),
+      sdk.requests.LocationInformationRequest.initWithLocationName('Lu', ['stop'], 30),
+      sdk.requests.LocationInformationRequest.initWithBBOX(bboxLocations[1], ['stop'], 100),
+      sdk.requests.LocationInformationRequest.initWithLocationName('Th', ['stop'], 30),
     ];
     const randomItems = OJPHelpers.shuffleArray(requests);
-
-    const sdk = this.userTripService.createOJP_SDK_Instance(this.languageService.language);
+    
     const request = randomItems[0];
     const response = await request.fetchResponse(sdk);
     if (response.ok === false) {

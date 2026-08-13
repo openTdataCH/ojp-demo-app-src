@@ -395,7 +395,7 @@ export class TripInfoSearchComponent implements OnInit {
       const isFrom = endpointType === 'From';
       const geoPosition = isFrom ? randomGeoPositions[0] : randomGeoPositions[randomGeoPositions.length - 1];
       const bbox = GeoPositionBBOX.initFromGeoPosition(geoPosition, 200, 200);
-      const request = OJP.LocationInformationRequest.initWithBBOX(bbox.asFeatureBBOX(), ['stop'], 10);
+      const request = sdk.requests.LocationInformationRequest.initWithBBOX(bbox.asFeatureBBOX(), ['stop'], 10);
       const response = await request.fetchResponse(sdk);
       if (!response.ok) {
         return;
@@ -417,7 +417,7 @@ export class TripInfoSearchComponent implements OnInit {
     let foundResults = false;
     for (const fromStopPlace of fromStopPlaces) {
       for (const toStopPlace of toStopPlaces) {
-        const request = OJP.TripRequest.initWithPlaceRefsOrCoords(fromStopPlace.placeRef.ref, toStopPlace.placeRef.ref);
+        const request = sdk.requests.TripRequest.initWithPlaceRefsOrCoords(fromStopPlace.placeRef.ref, toStopPlace.placeRef.ref);
         const response = await request.fetchResponse(sdk);
 
         await OJPHelpers.wait(100);
