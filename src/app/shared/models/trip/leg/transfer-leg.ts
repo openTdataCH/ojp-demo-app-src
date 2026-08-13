@@ -43,6 +43,13 @@ export class TransferLeg extends Leg {
     transferLeg.fromPlace = mapPlaces[fromPlaceRef.ref] ?? null;
     transferLeg.toPlace = mapPlaces[toPlaceRef.ref] ?? null;
 
+    if (transferLeg.fromPlace === null) {
+      transferLeg.fromPlace = transferLeg.computeBestPlaceCandidate('From', fromPlaceRef.name ?? null);
+    }
+    if (transferLeg.toPlace === null) {
+      transferLeg.toPlace = transferLeg.computeBestPlaceCandidate('To', fromPlaceRef.name ?? null);
+    }
+
     transferLeg.emissionCO2_KgPerPersonKm = legSchema.emissionCO2?.kilogramPerPersonKm ?? null;
     transferLeg.computePathGuidance(transferLegSchema.pathGuidance?.pathGuidanceSection ?? [], mapPlaces);
 
