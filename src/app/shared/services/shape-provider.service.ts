@@ -293,43 +293,39 @@ export class ShapeProviderService {
     })();
 
     const viaPartsStopIds = viaParts.filter(el => el.stopId !== null);
-    const useStopIds = (motType !== 'foot') && (viaParts.length >= 2) && (viaParts.length === viaPartsStopIds.length);
+    const useAtlas = (motType !== 'foot') && (viaParts.length >= 2) && (viaParts.length === viaPartsStopIds.length);
 
     const apiViaParts: string[] = [];
 
     const apiURL = (() => {
       const viaParam: string = (() => {
         viaParts.forEach(viaPart => {
-          if (useStopIds) {
-            let viaKeyPart = '!' + viaPart.stopId;
-            if (viaPart.platform !== null) {
-              // viaKeyPart = viaKeyPart + '$' + viaPart.platform;
-            }
-            apiViaParts.push(viaKeyPart);
-          } else {
-            // in API the hops are in lat,long format
-            let viaKeyPart = viaPart.geoPosition.latitude + ',' + viaPart.geoPosition.longitude;
-
-            if (viaPart.floor !== null) {
-              viaKeyPart = viaKeyPart + '$' + viaPart.floor;
+          const viaKeyPart = (() => {
+            if (viaPart.stopId) {
+              const viaStopId = '!' + viaPart.stopId;
+              return viaStopId;
             } else {
-              // TODO: platform works ONLY with !DIDOK
-              // if (viaPart.platform !== null) {
-              //   viaKeyPart = '@' + viaKeyPart + '$' + viaPart.platform;
-              // }
+              // in API the hops are in lat,long format - DIFFERENT than in the demo app
+              const viaKeyPart = viaPart.geoPosition.latitude + ',' + viaPart.geoPosition.longitude;
+              return viaKeyPart;
             }
+          })();
 
-            apiViaParts.push(viaKeyPart);
-          }
+          apiViaParts.push(viaKeyPart);
         });
 
         const param = apiViaParts.join('|');
         return param;
       })();
 
+      // https://developer.geops.io/apis/routing
       const url = new URL(apiConfig['url']);
       url.searchParams.set('via', viaParam);
       url.searchParams.set('mot', motType);
+
+      if (useAtlas) {
+        url.searchParams.set('atlas', 'true');
+      }
 
       return url.toString();
     })();
@@ -350,7 +346,6 @@ export class ShapeProviderService {
         const floorValues = endpointTypes.map(endpointType => {
           const defFloorValue = '0';
 
-
           const isFrom = endpointType === 'From';
           const viaPart = isFrom ? viaParts[0] : viaParts[viaParts.length - 1];
 
@@ -370,19 +365,16 @@ export class ShapeProviderService {
       const viaParam: string = (() => {
         const viaKeyParts: string[] = [];
         viaParts.forEach(viaPart => {
-          if (useStopIds) {
-            const viaKeyPart = '!' + viaPart.stopId;
-            viaKeyParts.push(viaKeyPart);
-          } else {
-            // in GUI the hops are in long,lat format - also no @ prefix when we have stops
-            let viaKeyPart = viaPart.geoPosition.longitude + ',' + viaPart.geoPosition.latitude;
-
-            // TODO: PLATFORM doesnt work with coords, only with !DIDOK|platform
-            // if (viaPart.platform !== null) {
-            //   viaKeyPart = viaKeyPart + '$' + viaPart.platform;
-            // }
-            viaKeyParts.push(viaKeyPart);
-          }
+          const viaKeyPart = (() => {
+            if (viaPart.stopId) {
+              const viaStopId = '!' + viaPart.stopId;
+              return viaStopId;
+            } else {
+              const viaCoords = viaPart.geoPosition.longitude + ',' + viaPart.geoPosition.latitude;
+              return viaCoords;
+            }
+          })();
+          viaKeyParts.push(viaKeyPart);
         });
 
         const param = viaKeyParts.join('|');
