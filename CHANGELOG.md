@@ -7,6 +7,9 @@ OJP-Demo URL: https://opentdatach.github.io/ojp-demo-app/
 13.August 2026
 - Improve leg endpoint names - [PR #397](https://github.com/openTdataCH/ojp-demo-app-src/pull/397)
   - unify handling of endpoint names for Continuous / Transfer legs
+- Improve shapes provider - [PR #398](Improve shapes provider API- #398)
+  - use sloids whenever is possible
+  - use `atlas=true` for TimedLeg with exclusive sloids
 
 30.July 2026
 - Improves ShapesProvider - [geOps with SLOID-LegProjection
