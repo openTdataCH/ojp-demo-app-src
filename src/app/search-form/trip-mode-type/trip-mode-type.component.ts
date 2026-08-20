@@ -374,7 +374,7 @@ export class TripModeTypeComponent implements OnInit {
         numberOfResultsAfter = this.numberOfResultsAfter;
       }
 
-      const availablePublicTransportModesFilter: ModeOfTransportType[] = ['bus', 'tram', 'rail', 'water'];
+      const availablePublicTransportModesFilter: ModeOfTransportType[] = ['bus', 'coach', 'tram', 'rail', 'water'];
       availablePublicTransportModesFilter.forEach(modeFilter => {
         if (this.mapPublicTransportModesFilter[modeFilter] === true) {
           this.userTripService.publicTransportModesFilter.push(modeFilter);
