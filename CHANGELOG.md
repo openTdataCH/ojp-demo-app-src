@@ -4,6 +4,10 @@ OJP-Demo URL: https://opentdatach.github.io/ojp-demo-app/
 
 ----
 
+21.August 2026 - [PR #403](https://github.com/openTdataCH/ojp-demo-app-src/pull/403)
+- Update display shapes
+  - adds trip toggle shapes provider
+
 20.August 2026 - [TR - additional filter for coach (instead of bus) #400](https://github.com/openTdataCH/ojp-demo-app-src/issues/400), [PR #402](https://github.com/openTdataCH/ojp-demo-app-src/pull/402)
 - Update TR filters
   - adds `coach` PtMode filter

@@ -32,6 +32,8 @@ interface TripHeaderStats {
   isUnplanned: boolean,
 }
 
+type ShapeVisibilityProperty = 'show' | 'showOtherProvider';
+
 @Component({
   selector: 'journey-result-row',
   templateUrl: './journey-result-row.component.html',
@@ -47,6 +49,8 @@ export class JourneyResultRowComponent implements OnInit {
   public tripHeaderStats: TripHeaderStats;
 
   public trrRequestInfo: OJP.RequestInfo | null;
+
+  public readonly useOtherProvider = FLAG_USE_2nd_SHAPE_PROVIDER;
 
   constructor(private userTripService: UserTripService, private mapService: MapService, private languageService: LanguageService, private shapeProviderService: ShapeProviderService, private sanitizer: DomSanitizer) {
     this.tripHeaderStats = <TripHeaderStats>{};
@@ -265,5 +269,31 @@ export class JourneyResultRowComponent implements OnInit {
     }
 
     this.userTripService.mapActiveTripSelected.emit(this.tripData);
+  }
+
+  public selectShapeProviderForAllLegs(property: ShapeVisibilityProperty): void {
+    this.tripData?.legsData.forEach(legData => {
+      const canUseOtherProvider = legData.map.legShapeResult !== null;
+      const useOtherProvider = (property === 'showOtherProvider') && canUseOtherProvider;
+
+      legData.map.show = !useOtherProvider;
+      legData.map.showOtherProvider = useOtherProvider;
+    });
+
+    this.redrawTripOnMap();
+  }
+
+  public isShapeVisibleForAllLegs(property: ShapeVisibilityProperty): boolean {
+    const allLegsData = this.tripData?.legsData ?? [];
+    const legsData = (() => {
+      if (property === 'showOtherProvider') {
+        const legsWithOtherProvider = allLegsData.filter(legData => legData.map.legShapeResult !== null);
+        return legsWithOtherProvider;
+      }
+
+      return allLegsData;
+    })();
+
+    return legsData.length > 0 && legsData.every(legData => legData.map[property]);
   }
 }

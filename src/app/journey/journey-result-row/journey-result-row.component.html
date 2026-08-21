@@ -29,6 +29,26 @@
     </div>
   </sbb-expansion-panel-header>
   <div>
+    <div *ngIf="this.useOtherProvider" class="d-flex justify-content-end gap-2 align-items-center mb-2">
+      <span>Toggle shapes for all legs:</span>
+
+      <button type="button" class="btn btn-sm"
+        [class.btn-primary]="this.isShapeVisibleForAllLegs('show')"
+        [class.btn-outline-primary]="!this.isShapeVisibleForAllLegs('show')"
+        [attr.aria-pressed]="this.isShapeVisibleForAllLegs('show')"
+        (click)="this.selectShapeProviderForAllLegs('show')" stopClickPropagation>
+        #1
+      </button>
+
+      <button type="button" class="btn btn-sm"
+        [class.btn-primary]="this.isShapeVisibleForAllLegs('showOtherProvider')"
+        [class.btn-outline-primary]="!this.isShapeVisibleForAllLegs('showOtherProvider')"
+        [attr.aria-pressed]="this.isShapeVisibleForAllLegs('showOtherProvider')"
+        (click)="this.selectShapeProviderForAllLegs('showOtherProvider')" stopClickPropagation>
+        #2
+      </button>
+    </div>
+
     <ng-container *ngFor="let legData of tripData?.legsData; index as legIdx">
       <result-trip-leg 
         [legData]="legData" 
