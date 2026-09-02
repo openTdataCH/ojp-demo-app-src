@@ -718,18 +718,15 @@ export class StationBoardSearchComponent implements OnInit {
   }
 
   private async handleCustomResponse(responseXML: string) {
-    if (this.currentRequestInfo === null) {
-      return;
-    }
+    const sdk = this.userTripService.createOJP_SDK_Instance(this.languageService.language);
+    const request = sdk.requests.StopEventRequest.initWithResponseMock(responseXML);
+
+    this.currentRequestInfo = request.requestInfo;
 
     this.currentRequestInfo.responseDateTime = new Date();
     this.currentRequestInfo.responseXML = responseXML;
-
-    const sdk = this.userTripService.createOJP_SDK_Instance(this.languageService.language);
-
-    const request = sdk.requests.StopEventRequest.initWithResponseMock(responseXML);
+    
     const response = await request.fetchResponse(sdk);
-
     if (!response.ok) {
       this.notificationToast.open('No StopEvents found', {
         type: 'error',
