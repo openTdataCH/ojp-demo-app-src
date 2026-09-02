@@ -7,6 +7,8 @@ OJP-Demo URL: https://opentdatach.github.io/ojp-demo-app/
 02.September 2026
 - Fix Station Board - [PR #406](https://github.com/openTdataCH/ojp-demo-app-src/pull/406)
   - fix custom SER XML response parsing
+- Fix shapes provider
+  - use `atlas` param for all mots, dont exclude walk
 
 21.August 2026 - [PR #403](https://github.com/openTdataCH/ojp-demo-app-src/pull/403)
 - Update display shapes
