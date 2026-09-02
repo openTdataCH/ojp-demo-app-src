@@ -29,6 +29,7 @@ interface ViaPart {
 interface RequestData {
   mot: RequestMotType,
   viaParts: ViaPart[],
+  useAtlas: boolean,
   url: string,
   demoURL: string,
   apiViaParts: string[],
@@ -293,7 +294,7 @@ export class ShapeProviderService {
     })();
 
     const viaPartsStopIds = viaParts.filter(el => el.stopId !== null);
-    const useAtlas = (motType !== 'foot') && (viaParts.length >= 2) && (viaParts.length === viaPartsStopIds.length);
+    const useAtlas = (viaParts.length >= 2) && (viaParts.length === viaPartsStopIds.length);
 
     const apiViaParts: string[] = [];
 
@@ -414,6 +415,7 @@ export class ShapeProviderService {
     const requestData: RequestData = {
       mot: motType,
       viaParts: viaParts,
+      useAtlas: useAtlas,
       url: apiURL,
       demoURL: demoURL,
       apiViaParts: apiViaParts,
