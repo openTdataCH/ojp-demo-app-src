@@ -436,15 +436,42 @@ export class SearchFormComponent implements OnInit {
         const request = sdk.requests.TripRequest.initWithResponseMock(tripsResponseXML);
         const response = await request.fetchResponse(sdk);
 
-        popover.inputTripRequestResponseXML = tripsResponseXML;
-        dialogRef.close();
+        let trips: Trip[] = [];
 
         if (response.ok) {
-          const trips = TripRequestBuilder.parseTrips(this.sanitizer, response);
-          this.handleCustomTripResponse(trips, request.requestInfo, true);
+          popover.inputTripRequestResponseXML = tripsResponseXML;
+
+          trips = TripRequestBuilder.parseTrips(this.sanitizer, response);
         } else {
-          this.handleCustomTripResponse([], request.requestInfo, true);
+          // Try TRR
+          const ojpSDKv2 = sdk as OJP.SDK<'2.0'>;
+          const trrRequest = ojpSDKv2.requests.TripRefineRequest.initWithResponseMock(tripsResponseXML);
+          const trrResponse = await trrRequest.fetchResponse(ojpSDKv2);
+
+          if (trrResponse.ok) {
+            popover.inputTripRequestResponseXML = tripsResponseXML;
+
+            if (trrResponse.value.tripResult.length !== 1) {
+              console.error('Expected 1 trip in reponse');
+            } else {
+              const mapPlaces = OJPHelpers.parseAnyPlaceContext(OJP_VERSION, trrResponse.value.tripResponseContext);
+              const mapSituations = OJPHelpers.parseAnySituationsContext(this.sanitizer, OJP_VERSION, trrResponse.value.tripResponseContext);
+
+              const updatedTrip = Trip.initWithTripResultSchema(OJP_VERSION, trrResponse.value.tripResult[0], mapPlaces, mapSituations);
+              if (updatedTrip) {
+                trips = [updatedTrip];
+              } else {
+                console.error('cant decode trip from TRR');
+                console.log(trrResponse);
+              }
+            }
+          } else {
+            console.error('Cant parse response XML');
+          }
         }
+
+        this.handleCustomTripResponse(trips, request.requestInfo, true);
+        dialogRef.close();
       };
 
       popover.tripCustomRequestSaved.subscribe(handleCustomXMLResponse);
