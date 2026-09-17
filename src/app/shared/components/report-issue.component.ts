@@ -1,124 +1,76 @@
-import { AfterViewInit, Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { Component, Inject } from '@angular/core';
+import { SBB_DIALOG_DATA } from '@sbb-esta/angular/dialog';
 
 import * as OJP from 'ojp-sdk';
 
-import { CreateIssueBody } from '../types/_all';
 import { HTTP_Service } from '../services/http.service';
+import { UserTripService } from '../services/user-trip.service';
 import { OJP_VERSION } from '../../config/constants';
-
-interface PageModel {
-  issueButtonCaption: string
-  issueCreationState: 'IDLE' | 'PROCESSING' | 'DONE'
-  issueURL: string | null,
-  projects: {
-    key: string
-    caption: string
-  }[],
-};
 
 @Component({
   selector: 'report-issue',
-  // styleUrls: ['./report-issue.componentt.scss'],
   templateUrl: './report-issue.component.html',
 })
-export class ReportIssueComponent implements OnInit, AfterViewInit {
-  public requestInfo: OJP.RequestInfo | null;
-  public model: PageModel;
+export class ReportIssueComponent {
+  public issueTitle = '[TR issue] ';
+  public isLoading = false;
+  public errorMessage: string | null = null;
+  public gistLinks: { request: string; response: string } | null = null;
 
-  public form: FormGroup;
+  public metadataRows: string[] = [];
 
-  private metadataRows: string[];
-  
-  constructor(private httpService: HTTP_Service, private fb: FormBuilder) {
-    this.requestInfo = null;
-    this.model = {
-      issueButtonCaption: 'Create Issue',
-      issueCreationState: 'IDLE',
-      issueURL: null,
-      projects: [
-        { key: 'ojp2_backend_issues', caption: 'OJP 2.0 Backend Issues', },
-        { key: 'ojp_siri_sx_current', caption: 'OJP DemoApp', },
-      ],
-    };
-
-    this.form = this.fb.group({
-      issueReporter: ['', Validators.required],
-      issueTitle: ['', Validators.required],
-      issueDescription: ['', Validators.required],
-      projectId: ['ojp2_backend_issues'],
-    });
-
-    this.metadataRows = [];
+  constructor(
+    private httpService: HTTP_Service,
+    private userTripService: UserTripService,
+    @Inject(SBB_DIALOG_DATA) private requestInfo: OJP.RequestInfo | null,
+  ) {
+    this.updateMetadataRows(window.location.href);
   }
 
-  ngOnInit(): void {
-
-  }
-
-  ngAfterViewInit(): void {
-    
-  }
-
-  public async onSubmit() {
-    if (this.form.invalid) {
-      this.form.markAllAsTouched();
+  public async createGists(): Promise<void> {
+    if (this.isLoading || this.gistLinks) {
       return;
     }
 
-    const newMetadataRows = this.metadataRows.slice();
-    newMetadataRows.unshift(...['reporter: ' + this.form.controls['issueReporter'].value.trim()]);
-
-    const metadataSeparators = [
-      '',
-      '',
-      '----',
-      '',
-    ];
-    newMetadataRows.unshift(...metadataSeparators);
-    const newMetadataRowsS = newMetadataRows.join('\n');
-
-    const newDescription = this.form.controls['issueDescription'].value.trim() + newMetadataRowsS;
-    this.setInputValue('issueDescription', newDescription);
-
-    await this.createIssue();
-  }
-
-  // convenience shortcut for template
-  public get f() {
-    return this.form.controls;
-  }
-
-  private async createIssue() {
-    if ((this.requestInfo === null) || (this.requestInfo.requestXML === null) || (this.requestInfo.responseXML === null)) {
+    this.errorMessage = null;
+    if (!this.requestInfo?.requestXML || !this.requestInfo?.responseXML) {
+      this.errorMessage = 'Request and response XML are required to create gists.';
       return;
     }
 
-    const issueTitle = this.form.controls['issueTitle'].value.trim();
-    const issueDescription = this.form.controls['issueDescription'].value.trim();
-    const projectKey = this.form.controls['projectId'].value;
-
-    const issueBody: CreateIssueBody = {
-      title: issueTitle,
-      description: issueDescription,
-      requestXML: this.requestInfo.requestXML,
-      responseXML: this.requestInfo.responseXML,
-      projectKey: projectKey,
-    };
-
-    this.model.issueCreationState = 'PROCESSING';
-    this.model.issueButtonCaption = 'Creating Issue ...';
-
-    const createIssueResponse = await this.httpService.createIssue(issueBody);
-
-    this.model.issueCreationState = 'DONE';
-    this.model.issueButtonCaption = 'Done';
-
-    this.model.issueURL = createIssueResponse.issue_url;
+    this.isLoading = true;
+    try {
+      const gists = await this.httpService.createGists({
+        requestXML: this.requestInfo.requestXML,
+        responseXML: this.requestInfo.responseXML,
+      });
+      this.gistLinks = gists;
+      const updateXMLRow = (row: string): string => {
+        if (row.startsWith('RequestXML:')) return `RequestXML: ${gists.request}`;
+        if (row.startsWith('ResponseXML:')) return `ResponseXML: ${gists.response}`;
+        return row;
+      };
+      this.metadataRows = this.metadataRows.map(updateXMLRow);
+    } catch (error) {
+      this.errorMessage = 'Could not create gists. Please try again.';
+    } finally {
+      this.isLoading = false;
+    }
   }
 
-  public setInputValue(inputName: 'issueTitle' | 'issueDescription', value: string) {
-    this.form.controls[inputName].setValue(value);
+  public openGitHubIssue(): void {
+    if (this.isLoading) {
+      return;
+    }
+
+    const url = new URL('https://github.com/openTdataCH/ojp-meta/issues/new');
+    url.search = new URLSearchParams({
+      template: '1-issue.yml',
+      title: this.issueTitle,
+      diagnostics: this.metadataRows.join('\n'),
+      stage: this.userTripService.currentAppStage.replace(/^V2-/, ''),
+    }).toString();
+    window.open(url.toString(), '_blank', 'noopener,noreferrer');
   }
 
   public updateMetadataRows(requestURL: string) {
@@ -127,6 +79,8 @@ export class ReportIssueComponent implements OnInit, AfterViewInit {
     const ua = navigator.userAgent;
 
     this.metadataRows = [
+      'RequestXML: ' + (this.gistLinks?.request ?? ''),
+      'ResponseXML: ' + (this.gistLinks?.response ?? ''),
       'URL: ' + requestURL,
       'OJP version: ' + OJP_VERSION,
       'ojp-sdk version: ' + OJP.SDK_VERSION,
