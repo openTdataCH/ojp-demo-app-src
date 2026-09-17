@@ -30,6 +30,8 @@ jobs:
           sed -i "s|PLACEHOLDER_REPLACE__INT|${{ secrets.OJP_DEMO_APP_INT_KEY }}|g" \
             src/app/config/app-config.ts
 
+          sed -i "s|PLACEHOLDER_REPLACE__V2_PROD|${{ secrets.PLACEHOLDER_REPLACE__V2_PROD }}|g" \
+            src/app/config/app-config.ts
           sed -i "s|PLACEHOLDER_REPLACE__V2_INT|${{ secrets.OJP_DEMO_APP_V2_INT_KEY }}|g" \
             src/app/config/app-config.ts
 
