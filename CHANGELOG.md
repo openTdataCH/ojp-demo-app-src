@@ -5,7 +5,7 @@ OJP-Demo URL: https://opentdatach.github.io/ojp-demo-app/
 ----
 
 17.September 2026
-- Separate secrets
+- Separate secrets - [PR #412](https://github.com/openTdataCH/ojp-demo-app-src/pull/412)
   - use different secret key for OJP 2.0 stage
 
 02.September 2026
