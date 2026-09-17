@@ -4,6 +4,10 @@ OJP-Demo URL: https://opentdatach.github.io/ojp-demo-app/
 
 ----
 
+17.September 2026
+- Separate secrets
+  - use different secret key for OJP 2.0 stage
+
 02.September 2026
 - Fix Station Board - [PR #406](https://github.com/openTdataCH/ojp-demo-app-src/pull/406)
   - fix custom SER XML response parsing
