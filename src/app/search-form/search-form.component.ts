@@ -524,12 +524,11 @@ export class SearchFormComponent implements OnInit {
     const dialogRef = this.popover.open(ReportIssueComponent, {
       position: { top: '20px' },
       width: dialogWidth,
+      data: this.currentRequestInfo,
     });
     dialogRef.afterOpened().subscribe(() => {
-      const popover = dialogRef.componentInstance as ReportIssueComponent;
       if (this.currentRequestInfo) {
         const popover = dialogRef.componentInstance as ReportIssueComponent;
-        popover.requestInfo = this.currentRequestInfo;
 
         const isOJPv2 = OJP_VERSION === '2.0';
         const issueTitle: string = (() => {
@@ -542,7 +541,7 @@ export class SearchFormComponent implements OnInit {
 
         const requestURL = window.location.href;
 
-        popover.setInputValue('issueTitle', issueTitle);
+        popover.issueTitle = issueTitle;
         popover.updateMetadataRows(requestURL);
       }
     });
