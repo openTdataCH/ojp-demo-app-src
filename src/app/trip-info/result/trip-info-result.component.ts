@@ -35,6 +35,10 @@ interface PageModel {
   serviceAttributes: ServiceAttributeRenderModel[],
 
   situations: SituationContent[],
+
+  isCancelled: boolean,
+  hasDeviation: boolean,
+  isUnplanned: boolean,
 }
 
 @Component({
@@ -129,6 +133,10 @@ export class TripInfoResultComponent implements OnInit, AfterViewInit {
     this.model.trainFormationURL = service.computeFormationServiceURL();
 
     this.model.situations = tripInfoResult.situations;
+
+    this.model.isCancelled = service.cancelled ?? false;
+    this.model.isUnplanned = service.unplanned ?? false;
+    this.model.hasDeviation = service.deviation ?? false;
   }
 
   public onLocationSelected(locationData: LegStopPointData) {
