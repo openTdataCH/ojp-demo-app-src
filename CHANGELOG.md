@@ -5,7 +5,7 @@ OJP-Demo URL: https://opentdatach.github.io/ojp-demo-app/
 ----
 
 18.September 2026
-- Updates TripInfo detail page
+- Updates TripInfo detail page - [PR #414](https://github.com/openTdataCH/ojp-demo-app-src/pull/412)
   - display visuals if isCancelled, hasDeviation, isUnplanned
 
 17.September 2026
