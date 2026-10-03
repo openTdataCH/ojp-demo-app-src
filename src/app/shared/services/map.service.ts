@@ -51,6 +51,10 @@ export class MapService {
       accessToken: mapboxAccessToken,
     });
 
+    map.on('load', () => {
+      this.hideBaseLayers(map);
+    });
+
     if (this.initialMapCenter) {
       map.setCenter(this.initialMapCenter);
       if (this.initialMapZoom) {
