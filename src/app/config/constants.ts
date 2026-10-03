@@ -236,6 +236,14 @@ export const MAP_RASTER_LAYERS: RasterLayerType[] = [
   },
 ];
 
+export const MAP_HIDDEN_BASE_LAYER_IDS = [
+  'poi_journey_service-1-mobility',
+  'poi_journey_service-1',
+  'poi_journey_service-2',
+  'poi_journey_service-3',
+  'platform_1x_name',
+];
+
 export const TRIP_REQUEST_DEFAULT_NUMBER_OF_RESULTS = 5;
 
 export const EMPTY_HTTPConfig: OJP.HTTPConfig = {
