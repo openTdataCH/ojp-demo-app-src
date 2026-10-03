@@ -44,9 +44,12 @@ export class MapService {
     const mapBounds = new mapboxgl.LngLatBounds([[5.9559,45.818], [10.4921,47.8084]]);
 
     const mapboxAccessToken = APP_CONFIG['stages']['MAPBOX_MAP'].authToken ?? 'n/a';
+    const geopsAPIKey = APP_CONFIG['stages']['SHAPE_PROVIDER'].authToken ?? '';
+    const mapStyleURL = `https://maps.geops.io/styles/base_bright_v2/style.json?key=${encodeURIComponent(geopsAPIKey)}`;
+
     const map = new mapboxgl.Map({
       container: elementID,
-      style: mapStageConfig.url,
+      style: mapStyleURL,
       bounds: mapBounds,
       accessToken: mapboxAccessToken,
     });
