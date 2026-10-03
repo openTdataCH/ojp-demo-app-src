@@ -116,7 +116,14 @@ export class AppMapLayer {
         if (mapBounds === null) {
             return;
         }
-        const bboxData = [mapBounds.getWest(), mapBounds.getSouth(), mapBounds.getEast(), mapBounds.getNorth()];
+
+        const requestBounds = MapHelpers.expandBoundsToGrid(mapBounds);
+        const bboxData = [
+            requestBounds.getWest(),
+            requestBounds.getSouth(),
+            requestBounds.getEast(),
+            requestBounds.getNorth(),
+        ];
 
         const restrictionTypes: OJP_Types.PlaceTypeEnum[] = (() => {
             if (isOJPv2) {
