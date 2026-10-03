@@ -241,7 +241,28 @@ export const MAP_HIDDEN_BASE_LAYER_IDS = [
   'poi_journey_service-1',
   'poi_journey_service-2',
   'poi_journey_service-3',
+  
   'platform_1x_name',
+
+  'station_point_bus',
+  'station_point_chairlift-gondola',
+  'station_point_div',
+  'station_point_tram',
+  'station_skilift_OSM',
+  'station_1x_chairlift_fallback',
+  'station_1x_bus',
+  'station_1x_chairlift-gondola',
+  'station_ship_qfanas_picto',
+  'station_1x_div',
+  'station_2x_div',
+  'station_3x_div',
+
+  'stationRail_3x',
+  'stationRail_2x',
+  'stationRail_1x',
+  'stationRail_low',
+  'stationRail_medium',
+  'stationRail_top',
 ];
 
 export const TRIP_REQUEST_DEFAULT_NUMBER_OF_RESULTS = 5;
