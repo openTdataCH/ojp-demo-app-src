@@ -110,8 +110,7 @@ export class AppMapLayer {
 
         const isOJPv2 = OJP_VERSION === '2.0';
 
-        const isPOI_all = this.restrictionType === 'poi' && this.restrictionPOI?.poiType === 'poi';
-        const featuresLimit = isPOI_all ? 1000 : 300;
+        const featuresLimit = 5000;
 
         const mapBounds = this.map.getBounds();
         if (mapBounds === null) {
