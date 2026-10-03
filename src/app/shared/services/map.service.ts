@@ -66,6 +66,17 @@ export class MapService {
     return map;
   }
 
+  private hideBaseLayers(map: mapboxgl.Map) {
+    MAP_HIDDEN_BASE_LAYER_IDS.forEach(layerID => {
+      if (map.getLayer(layerID) === undefined) {
+        console.error(`Unable to hide base layer "${layerID}": layer does not exist in the current map style.`);
+        return;
+      }
+
+      map.setLayoutProperty(layerID, 'visibility', 'none');
+    });
+  }
+
   public tryToCenterAndZoomToPlace(place: AnyPlace, zoomValue: number = 16.0) {
     this.newMapCenterAndZoomRequested.emit({
       lnglat: place.geoPosition.asLngLat(),
