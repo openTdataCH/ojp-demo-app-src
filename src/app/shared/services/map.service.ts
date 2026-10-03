@@ -180,8 +180,7 @@ export class MapService {
     const debugControl = new MapDebugControl(map);
     map.addControl(debugControl, 'top-left');
 
-    // HACK - the map type select is added via innerHTML property so we cant use Angular (change) hook
-    //      => use good ol' document.getElementById instead
+    // The map type select is added via innerHTML, so Angular change binding is unavailable here.
     const select = document.getElementById('mapTypeSelect') as HTMLSelectElement;
     if (select) {
       select.addEventListener('change', () => {
