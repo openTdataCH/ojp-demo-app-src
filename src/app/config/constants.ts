@@ -79,7 +79,7 @@ export interface AppMapLayerOptions {
 export const MAP_APP_MAP_LAYERS: Record<string, AppMapLayerOptions> = {
   'stops': {
     LIR_Restriction_Type: 'stop',
-    minZoom: 13,
+    minZoom: 10,
     layer_ids: [
       'stops-circle',
       'stops-label',
