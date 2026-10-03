@@ -43,12 +43,12 @@ export class MapService {
   public createMap(elementID: string): mapboxgl.Map {
     const mapBounds = new mapboxgl.LngLatBounds([[5.9559,45.818], [10.4921,47.8084]]);
 
-    const mapStageConfig = APP_CONFIG['stages']['MAPBOX_MAP'];
+    const mapboxAccessToken = APP_CONFIG['stages']['MAPBOX_MAP'].authToken ?? 'n/a';
     const map = new mapboxgl.Map({
       container: elementID,
       style: mapStageConfig.url,
       bounds: mapBounds,
-      accessToken: mapStageConfig.authToken ?? 'n/a',
+      accessToken: mapboxAccessToken,
     });
 
     if (this.initialMapCenter) {
