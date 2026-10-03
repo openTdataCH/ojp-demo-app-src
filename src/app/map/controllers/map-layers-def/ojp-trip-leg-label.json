@@ -1,0 +1,26 @@
+{
+  "id": "ojp-trip-leg-label",
+  "type": "symbol",
+  "source": "[SOURCE]",
+  "filter": [
+    "match",
+    ["get", "draw.type"],
+    ["Beeline", "WalkLine", "LegLine"],
+    true,
+    false
+  ],
+  "layout": {
+    "symbol-placement": "line-center",
+    "text-field": ["to-string", ["get", "leg.label"]],
+    "text-font": ["SBB Web Bold", "Arial"],
+    "text-size": 13,
+    "text-allow-overlap": false,
+    "text-ignore-placement": false
+  },
+  "paint": {
+    "text-color": "#1f1f1f",
+    "text-halo-color": "#fff",
+    "text-halo-width": 3,
+    "text-halo-blur": 1
+  }
+}
