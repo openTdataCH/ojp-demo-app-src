@@ -10,7 +10,7 @@ import { MapDebugControl } from '../../map/controls/map-debug-control'
 import { MapLayersLegendControl } from '../../map/controls/map-layers-legend-control';
 import { LanguageService } from './language.service';
 import { TripGeoController } from '../controllers/trip-geo-controller';
-import { MAP_RASTER_LAYERS } from '../../config/constants';
+import { MAP_HIDDEN_BASE_LAYER_IDS, MAP_RASTER_LAYERS } from '../../config/constants';
 import { AnyPlace } from '../models/place/place-builder';
 import { Trip } from '../models/trip/trip';
 import { APP_CONFIG } from '../../config/app-config';
