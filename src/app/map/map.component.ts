@@ -232,6 +232,7 @@ export class MapComponent implements OnInit, AfterViewInit {
       const image_url = './assets/map-style-icons/' + ev.id + '.png';
       map.loadImage(image_url, (error, image) => {
         if (error) {
+          console.error('styleimagemissing: cant find image for ' + ev.id);
           console.error(error);
           return;
         }
