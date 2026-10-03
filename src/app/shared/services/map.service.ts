@@ -67,6 +67,7 @@ export class MapService {
       map.fitBounds(mapBounds, {
         padding: 50,
         duration: 0,
+        retainPadding: false,
       });
     }
 
@@ -151,6 +152,7 @@ export class MapService {
 
     const easingOptions: mapboxgl.EasingOptions = {
       padding: padding,
+      retainPadding: false,
     };
 
     if (mapData.disableEase) {
