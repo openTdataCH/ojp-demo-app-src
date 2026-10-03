@@ -216,7 +216,7 @@ export class MapService {
         source: rasterLayerDef.id,
         type: 'raster',
         paint: {
-          "raster-opacity": rasterLayerDef.rasterOpacity,
+          'raster-opacity': rasterLayerDef.rasterOpacity,
         },
         layout: {
           visibility: 'none',
