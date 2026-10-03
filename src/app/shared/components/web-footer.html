@@ -146,7 +146,24 @@
           </div>
           </div>
         </div>
-      
+
+        <div class="d-flex flex-row map-layer-group-header mt-2">
+          <div class="flex-grow-1">Current Trip</div>
+          <div>
+            <a class="content-collapse align-middle" href="#map_layers_current_trip_body" data-bs-toggle="collapse" aria-expanded="true" aria-controls="map_layers_current_trip_body">
+              <i class="bi bi-plus-circle"></i>
+              <i class="bi bi-dash-circle"></i>
+            </a>
+          </div>
+        </div>
+
+        <div class="collapse show map-layer-group-body" id="map_layers_current_trip_body">
+          <div class="d-flex gap-1">
+            <div><input type="checkbox" class="trip-leg-label-checkbox align-middle"></div>
+            <div><span class="layer-text">Leg labels</span></div>
+          </div>
+        </div>
+
       </div>
     </div>
   </div>
