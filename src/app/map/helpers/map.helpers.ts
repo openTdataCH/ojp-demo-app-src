@@ -11,6 +11,25 @@ interface NearbyFeature {
 type WebMercatorPoint = { x: number; y: number };
 
 export class MapHelpers {
+  public static expandBoundsToGrid(
+    bounds: mapboxgl.LngLatBounds,
+    gridSize: number = 9,
+    gridStepRatio: number = 0.5,
+  ): mapboxgl.LngLatBounds {
+    if (gridSize < 1 || gridSize % 2 === 0) {
+      throw new Error('gridSize must be a positive odd number');
+    }
+
+    const gridRadius = Math.floor(gridSize / 2);
+    const longitudeExpansion = (bounds.getEast() - bounds.getWest()) * gridStepRatio * gridRadius;
+    const latitudeExpansion = (bounds.getNorth() - bounds.getSouth()) * gridStepRatio * gridRadius;
+
+    return new mapboxgl.LngLatBounds(
+      [bounds.getWest() - longitudeExpansion, bounds.getSouth() - latitudeExpansion],
+      [bounds.getEast() + longitudeExpansion, bounds.getNorth() + latitudeExpansion],
+    );
+  }
+
   public static formatMapboxLngLatAsLatLng(lnglat: mapboxgl.LngLat): string {
     const lnglatS = lnglat.lat.toFixed(6) + ',' + lnglat.lng.toFixed(6);
     return lnglatS;
