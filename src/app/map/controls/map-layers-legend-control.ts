@@ -43,6 +43,7 @@ export class MapLayersLegendControl implements mapboxgl.IControl {
 
     this.addLayers(container, map);
     this.addPOICompositeLayers(container, map);
+    this.addCurrentTripLayers(container, map);
 
     map.on('zoom', ev => {
       this.onZoomChanged(map);
@@ -58,6 +59,23 @@ export class MapLayersLegendControl implements mapboxgl.IControl {
     })
 
     return container;
+  }
+
+  private addCurrentTripLayers(container: HTMLElement, map: mapboxgl.Map) {
+    const legLabelsInput = container.querySelector('.trip-leg-label-checkbox') as HTMLInputElement | null;
+    if (legLabelsInput === null) {
+      return;
+    }
+
+    legLabelsInput.addEventListener('change', () => {
+      const layerID = 'ojp-trip-leg-label';
+      if (map.getLayer(layerID) === undefined) {
+        console.error(`Unable to toggle trip leg labels: layer "${layerID}" does not exist.`);
+        return;
+      }
+
+      map.setLayoutProperty(layerID, 'visibility', legLabelsInput.checked ? 'visible' : 'none');
+    });
   }
 
   onRemove() {

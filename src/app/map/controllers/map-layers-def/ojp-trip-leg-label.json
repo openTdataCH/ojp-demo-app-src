@@ -4,6 +4,7 @@
   "source": "[SOURCE]",
   "filter": ["==", ["get", "draw.type"], "LegLabel"],
   "layout": {
+    "visibility": "none",
     "symbol-placement": "point",
     "text-field": ["to-string", ["get", "leg.label"]],
     "text-font": ["SBB Web Bold", "Arial"],
