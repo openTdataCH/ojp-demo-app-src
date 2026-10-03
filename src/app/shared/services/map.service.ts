@@ -195,6 +195,14 @@ export class MapService {
 
   public addRasterLayers(map: mapboxgl.Map) {
     MAP_RASTER_LAYERS.forEach(rasterLayerDef => {
+      if (rasterLayerDef.beforeLayerId && map.getLayer(rasterLayerDef.beforeLayerId) === undefined) {
+        console.error(
+          `Unable to add raster layer "${rasterLayerDef.id}": insertion layer ` +
+          `"${rasterLayerDef.beforeLayerId}" does not exist in the current map style.`,
+        );
+        return;
+      }
+
       const mapSource: mapboxgl.RasterSourceSpecification = {
         type: 'raster',
         tiles: rasterLayerDef.tileURLs,
@@ -221,16 +229,16 @@ export class MapService {
 
   private mapTypeChanged(map: mapboxgl.Map, mapTypeS: string) {
     MAP_RASTER_LAYERS.forEach(rasterLayerDef => {
-      const isVisible = (() => {
-        if (mapTypeS === 'default') {
-          return false;
-        }
+      if (map.getLayer(rasterLayerDef.id) === undefined) {
+        console.error(
+          `Unable to change raster layer "${rasterLayerDef.id}": ` +
+          'the layer does not exist in the current map style.',
+        );
+        return;
+      }
 
-        return rasterLayerDef.id === mapTypeS;
-      })();
-
-      const visibilityProperty = isVisible ? 'visible' : 'none';
-      map.setLayoutProperty(rasterLayerDef.id, 'visibility', visibilityProperty);
+      const isVisible = mapTypeS !== 'default' && rasterLayerDef.id === mapTypeS;
+      map.setLayoutProperty(rasterLayerDef.id, 'visibility', isVisible ? 'visible' : 'none');
     });
   }
 }
