@@ -2,6 +2,7 @@ import * as GeoJSON from 'geojson';
 
 import tripLegBeelineLayerJSON from './map-layers-def/ojp-trip-leg-beeline.json';
 import tripLegBeelineOuterLayerJSON from './map-layers-def/ojp-trip-leg-beeline-outer.json';
+import tripLegLabelLayerJSON from './map-layers-def/ojp-trip-leg-label.json';
 
 import tripTimedLegEndpointFromCircleLayerJSON from './map-layers-def/ojp-trip-timed-leg-endpoint-from-circle.json';
 import tripTimedLegEndpointIntermediateCircleLayerJSON from './map-layers-def/ojp-trip-timed-leg-endpoint-intermediate-circle.json';
@@ -61,6 +62,7 @@ export class TripRenderController {
   private computeMapLayers(): mapboxgl.LayerSpecification[] {
     const tripLegBeelineLayer = tripLegBeelineLayerJSON as mapboxgl.LineLayerSpecification;
     const tripLegBeelineOuterLayer = tripLegBeelineOuterLayerJSON as mapboxgl.LineLayerSpecification;
+    const tripLegLabelLayer = tripLegLabelLayerJSON as mapboxgl.SymbolLayerSpecification;
     
     const tripTimedLegEndpointFromCircleLayer = tripTimedLegEndpointFromCircleLayerJSON as mapboxgl.CircleLayerSpecification;
     const tripTimedLegEndpointIntermediateCircleLayer = tripTimedLegEndpointIntermediateCircleLayerJSON as mapboxgl.CircleLayerSpecification;
@@ -90,10 +92,12 @@ export class TripRenderController {
 
       tripLegLineOuterLayer,                        //    - line (casing)
       tripLegLineLayer,                             //    - line
-      
+
       tripTimedLegEndpointIntermediateCircleLayer,  //    - circle (endpoints, intermediary points)
       tripTimedLegEndpointToCircleLayer,            //    - circle (endpoints, intermediary points)
       tripTimedLegEndpointFromCircleLayer,          //    - circle (endpoints, intermediary points)
+
+      tripLegLabelLayer,                            //    - symbol (always above all trip layers)
     ];
 
     return mapLayers;
@@ -152,6 +156,13 @@ export class TripRenderController {
           });
         }
       }
+
+      if (mapTripLegs[idx].map.show) {
+        const labelFeature = this.computeLegLabelFeature(mapTripLegs[idx], legFeatures);
+        if (labelFeature) {
+          features.push(labelFeature);
+        }
+      }
     });
 
     const geojson: GeoJSON.FeatureCollection = {
@@ -160,5 +171,79 @@ export class TripRenderController {
     };
 
     return geojson;
+  }
+
+  private computeLegLabel(legData: TripLegData, directionMarker: string): string {
+    return `${directionMarker} Leg ${legData.info.id}`;
+  }
+
+  private computeLegLabelFeature(legData: TripLegData, features: GeoJSON.Feature[]): GeoJSON.Feature<GeoJSON.Point> | null {
+    const lineFeatures = features.filter(
+      (feature): feature is GeoJSON.Feature<GeoJSON.LineString> => feature.geometry.type === 'LineString',
+    );
+
+    const segments: Array<{ from: GeoJSON.Position, to: GeoJSON.Position, length: number }> = [];
+    lineFeatures.forEach(feature => {
+      const coordinates = feature.geometry.coordinates;
+      for (let idx = 1; idx < coordinates.length; idx += 1) {
+        const from = coordinates[idx - 1];
+        const to = coordinates[idx];
+        const averageLatitude = (from[1] + to[1]) / 2 * Math.PI / 180;
+        const longitudeDistance = (to[0] - from[0]) * Math.cos(averageLatitude);
+        const latitudeDistance = to[1] - from[1];
+        const length = Math.hypot(longitudeDistance, latitudeDistance);
+        if (length > 0) {
+          segments.push({ from, to, length });
+        }
+      }
+    });
+
+    const totalLength = segments.reduce((sum, segment) => sum + segment.length, 0);
+    if (totalLength === 0) {
+      return null;
+    }
+
+    const midpointDistance = totalLength / 2;
+    let traversedDistance = 0;
+    const midpointSegment = segments.find(segment => {
+      traversedDistance += segment.length;
+      return traversedDistance >= midpointDistance;
+    });
+    if (!midpointSegment) {
+      return null;
+    }
+
+    const distanceBeforeSegment = traversedDistance - midpointSegment.length;
+    const segmentRatio = (midpointDistance - distanceBeforeSegment) / midpointSegment.length;
+    const midpoint: GeoJSON.Position = [
+      midpointSegment.from[0] + (midpointSegment.to[0] - midpointSegment.from[0]) * segmentRatio,
+      midpointSegment.from[1] + (midpointSegment.to[1] - midpointSegment.from[1]) * segmentRatio,
+    ];
+
+    const longitudeDelta = midpointSegment.to[0] - midpointSegment.from[0];
+    const latitudeDelta = midpointSegment.to[1] - midpointSegment.from[1];
+    let rotation = Math.atan2(-latitudeDelta, longitudeDelta) * 180 / Math.PI;
+    let directionMarker = '>>';
+    if (rotation > 90) {
+      rotation -= 180;
+      directionMarker = '<<';
+    } else if (rotation < -90) {
+      rotation += 180;
+      directionMarker = '<<';
+    }
+
+    const drawType: TripLegDrawType = 'LegLabel';
+    return {
+      type: 'Feature',
+      geometry: {
+        type: 'Point',
+        coordinates: midpoint,
+      },
+      properties: {
+        [TripLegPropertiesEnum.DrawType]: drawType,
+        [TripLegPropertiesEnum.Label]: this.computeLegLabel(legData, directionMarker),
+        [TripLegPropertiesEnum.LabelRotation]: rotation,
+      },
+    };
   }
 }

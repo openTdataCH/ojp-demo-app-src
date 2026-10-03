@@ -2,18 +2,15 @@
   "id": "ojp-trip-leg-label",
   "type": "symbol",
   "source": "[SOURCE]",
-  "filter": [
-    "match",
-    ["get", "draw.type"],
-    ["Beeline", "WalkLine", "LegLine"],
-    true,
-    false
-  ],
+  "filter": ["==", ["get", "draw.type"], "LegLabel"],
   "layout": {
-    "symbol-placement": "line-center",
+    "symbol-placement": "point",
     "text-field": ["to-string", ["get", "leg.label"]],
     "text-font": ["SBB Web Bold", "Arial"],
     "text-size": 13,
+    "text-rotate": ["get", "leg.label.rotation"],
+    "text-rotation-alignment": "map",
+    "text-keep-upright": true,
     "text-allow-overlap": false,
     "text-ignore-placement": false
   },
