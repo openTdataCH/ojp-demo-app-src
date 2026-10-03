@@ -1,16 +1,19 @@
 import * as GeoJSON from 'geojson';
 
 import tripLegBeelineLayerJSON from './map-layers-def/ojp-trip-leg-beeline.json';
+import tripLegBeelineOuterLayerJSON from './map-layers-def/ojp-trip-leg-beeline-outer.json';
 
 import tripTimedLegEndpointFromCircleLayerJSON from './map-layers-def/ojp-trip-timed-leg-endpoint-from-circle.json';
 import tripTimedLegEndpointIntermediateCircleLayerJSON from './map-layers-def/ojp-trip-timed-leg-endpoint-intermediate-circle.json';
 import tripTimedLegEndpointToCircleLayerJSON from './map-layers-def/ojp-trip-timed-leg-endpoint-to-circle.json';
 
 import tripLegLineLayerJSON from './map-layers-def/ojp-trip-timed-leg-track.json';
+import tripLegLineOuterLayerJSON from './map-layers-def/ojp-trip-timed-leg-track-outer.json';
 import tripLegLineLayerP2JSON from './map-layers-def/ojp-trip-timed-leg-track-p2.json';
 import tripLegLineLayerP2OuterJSON from './map-layers-def/ojp-trip-timed-leg-track-p2-outer.json';
 
 import tripLegWalkingLineLayerJSON from './map-layers-def/ojp-trip-walking-leg-line.json';
+import tripLegWalkingLineOuterLayerJSON from './map-layers-def/ojp-trip-walking-leg-line-outer.json';
 import tripLegWalkingLineLayerP2JSON from './map-layers-def/ojp-trip-walking-leg-line-p2.json';
 import tripLegWalkingLineLayerP2OuterJSON from './map-layers-def/ojp-trip-walking-leg-line-p2-outer.json';
 
@@ -57,29 +60,35 @@ export class TripRenderController {
 
   private computeMapLayers(): mapboxgl.LayerSpecification[] {
     const tripLegBeelineLayer = tripLegBeelineLayerJSON as mapboxgl.LineLayerSpecification;
+    const tripLegBeelineOuterLayer = tripLegBeelineOuterLayerJSON as mapboxgl.LineLayerSpecification;
     
     const tripTimedLegEndpointFromCircleLayer = tripTimedLegEndpointFromCircleLayerJSON as mapboxgl.CircleLayerSpecification;
     const tripTimedLegEndpointIntermediateCircleLayer = tripTimedLegEndpointIntermediateCircleLayerJSON as mapboxgl.CircleLayerSpecification;
     const tripTimedLegEndpointToCircleLayer = tripTimedLegEndpointToCircleLayerJSON as mapboxgl.CircleLayerSpecification;
     
     const tripLegLineLayer = tripLegLineLayerJSON as mapboxgl.LineLayerSpecification;
+    const tripLegLineOuterLayer = tripLegLineOuterLayerJSON as mapboxgl.LineLayerSpecification;
     const tripLegLineP2Layer = tripLegLineLayerP2JSON as mapboxgl.LineLayerSpecification;
     const tripLegLineP2OuterLayer = tripLegLineLayerP2OuterJSON as mapboxgl.LineLayerSpecification;
     
     const tripLegWalkingLineLayer = tripLegWalkingLineLayerJSON as mapboxgl.LineLayerSpecification;
+    const tripLegWalkingLineOuterLayer = tripLegWalkingLineOuterLayerJSON as mapboxgl.LineLayerSpecification;
     const tripLegWalkingLineP2Layer = tripLegWalkingLineLayerP2JSON as mapboxgl.LineLayerSpecification;
     const tripLegWalkingLineP2OuterLayer = tripLegWalkingLineLayerP2OuterJSON as mapboxgl.LineLayerSpecification;
 
     const mapLayers = [                             // layers order matters:
+      tripLegBeelineOuterLayer,                     //    - line (beeline casing)
       tripLegBeelineLayer,                          //    - line (beelines)
       
       tripLegWalkingLineP2OuterLayer,               //    - line (provider 2 - casing)
       tripLegWalkingLineP2Layer,                    //    - line (provider 2)
+      tripLegWalkingLineOuterLayer,                 //    - line (casing)
       tripLegWalkingLineLayer,                      //    - line
 
       tripLegLineP2OuterLayer,                      //    - line provider 2 + casing
       tripLegLineP2Layer,                           //    -  + casing
-      
+
+      tripLegLineOuterLayer,                        //    - line (casing)
       tripLegLineLayer,                             //    - line
       
       tripTimedLegEndpointIntermediateCircleLayer,  //    - circle (endpoints, intermediary points)
