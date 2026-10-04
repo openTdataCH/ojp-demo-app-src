@@ -68,7 +68,7 @@ export class MapLayersLegendControl implements mapgl.IControl {
     }
 
     legLabelsInput.addEventListener('change', () => {
-      const layerID = legLabelsInput.dataset.mapLayerId;
+      const layerID = legLabelsInput.dataset['mapLayerId'];
       if (!layerID) {
         console.error('Unable to toggle map style layer: data-map-layer-id is missing.');
         return;
