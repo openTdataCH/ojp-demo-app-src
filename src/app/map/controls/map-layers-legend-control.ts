@@ -62,15 +62,20 @@ export class MapLayersLegendControl implements mapgl.IControl {
   }
 
   private addCurrentTripLayers(container: HTMLElement, map: mapgl.Map) {
-    const legLabelsInput = container.querySelector('.trip-leg-label-checkbox') as HTMLInputElement | null;
+    const legLabelsInput = container.querySelector('.map-style-layer-checkbox') as HTMLInputElement | null;
     if (legLabelsInput === null) {
       return;
     }
 
     legLabelsInput.addEventListener('change', () => {
-      const layerID = 'ojp-trip-leg-label';
+      const layerID = legLabelsInput.dataset.mapLayerId;
+      if (!layerID) {
+        console.error('Unable to toggle map style layer: data-map-layer-id is missing.');
+        return;
+      }
+
       if (map.getLayer(layerID) === undefined) {
-        console.error(`Unable to toggle trip leg labels: layer "${layerID}" does not exist.`);
+        console.error(`Unable to toggle map style layer: layer "${layerID}" does not exist.`);
         return;
       }
 
