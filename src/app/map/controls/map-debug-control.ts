@@ -1,13 +1,13 @@
-import mapboxgl from "mapbox-gl";
+import mapgl from "maplibre-gl";
 
-export class MapDebugControl implements mapboxgl.IControl {
-  private map: mapboxgl.Map | null;
+export class MapDebugControl implements mapgl.IControl {
+  private map: mapgl.Map | null;
   private container?: HTMLElement | null;
 
   private debugCenterEl?: HTMLElement | null;
   private debugZoomEl?: HTMLElement | null;
 
-  constructor(map: mapboxgl.Map) {
+  constructor(map: mapgl.Map) {
     this.map = map;
     this.container = null;
 
@@ -15,11 +15,11 @@ export class MapDebugControl implements mapboxgl.IControl {
     this.debugZoomEl = null;
   }
 
-  onAdd(map: mapboxgl.Map): HTMLElement {
+  onAdd(map: mapgl.Map): HTMLElement {
     this.map = map;
 
     this.container = document.createElement('div');
-    this.container.className = 'mapboxgl-ctrl mapboxgl-ctrl-group map-control';
+    this.container.className = 'maplibregl-ctrl maplibregl-ctrl-group map-control';
 
     this.container.innerHTML = (document.getElementById('map-debug-control') as HTMLElement).innerHTML
 

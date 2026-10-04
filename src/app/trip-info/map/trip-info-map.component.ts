@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { SbbDialog } from '@sbb-esta/angular/dialog';
 
-import mapboxgl from 'mapbox-gl'
+import mapgl from 'maplibre-gl'
 
 import { MapService } from '../../shared/services/map.service';
 import { UserTripService } from '../../shared/services/user-trip.service';
@@ -18,7 +18,7 @@ import { GeoPositionBBOX } from '../../shared/models/geo/geoposition-bbox';
   styleUrls: ['./trip-info-map.component.scss']
 })
 export class TripInfoMapComponent implements OnInit {
-  public mapLoadingPromise: Promise<mapboxgl.Map> | null;
+  public mapLoadingPromise: Promise<mapgl.Map> | null;
   private journeyServiceRenderer: JourneyServiceRenderer | null
 
   constructor(
@@ -77,7 +77,7 @@ export class TripInfoMapComponent implements OnInit {
   private initMap() {
     const map = this.mapService.createMap('map_canvas_trip_info');
     
-    this.mapLoadingPromise = new Promise<mapboxgl.Map>((resolve, reject) => {
+    this.mapLoadingPromise = new Promise<mapgl.Map>((resolve, reject) => {
       map.on('load', ev => {
         resolve(map);
         this.onMapLoad(map);
@@ -98,14 +98,14 @@ export class TripInfoMapComponent implements OnInit {
       return;
     }
 
-    const bounds = new mapboxgl.LngLatBounds(bbox.asFeatureBBOX());
+    const bounds = new mapgl.LngLatBounds(bbox.asFeatureBBOX());
     const mapData = {
       bounds: bounds,
     }
     this.mapService.newMapBoundsRequested.emit(mapData);
   }
 
-  private onMapLoad(map: mapboxgl.Map) {
+  private onMapLoad(map: mapgl.Map) {
     this.mapService.addControls(map, this.debugXmlPopover, this.userTripService, this.languageService);
 
     this.addMapListeners(map);
@@ -115,18 +115,17 @@ export class TripInfoMapComponent implements OnInit {
     this.journeyServiceRenderer = new JourneyServiceRenderer(map);
   }
 
-  private addMapListeners(map: mapboxgl.Map) {
-    map.on('styleimagemissing', ev => {
+  private addMapListeners(map: mapgl.Map) {
+    map.on('styleimagemissing', async ev => {
       const image_url = './assets/map-style-icons/' + ev.id + '.png';
-      map.loadImage(image_url, (error, image) => {
-        if (error) {
-          console.error(error);
-          return;
+      try {
+        const image = await map.loadImage(image_url);
+        if (!map.hasImage(ev.id)) {
+          map.addImage(ev.id, image.data);
         }
-        if (!map.hasImage(ev.id) && image) {
-          map.addImage(ev.id, image);
-        } 
-      });
+      } catch (error) {
+        console.error(error);
+      }
     });
 
     map.on('click', ev => {

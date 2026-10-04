@@ -1,6 +1,6 @@
 import { Injectable, EventEmitter } from '@angular/core'
 
-import mapboxgl from 'mapbox-gl';
+import mapgl from 'maplibre-gl';
 
 import { SbbDialog } from '@sbb-esta/angular/dialog';
 
@@ -16,14 +16,14 @@ import { Trip } from '../models/trip/trip';
 import { APP_CONFIG } from '../../config/app-config';
 
 export interface IMapBoundsData {
-  bounds: mapboxgl.LngLatBounds
+  bounds: mapgl.LngLatBounds
   onlyIfOutside?: boolean | null
-  padding?: mapboxgl.PaddingOptions | null
+  padding?: mapgl.PaddingOptions | null
   disableEase?: boolean | null
 }
 
 export interface IMapLocationZoomData {
-  lnglat: mapboxgl.LngLatLike
+  lnglat: mapgl.LngLatLike
   zoom: number
 }
 
@@ -32,7 +32,7 @@ export class MapService {
   public newMapBoundsRequested = new EventEmitter<IMapBoundsData>();
   public newMapCenterAndZoomRequested = new EventEmitter<IMapLocationZoomData>();
 
-  public initialMapCenter: mapboxgl.LngLat | null
+  public initialMapCenter: mapgl.LngLat | null
   public initialMapZoom: number | null
 
   constructor() {
@@ -40,18 +40,16 @@ export class MapService {
     this.initialMapZoom = null;
   }
 
-  public createMap(elementID: string): mapboxgl.Map {
-    const mapBounds = new mapboxgl.LngLatBounds([[5.9559,45.818], [10.4921,47.8084]]);
+  public createMap(elementID: string): mapgl.Map {
+    const mapBounds = new mapgl.LngLatBounds([[5.9559,45.818], [10.4921,47.8084]]);
 
-    const mapboxAccessToken = APP_CONFIG['stages']['MAPBOX_MAP'].authToken ?? 'n/a';
     const geopsAPIKey = APP_CONFIG['stages']['SHAPE_PROVIDER'].authToken ?? '';
     const mapStyleURL = `https://maps.geops.io/styles/base_bright_v2/style.json?key=${encodeURIComponent(geopsAPIKey)}`;
 
-    const map = new mapboxgl.Map({
+    const map = new mapgl.Map({
       container: elementID,
       style: mapStyleURL,
       bounds: mapBounds,
-      accessToken: mapboxAccessToken,
     });
 
     map.on('load', () => {
@@ -67,14 +65,13 @@ export class MapService {
       map.fitBounds(mapBounds, {
         padding: 50,
         duration: 0,
-        retainPadding: false,
       });
     }
 
     return map;
   }
 
-  private hideBaseLayers(map: mapboxgl.Map) {
+  private hideBaseLayers(map: mapgl.Map) {
     MAP_HIDDEN_BASE_LAYER_IDS.forEach(layerID => {
       if (map.getLayer(layerID) === undefined) {
         console.error(`Unable to hide base layer "${layerID}": layer does not exist in the current map style.`);
@@ -100,7 +97,7 @@ export class MapService {
       return;
     }
 
-    const bounds = new mapboxgl.LngLatBounds(bbox.asFeatureBBOX())
+    const bounds = new mapgl.LngLatBounds(bbox.asFeatureBBOX())
     const mapData = {
       bounds: bounds
     }
@@ -108,7 +105,7 @@ export class MapService {
     this.newMapBoundsRequested.emit(mapData);
   }
 
-  public zoomToBounds(map: mapboxgl.Map, mapData: IMapBoundsData) {
+  public zoomToBounds(map: mapgl.Map, mapData: IMapBoundsData) {
     const newBounds = mapData.bounds;
 
     const minDistanceM = 20
@@ -148,11 +145,10 @@ export class MapService {
     // without this hack we get
     // ERROR Error: Uncaught (in promise): Error: `LngLatLike` argument must be specified as a LngLat instance, an object {lng: <lng>, lat: <lat>}, an object {lon: <lng>, lat: <lat>}, or an array of [<lng>, <lat>]
     // Error: `LngLatLike` argument must be specified as a LngLat instance, an object {lng: <lng>, lat: <lat>}, an object {lon: <lng>, lat: <lat>}, or an array of [<lng>, <lat>]
-    const fixedBounds: mapboxgl.LngLatBoundsLike = [newBounds.getWest(), newBounds.getSouth(), newBounds.getEast(), newBounds.getNorth()];
+    const fixedBounds: mapgl.LngLatBoundsLike = [newBounds.getWest(), newBounds.getSouth(), newBounds.getEast(), newBounds.getNorth()];
 
-    const easingOptions: mapboxgl.EasingOptions = {
+    const easingOptions: mapgl.FitBoundsOptions = {
       padding: padding,
-      retainPadding: false,
     };
 
     if (mapData.disableEase) {
@@ -162,21 +158,21 @@ export class MapService {
     map.fitBounds(fixedBounds, easingOptions);
   }
 
-  public zoomToLocation(map: mapboxgl.Map, mapData: IMapLocationZoomData) {
+  public zoomToLocation(map: mapgl.Map, mapData: IMapLocationZoomData) {
     map.flyTo({
       center: mapData.lnglat,
       zoom: mapData.zoom
     });
   }
 
-  public addControls(map: mapboxgl.Map, debugXmlPopover: SbbDialog, userTripService: UserTripService, languageService: LanguageService) {
-    const navigationControl = new mapboxgl.NavigationControl({
+  public addControls(map: mapgl.Map, debugXmlPopover: SbbDialog, userTripService: UserTripService, languageService: LanguageService) {
+    const navigationControl = new mapgl.NavigationControl({
       showCompass: false,
       visualizePitch: false
     });
     map.addControl(navigationControl, 'bottom-right');
 
-    const scaleControl = new mapboxgl.ScaleControl({
+    const scaleControl = new mapgl.ScaleControl({
         maxWidth: 200,
         unit: 'metric'
     });
@@ -197,7 +193,7 @@ export class MapService {
     map.addControl(mapLayersLegendControl, 'top-right');
   }
 
-  public addRasterLayers(map: mapboxgl.Map) {
+  public addRasterLayers(map: mapgl.Map) {
     MAP_RASTER_LAYERS.forEach(rasterLayerDef => {
       if (rasterLayerDef.beforeLayerId && map.getLayer(rasterLayerDef.beforeLayerId) === undefined) {
         console.error(
@@ -207,7 +203,7 @@ export class MapService {
         return;
       }
 
-      const mapSource: mapboxgl.RasterSourceSpecification = {
+      const mapSource: mapgl.RasterSourceSpecification = {
         type: 'raster',
         tiles: rasterLayerDef.tileURLs,
         tileSize: 256,
@@ -216,7 +212,7 @@ export class MapService {
       };
       map.addSource(rasterLayerDef.id, mapSource);
 
-      const layer: mapboxgl.RasterLayerSpecification = {
+      const layer: mapgl.RasterLayerSpecification = {
         id: rasterLayerDef.id,
         source: rasterLayerDef.id,
         type: 'raster',
@@ -231,7 +227,7 @@ export class MapService {
     });
   }
 
-  private mapTypeChanged(map: mapboxgl.Map, mapTypeS: string) {
+  private mapTypeChanged(map: mapgl.Map, mapTypeS: string) {
     MAP_RASTER_LAYERS.forEach(rasterLayerDef => {
       if (map.getLayer(rasterLayerDef.id) === undefined) {
         console.error(

@@ -2,7 +2,7 @@ import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { Router } from '@angular/router';
 import { DomSanitizer } from '@angular/platform-browser';
 
-import mapboxgl from 'mapbox-gl';
+import mapgl from 'maplibre-gl';
 
 import { SbbDialog } from "@sbb-esta/angular/dialog";
 import { SbbIconRegistry } from '@sbb-esta/angular/icon';
@@ -284,7 +284,7 @@ export class ResultTripLegComponent implements OnInit {
       return
     }
 
-    const bounds = new mapboxgl.LngLatBounds(bbox.asFeatureBBOX())
+    const bounds = new mapgl.LngLatBounds(bbox.asFeatureBBOX())
     const mapData = {
       bounds: bounds,
     }
@@ -742,7 +742,7 @@ export class ResultTripLegComponent implements OnInit {
     } else {
       const bbox = feature.bbox ?? null;
       if (bbox) {
-        const bounds = new mapboxgl.LngLatBounds(bbox as [number, number, number, number]);
+        const bounds = new mapgl.LngLatBounds(bbox as [number, number, number, number]);
 
         const dx = bounds.getSouthWest().distanceTo(bounds.getSouthEast());
         const dy = bounds.getNorthWest().distanceTo(bounds.getSouthWest());

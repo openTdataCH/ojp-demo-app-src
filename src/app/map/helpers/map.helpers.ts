@@ -1,21 +1,21 @@
 import * as OJP from 'ojp-sdk';
 
 import * as GeoJSON from 'geojson'
-import mapboxgl from "mapbox-gl";
+import mapgl from "maplibre-gl";
 
 interface NearbyFeature {
   distance: number
-  feature: mapboxgl.GeoJSONFeature
+  feature: mapgl.MapGeoJSONFeature
 }
 
 type WebMercatorPoint = { x: number; y: number };
 
 export class MapHelpers {
   public static expandBoundsToGrid(
-    bounds: mapboxgl.LngLatBounds,
+    bounds: mapgl.LngLatBounds,
     gridSize: number = 9,
     gridStepRatio: number = 0.5,
-  ): mapboxgl.LngLatBounds {
+  ): mapgl.LngLatBounds {
     if (gridSize < 1 || gridSize % 2 === 0) {
       throw new Error('gridSize must be a positive odd number');
     }
@@ -24,35 +24,35 @@ export class MapHelpers {
     const longitudeExpansion = (bounds.getEast() - bounds.getWest()) * gridStepRatio * gridRadius;
     const latitudeExpansion = (bounds.getNorth() - bounds.getSouth()) * gridStepRatio * gridRadius;
 
-    return new mapboxgl.LngLatBounds(
+    return new mapgl.LngLatBounds(
       [bounds.getWest() - longitudeExpansion, bounds.getSouth() - latitudeExpansion],
       [bounds.getEast() + longitudeExpansion, bounds.getNorth() + latitudeExpansion],
     );
   }
 
-  public static formatMapboxLngLatAsLatLng(lnglat: mapboxgl.LngLat): string {
+  public static formatMapboxLngLatAsLatLng(lnglat: mapgl.LngLat): string {
     const lnglatS = lnglat.lat.toFixed(6) + ',' + lnglat.lng.toFixed(6);
     return lnglatS;
   }
 
-  public static computePointLngLatFromFeature(feature: GeoJSON.Feature): mapboxgl.LngLat | null {
+  public static computePointLngLatFromFeature(feature: GeoJSON.Feature): mapgl.LngLat | null {
     if (feature.geometry.type !== 'Point') {
       return null;
     }
 
-    const featureCoords: mapboxgl.LngLatLike = (feature.geometry as GeoJSON.Point).coordinates as [number, number];
-    const featureLngLat = mapboxgl.LngLat.convert(featureCoords);
+    const featureCoords: mapgl.LngLatLike = (feature.geometry as GeoJSON.Point).coordinates as [number, number];
+    const featureLngLat = mapgl.LngLat.convert(featureCoords);
 
     return featureLngLat;
   }
 
-  private static bboxPxFromLngLatWidthPx(map: mapboxgl.Map, lngLat: mapboxgl.LngLat, width: number, height: number | null = null): [mapboxgl.PointLike, mapboxgl.PointLike] {
+  private static bboxPxFromLngLatWidthPx(map: mapgl.Map, lngLat: mapgl.LngLat, width: number, height: number | null = null): [mapgl.PointLike, mapgl.PointLike] {
     if (height === null) {
       height = width;
     }
 
     const pointPx = map.project(lngLat);
-    const bboxPx: [mapboxgl.PointLike, mapboxgl.PointLike] = [
+    const bboxPx: [mapgl.PointLike, mapgl.PointLike] = [
       [
         pointPx.x - width / 2,
         pointPx.y + height / 2,
@@ -66,15 +66,15 @@ export class MapHelpers {
     return bboxPx;
   }
 
-  private static bboxPxToLngLatBounds(map: mapboxgl.Map, bboxPx: [mapboxgl.PointLike, mapboxgl.PointLike]): mapboxgl.LngLatBounds {
+  private static bboxPxToLngLatBounds(map: mapgl.Map, bboxPx: [mapgl.PointLike, mapgl.PointLike]): mapgl.LngLatBounds {
     const coordSW = map.unproject(bboxPx[0]);
     const coordNE = map.unproject(bboxPx[1]);
-    const bbox = new mapboxgl.LngLatBounds(coordSW, coordNE);
+    const bbox = new mapgl.LngLatBounds(coordSW, coordNE);
 
     return bbox;
   }
 
-  public static bboxFromLngLatWidthPx(map: mapboxgl.Map, lngLat: mapboxgl.LngLat, width: number, height: number | null = null): number[] {
+  public static bboxFromLngLatWidthPx(map: mapgl.Map, lngLat: mapgl.LngLat, width: number, height: number | null = null): number[] {
     const bboxPx = MapHelpers.bboxPxFromLngLatWidthPx(map, lngLat, width, height);
     const bboxLngLatBounds = MapHelpers.bboxPxToLngLatBounds(map, bboxPx);
     const bbox: number[] = [
@@ -87,7 +87,7 @@ export class MapHelpers {
     return bbox;
   }
 
-  public static areBoundsInsideOtherBounds(bounds: mapboxgl.LngLatBounds, otherBounds: mapboxgl.LngLatBounds): boolean {
+  public static areBoundsInsideOtherBounds(bounds: mapgl.LngLatBounds, otherBounds: mapgl.LngLatBounds): boolean {
     if (bounds.getWest() < otherBounds.getWest()) {
       return false;
     }
@@ -107,7 +107,7 @@ export class MapHelpers {
     return true;
   }
 
-  public static queryNearbyFeaturesByLayerIDs(map: mapboxgl.Map, lngLat: mapboxgl.LngLat, layerIDs: string[]): NearbyFeature[] {
+  public static queryNearbyFeaturesByLayerIDs(map: mapgl.Map, lngLat: mapgl.LngLat, layerIDs: string[]): NearbyFeature[] {
     const bboxPx = MapHelpers.bboxPxFromLngLatWidthPx(map, lngLat, 30);
     const features = map.queryRenderedFeatures(bboxPx, {
       layers: layerIDs
@@ -144,17 +144,17 @@ export class MapHelpers {
     return nearbyFeatures;
   }
 
-  private static highlightBBOXPxOnMap(bboxPx: [mapboxgl.PointLike, mapboxgl.PointLike], map: mapboxgl.Map) {
+  private static highlightBBOXPxOnMap(bboxPx: [mapgl.PointLike, mapgl.PointLike], map: mapgl.Map) {
     const bbox = MapHelpers.bboxPxToLngLatBounds(map, bboxPx);
     MapHelpers.highlightLngLatBoundsOnMap(bbox, map);
   }
 
-  public static highlightBBOXOnMap(bbox: number[], map: mapboxgl.Map) {
-    const bboxLngLatBounds = new mapboxgl.LngLatBounds(bbox as [number, number, number, number]);
+  public static highlightBBOXOnMap(bbox: number[], map: mapgl.Map) {
+    const bboxLngLatBounds = new mapgl.LngLatBounds(bbox as [number, number, number, number]);
     MapHelpers.highlightLngLatBoundsOnMap(bboxLngLatBounds, map);
   }
   
-  private static highlightLngLatBoundsOnMap(bboxLngLatBounds: mapboxgl.LngLatBounds, map: mapboxgl.Map) {
+  private static highlightLngLatBoundsOnMap(bboxLngLatBounds: mapgl.LngLatBounds, map: mapgl.Map) {
     const featureCoords: GeoJSON.Position[] = [
       bboxLngLatBounds.getSouthWest().toArray(),
       bboxLngLatBounds.getSouthEast().toArray(),
@@ -174,7 +174,7 @@ export class MapHelpers {
     
     const sourceID = 'debug-highlight';
     if (!map.getSource(sourceID)) {
-      const source = <mapboxgl.GeoJSONSourceSpecification>{
+      const source = <mapgl.GeoJSONSourceSpecification>{
         type: 'geojson',
         data: <GeoJSON.FeatureCollection>{
           type: 'FeatureCollection',
@@ -186,11 +186,11 @@ export class MapHelpers {
     
     const layerID = sourceID + '-bbox';
     if (!map.getLayer(layerID)) {
-      const layer = <mapboxgl.LineLayerSpecification>{
+      const layer = <mapgl.LineLayerSpecification>{
         id: layerID,
         type: 'line',
         source: sourceID,
-        paint: <mapboxgl.LineLayerSpecification['paint']>{
+        paint: <mapgl.LineLayerSpecification['paint']>{
           'line-color': '#630000',
           'line-width': 2,
         },
@@ -198,7 +198,7 @@ export class MapHelpers {
       map.addLayer(layer);
     }
     
-    const source = map.getSource(sourceID) as mapboxgl.GeoJSONSource;
+    const source = map.getSource(sourceID) as mapgl.GeoJSONSource;
     source.setData(<GeoJSON.FeatureCollection>{
       type: 'FeatureCollection',
       features: [feature],
@@ -212,7 +212,7 @@ export class MapHelpers {
     }, 500);
   }
   
-  public static highlightLngLatOnMap(lngLat: mapboxgl.LngLat, map: mapboxgl.Map) {
+  public static highlightLngLatOnMap(lngLat: mapgl.LngLat, map: mapgl.Map) {
     const feature = <GeoJSON.Feature>{
       type: 'Feature',
       properties: {},
@@ -224,7 +224,7 @@ export class MapHelpers {
     
     const sourceID = 'debug-highlight-layer-coord';
     if (!map.getSource(sourceID)) {
-      const source = <mapboxgl.GeoJSONSourceSpecification>{
+      const source = <mapgl.GeoJSONSourceSpecification>{
         type: 'geojson',
         data: <GeoJSON.FeatureCollection>{
           type: 'FeatureCollection',
@@ -236,11 +236,11 @@ export class MapHelpers {
     
     const layerID = sourceID + '-coords';
     if (!map.getLayer(layerID)) {
-      const layer = <mapboxgl.CircleLayerSpecification>{
+      const layer = <mapgl.CircleLayerSpecification>{
         id: layerID,
         type: 'circle',
         source: sourceID,
-        paint: <mapboxgl.CircleLayerSpecification['paint']>{
+        paint: <mapgl.CircleLayerSpecification['paint']>{
           'circle-color': '#630000',
           'circle-radius': 4
         },
@@ -248,7 +248,7 @@ export class MapHelpers {
       map.addLayer(layer);
     }
     
-    const source = map.getSource(sourceID) as mapboxgl.GeoJSONSource;
+    const source = map.getSource(sourceID) as mapgl.GeoJSONSource;
     source.setData(<GeoJSON.FeatureCollection>{
       type: 'FeatureCollection',
       features: [feature],

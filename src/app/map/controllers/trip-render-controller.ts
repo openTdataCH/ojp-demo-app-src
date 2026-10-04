@@ -1,4 +1,5 @@
 import * as GeoJSON from 'geojson';
+import mapgl from 'maplibre-gl';
 
 import tripLegBeelineLayerJSON from './map-layers-def/ojp-trip-leg-beeline.json';
 import tripLegBeelineOuterLayerJSON from './map-layers-def/ojp-trip-leg-beeline-outer.json';
@@ -24,10 +25,10 @@ import { TripLegData } from '../../shared/types/trip';
 import { TripLegDrawType, TripLegPropertiesEnum } from '../../shared/types/map-geometry-types';
 
 export class TripRenderController {
-  private map: mapboxgl.Map;
+  private map: mapgl.Map;
   private mapSourceId = 'trip-data';
 
-  constructor(map: mapboxgl.Map) {
+  constructor(map: mapgl.Map) {
     this.map = map;
     this.addMapSourceAndLayers();
   }
@@ -39,7 +40,7 @@ export class TripRenderController {
   }
 
   private addMapSourceAndLayers() {
-    const source: mapboxgl.GeoJSONSourceSpecification = {
+    const source: mapgl.GeoJSONSourceSpecification = {
       type: 'geojson',
       data: {
         type: 'FeatureCollection',
@@ -53,30 +54,32 @@ export class TripRenderController {
 
 
     mapLayers.forEach(mapLayerJSON => {
-      const mapLayerDef = mapLayerJSON as mapboxgl.Layer;
-      mapLayerDef.source = this.mapSourceId;
-      this.map.addLayer(mapLayerDef as mapboxgl.LayerSpecification);
+      const mapLayerDef = {
+        ...mapLayerJSON,
+        source: this.mapSourceId,
+      } as mapgl.LayerSpecification;
+      this.map.addLayer(mapLayerDef as mapgl.LayerSpecification);
     });
   }
 
-  private computeMapLayers(): mapboxgl.LayerSpecification[] {
-    const tripLegBeelineLayer = tripLegBeelineLayerJSON as mapboxgl.LineLayerSpecification;
-    const tripLegBeelineOuterLayer = tripLegBeelineOuterLayerJSON as mapboxgl.LineLayerSpecification;
-    const tripLegLabelLayer = tripLegLabelLayerJSON as mapboxgl.SymbolLayerSpecification;
+  private computeMapLayers(): mapgl.LayerSpecification[] {
+    const tripLegBeelineLayer = tripLegBeelineLayerJSON as mapgl.LineLayerSpecification;
+    const tripLegBeelineOuterLayer = tripLegBeelineOuterLayerJSON as mapgl.LineLayerSpecification;
+    const tripLegLabelLayer = tripLegLabelLayerJSON as mapgl.SymbolLayerSpecification;
     
-    const tripTimedLegEndpointFromCircleLayer = tripTimedLegEndpointFromCircleLayerJSON as mapboxgl.CircleLayerSpecification;
-    const tripTimedLegEndpointIntermediateCircleLayer = tripTimedLegEndpointIntermediateCircleLayerJSON as mapboxgl.CircleLayerSpecification;
-    const tripTimedLegEndpointToCircleLayer = tripTimedLegEndpointToCircleLayerJSON as mapboxgl.CircleLayerSpecification;
+    const tripTimedLegEndpointFromCircleLayer = tripTimedLegEndpointFromCircleLayerJSON as mapgl.CircleLayerSpecification;
+    const tripTimedLegEndpointIntermediateCircleLayer = tripTimedLegEndpointIntermediateCircleLayerJSON as mapgl.CircleLayerSpecification;
+    const tripTimedLegEndpointToCircleLayer = tripTimedLegEndpointToCircleLayerJSON as mapgl.CircleLayerSpecification;
     
-    const tripLegLineLayer = tripLegLineLayerJSON as mapboxgl.LineLayerSpecification;
-    const tripLegLineOuterLayer = tripLegLineOuterLayerJSON as mapboxgl.LineLayerSpecification;
-    const tripLegLineP2Layer = tripLegLineLayerP2JSON as mapboxgl.LineLayerSpecification;
-    const tripLegLineP2OuterLayer = tripLegLineLayerP2OuterJSON as mapboxgl.LineLayerSpecification;
+    const tripLegLineLayer = tripLegLineLayerJSON as mapgl.LineLayerSpecification;
+    const tripLegLineOuterLayer = tripLegLineOuterLayerJSON as mapgl.LineLayerSpecification;
+    const tripLegLineP2Layer = tripLegLineLayerP2JSON as mapgl.LineLayerSpecification;
+    const tripLegLineP2OuterLayer = tripLegLineLayerP2OuterJSON as mapgl.LineLayerSpecification;
     
-    const tripLegWalkingLineLayer = tripLegWalkingLineLayerJSON as mapboxgl.LineLayerSpecification;
-    const tripLegWalkingLineOuterLayer = tripLegWalkingLineOuterLayerJSON as mapboxgl.LineLayerSpecification;
-    const tripLegWalkingLineP2Layer = tripLegWalkingLineLayerP2JSON as mapboxgl.LineLayerSpecification;
-    const tripLegWalkingLineP2OuterLayer = tripLegWalkingLineLayerP2OuterJSON as mapboxgl.LineLayerSpecification;
+    const tripLegWalkingLineLayer = tripLegWalkingLineLayerJSON as mapgl.LineLayerSpecification;
+    const tripLegWalkingLineOuterLayer = tripLegWalkingLineOuterLayerJSON as mapgl.LineLayerSpecification;
+    const tripLegWalkingLineP2Layer = tripLegWalkingLineLayerP2JSON as mapgl.LineLayerSpecification;
+    const tripLegWalkingLineP2OuterLayer = tripLegWalkingLineLayerP2OuterJSON as mapgl.LineLayerSpecification;
 
     const mapLayers = [                             // layers order matters:
       tripLegBeelineOuterLayer,                     //    - line (beeline casing)
@@ -104,7 +107,7 @@ export class TripRenderController {
   }
 
   private setSourceFeatures(features: GeoJSON.Feature[], sourceId: string) {
-    const source = this.map.getSource(sourceId) as mapboxgl.GeoJSONSource
+    const source = this.map.getSource(sourceId) as mapgl.GeoJSONSource
     const featureCollection: GeoJSON.FeatureCollection = {
       type: 'FeatureCollection',
       features: features

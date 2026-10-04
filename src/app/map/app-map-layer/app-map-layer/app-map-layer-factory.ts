@@ -1,4 +1,4 @@
-import mapboxgl from 'mapbox-gl';
+import mapgl from 'maplibre-gl';
 
 import * as OJP from 'ojp-sdk';
 
@@ -13,7 +13,7 @@ import { SharedMobilityAppMapLayer } from "./shared-mobility-app-map-layer";
 import { StopAppMapLayer } from "./stop-app-map-layer";
 
 export class AppMapLayerFactory {
-  public static init(language: OJP.Language, layerKey: string, map: mapboxgl.Map, appMapLayerOptions: AppMapLayerOptions, userTripService: UserTripService): AppMapLayer {
+  public static init(language: OJP.Language, layerKey: string, map: mapgl.Map, appMapLayerOptions: AppMapLayerOptions, userTripService: UserTripService): AppMapLayer {
       if (appMapLayerOptions.LIR_Restriction_Type === 'stop') {
           const stopAppMapLayer = new StopAppMapLayer(language, layerKey, map, appMapLayerOptions, userTripService);
           return stopAppMapLayer;

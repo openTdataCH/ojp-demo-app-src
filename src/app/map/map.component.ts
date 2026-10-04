@@ -3,7 +3,7 @@ import { Subject, takeUntil } from 'rxjs';
 
 import { SbbDialog } from "@sbb-esta/angular/dialog";
 
-import mapboxgl from 'mapbox-gl'
+import mapgl from 'maplibre-gl'
 
 import { IMapBoundsData, MapService } from '../shared/services/map.service';
 import { UserTripService } from '../shared/services/user-trip.service';
@@ -24,13 +24,13 @@ import { JourneyPointType } from '../shared/types/_all';
   styleUrls: ['./map.component.scss']
 })
 export class MapComponent implements OnInit, AfterViewInit {
-  public mapLoadingPromise: Promise<mapboxgl.Map> | null;
+  public mapLoadingPromise: Promise<mapgl.Map> | null;
 
-  private fromMarker: mapboxgl.Marker;
-  private toMarker: mapboxgl.Marker;
-  private viaMarkers: mapboxgl.Marker[];
+  private fromMarker: mapgl.Marker;
+  private toMarker: mapgl.Marker;
+  private viaMarkers: mapgl.Marker[];
 
-  private popupContextMenu: mapboxgl.Popup;
+  private popupContextMenu: mapgl.Popup;
 
   private tripRenderController: TripRenderController | null;
 
@@ -43,15 +43,15 @@ export class MapComponent implements OnInit, AfterViewInit {
     private debugXmlPopover: SbbDialog,
   ) {
     // Dummy initialize the markers, re-init them in the loop below
-    this.fromMarker = new mapboxgl.Marker();
-    this.toMarker = new mapboxgl.Marker();
+    this.fromMarker = new mapgl.Marker();
+    this.toMarker = new mapgl.Marker();
 
     const endpointTypes: JourneyPointType[] = ['From', 'To'];
     endpointTypes.forEach(endpointType => {
       var markerDIV = document.createElement('div');
       markerDIV.className = 'marker-journey-endpoint marker-journey-endpoint-' + endpointType;
 
-      const marker = new mapboxgl.Marker({
+      const marker = new mapgl.Marker({
         element: markerDIV,
         draggable: true,
         anchor: 'bottom'
@@ -73,7 +73,7 @@ export class MapComponent implements OnInit, AfterViewInit {
 
     this.mapLoadingPromise = null;
 
-    this.popupContextMenu = new mapboxgl.Popup({
+    this.popupContextMenu = new mapgl.Popup({
       focusAfterOpen: false,
     });
 
@@ -134,7 +134,7 @@ export class MapComponent implements OnInit, AfterViewInit {
   private initMap() {
     const map = this.mapService.createMap('map_canvas');
 
-    this.mapLoadingPromise = new Promise<mapboxgl.Map>((resolve, reject) => {
+    this.mapLoadingPromise = new Promise<mapgl.Map>((resolve, reject) => {
       map.on('load', ev => {
         resolve(map);
         this.onMapLoad(map);
@@ -177,7 +177,7 @@ export class MapComponent implements OnInit, AfterViewInit {
     }
   }
 
-  private async handleMarkerDrag(marker: mapboxgl.Marker, endpointType: JourneyPointType) {
+  private async handleMarkerDrag(marker: mapgl.Marker, endpointType: JourneyPointType) {
     const lngLat = marker.getLngLat();
 
     let place = new PlaceLocation(lngLat.lng, lngLat.lat);
@@ -192,7 +192,7 @@ export class MapComponent implements OnInit, AfterViewInit {
     });
   }
 
-  private async tryToFindNearbyPlace(map: mapboxgl.Map, lngLat: mapboxgl.LngLat): Promise<AnyPlace | null> {
+  private async tryToFindNearbyPlace(map: mapgl.Map, lngLat: mapgl.LngLat): Promise<AnyPlace | null> {
     const centerPlace = new PlaceLocation(lngLat.lng, lngLat.lat);
     
     const bbox = MapHelpers.bboxFromLngLatWidthPx(map, lngLat, 20, 20);
@@ -221,25 +221,24 @@ export class MapComponent implements OnInit, AfterViewInit {
     return sortedPlaces[0];
   }
 
-  private onMapLoad(map: mapboxgl.Map) {
+  private onMapLoad(map: mapgl.Map) {
     this.mapService.addControls(map, this.debugXmlPopover, this.userTripService, this.languageService);
 
-    map.on('contextmenu', (ev: mapboxgl.MapMouseEvent) => {
+    map.on('contextmenu', (ev: mapgl.MapMouseEvent) => {
       this.showPickupPopup(map, ev.lngLat);
     });
 
-    map.on('styleimagemissing', ev => {
+    map.on('styleimagemissing', async ev => {
       const image_url = './assets/map-style-icons/' + ev.id + '.png';
-      map.loadImage(image_url, (error, image) => {
-        if (error) {
-          console.error('styleimagemissing: cant find image for ' + ev.id);
-          console.error(error);
-          return;
+      try {
+        const image = await map.loadImage(image_url);
+        if (!map.hasImage(ev.id)) {
+          map.addImage(ev.id, image.data);
         }
-        if (!map.hasImage(ev.id) && image) {
-          map.addImage(ev.id, image);
-        } 
-      });
+      } catch (error) {
+        console.error('styleimagemissing: cant find image for ' + ev.id);
+        console.error(error);
+      }
     });
 
     this.mapService.addRasterLayers(map);
@@ -247,7 +246,7 @@ export class MapComponent implements OnInit, AfterViewInit {
     this.tripRenderController = new TripRenderController(map);
   }
 
-  private showPickupPopup(map: mapboxgl.Map, lngLat: mapboxgl.LngLat) {
+  private showPickupPopup(map: mapgl.Map, lngLat: mapgl.LngLat) {
     let popupHTML = (document.getElementById('map-endpoint-coords-picker-popup') as HTMLElement).innerHTML;
     const pointLatLngS = MapHelpers.formatMapboxLngLatAsLatLng(lngLat);
     popupHTML = popupHTML.replace('[PICKER_COORDS]', pointLatLngS);
@@ -273,7 +272,7 @@ export class MapComponent implements OnInit, AfterViewInit {
       .addTo(map);
   }
 
-  private updateMarkerLocation(marker: mapboxgl.Marker, place: AnyPlace | null) {
+  private updateMarkerLocation(marker: mapgl.Marker, place: AnyPlace | null) {
     if (place === null) {
       marker.remove();
       return;
@@ -289,7 +288,7 @@ export class MapComponent implements OnInit, AfterViewInit {
     marker.setLngLat(place.geoPosition.asLngLat());
   }
 
-  private createViaMarker(place: AnyPlace, markerIDx: number): mapboxgl.Marker {
+  private createViaMarker(place: AnyPlace, markerIDx: number): mapgl.Marker {
     const markerDIV = document.createElement('div');
     markerDIV.className = 'marker-journey-endpoint marker-journey-endpoint-Via';
 
@@ -298,7 +297,7 @@ export class MapComponent implements OnInit, AfterViewInit {
       isDraggable = true;
     }
 
-    const marker = new mapboxgl.Marker({
+    const marker = new mapgl.Marker({
       element: markerDIV,
       anchor: 'bottom',
       draggable: isDraggable,
@@ -322,7 +321,7 @@ export class MapComponent implements OnInit, AfterViewInit {
     const queryParams = new URLSearchParams(document.location.search);
     const shouldZoomToBounds = queryParams.has('from') || queryParams.has('to');
     if (shouldZoomToBounds) {
-      const bounds = new mapboxgl.LngLatBounds(bbox.asFeatureBBOX());
+      const bounds = new mapgl.LngLatBounds(bbox.asFeatureBBOX());
       const mapData: IMapBoundsData = {
         bounds: bounds,
         disableEase: true,
