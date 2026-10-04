@@ -10,6 +10,8 @@ import { XML_Helpers } from 'src/app/helpers/xml-helpers';
   templateUrl: './debug-xml-popover.component.html',
 })
 export class DebugXmlPopoverComponent {
+  public title: string;
+  public showRequestXML: boolean;
   public responseXML: string;
   public isTripRequest: boolean;
   
@@ -20,12 +22,22 @@ export class DebugXmlPopoverComponent {
   private isStrippingTagsEnabled: boolean
 
   constructor(private clipboard: Clipboard) {
+    this.title = 'Current Response XML';
+    this.showRequestXML = true;
     this.responseXML = 'loading TR...';
     this.isTripRequest = false;
     this.requestXML = 'n/a';
     this.responseXML_Original = 'n/a';
     this.responseXML_Stripped = 'n/a';
     this.isStrippingTagsEnabled = true;
+  }
+
+  public showResponseOnly(title: string, responseXML: string) {
+    this.title = title;
+    this.showRequestXML = false;
+    this.responseXML_Original = XML_Helpers.prettyPrintXML(responseXML);
+    this.responseXML_Stripped = this.responseXML_Original;
+    this.responseXML = this.responseXML_Original;
   }
 
   public updateRequestData(requestInfo: OJP.RequestInfo | OJP.RequestInfo) {

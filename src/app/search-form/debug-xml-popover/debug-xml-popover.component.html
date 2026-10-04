@@ -1,6 +1,6 @@
-<div sbbDialogTitle><strong>Current Response XML</strong></div>
+<div sbbDialogTitle><strong>{{ this.title }}</strong></div>
 <div sbbDialogContent class="d-flex flex-column h-100"> 
-  <div class="flex-fill">
+  <div class="flex-fill" *ngIf="this.showRequestXML">
     <div class="d-flex flex-column h-100">
       <div class="mb-2">Request XML</div>
       <div class="flex-grow-1"><textarea class="w-100 h-100">{{ this.requestXML }}</textarea></div>

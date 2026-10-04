@@ -34,6 +34,7 @@ import { TimedLeg } from '../../../shared/models/trip/leg/timed-leg';
 import { AnyLeg } from '../../../shared/models/trip/leg-builder';
 import { StopPointHelpers } from '../../../shared/models/stop-point-call';
 import { TransferLeg } from '../../../shared/models/trip/leg/transfer-leg';
+import { XML_Helpers } from '../../../helpers/xml-helpers';
 
 type LegTemplate = 'default' | 'timed' | 'taxi';
 
@@ -100,6 +101,8 @@ interface LegInfoDataModel {
 export class ResultTripLegComponent implements OnInit {
   @Input() legData: TripLegData | undefined;
   @Input() trrRequestInfo: OJP.RequestInfo | undefined;
+  @Input() tripIndex: number | undefined;
+  @Input() legIndex: number | undefined;
 
   @Output() legReloadRequest = new EventEmitter<void>();
   @Output() legMapRedrawRequest = new EventEmitter<void>();
@@ -781,9 +784,22 @@ export class ResultTripLegComponent implements OnInit {
     });
   }
 
-  public loadTRR_Popover() {
-    const requestInfo = this.trrRequestInfo ?? null;
-    if (requestInfo === null) {
+  public loadLegXMLPopover() {
+    const requestInfo = this.currentLegRequestInfo();
+    const legData = this.legData ?? null;
+    if ((requestInfo?.responseXML === null) || (requestInfo?.responseXML === undefined) || (legData === null)) {
+      return;
+    }
+
+    const legXML = XML_Helpers.extractTripLegXML(
+      requestInfo.responseXML,
+      legData.tripId,
+      legData.leg.id,
+      this.tripIndex ?? 0,
+      this.legIndex ?? 0,
+    );
+    if (legXML === null) {
+      console.error(`Unable to find XML for trip ${legData.tripId}, leg ${legData.leg.id}`);
       return;
     }
 
@@ -795,7 +811,15 @@ export class ResultTripLegComponent implements OnInit {
 
     dialogRef.afterOpened().subscribe(() => {
       const popover = dialogRef.componentInstance as DebugXmlPopoverComponent
-      popover.updateRequestData(requestInfo);
+      popover.showResponseOnly(`Leg ${legData.info.id} XML`, legXML);
     });
+  }
+
+  public hasLegXML(): boolean {
+    return this.currentLegRequestInfo()?.responseXML != null;
+  }
+
+  private currentLegRequestInfo(): OJP.RequestInfo | null {
+    return this.trrRequestInfo ?? this.userTripService.currentTripRequestInfo;
   }
 }

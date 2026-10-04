@@ -133,6 +133,7 @@ export class SearchFormComponent implements OnInit {
       this.expandSearchPanel();
       this.requestDurationF = null;
       this.currentRequestInfo = null;
+      this.userTripService.currentTripRequestInfo = null;
     });
 
     this.userTripService.searchFormAfterDefaultsInited.subscribe(async nothing => {
@@ -145,6 +146,7 @@ export class SearchFormComponent implements OnInit {
       this.requestDurationF = (requestNetworkDuration + requestParseDuration).toFixed(2) + ' sec';
 
       this.currentRequestInfo = requestInfo;
+      this.userTripService.currentTripRequestInfo = requestInfo;
     });
 
     this.viaDwellTime.valueChanges.pipe(debounceTime(300)).subscribe(value => {
