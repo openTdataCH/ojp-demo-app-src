@@ -210,7 +210,7 @@ export const MAP_RASTER_LAYERS: RasterLayerType[] = [
     minZoom: 0,
     maxZoom: 19,
     rasterOpacity: 1.0,
-    beforeLayerId: 'road-label',
+    beforeLayerId: 'waterName_stream_canal',
   },
   {
     id: 'raster-swisstopo-pixelkarte',
