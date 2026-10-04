@@ -143,6 +143,23 @@
   display: none;
 }
 
+.page-tab-bar {
+  display: flex;
+}
+
+.page-fullscreen-toggle {
+  // The SBB tab row uses a growing ::after element for the remaining underline.
+  // Ordering this link after it places the control at the far right of the row.
+  order: 1;
+  padding: 0.5rem 0.75rem;
+  border: 0;
+  background: transparent;
+  color: #1f1f1f;
+  font-size: 1.25rem;
+  line-height: 1;
+  cursor: pointer;
+}
+
 .popup-charging-station p1 {
   font-size: 14px;
 }

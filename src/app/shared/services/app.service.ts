@@ -9,9 +9,11 @@ import { APP_STAGE, DEFAULT_APP_STAGE, OJP_VERSION } from '../../config/constant
 export class AppService {
   public headerTitle: string;
   public bgMainClassName: 'ojpv2-prod' | 'ojpv1-beta' | 'ojpv2-beta';
+  public isPageFullscreen: boolean;
 
   constructor(private title: Title) {
     this.headerTitle = '';
+    this.isPageFullscreen = false;
 
     this.bgMainClassName = (() => {
       const isBrowser = typeof window !== 'undefined' && typeof window.document !== 'undefined';
@@ -34,6 +36,14 @@ export class AppService {
   public updatePageTitle(sectionTitle: string, stage: APP_STAGE) {
     this.headerTitle = this.computeHeaderTitle(stage);
     this.title.setTitle(sectionTitle + ' | ' + this.headerTitle);
+  }
+
+  public togglePageFullscreen() {
+    this.isPageFullscreen = !this.isPageFullscreen;
+
+    setTimeout(() => {
+      window.dispatchEvent(new Event('resize'));
+    });
   }
 
   private computeHeaderTitle(stage: APP_STAGE): string {
