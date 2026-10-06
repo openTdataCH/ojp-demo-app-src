@@ -136,17 +136,6 @@ export class MapService {
       }
     }
 
-    // TODO - check wht Mapbox is complaining
-    // map.fitBounds(newBounds, {
-    //   padding: padding,
-    //   duration: 0
-    // })
-
-    // without this hack we get
-    // ERROR Error: Uncaught (in promise): Error: `LngLatLike` argument must be specified as a LngLat instance, an object {lng: <lng>, lat: <lat>}, an object {lon: <lng>, lat: <lat>}, or an array of [<lng>, <lat>]
-    // Error: `LngLatLike` argument must be specified as a LngLat instance, an object {lng: <lng>, lat: <lat>}, an object {lon: <lng>, lat: <lat>}, or an array of [<lng>, <lat>]
-    const fixedBounds: mapgl.LngLatBoundsLike = [newBounds.getWest(), newBounds.getSouth(), newBounds.getEast(), newBounds.getNorth()];
-
     const easingOptions: mapgl.FitBoundsOptions = {
       padding: padding,
     };
@@ -155,7 +144,7 @@ export class MapService {
       easingOptions.duration = 0;
     }
 
-    map.fitBounds(fixedBounds, easingOptions);
+    map.fitBounds(newBounds, easingOptions);
   }
 
   public zoomToLocation(map: mapgl.Map, mapData: IMapLocationZoomData) {
