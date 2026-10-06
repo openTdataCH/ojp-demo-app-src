@@ -18,6 +18,7 @@ OJP Demo is a [TypeScript](https://www.typescriptlang.org/) web application, com
 ----
 
 CHANGELOG
+- Oct 2026 - updated map library
 - Jul 2025 - updated with TripInfoRequest, updated libraries
 - Oct 2022 - updated with StopEvent
 - Feb 2022 - created this document
