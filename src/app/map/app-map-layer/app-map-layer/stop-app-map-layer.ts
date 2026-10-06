@@ -27,7 +27,7 @@ export class StopAppMapLayer extends AppMapLayer {
     feature.properties['stopPlace.stopPlaceName'] = stopPlace.placeRef.name;
 
     let featureStopPlaceRefLabel = featureStopPlaceRef.slice();
-    // TEST LA issue - long ids are too long - trim the Mapbox layer label if needed
+    // TEST LA issue - long ids are too long - trim the map layer label if needed
     const maxCharsNo = 32;
     if (featureStopPlaceRefLabel.length > maxCharsNo) {
       featureStopPlaceRefLabel = featureStopPlaceRef.substring(0, maxCharsNo) + '...';
