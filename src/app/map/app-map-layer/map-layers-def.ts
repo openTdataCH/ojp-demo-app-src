@@ -1,4 +1,4 @@
-import mapboxgl from 'mapbox-gl'
+import mapgl from 'maplibre-gl'
 
 import stopsCircleLayer from './map-layers-def/stops/stops-circle.json'
 import stopsLabelLayer from './map-layers-def/stops/stops-label.json'
@@ -15,29 +15,29 @@ import sharedVehicleTextProviderLayer from './map-layers-def/poi/shared-vehicle/
 
 import poisIcon from './map-layers-def/pois-icon.json'
 
-const map_layers_def: Record<string, mapboxgl.Layer> = {
-    'stops-circle': stopsCircleLayer as mapboxgl.CircleLayerSpecification,
-    'stops-label': stopsLabelLayer as mapboxgl.SymbolLayerSpecification,
-    'address-circle': addressCircleLayer as mapboxgl.CircleLayerSpecification,
-    'topographic-place-circle': topographicPlaceCircleLayer as mapboxgl.CircleLayerSpecification,
+const map_layers_def: Record<string, mapgl.LayerSpecification> = {
+    'stops-circle': stopsCircleLayer as mapgl.CircleLayerSpecification,
+    'stops-label': stopsLabelLayer as mapgl.SymbolLayerSpecification,
+    'address-circle': addressCircleLayer as mapgl.CircleLayerSpecification,
+    'topographic-place-circle': topographicPlaceCircleLayer as mapgl.CircleLayerSpecification,
 
-    'charging-station-icon': chargingStationIconLayer as mapboxgl.SymbolLayerSpecification,
-    'charging-station-text-number': sharedVehicleTextNumberLayer as mapboxgl.SymbolLayerSpecification,
-    'charging-station-text-provider': sharedVehicleTextProviderLayer as mapboxgl.SymbolLayerSpecification,
+    'charging-station-icon': chargingStationIconLayer as mapgl.SymbolLayerSpecification,
+    'charging-station-text-number': sharedVehicleTextNumberLayer as mapgl.SymbolLayerSpecification,
+    'charging-station-text-provider': sharedVehicleTextProviderLayer as mapgl.SymbolLayerSpecification,
     
-    'car-rental-icon': carRentalIconLayer as mapboxgl.SymbolLayerSpecification,
-    'car-rental-text-number': sharedVehicleTextNumberLayer as mapboxgl.SymbolLayerSpecification,
-    'car-rental-text-provider': sharedVehicleTextProviderLayer as mapboxgl.SymbolLayerSpecification,
+    'car-rental-icon': carRentalIconLayer as mapgl.SymbolLayerSpecification,
+    'car-rental-text-number': sharedVehicleTextNumberLayer as mapgl.SymbolLayerSpecification,
+    'car-rental-text-provider': sharedVehicleTextProviderLayer as mapgl.SymbolLayerSpecification,
     
-    'bike-icon': bikeIconLayer as mapboxgl.SymbolLayerSpecification,
-    'bike-text-number': sharedVehicleTextNumberLayer as mapboxgl.SymbolLayerSpecification,
-    'bike-text-provider': sharedVehicleTextProviderLayer as mapboxgl.SymbolLayerSpecification,
+    'bike-icon': bikeIconLayer as mapgl.SymbolLayerSpecification,
+    'bike-text-number': sharedVehicleTextNumberLayer as mapgl.SymbolLayerSpecification,
+    'bike-text-provider': sharedVehicleTextProviderLayer as mapgl.SymbolLayerSpecification,
     
-    'scooter-icon': scooterIconLayer as mapboxgl.SymbolLayerSpecification,
-    'scooter-text-number': sharedVehicleTextNumberLayer as mapboxgl.SymbolLayerSpecification,
-    'scooter-text-provider': sharedVehicleTextProviderLayer as mapboxgl.SymbolLayerSpecification,
+    'scooter-icon': scooterIconLayer as mapgl.SymbolLayerSpecification,
+    'scooter-text-number': sharedVehicleTextNumberLayer as mapgl.SymbolLayerSpecification,
+    'scooter-text-provider': sharedVehicleTextProviderLayer as mapgl.SymbolLayerSpecification,
     
-    'poi-all': poisIcon as mapboxgl.SymbolLayerSpecification,
+    'poi-all': poisIcon as mapgl.SymbolLayerSpecification,
 }
 
 export const MAP_LAYERS_DEFINITIONS = map_layers_def

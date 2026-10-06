@@ -1,4 +1,4 @@
-import { Component, Input, OnInit, ViewChild } from '@angular/core';
+import { Component, ElementRef, Input, OnInit, ViewChild } from '@angular/core';
 import { DomSanitizer } from '@angular/platform-browser';
 
 import { SbbExpansionPanel } from '@sbb-esta/angular/accordion';
@@ -52,7 +52,7 @@ export class JourneyResultRowComponent implements OnInit {
 
   public readonly useOtherProvider = FLAG_USE_2nd_SHAPE_PROVIDER;
 
-  constructor(private userTripService: UserTripService, private mapService: MapService, private languageService: LanguageService, private shapeProviderService: ShapeProviderService, private sanitizer: DomSanitizer) {
+  constructor(private userTripService: UserTripService, private mapService: MapService, private languageService: LanguageService, private shapeProviderService: ShapeProviderService, private sanitizer: DomSanitizer, private elementRef: ElementRef<HTMLElement>) {
     this.tripHeaderStats = <TripHeaderStats>{};
     this.trrRequestInfo = null;
   }
@@ -70,6 +70,7 @@ export class JourneyResultRowComponent implements OnInit {
     }
 
     this.tripPanel?.afterExpand.subscribe(async ev => {
+      this.scrollToTripTop();
       this.drawAndZoomToMapTrip();
       await this.loadShapeProvider();
     });
@@ -77,6 +78,13 @@ export class JourneyResultRowComponent implements OnInit {
       this.drawAndZoomToMapTrip();
       await this.loadShapeProvider();
     }
+  }
+
+  private scrollToTripTop() {
+    this.elementRef.nativeElement.scrollIntoView({
+      behavior: 'smooth',
+      block: 'start',
+    });
   }
 
   private updateTripModel(tripData: TripData) {

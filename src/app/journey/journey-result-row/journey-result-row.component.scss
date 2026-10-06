@@ -18,3 +18,11 @@
 .sbb-expansion-panel-header {
   background-color: var(--sbb-color-cloud);
 }
+
+.sbb-expansion-panel-header.sbb-expanded {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  background-color: var(--sbb-color-cloud) !important;
+  box-shadow: 0 2px 4px rgb(0 0 0 / 12%);
+}

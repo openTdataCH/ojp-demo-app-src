@@ -1,5 +1,5 @@
 import * as GeoJSON from 'geojson';
-import mapboxgl from "mapbox-gl";
+import mapgl from "maplibre-gl";
 
 import * as OJP_Types from 'ojp-shared-types';
 import * as OJP from 'ojp-sdk';
@@ -18,7 +18,7 @@ export class AppMapLayer {
     private language: OJP.Language;
     private layerKey: string;
 
-    private map: mapboxgl.Map;
+    private map: mapgl.Map;
     private restrictionType: OJP_Types.PlaceTypeEnum;
     public restrictionPOI: POI_Restriction | null;
     public minZoom: number;
@@ -32,7 +32,7 @@ export class AppMapLayer {
 
     protected mapCurrentPlaces: Record<string, AnyPlace>;
 
-    constructor(language: OJP.Language, layerKey: string, map: mapboxgl.Map, appMapLayerOptions: AppMapLayerOptions, userTripService: UserTripService) {
+    constructor(language: OJP.Language, layerKey: string, map: mapgl.Map, appMapLayerOptions: AppMapLayerOptions, userTripService: UserTripService) {
         this.language = language;
         this.layerKey = layerKey;
 
@@ -59,7 +59,7 @@ export class AppMapLayer {
     }
 
     private addMapSourceAndLayers() {
-        this.map.addSource(this.mapSourceID, <mapboxgl.GeoJSONSourceSpecification>{
+        this.map.addSource(this.mapSourceID, <mapgl.GeoJSONSourceSpecification>{
             type: 'geojson',
             data: <GeoJSON.FeatureCollection>{
                 'type': 'FeatureCollection',
@@ -81,12 +81,13 @@ export class AppMapLayer {
             }
             
             const layerJSON = MAP_LAYERS_DEFINITIONS[layerID];
-            const layer = JSON.parse(JSON.stringify(layerJSON)) as mapboxgl.Layer;
+            const layer = {
+                ...JSON.parse(JSON.stringify(layerJSON)),
+                id: layerID,
+                source: this.mapSourceID,
+            } as mapgl.LayerSpecification;
 
-            layer.id = layerID;
-            layer.source = this.mapSourceID;
-
-            this.map.addLayer(layer as mapboxgl.LayerSpecification);
+            this.map.addLayer(layer as mapgl.LayerSpecification);
         });
     }
 
@@ -110,14 +111,20 @@ export class AppMapLayer {
 
         const isOJPv2 = OJP_VERSION === '2.0';
 
-        const isPOI_all = this.restrictionType === 'poi' && this.restrictionPOI?.poiType === 'poi';
-        const featuresLimit = isPOI_all ? 1000 : 300;
+        const featuresLimit = 5000;
 
         const mapBounds = this.map.getBounds();
         if (mapBounds === null) {
             return;
         }
-        const bboxData = [mapBounds.getWest(), mapBounds.getSouth(), mapBounds.getEast(), mapBounds.getNorth()];
+
+        const requestBounds = MapHelpers.expandBoundsToGrid(mapBounds);
+        const bboxData = [
+            requestBounds.getWest(),
+            requestBounds.getSouth(),
+            requestBounds.getEast(),
+            requestBounds.getNorth(),
+        ];
 
         const restrictionTypes: OJP_Types.PlaceTypeEnum[] = (() => {
             if (isOJPv2) {
@@ -302,7 +309,7 @@ export class AppMapLayer {
     private setSourceFeatures(features: GeoJSON.Feature[]) {
         this.features = features;
     
-        const source = this.map.getSource(this.mapSourceID) as mapboxgl.GeoJSONSource;
+        const source = this.map.getSource(this.mapSourceID) as mapgl.GeoJSONSource;
         const featureCollection: GeoJSON.FeatureCollection = {
             'type': 'FeatureCollection',
             'features': features
@@ -315,7 +322,7 @@ export class AppMapLayer {
         // extend / override
     }
 
-    public handleMapClick(ev: mapboxgl.MapMouseEvent): boolean {
+    public handleMapClick(ev: mapgl.MapMouseEvent): boolean {
         if (!this.shouldLoadNewFeatures()) {
             return false;
         }
@@ -378,7 +385,7 @@ export class AppMapLayer {
         const popupContainer = document.createElement('div');
         popupContainer.innerHTML = popupHTML;
     
-        const popup = new mapboxgl.Popup({
+        const popup = new mapgl.Popup({
             focusAfterOpen: false,
             maxWidth: '400px'
         });

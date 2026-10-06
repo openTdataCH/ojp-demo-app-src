@@ -2,7 +2,7 @@ import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { Router } from '@angular/router';
 import { DomSanitizer } from '@angular/platform-browser';
 
-import mapboxgl from 'mapbox-gl';
+import mapgl from 'maplibre-gl';
 
 import { SbbDialog } from "@sbb-esta/angular/dialog";
 import { SbbIconRegistry } from '@sbb-esta/angular/icon';
@@ -34,6 +34,7 @@ import { TimedLeg } from '../../../shared/models/trip/leg/timed-leg';
 import { AnyLeg } from '../../../shared/models/trip/leg-builder';
 import { StopPointHelpers } from '../../../shared/models/stop-point-call';
 import { TransferLeg } from '../../../shared/models/trip/leg/transfer-leg';
+import { XML_Helpers } from '../../../helpers/xml-helpers';
 
 type LegTemplate = 'default' | 'timed' | 'taxi';
 
@@ -100,6 +101,8 @@ interface LegInfoDataModel {
 export class ResultTripLegComponent implements OnInit {
   @Input() legData: TripLegData | undefined;
   @Input() trrRequestInfo: OJP.RequestInfo | undefined;
+  @Input() tripIndex: number | undefined;
+  @Input() legIndex: number | undefined;
 
   @Output() legReloadRequest = new EventEmitter<void>();
   @Output() legMapRedrawRequest = new EventEmitter<void>();
@@ -284,7 +287,7 @@ export class ResultTripLegComponent implements OnInit {
       return
     }
 
-    const bounds = new mapboxgl.LngLatBounds(bbox.asFeatureBBOX())
+    const bounds = new mapgl.LngLatBounds(bbox.asFeatureBBOX())
     const mapData = {
       bounds: bounds,
     }
@@ -742,7 +745,7 @@ export class ResultTripLegComponent implements OnInit {
     } else {
       const bbox = feature.bbox ?? null;
       if (bbox) {
-        const bounds = new mapboxgl.LngLatBounds(bbox as [number, number, number, number]);
+        const bounds = new mapgl.LngLatBounds(bbox as [number, number, number, number]);
 
         const dx = bounds.getSouthWest().distanceTo(bounds.getSouthEast());
         const dy = bounds.getNorthWest().distanceTo(bounds.getSouthWest());
@@ -781,7 +784,42 @@ export class ResultTripLegComponent implements OnInit {
     });
   }
 
-  public loadTRR_Popover() {
+  public loadLegXMLPopover() {
+    const requestInfo = this.currentLegRequestInfo();
+    const legData = this.legData ?? null;
+    if ((requestInfo?.responseXML === null) || (requestInfo?.responseXML === undefined) || (legData === null)) {
+      return;
+    }
+
+    const isOJPv2 = OJP_VERSION === '2.0';
+    const xmlConfig = isOJPv2 ? OJP.DefaultXML_Config : OJP.XML_BuilderConfigOJPv1;
+    const legXML = XML_Helpers.extractTripLegXML(
+      requestInfo.responseXML,
+      legData.tripId,
+      legData.leg.id,
+      this.tripIndex ?? 0,
+      this.legIndex ?? 0,
+      isOJPv2,
+      xmlConfig,
+    );
+    if (legXML === null) {
+      console.error(`Unable to find XML for trip ${legData.tripId}, leg ${legData.leg.id}`);
+      return;
+    }
+
+    const dialogRef = this.popover.open(DebugXmlPopoverComponent, {
+      position: { top: '20px' },
+      width: '50vw',
+      height: '90vh',
+    });
+
+    dialogRef.afterOpened().subscribe(() => {
+      const popover = dialogRef.componentInstance as DebugXmlPopoverComponent
+      popover.showResponseOnly(`Leg ${legData.info.id} XML`, legXML);
+    });
+  }
+
+  public loadTRRXMLPopover() {
     const requestInfo = this.trrRequestInfo ?? null;
     if (requestInfo === null) {
       return;
@@ -794,8 +832,17 @@ export class ResultTripLegComponent implements OnInit {
     });
 
     dialogRef.afterOpened().subscribe(() => {
-      const popover = dialogRef.componentInstance as DebugXmlPopoverComponent
+      const popover = dialogRef.componentInstance as DebugXmlPopoverComponent;
+      popover.title = 'TRR Request / Response XML';
       popover.updateRequestData(requestInfo);
     });
+  }
+
+  public hasLegXML(): boolean {
+    return this.currentLegRequestInfo()?.responseXML != null;
+  }
+
+  private currentLegRequestInfo(): OJP.RequestInfo | null {
+    return this.trrRequestInfo ?? this.userTripService.currentTripRequestInfo;
   }
 }
