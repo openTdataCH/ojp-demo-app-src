@@ -248,7 +248,7 @@ export class MapComponent implements OnInit, AfterViewInit {
 
   private showPickupPopup(map: mapgl.Map, lngLat: mapgl.LngLat) {
     let popupHTML = (document.getElementById('map-endpoint-coords-picker-popup') as HTMLElement).innerHTML;
-    const pointLatLngS = MapHelpers.formatMapboxLngLatAsLatLng(lngLat);
+    const pointLatLngS = `${lngLat.lat.toFixed(6)},${lngLat.lng.toFixed(6)}`;
     popupHTML = popupHTML.replace('[PICKER_COORDS]', pointLatLngS);
 
     const popupContainer = document.createElement('div');

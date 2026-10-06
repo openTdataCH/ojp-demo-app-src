@@ -30,11 +30,6 @@ export class MapHelpers {
     );
   }
 
-  public static formatMapboxLngLatAsLatLng(lnglat: mapgl.LngLat): string {
-    const lnglatS = lnglat.lat.toFixed(6) + ',' + lnglat.lng.toFixed(6);
-    return lnglatS;
-  }
-
   public static computePointLngLatFromFeature(feature: GeoJSON.Feature): mapgl.LngLat | null {
     if (feature.geometry.type !== 'Point') {
       return null;
