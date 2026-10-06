@@ -819,6 +819,25 @@ export class ResultTripLegComponent implements OnInit {
     });
   }
 
+  public loadTRRXMLPopover() {
+    const requestInfo = this.trrRequestInfo ?? null;
+    if (requestInfo === null) {
+      return;
+    }
+
+    const dialogRef = this.popover.open(DebugXmlPopoverComponent, {
+      position: { top: '20px' },
+      width: '50vw',
+      height: '90vh',
+    });
+
+    dialogRef.afterOpened().subscribe(() => {
+      const popover = dialogRef.componentInstance as DebugXmlPopoverComponent;
+      popover.title = 'TRR Request / Response XML';
+      popover.updateRequestData(requestInfo);
+    });
+  }
+
   public hasLegXML(): boolean {
     return this.currentLegRequestInfo()?.responseXML != null;
   }

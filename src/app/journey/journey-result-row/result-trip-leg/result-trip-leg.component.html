@@ -90,7 +90,10 @@
       </div>
       
       <ng-container *ngIf="this.enableTRR">
-        <div class="badge leg-pill pill-hover bg-primary" (click)="this.reloadTripLeg()" stopClickPropagation>Refresh</div>
+        <div class="d-flex flex-column gap-1 align-items-center">
+          <div class="badge leg-pill pill-hover bg-primary" (click)="this.reloadTripLeg()" stopClickPropagation>Refresh</div>
+          <button *ngIf="this.trrRequestInfo?.responseXML" type="button" class="border-0 badge leg-pill pill-hover bg-info text-dark" (click)="this.loadTRRXMLPopover()" stopClickPropagation>TRR XML</button>
+        </div>
       </ng-container>
       <button *ngIf="this.hasLegXML()" type="button" class="border-0 badge leg-pill pill-hover bg-info text-dark" (click)="this.loadLegXMLPopover()" stopClickPropagation>XML</button>
     </div>
