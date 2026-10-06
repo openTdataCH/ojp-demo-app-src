@@ -5,7 +5,7 @@ OJP-Demo URL: https://opentdatach.github.io/ojp-demo-app/
 ----
 
 6.October 2026
-- New Basemap
+- New Basemap - [PR #415](https://github.com/openTdataCH/ojp-demo-app-src/pull/415), [TR: Explore other providers for LinkProjection display #310](https://github.com/openTdataCH/ojp-demo-app-src/issues/310)
   - use [geOps](https://developer.geops.io/apis/maps) map style variation of `base_bright_v2`
   - migrate to use `maplibre-gl` map library
   - display individual legs debug XML popover
