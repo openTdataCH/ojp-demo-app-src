@@ -791,12 +791,16 @@ export class ResultTripLegComponent implements OnInit {
       return;
     }
 
+    const isOJPv2 = OJP_VERSION === '2.0';
+    const xmlConfig = isOJPv2 ? OJP.DefaultXML_Config : OJP.XML_BuilderConfigOJPv1;
     const legXML = XML_Helpers.extractTripLegXML(
       requestInfo.responseXML,
       legData.tripId,
       legData.leg.id,
       this.tripIndex ?? 0,
       this.legIndex ?? 0,
+      isOJPv2,
+      xmlConfig,
     );
     if (legXML === null) {
       console.error(`Unable to find XML for trip ${legData.tripId}, leg ${legData.leg.id}`);
