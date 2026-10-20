@@ -4,6 +4,12 @@ OJP-Demo URL: https://opentdatach.github.io/ojp-demo-app/
 
 ----
 
+20.October 2026
+- Fix OJP v1 OnDemand - [PR #418](https://github.com/openTdataCH/ojp-demo-app-src/pull/418)
+  - the XML parser can return numeric codes for on-demand service attributes
+  - adds fallback for BBOX zoom to use LinkProjection endpoints when available
+  - by default display also bus LinkProjection as precise polylines
+
 6.October 2026
 - New Basemap - [PR #415](https://github.com/openTdataCH/ojp-demo-app-src/pull/415), [TR: Explore other providers for LinkProjection display #310](https://github.com/openTdataCH/ojp-demo-app-src/issues/310)
   - use [geOps](https://developer.geops.io/apis/maps) map style variation of `base_bright_v2`
