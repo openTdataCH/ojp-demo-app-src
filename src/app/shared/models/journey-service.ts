@@ -253,7 +253,6 @@ export class JourneyService implements OJP_Types.DatedJourneySchema  {
     }
 
     const ignorePtModes: string[] = [
-      'bus',
       'tram'
     ];
     if (ignorePtModes.indexOf(this.mode.ptMode) !== -1) {

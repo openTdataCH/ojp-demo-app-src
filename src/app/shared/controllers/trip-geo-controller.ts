@@ -81,6 +81,11 @@ export class TripGeoController {
       if (trackSection.fromPlace) {
         return trackSection.fromPlace.geoPosition;
       }
+
+      if (trackSection.linkProjection && trackSection.linkProjection.geoPositions.length > 1) {
+        const firstGeoPosition = trackSection.linkProjection.geoPositions[0];
+        return firstGeoPosition;
+      }
     }
 
     return null;
@@ -101,6 +106,12 @@ export class TripGeoController {
       const trackSection = lastLeg.legTrack.trackSections[lastLeg.legTrack.trackSections.length - 1];
       if (trackSection.toPlace) {
         return trackSection.toPlace.geoPosition;
+      }
+
+      if (trackSection.linkProjection && trackSection.linkProjection.geoPositions.length > 1) {
+        const geoPositions = trackSection.linkProjection.geoPositions;
+        const lastGeoPosition = geoPositions[geoPositions.length - 1];
+        return lastGeoPosition;
       }
     }
 
