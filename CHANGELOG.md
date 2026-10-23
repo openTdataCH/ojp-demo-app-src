@@ -4,6 +4,10 @@ OJP-Demo URL: https://opentdatach.github.io/ojp-demo-app/
 
 ----
 
+23.October 2026 - [PR #420](https://github.com/openTdataCH/ojp-demo-app-src/pull/420)
+- Update TimedLegs
+  - fixed bug to use estimatedQuay instead of plannedQuay for real-time platform updates
+
 20.October 2026
 - Fix OJP v1 OnDemand - [PR #418](https://github.com/openTdataCH/ojp-demo-app-src/pull/418)
   - the XML parser can return numeric codes for on-demand service attributes
