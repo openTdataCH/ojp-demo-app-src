@@ -399,7 +399,7 @@ export class StopPointCall {
 
     stopCall.platform = {
       timetable: callAtStopSchema.plannedQuay?.text ?? null,
-      realtime: callAtStopSchema.plannedQuay?.text ?? null,
+      realtime: callAtStopSchema.estimatedQuay?.text ?? null,
     };
 
     stopCall.nameSuffix = callAtStopSchema.nameSuffix?.text ?? null;
