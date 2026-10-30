@@ -72,6 +72,7 @@ export class UserTripService {
   public tripsDataUpdated = new EventEmitter<TripData[]>();
   
   public tripFaresUpdated = new EventEmitter<OJP_Types.FareResultSchema[]>();
+  public currentTripRequestInfo: OJP.RequestInfo | null;
   
   public mapActiveTripSelected = new EventEmitter<TripData | null>();
   public tripRequestFinished = new EventEmitter<OJP.RequestInfo>();
@@ -84,6 +85,7 @@ export class UserTripService {
   readonly initialLocationsChanges$: Observable<boolean | null> = this._initialLocationsChanges.asObservable();
 
   constructor(private languageService: LanguageService) {
+    this.currentTripRequestInfo = null;
     this.queryParams = new URLSearchParams(document.location.search);
 
     this.fromTripPlace = null;

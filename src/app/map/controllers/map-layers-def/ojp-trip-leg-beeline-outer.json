@@ -1,0 +1,16 @@
+{
+  "id": "ojp-trip-leg-beeline-outer",
+  "type": "line",
+  "source": "[SOURCE]",
+  "filter": ["==", ["get", "draw.type"], "Beeline"],
+  "layout": {
+    "line-join": "round",
+    "line-cap": "round",
+    "visibility": "visible"
+  },
+  "paint": {
+    "line-color": "#fff",
+    "line-width": 8,
+    "line-opacity": 1.0
+  }
+}

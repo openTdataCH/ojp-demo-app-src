@@ -53,6 +53,8 @@
       <result-trip-leg 
         [legData]="legData" 
         [trrRequestInfo]="this.trrRequestInfo ?? undefined"
+        [tripIndex]="this.idx"
+        [legIndex]="legIdx"
         (legReloadRequest)="this.reloadTripLegIdx()"
         (legMapRedrawRequest)="this.redrawTripOnMap()">
       </result-trip-leg>

@@ -1,0 +1,15 @@
+{
+  "id": "ojp-trip-walking-leg-line-outer",
+  "type": "line",
+  "source": "[SOURCE]",
+  "filter": ["==", ["get", "draw.type"], "WalkLine"],
+  "layout": {
+    "line-cap": "round",
+    "line-join": "round"
+  },
+  "paint": {
+    "line-color": "#fff",
+    "line-width": 8.0,
+    "line-opacity": 1.0
+  }
+}

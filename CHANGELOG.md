@@ -4,6 +4,33 @@ OJP-Demo URL: https://opentdatach.github.io/ojp-demo-app/
 
 ----
 
+23.October 2026 - [PR #420](https://github.com/openTdataCH/ojp-demo-app-src/pull/420)
+- Update TimedLegs
+  - fixed bug to use estimatedQuay instead of plannedQuay for real-time platform updates
+
+20.October 2026
+- Fix OJP v1 OnDemand - [PR #418](https://github.com/openTdataCH/ojp-demo-app-src/pull/418)
+  - the XML parser can return numeric codes for on-demand service attributes
+  - adds fallback for BBOX zoom to use LinkProjection endpoints when available
+  - by default display also bus LinkProjection as precise polylines
+
+6.October 2026
+- New Basemap - [PR #415](https://github.com/openTdataCH/ojp-demo-app-src/pull/415), [TR: Explore other providers for LinkProjection display #310](https://github.com/openTdataCH/ojp-demo-app-src/issues/310)
+  - use [geOps](https://developer.geops.io/apis/maps) map style variation of `base_bright_v2`
+  - migrate to use `maplibre-gl` map library
+  - display individual legs debug XML popover
+  - adds `full-screen` display mode
+
+18.September 2026
+- Updates TripInfo detail page - [PR #414](https://github.com/openTdataCH/ojp-demo-app-src/pull/412)
+  - display visuals if isCancelled, hasDeviation, isUnplanned
+
+17.September 2026
+- Separate secrets - [PR #412](https://github.com/openTdataCH/ojp-demo-app-src/pull/412)
+  - use different secret key for OJP 2.0 stage
+- Updates custom XML response parser - [PR #413](https://github.com/openTdataCH/ojp-demo-app-src/pull/413)
+  - parse also TRR custom XML response and display trips
+
 02.September 2026
 - Fix Station Board - [PR #406](https://github.com/openTdataCH/ojp-demo-app-src/pull/406)
   - fix custom SER XML response parsing

@@ -13,7 +13,7 @@ import { OJPHelpers } from '../../helpers/ojp-helpers';
 export class JourneySearchComponent implements OnInit {
   public queryParams: Record<string, string>;
 
-  constructor(private appService: AppService, public userTripService: UserTripService) {
+  constructor(public appService: AppService, public userTripService: UserTripService) {
     this.queryParams = {};
   }
 

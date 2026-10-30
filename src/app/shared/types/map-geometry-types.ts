@@ -6,6 +6,8 @@ export enum TripLegPropertiesEnum {
   LineType = 'line.type',         // see below TripTimedLegLineType
   
   LineColor = 'leg-type.color',   // color literal
+  Label = 'leg.label',            // ID shown in the journey leg list
+  LabelRotation = 'leg.label.rotation',
 }
 
 type TripTimedLegLineType =
@@ -30,4 +32,4 @@ export type TripLegLineType =
   | TripTimedLegLineType
   | TripContinousLegLineType;
 
-export type TripLegDrawType = 'Beeline' | 'WalkLine' | 'LegLine' | 'WalkLineP2' | 'LegLineP2';
+export type TripLegDrawType = 'Beeline' | 'WalkLine' | 'LegLine' | 'WalkLineP2' | 'LegLineP2' | 'LegLabel';

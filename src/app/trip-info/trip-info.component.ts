@@ -14,7 +14,7 @@ import { UserTripService } from '../shared/services/user-trip.service';
 export class TripInfoComponent implements OnInit {
   public routeQueryParams: Record<string, string>;
 
-  constructor(private appService: AppService, private userTripService: UserTripService, private tripInfoService: TripInfoService) {
+  constructor(public appService: AppService, private userTripService: UserTripService, private tripInfoService: TripInfoService) {
     this.routeQueryParams = {};
   }
 

@@ -23,7 +23,7 @@ export const APP_CONFIG: AppConfig = {
     // OJP 2.0
     'V2-PROD': {
       url: 'https://api.opentransportdata.swiss/ojp20',
-      authToken: "PLACEHOLDER_REPLACE__PROD",
+      authToken: "PLACEHOLDER_REPLACE__V2_PROD",
     },
     'V2-INT': {
       url: 'https://odpch-api.clients.liip.ch/ojp20-beta',
@@ -64,11 +64,5 @@ export const APP_CONFIG: AppConfig = {
       url: 'https://api.geops.io/routing/v1/',
       authToken: 'PLACEHOLDER_REPLACE__SHAPE_PROVIDER',
     },
-
-    'MAPBOX_MAP': {
-      // style URL
-      url: 'mapbox://styles/mapbox/light-v10',
-      authToken: 'PLACEHOLDER_REPLACE__MAPBOX_TOKEN',
-    }
   }
 }

@@ -1,0 +1,24 @@
+{
+  "id": "ojp-trip-leg-label",
+  "type": "symbol",
+  "source": "[SOURCE]",
+  "filter": ["==", ["get", "draw.type"], "LegLabel"],
+  "layout": {
+    "visibility": "none",
+    "symbol-placement": "point",
+    "text-field": ["to-string", ["get", "leg.label"]],
+    "text-font": ["SBB Web Bold", "Arial"],
+    "text-size": 13,
+    "text-rotate": ["get", "leg.label.rotation"],
+    "text-rotation-alignment": "map",
+    "text-keep-upright": true,
+    "text-allow-overlap": false,
+    "text-ignore-placement": false
+  },
+  "paint": {
+    "text-color": "#1f1f1f",
+    "text-halo-color": "#fff",
+    "text-halo-width": 3,
+    "text-halo-blur": 1
+  }
+}

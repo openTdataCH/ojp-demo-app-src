@@ -1,5 +1,5 @@
 import * as GeoJSON from 'geojson'
-import mapboxgl from "mapbox-gl";
+import mapgl from "maplibre-gl";
 
 import * as OJP from 'ojp-sdk';
 
@@ -12,11 +12,11 @@ import { StopPointCall } from '../../../shared/models/stop-point-call';
 type LinePointType = 'prev' | 'next';
 
 export class StopEventServiceRenderer {
-    private map: mapboxgl.Map
+    private map: mapgl.Map
     private sourceID: string;
     public geojsonFeatures: GeoJSON.Feature[]
 
-    constructor(map: mapboxgl.Map) {
+    constructor(map: mapgl.Map) {
         this.map = map
         this.sourceID = 'stop-event-service-data';
         this.geojsonFeatures = [];
@@ -24,8 +24,8 @@ export class StopEventServiceRenderer {
         this.addMapLayers(map);
     }
 
-    private addMapLayers(map: mapboxgl.Map) {
-        const source: mapboxgl.GeoJSONSourceSpecification = {
+    private addMapLayers(map: mapgl.Map) {
+        const source: mapgl.GeoJSONSourceSpecification = {
             type: 'geojson',
             data: <GeoJSON.FeatureCollection> {
                 type: 'FeatureCollection',
@@ -34,11 +34,11 @@ export class StopEventServiceRenderer {
         };
         map.addSource(this.sourceID, source);
 
-        const serviceTrackLineLayer = serviceTrackLineLayerJSON as mapboxgl.LineLayerSpecification;
+        const serviceTrackLineLayer = serviceTrackLineLayerJSON as mapgl.LineLayerSpecification;
         serviceTrackLineLayer.source = this.sourceID;
         map.addLayer(serviceTrackLineLayer);
 
-        const serviceTrackStopLayer = serviceTrackStopLayerJSON as mapboxgl.CircleLayerSpecification;
+        const serviceTrackStopLayer = serviceTrackStopLayerJSON as mapgl.CircleLayerSpecification;
         serviceTrackStopLayer.source = this.sourceID;
         map.addLayer(serviceTrackStopLayer);
     }
@@ -212,7 +212,7 @@ export class StopEventServiceRenderer {
     }
 
     private udateStopEventSource(geojson: GeoJSON.FeatureCollection) {
-        const source = this.map.getSource(this.sourceID) as mapboxgl.GeoJSONSource;
+        const source = this.map.getSource(this.sourceID) as mapgl.GeoJSONSource;
         if (source === null) {
             console.error('ERROR - cant find the source ' + this.sourceID);
             console.log(this.map.getStyle());

@@ -4,8 +4,8 @@
   "type": "symbol",
   "minzoom": 0.0,
   "layout": {
-    "icon-image": "car-15",
+    "icon-image": "poi-car",
     "icon-allow-overlap": true,
-    "icon-size": 1.4
+    "icon-size": 0.7
   }
 }

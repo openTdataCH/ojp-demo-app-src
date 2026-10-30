@@ -1,6 +1,6 @@
 import { SbbDialog } from "@sbb-esta/angular/dialog";
 
-import mapboxgl from "mapbox-gl";
+import mapgl from "maplibre-gl";
 
 import { UserTripService } from "../../shared/services/user-trip.service";
 import { LanguageService } from "../../shared/services/language.service";
@@ -18,8 +18,8 @@ interface LayerData {
   layer: AppMapLayer
 }
 
-export class MapLayersLegendControl implements mapboxgl.IControl {
-  private map: mapboxgl.Map | null;
+export class MapLayersLegendControl implements mapgl.IControl {
+  private map: mapgl.Map | null;
   private layersData: LayerData[]
   private userTripService: UserTripService
   private languageService: LanguageService
@@ -27,22 +27,23 @@ export class MapLayersLegendControl implements mapboxgl.IControl {
   // TODO - move me in MapLayersController
   private prevMapBoundsHash: string = '';
 
-  constructor(map: mapboxgl.Map, private debugXmlPopover: SbbDialog, userTripService: UserTripService, languageService: LanguageService) {
+  constructor(map: mapgl.Map, private debugXmlPopover: SbbDialog, userTripService: UserTripService, languageService: LanguageService) {
     this.map = map;
     this.layersData = []
     this.userTripService = userTripService;
     this.languageService = languageService;
   }
 
-  onAdd(map: mapboxgl.Map): HTMLElement {
+  onAdd(map: mapgl.Map): HTMLElement {
     this.map = map;
 
     const container = document.createElement('div');
-    container.className = 'mapboxgl-ctrl mapboxgl-ctrl-group map-control';
+    container.className = 'maplibregl-ctrl maplibregl-ctrl-group map-control';
     container.innerHTML = (document.getElementById('map-layers-legend-control') as HTMLElement).innerHTML;
 
     this.addLayers(container, map);
     this.addPOICompositeLayers(container, map);
+    this.addCurrentTripLayers(container, map);
 
     map.on('zoom', ev => {
       this.onZoomChanged(map);
@@ -60,11 +61,33 @@ export class MapLayersLegendControl implements mapboxgl.IControl {
     return container;
   }
 
+  private addCurrentTripLayers(container: HTMLElement, map: mapgl.Map) {
+    const legLabelsInput = container.querySelector('.map-style-layer-checkbox') as HTMLInputElement | null;
+    if (legLabelsInput === null) {
+      return;
+    }
+
+    legLabelsInput.addEventListener('change', () => {
+      const layerID = legLabelsInput.dataset['mapLayerId'];
+      if (!layerID) {
+        console.error('Unable to toggle map style layer: data-map-layer-id is missing.');
+        return;
+      }
+
+      if (map.getLayer(layerID) === undefined) {
+        console.error(`Unable to toggle map style layer: layer "${layerID}" does not exist.`);
+        return;
+      }
+
+      map.setLayoutProperty(layerID, 'visibility', legLabelsInput.checked ? 'visible' : 'none');
+    });
+  }
+
   onRemove() {
     this.map = null;
   }
 
-  private addLayers(container: HTMLElement, map: mapboxgl.Map) {
+  private addLayers(container: HTMLElement, map: mapgl.Map) {
     container.querySelectorAll('.map-layer-data').forEach(divEl => {
       const layerKey = divEl.getAttribute('data-map-layer-key');
       if (layerKey === null) {
@@ -137,14 +160,14 @@ export class MapLayersLegendControl implements mapboxgl.IControl {
     })
   }
 
-  private addPOICompositeLayers(container: HTMLElement, map: mapboxgl.Map) {
+  private addPOICompositeLayers(container: HTMLElement, map: mapgl.Map) {
     container.querySelectorAll('.map-composite-pois').forEach(el => {
       const wrapperEl = el as HTMLElement;
       this.addPOICompositeLayer(wrapperEl, map);
     });
   }
 
-  private addPOICompositeLayer(wrapperEl: HTMLElement, map: mapboxgl.Map) {
+  private addPOICompositeLayer(wrapperEl: HTMLElement, map: mapgl.Map) {
     const layerKey = 'pois-ALL';
     const appMapLayerOptions: AppMapLayerOptions = JSON.parse(JSON.stringify(MAP_APP_MAP_LAYERS[layerKey]));
 
@@ -207,7 +230,7 @@ export class MapLayersLegendControl implements mapboxgl.IControl {
     this.layersData.push(layerData);
   }
 
-  private handleMapIdleEvents(map: mapboxgl.Map) {
+  private handleMapIdleEvents(map: mapgl.Map) {
     const mapBounds = map.getBounds();
     if (mapBounds === null) {
       return;
@@ -225,7 +248,7 @@ export class MapLayersLegendControl implements mapboxgl.IControl {
     });
   }
 
-  private onZoomChanged(map: mapboxgl.Map) {
+  private onZoomChanged(map: mapgl.Map) {
     this.layersData.forEach(layerData => {
       const layerMinZoomLevel = layerData.layer.minZoom;
       const shouldDisableLayer = map.getZoom() < layerMinZoomLevel;
@@ -244,7 +267,7 @@ export class MapLayersLegendControl implements mapboxgl.IControl {
     });
   }
 
-  private handleMapClickEvents(ev: mapboxgl.MapMouseEvent, map: mapboxgl.Map) {
+  private handleMapClickEvents(ev: mapgl.MapMouseEvent, map: mapgl.Map) {
     let foundClickResponder = false;
     this.layersData.forEach(layerData => {
       if (foundClickResponder) {

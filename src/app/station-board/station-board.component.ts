@@ -14,7 +14,7 @@ import { UserTripService } from '../shared/services/user-trip.service';
 export class StationBoardComponent implements OnInit {
   public routeQueryParams: Record<string, string>;
 
-  constructor(private appService: AppService, private userTripService: UserTripService, private stationBoardService: StationBoardService) {
+  constructor(public appService: AppService, private userTripService: UserTripService, private stationBoardService: StationBoardService) {
     this.routeQueryParams = {};
   }
 

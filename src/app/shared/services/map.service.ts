@@ -1,6 +1,6 @@
 import { Injectable, EventEmitter } from '@angular/core'
 
-import mapboxgl from 'mapbox-gl';
+import mapgl from 'maplibre-gl';
 
 import { SbbDialog } from '@sbb-esta/angular/dialog';
 
@@ -10,20 +10,20 @@ import { MapDebugControl } from '../../map/controls/map-debug-control'
 import { MapLayersLegendControl } from '../../map/controls/map-layers-legend-control';
 import { LanguageService } from './language.service';
 import { TripGeoController } from '../controllers/trip-geo-controller';
-import { MAP_RASTER_LAYERS } from '../../config/constants';
+import { MAP_HIDDEN_BASE_LAYER_IDS, MAP_RASTER_LAYERS } from '../../config/constants';
 import { AnyPlace } from '../models/place/place-builder';
 import { Trip } from '../models/trip/trip';
 import { APP_CONFIG } from '../../config/app-config';
 
 export interface IMapBoundsData {
-  bounds: mapboxgl.LngLatBounds
+  bounds: mapgl.LngLatBounds
   onlyIfOutside?: boolean | null
-  padding?: mapboxgl.PaddingOptions | null
+  padding?: mapgl.PaddingOptions | null
   disableEase?: boolean | null
 }
 
 export interface IMapLocationZoomData {
-  lnglat: mapboxgl.LngLatLike
+  lnglat: mapgl.LngLatLike
   zoom: number
 }
 
@@ -32,7 +32,7 @@ export class MapService {
   public newMapBoundsRequested = new EventEmitter<IMapBoundsData>();
   public newMapCenterAndZoomRequested = new EventEmitter<IMapLocationZoomData>();
 
-  public initialMapCenter: mapboxgl.LngLat | null
+  public initialMapCenter: mapgl.LngLat | null
   public initialMapZoom: number | null
 
   constructor() {
@@ -40,15 +40,20 @@ export class MapService {
     this.initialMapZoom = null;
   }
 
-  public createMap(elementID: string): mapboxgl.Map {
-    const mapBounds = new mapboxgl.LngLatBounds([[5.9559,45.818], [10.4921,47.8084]]);
+  public createMap(elementID: string): mapgl.Map {
+    const mapBounds = new mapgl.LngLatBounds([[5.9559,45.818], [10.4921,47.8084]]);
 
-    const mapStageConfig = APP_CONFIG['stages']['MAPBOX_MAP'];
-    const map = new mapboxgl.Map({
+    const geopsAPIKey = APP_CONFIG['stages']['SHAPE_PROVIDER'].authToken ?? '';
+    const mapStyleURL = `https://maps.geops.io/styles/base_bright_v2/style.json?key=${encodeURIComponent(geopsAPIKey)}`;
+
+    const map = new mapgl.Map({
       container: elementID,
-      style: mapStageConfig.url,
+      style: mapStyleURL,
       bounds: mapBounds,
-      accessToken: mapStageConfig.authToken ?? 'n/a',
+    });
+
+    map.on('load', () => {
+      this.hideBaseLayers(map);
     });
 
     if (this.initialMapCenter) {
@@ -66,6 +71,17 @@ export class MapService {
     return map;
   }
 
+  private hideBaseLayers(map: mapgl.Map) {
+    MAP_HIDDEN_BASE_LAYER_IDS.forEach(layerID => {
+      if (map.getLayer(layerID) === undefined) {
+        console.error(`Unable to hide base layer "${layerID}": layer does not exist in the current map style.`);
+        return;
+      }
+
+      map.setLayoutProperty(layerID, 'visibility', 'none');
+    });
+  }
+
   public tryToCenterAndZoomToPlace(place: AnyPlace, zoomValue: number = 16.0) {
     this.newMapCenterAndZoomRequested.emit({
       lnglat: place.geoPosition.asLngLat(),
@@ -81,7 +97,7 @@ export class MapService {
       return;
     }
 
-    const bounds = new mapboxgl.LngLatBounds(bbox.asFeatureBBOX())
+    const bounds = new mapgl.LngLatBounds(bbox.asFeatureBBOX())
     const mapData = {
       bounds: bounds
     }
@@ -89,7 +105,7 @@ export class MapService {
     this.newMapBoundsRequested.emit(mapData);
   }
 
-  public zoomToBounds(map: mapboxgl.Map, mapData: IMapBoundsData) {
+  public zoomToBounds(map: mapgl.Map, mapData: IMapBoundsData) {
     const newBounds = mapData.bounds;
 
     const minDistanceM = 20
@@ -120,18 +136,7 @@ export class MapService {
       }
     }
 
-    // TODO - check wht Mapbox is complaining
-    // map.fitBounds(newBounds, {
-    //   padding: padding,
-    //   duration: 0
-    // })
-
-    // without this hack we get
-    // ERROR Error: Uncaught (in promise): Error: `LngLatLike` argument must be specified as a LngLat instance, an object {lng: <lng>, lat: <lat>}, an object {lon: <lng>, lat: <lat>}, or an array of [<lng>, <lat>]
-    // Error: `LngLatLike` argument must be specified as a LngLat instance, an object {lng: <lng>, lat: <lat>}, an object {lon: <lng>, lat: <lat>}, or an array of [<lng>, <lat>]
-    const fixedBounds: mapboxgl.LngLatBoundsLike = [newBounds.getWest(), newBounds.getSouth(), newBounds.getEast(), newBounds.getNorth()];
-
-    const easingOptions: mapboxgl.EasingOptions = {
+    const easingOptions: mapgl.FitBoundsOptions = {
       padding: padding,
     };
 
@@ -139,24 +144,24 @@ export class MapService {
       easingOptions.duration = 0;
     }
 
-    map.fitBounds(fixedBounds, easingOptions);
+    map.fitBounds(newBounds, easingOptions);
   }
 
-  public zoomToLocation(map: mapboxgl.Map, mapData: IMapLocationZoomData) {
+  public zoomToLocation(map: mapgl.Map, mapData: IMapLocationZoomData) {
     map.flyTo({
       center: mapData.lnglat,
       zoom: mapData.zoom
     });
   }
 
-  public addControls(map: mapboxgl.Map, debugXmlPopover: SbbDialog, userTripService: UserTripService, languageService: LanguageService) {
-    const navigationControl = new mapboxgl.NavigationControl({
+  public addControls(map: mapgl.Map, debugXmlPopover: SbbDialog, userTripService: UserTripService, languageService: LanguageService) {
+    const navigationControl = new mapgl.NavigationControl({
       showCompass: false,
       visualizePitch: false
     });
     map.addControl(navigationControl, 'bottom-right');
 
-    const scaleControl = new mapboxgl.ScaleControl({
+    const scaleControl = new mapgl.ScaleControl({
         maxWidth: 200,
         unit: 'metric'
     });
@@ -165,8 +170,7 @@ export class MapService {
     const debugControl = new MapDebugControl(map);
     map.addControl(debugControl, 'top-left');
 
-    // HACK - the map type select is added via innerHTML property so we cant use Angular (change) hook
-    //      => use good ol' document.getElementById instead
+    // The map type select is added via innerHTML, so Angular change binding is unavailable here.
     const select = document.getElementById('mapTypeSelect') as HTMLSelectElement;
     if (select) {
       select.addEventListener('change', () => {
@@ -178,9 +182,17 @@ export class MapService {
     map.addControl(mapLayersLegendControl, 'top-right');
   }
 
-  public addRasterLayers(map: mapboxgl.Map) {
+  public addRasterLayers(map: mapgl.Map) {
     MAP_RASTER_LAYERS.forEach(rasterLayerDef => {
-      const mapSource: mapboxgl.RasterSourceSpecification = {
+      if (rasterLayerDef.beforeLayerId && map.getLayer(rasterLayerDef.beforeLayerId) === undefined) {
+        console.error(
+          `Unable to add raster layer "${rasterLayerDef.id}": insertion layer ` +
+          `"${rasterLayerDef.beforeLayerId}" does not exist in the current map style.`,
+        );
+        return;
+      }
+
+      const mapSource: mapgl.RasterSourceSpecification = {
         type: 'raster',
         tiles: rasterLayerDef.tileURLs,
         tileSize: 256,
@@ -189,12 +201,12 @@ export class MapService {
       };
       map.addSource(rasterLayerDef.id, mapSource);
 
-      const layer: mapboxgl.RasterLayerSpecification = {
+      const layer: mapgl.RasterLayerSpecification = {
         id: rasterLayerDef.id,
         source: rasterLayerDef.id,
         type: 'raster',
         paint: {
-          "raster-opacity": rasterLayerDef.rasterOpacity,
+          'raster-opacity': rasterLayerDef.rasterOpacity,
         },
         layout: {
           visibility: 'none',
@@ -204,18 +216,18 @@ export class MapService {
     });
   }
 
-  private mapTypeChanged(map: mapboxgl.Map, mapTypeS: string) {
+  private mapTypeChanged(map: mapgl.Map, mapTypeS: string) {
     MAP_RASTER_LAYERS.forEach(rasterLayerDef => {
-      const isVisible = (() => {
-        if (mapTypeS === 'default') {
-          return false;
-        }
+      if (map.getLayer(rasterLayerDef.id) === undefined) {
+        console.error(
+          `Unable to change raster layer "${rasterLayerDef.id}": ` +
+          'the layer does not exist in the current map style.',
+        );
+        return;
+      }
 
-        return rasterLayerDef.id === mapTypeS;
-      })();
-
-      const visibilityProperty = isVisible ? 'visible' : 'none';
-      map.setLayoutProperty(rasterLayerDef.id, 'visibility', visibilityProperty);
+      const isVisible = mapTypeS !== 'default' && rasterLayerDef.id === mapTypeS;
+      map.setLayoutProperty(rasterLayerDef.id, 'visibility', isVisible ? 'visible' : 'none');
     });
   }
 }

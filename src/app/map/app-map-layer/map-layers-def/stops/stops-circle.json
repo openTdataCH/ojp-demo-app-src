@@ -5,7 +5,14 @@
   "minzoom": 0.0,
   "paint": {
       "circle-color": "#0000FF",
-      "circle-radius": 4,
+      "circle-radius": [
+        "interpolate",
+        ["linear"],
+        ["zoom"],
+        9, 1,
+        12, 2.5,
+        15, 4
+      ],
       "circle-stroke-width": 1,
       "circle-stroke-color": "#fff"
   }

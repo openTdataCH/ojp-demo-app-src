@@ -408,7 +408,7 @@ export class OJPHelpers {
     const rows: ServiceAttributeRenderModel[] = [];
 
     service.attribute.forEach(serviceAttribute => {
-      const key = serviceAttribute.code;
+      const key = String(serviceAttribute.code);
       const icon: string = (() => {
         const defaultIcon = 'kom:circle-question-mark-medium';
         
