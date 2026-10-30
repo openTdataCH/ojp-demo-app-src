@@ -533,10 +533,10 @@ export class SearchFormComponent implements OnInit {
         const isOJPv2 = OJP_VERSION === '2.0';
         const issueTitle: string = (() => {
           if (!isOJPv2) {
-            return '[OJP v1.0][TR issue] ';
+            return '[OJP v1.0][TR] ';
           }
 
-          return '[TR issue] ';
+          return '[TR] ';
         })();
 
         const requestURL = window.location.href;
