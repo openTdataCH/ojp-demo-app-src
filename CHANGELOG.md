@@ -4,6 +4,10 @@ OJP-Demo URL: https://opentdatach.github.io/ojp-demo-app/
 
 ----
 
+2.November 2026
+- Fix station board platform - [PR #424](https://github.com/openTdataCH/ojp-demo-app-src/pull/424)
+  - use realtime info when available
+
 23.October 2026 - [PR #420](https://github.com/openTdataCH/ojp-demo-app-src/pull/420)
 - Update TimedLegs
   - fixed bug to use estimatedQuay instead of plannedQuay for real-time platform updates
