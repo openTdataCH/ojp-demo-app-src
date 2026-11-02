@@ -214,7 +214,7 @@ export class StationBoardResultComponent implements OnInit, AfterViewInit {
     const arrivalTime = this.computeStopTimeData(stopEvent.thisCall, 'Arrivals');
     const departureTime = this.computeStopTimeData(stopEvent.thisCall, 'Departures');
 
-    const stopPlatformActual = stopEvent.thisCall.platform.timetable === stopEvent.thisCall.platform.realtime ? null : stopEvent.thisCall.platform.timetable;
+    const stopPlatformActual = stopEvent.thisCall.platform.timetable === stopEvent.thisCall.platform.realtime ? null : stopEvent.thisCall.platform.realtime;
 
     const isCancelled = stopEvent.service.cancelled === true;
     const hasDeviation = stopEvent.service.deviation === true;
