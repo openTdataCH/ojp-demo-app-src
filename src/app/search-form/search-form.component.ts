@@ -115,6 +115,12 @@ export class SearchFormComponent implements OnInit {
       return;
     }
 
+    const gistId = new URLSearchParams(document.location.search).get('gist');
+    if (gistId) {
+      await this.initFromGistRef(gistId);
+      return;
+    }
+
     this.userTripService.locationsUpdated.subscribe(nothing => {
       this.updateLocationTexts();
       this.userTripService.updateCurrentURL(this.router, this.route);
@@ -188,12 +194,6 @@ export class SearchFormComponent implements OnInit {
     const doSearch = queryParams.get('do_search') ?? false;
     if (doSearch) {
       await this.handleTapOnSearch();
-      return;
-    }
-
-    const gistId = queryParams.get('gist');
-    if (gistId) {
-      await this.initFromGistRef(gistId);
       return;
     }
   }
