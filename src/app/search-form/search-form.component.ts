@@ -217,11 +217,9 @@ export class SearchFormComponent implements OnInit {
       fromToTextParts.push(place?.computeName() ?? '')
     });
 
-    if (this.userTripService.viaTripLocations.length > 0) {
-      this.viaPlaces = [];
-      this.userTripService.viaTripLocations.forEach(viaTripLocation => {
-        this.viaPlaces.push(viaTripLocation.place);
-      });
+    this.viaPlaces = this.userTripService.viaTripLocations.map(viaTripLocation => viaTripLocation.place);
+    if (this.viaPlaces.length === 0) {
+      this.viaDwellTime.setValue('', { emitEvent: false });
     }
 
     const textParts: string[] = [];
