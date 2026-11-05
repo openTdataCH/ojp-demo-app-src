@@ -4,6 +4,10 @@ OJP-Demo URL: https://opentdatach.github.io/ojp-demo-app/
 
 ----
 
+5.November 2026
+- Fix via model - [Fix via param #417](https://github.com/openTdataCH/ojp-demo-app-src/issues/417), [PR #425](https://github.com/openTdataCH/ojp-demo-app-src/pull/425)
+  - clears trip via locations when via stop is removed
+
 2.November 2026
 - Fix station board platform - [PR #424](https://github.com/openTdataCH/ojp-demo-app-src/pull/424)
   - use realtime info when available

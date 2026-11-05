@@ -115,6 +115,12 @@ export class SearchFormComponent implements OnInit {
       return;
     }
 
+    const gistId = new URLSearchParams(document.location.search).get('gist');
+    if (gistId) {
+      await this.initFromGistRef(gistId);
+      return;
+    }
+
     this.userTripService.locationsUpdated.subscribe(nothing => {
       this.updateLocationTexts();
       this.userTripService.updateCurrentURL(this.router, this.route);
@@ -190,12 +196,6 @@ export class SearchFormComponent implements OnInit {
       await this.handleTapOnSearch();
       return;
     }
-
-    const gistId = queryParams.get('gist');
-    if (gistId) {
-      await this.initFromGistRef(gistId);
-      return;
-    }
   }
 
   private updateLocationTexts() {
@@ -217,11 +217,9 @@ export class SearchFormComponent implements OnInit {
       fromToTextParts.push(place?.computeName() ?? '')
     });
 
-    if (this.userTripService.viaTripLocations.length > 0) {
-      this.viaPlaces = [];
-      this.userTripService.viaTripLocations.forEach(viaTripLocation => {
-        this.viaPlaces.push(viaTripLocation.place);
-      });
+    this.viaPlaces = this.userTripService.viaTripLocations.map(viaTripLocation => viaTripLocation.place);
+    if (this.viaPlaces.length === 0) {
+      this.viaDwellTime.setValue('', { emitEvent: false });
     }
 
     const textParts: string[] = [];
@@ -273,10 +271,10 @@ export class SearchFormComponent implements OnInit {
 
     this.gistURL = 'https://gist.github.com/' + gistId;
 
-    this.initFromMockXML(mockText);
+    await this.initFromMockXML(mockText);
   }
 
-  onPlaceSelected(newPlace: AnyPlace, originType: JourneyPointType) {
+  onPlaceSelected(newPlace: AnyPlace | null, originType: JourneyPointType) {
     this.userTripService.updateTripEndpoint(newPlace, originType, 'SearchForm');
   }
 

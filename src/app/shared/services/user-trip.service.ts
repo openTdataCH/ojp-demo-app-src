@@ -424,6 +424,9 @@ export class UserTripService {
 
   public updateVia() {
     this.isViaEnabled = !this.isViaEnabled;
+    if (!this.isViaEnabled) {
+      this.viaTripLocations = [];
+    }
 
     this.locationsUpdated.emit();
     this.mapActiveTripSelected.emit(null);
@@ -432,30 +435,38 @@ export class UserTripService {
     this.updateURLs();
   }
 
-  updateTripEndpoint(place: AnyPlace, endpointType: JourneyPointType, updateSource: LocationUpdateSource) {
+  updateTripEndpoint(place: AnyPlace | null, endpointType: JourneyPointType, updateSource: LocationUpdateSource) {
     if (endpointType === 'From') {
-      if (this.fromTripPlace) {
+      if (place === null) {
+        this.fromTripPlace = null;
+      } else if (this.fromTripPlace) {
         this.fromTripPlace = this.patchTripPlace(this.fromTripPlace, place);
       } else {
         this.fromTripPlace = TripPlace.initWithPlace(place);
       }
     }
     if (endpointType === 'To') {
-      if (this.toTripPlace) {
+      if (place === null) {
+        this.toTripPlace = null;
+      } else if (this.toTripPlace) {
         this.toTripPlace = this.patchTripPlace(this.toTripPlace, place);
       } else {
         this.toTripPlace = TripPlace.initWithPlace(place);
       }
     }
 
-    if (location && endpointType === 'Via') {
-      const viaTripLocation = TripPlace.initWithPlace(place);
-      if (this.viaTripLocations.length > 0) {
-        viaTripLocation.dwellTimeMinutes = this.viaTripLocations[0].dwellTimeMinutes;
-      }
+    if (endpointType === 'Via') {
+      if (place === null) {
+        this.viaTripLocations = [];
+      } else {
+        const viaTripLocation = TripPlace.initWithPlace(place);
+        if (this.viaTripLocations.length > 0) {
+          viaTripLocation.dwellTimeMinutes = this.viaTripLocations[0].dwellTimeMinutes;
+        }
 
-      this.viaTripLocations = [viaTripLocation];
-      this.isViaEnabled = true;
+        this.viaTripLocations = [viaTripLocation];
+        this.isViaEnabled = true;
+      }
     }
 
     this.locationsUpdated.emit();

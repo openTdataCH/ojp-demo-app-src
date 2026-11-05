@@ -82,12 +82,14 @@ export class JourneyPointInputComponent implements OnInit {
 
       this.mapLookupPlaces[place.type] = [this._currentRenderPlaceResult];
     } else {
+      this.inputControl.setValue('', { emitEvent: false });
       this._currentRenderPlaceResult = null;
       this.mapLookupPlaces['stop'] = [AroundMePlaceResult];
     }
   }
 
   @Output() selectedNewPlace = new EventEmitter<AnyPlace>();
+  @Output() placeCleared = new EventEmitter<void>();
 
   public useSingleSearchPool: boolean;
 
@@ -324,5 +326,6 @@ export class JourneyPointInputComponent implements OnInit {
     this.mapLookupPlaces['stop'] = [AroundMePlaceResult];    
     
     this.autocompleteInputTrigger?.openPanel();
+    this.placeCleared.emit();
   }
 }

@@ -29,7 +29,7 @@ export class TripRequestBuilder {
       request.setArrivalDatetime(userTripService.departureDate);
     }
 
-    if (userTripService.viaTripLocations.length > 0) {
+    if (userTripService.isViaEnabled && userTripService.viaTripLocations.length > 0) {
       const viaTripLocation = userTripService.viaTripLocations[0];
       const viaTripPlace = TripRequestBuilder.convertTripPlaceToSDKPlace(viaTripLocation);
       request.setViaPlace(viaTripPlace, viaTripLocation.dwellTimeMinutes);
