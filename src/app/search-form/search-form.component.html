@@ -42,6 +42,7 @@
           [appStage]="this.userTripService.currentAppStage"
           [place]="this.viaPlaces[0]"
           [label]="'Via'"
+          (placeCleared)="onPlaceSelected(null, 'Via')"
           (selectedNewPlace)="onPlaceSelected($event, 'Via')">
         </journey-point-input>
       </div>
