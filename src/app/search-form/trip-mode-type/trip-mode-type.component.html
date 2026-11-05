@@ -208,6 +208,14 @@
             </sbb-radio-group>
           </div>
         </div>
+
+        <hr />
+
+        <div class="mb-2">
+          <sbb-checkbox [(ngModel)]="this.isAccessibleJourneysEnabled" (change)="updateAdditionalRestrictions()">
+            Accessible journeys
+          </sbb-checkbox>
+        </div>
       </ng-container>
     </div>
   </div>

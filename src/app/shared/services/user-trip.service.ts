@@ -43,6 +43,7 @@ export class UserTripService {
   public useRealTimeDataType: OJP_Types.UseRealtimeDataEnum;
   public trOptimisationMethod: OJP_Types.OptimisationMethodEnum | null;
   public useBikeTransport: boolean | null;
+  public isAccessibleJourneysEnabled: boolean | null;
   public walkSpeedDeviation: number | null;
 
   public currentBoardingType: TripRequestBoardingType;
@@ -100,6 +101,7 @@ export class UserTripService {
     this.useRealTimeDataType = 'explanatory';
     this.trOptimisationMethod = null;
     this.useBikeTransport = null;
+    this.isAccessibleJourneysEnabled = null;
     this.walkSpeedDeviation = null;
     
     this.isViaEnabled = false;
@@ -339,6 +341,7 @@ export class UserTripService {
     }
 
     this.useBikeTransport = ['yes', 'true', '1'].includes(this.queryParams.get('bike_transport') ?? 'n/a');
+    this.isAccessibleJourneysEnabled = ['yes', 'true', '1'].includes(this.queryParams.get('is_accesible') ?? 'n/a');
 
     this._initialLocationsChanges.next(true);
   }
@@ -638,6 +641,10 @@ export class UserTripService {
 
       if (this.useBikeTransport) {
         queryParams.append('bike_transport', 'yes');
+      }
+
+      if (this.isAccessibleJourneysEnabled) {
+        queryParams.append('is_accesible', 'yes');
       }
 
       if (this.useRealTimeDataType !== 'explanatory') {

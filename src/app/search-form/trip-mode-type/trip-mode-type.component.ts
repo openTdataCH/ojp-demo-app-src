@@ -110,6 +110,7 @@ export class TripModeTypeComponent implements OnInit {
   public isNumberOfResultsBeforeEnabled: boolean;
   public isNumberOfResultsAfterEnabled: boolean;
   public isBikeTransportEnabled: boolean;
+  public isAccessibleJourneysEnabled = false;
 
   public numberOfResults: number;
   public numberOfResultsBefore: number;
@@ -315,6 +316,7 @@ export class TripModeTypeComponent implements OnInit {
     }
 
     this.isBikeTransportEnabled = this.userTripService.useBikeTransport === null ? false : this.userTripService.useBikeTransport;
+    this.isAccessibleJourneysEnabled = this.userTripService.isAccessibleJourneysEnabled ?? false;
 
     this.updateAdditionalRestrictions();
 
@@ -346,6 +348,7 @@ export class TripModeTypeComponent implements OnInit {
     this.userTripService.walkSpeedDeviation = null;
 
     this.userTripService.useBikeTransport = null;
+    this.userTripService.isAccessibleJourneysEnabled = null;
 
     if (this.userTripService.isAdditionalRestrictionsEnabled) {
       if (this.isFilterMinDurationEnabled) {
@@ -392,6 +395,10 @@ export class TripModeTypeComponent implements OnInit {
 
       if (this.isBikeTransportEnabled) {
         this.userTripService.useBikeTransport = true;
+      }
+
+      if (this.isAccessibleJourneysEnabled) {
+        this.userTripService.isAccessibleJourneysEnabled = true;
       }
 
       this.userTripService.walkSpeedDeviation = this.walkSpeedDeviation;
