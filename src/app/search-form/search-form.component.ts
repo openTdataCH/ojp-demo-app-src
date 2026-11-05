@@ -273,7 +273,7 @@ export class SearchFormComponent implements OnInit {
 
     this.gistURL = 'https://gist.github.com/' + gistId;
 
-    this.initFromMockXML(mockText);
+    await this.initFromMockXML(mockText);
   }
 
   onPlaceSelected(newPlace: AnyPlace, originType: JourneyPointType) {
