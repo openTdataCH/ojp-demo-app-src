@@ -276,7 +276,7 @@ export class SearchFormComponent implements OnInit {
     await this.initFromMockXML(mockText);
   }
 
-  onPlaceSelected(newPlace: AnyPlace, originType: JourneyPointType) {
+  onPlaceSelected(newPlace: AnyPlace | null, originType: JourneyPointType) {
     this.userTripService.updateTripEndpoint(newPlace, originType, 'SearchForm');
   }
 
