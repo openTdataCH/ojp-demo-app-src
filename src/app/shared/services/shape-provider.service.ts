@@ -61,9 +61,9 @@ export class ShapeProviderService {
     // this.useCache = false;
   }
 
-  private getLegShape$(leg: AnyLeg): Observable<LegShapeResult> {
+  private getLegShape$(leg: AnyLeg, useAccesibilityParam: boolean): Observable<LegShapeResult> {
     const viaParts = this.computeLegViaParts(leg);
-    const requestData = this.computeRequestData(leg, viaParts);
+    const requestData = this.computeRequestData(leg, viaParts, useAccesibilityParam);
     const cacheKey = requestData.url;
 
     // 🚀 Cache hit → NO delay
@@ -124,8 +124,8 @@ export class ShapeProviderService {
     return legShapeResult;
   }
 
-  public async fetchLegShape(leg: AnyLeg): Promise<LegShapeResult> {
-    const response = await firstValueFrom(this.getLegShape$(leg))
+  public async fetchLegShape(leg: AnyLeg, useAccesibilityParam: boolean = false): Promise<LegShapeResult> {
+    const response = await firstValueFrom(this.getLegShape$(leg, useAccesibilityParam))
     return response;
   }
 
@@ -246,7 +246,7 @@ export class ShapeProviderService {
     return viaParts;
   }
 
-  private computeRequestData(leg: AnyLeg, viaParts: ViaPart[]): RequestData {
+  private computeRequestData(leg: AnyLeg, viaParts: ViaPart[], useAccesibilityParam: boolean): RequestData {
     const footLegTypes: TripLegLineType[] = ['Guidance', 'Transfer', 'Walk'];
     const railTypes: TripLegLineType[] = ['LongDistanceRail', 'SBahn', 'CogRailway'];
 
@@ -315,6 +315,10 @@ export class ShapeProviderService {
       url.searchParams.set('via', viaParam);
       url.searchParams.set('mot', motType);
 
+      if (useAccesibilityParam && ShapeProviderService.supportsThirdShape(leg)) {
+        url.searchParams.set('barrierefrei', 'true');
+      }
+
       if (useAtlas) {
         url.searchParams.set('atlas', 'true');
       }
@@ -380,6 +384,10 @@ export class ShapeProviderService {
       url.searchParams.set('mot', motType);
       url.searchParams.set('resolve-hops', 'false');
       url.searchParams.set('via', viaParam);
+
+      if (useAccesibilityParam && ShapeProviderService.supportsThirdShape(leg)) {
+        url.searchParams.set('barrier-free', 'true');
+      }
 
       if (viaParts.length > 0) {
         const geoPosition = viaParts[0].geoPosition;
