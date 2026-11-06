@@ -13,8 +13,11 @@ export interface TripLegData {
     show: boolean,
     showPreciseLine: boolean,
     showOtherProvider: boolean,
+    showThirdProvider: boolean,
     legShapeResult: LegShapeResult | null,
     legShapeError: string | null,
+    thirdLegShapeResult: LegShapeResult | null,
+    thirdLegShapeError: string | null,
   }
 }
 
