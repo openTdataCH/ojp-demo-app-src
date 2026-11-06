@@ -63,22 +63,12 @@ export class ShapeProviderService {
 
   private getLegShape$(leg: AnyLeg): Observable<LegShapeResult> {
     const viaParts = this.computeLegViaParts(leg);
-
-    const viaKey = viaParts.map(el => {
-      if (el.stopId) {
-        const stopKey = '!' + el.stopId;
-        return stopKey;
-      }
-
-      const defaultKey = el.geoPosition.asLatLngString() + '_' + (el.platform ?? '');
-      return defaultKey;
-    }).join('__');
-
     const requestData = this.computeRequestData(leg, viaParts);
+    const cacheKey = requestData.url;
 
     // 🚀 Cache hit → NO delay
     if (this.useCache) {
-      const cached$ = this.cache.get(viaKey);
+      const cached$ = this.cache.get(cacheKey);
       if (cached$) {
         const legShapeResult = cached$.pipe(
             map(value => {
@@ -113,7 +103,7 @@ export class ShapeProviderService {
         shareReplay({ bufferSize: 1, refCount: false }),
 
         catchError(err => {
-          this.cache.delete(viaKey);
+          this.cache.delete(cacheKey);
           return throwError(() => err);
         })
       );
@@ -129,7 +119,7 @@ export class ShapeProviderService {
       })
     );
 
-    this.cache.set(viaKey, request$);
+    this.cache.set(cacheKey, request$);
 
     return legShapeResult;
   }
