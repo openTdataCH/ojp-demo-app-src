@@ -241,7 +241,8 @@ export class SearchFormComponent implements OnInit {
   }
 
   private async initLocationsFromMocks() {
-    const mockURL = '/path/to/mock';
+    const mockURL = 
+      'https://url.to/mock';
 
     const mockText = await (await fetch(mockURL)).text();
     this.initFromMockXML(mockText);
@@ -255,7 +256,7 @@ export class SearchFormComponent implements OnInit {
     if (response.ok) {
       this.collapseSearchPanel();
       
-      const trips = TripRequestBuilder.parseTrips(this.sanitizer, response);
+      const trips = TripRequestBuilder.parseTrips(this.sanitizer, response, this.languageService.language);
       this.handleCustomTripResponse(trips, request2.requestInfo, true);
     } else {
       this.handleCustomTripResponse([], request2.requestInfo, true);
@@ -370,7 +371,7 @@ export class SearchFormComponent implements OnInit {
 
     this.logResponseTime(tripRequestStep1.requestInfo, 'DEBUG TR - 1st request');
     
-    const trips = TripRequestBuilder.parseTrips(this.sanitizer, responseStep1);
+    const trips = TripRequestBuilder.parseTrips(this.sanitizer, responseStep1, this.languageService.language);
 
     this.userTripService.tripRequestFinished.emit(tripRequestStep1.requestInfo);
     this.userTripService.updateTrips(trips);
@@ -441,7 +442,7 @@ export class SearchFormComponent implements OnInit {
         if (response.ok) {
           popover.inputTripRequestResponseXML = tripsResponseXML;
 
-          trips = TripRequestBuilder.parseTrips(this.sanitizer, response);
+          trips = TripRequestBuilder.parseTrips(this.sanitizer, response, this.languageService.language);
         } else {
           // Try TRR
           const ojpSDKv2 = sdk as OJP.SDK<'2.0'>;
@@ -455,7 +456,7 @@ export class SearchFormComponent implements OnInit {
               console.error('Expected 1 trip in reponse');
             } else {
               const mapPlaces = OJPHelpers.parseAnyPlaceContext(OJP_VERSION, trrResponse.value.tripResponseContext);
-              const mapSituations = OJPHelpers.parseAnySituationsContext(this.sanitizer, OJP_VERSION, trrResponse.value.tripResponseContext);
+              const mapSituations = OJPHelpers.parseAnySituationsContext(this.sanitizer, OJP_VERSION, trrResponse.value.tripResponseContext, this.languageService.language);
 
               const updatedTrip = Trip.initWithTripResultSchema(OJP_VERSION, trrResponse.value.tripResult[0], mapPlaces, mapSituations);
               if (updatedTrip) {

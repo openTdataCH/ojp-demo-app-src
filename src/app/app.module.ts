@@ -40,6 +40,7 @@ import { TripInfoResultComponent } from './trip-info/result/trip-info-result.com
 import { TripModeTypeComponent } from './search-form/trip-mode-type/trip-mode-type.component';
 
 import { ServiceStopsComponent } from './shared/components/service-stops.component';
+import { PtSituationsComponent } from './shared/components/pt-situations.component';
 
 import { ReportIssueComponent } from './shared/components/report-issue.component';
 
@@ -87,6 +88,7 @@ export function initLanguage(languageService: LanguageService): () => void {
     EmbedStationBoardPopoverComponent,
 
     ServiceStopsComponent,
+    PtSituationsComponent,
 
     ReportIssueComponent,
     

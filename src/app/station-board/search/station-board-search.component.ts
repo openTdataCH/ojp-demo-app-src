@@ -460,7 +460,7 @@ export class StationBoardSearchComponent implements OnInit {
     const isOJPv2 = OJP_VERSION === '2.0';
 
     const mapPlaces = OJPHelpers.parseAnyPlaceContext(OJP_VERSION, response.value.stopEventResponseContext);
-    const mapSituations = OJPHelpers.parseAnySituationsContext(this.sanitizer, OJP_VERSION, response.value.stopEventResponseContext);
+    const mapSituations = OJPHelpers.parseAnySituationsContext(this.sanitizer, OJP_VERSION, response.value.stopEventResponseContext, this.languageService.language);
 
     const stopEventResultsSchema: OJP_Types.StopEventResultSchema[] = (() => {
       if (isOJPv2) {

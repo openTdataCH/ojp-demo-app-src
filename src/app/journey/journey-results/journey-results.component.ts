@@ -162,7 +162,7 @@ export class JourneyResultsComponent implements OnInit {
     }
 
 
-    const trips = TripRequestBuilder.parseTrips(this.sanitizer, response);
+    const trips = TripRequestBuilder.parseTrips(this.sanitizer, response, this.languageService.language);
 
     this.userTripService.tripRequestFinished.emit(request.requestInfo);
     this.userTripService.updateTrips(trips);
