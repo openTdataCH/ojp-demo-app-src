@@ -7,20 +7,20 @@ import { AnyPtSituationElement } from "../types/_all";
 
 export class SituationContent {
   public situationNumber: string;
-  public summary: string;
+  public summaries: string[];
   public descriptions: string[];
   public safeDetails: SafeHtml[];
 
-  private constructor(situationNumber: string, summary: string, descriptions: string[], safeDetails: SafeHtml[]) {
+  private constructor(situationNumber: string, summaries: string[], descriptions: string[], safeDetails: SafeHtml[]) {
     this.situationNumber = situationNumber;
-    this.summary = summary;
+    this.summaries = summaries;
     this.descriptions = descriptions;
     this.safeDetails = safeDetails;
   }
 
-  public static initWithData(sanitizer: DomSanitizer, situationNumber: string, summary: string, descriptions: string[], detailTexts: string[]) {
+  public static initWithData(sanitizer: DomSanitizer, situationNumber: string, summaries: string[], descriptions: string[], detailTexts: string[]) {
     const safeDetails = SituationContent.computeSafeItems(sanitizer, detailTexts);
-    const situationContent = new SituationContent(situationNumber, summary, descriptions, safeDetails);
+    const situationContent = new SituationContent(situationNumber, summaries, descriptions, safeDetails);
     
     return situationContent;
   }
@@ -51,7 +51,7 @@ export class SituationContent {
       
       publishingAction.passengerInformationAction.forEach(passengerInformationAction => {
         passengerInformationAction.textualContent.forEach(textualContent => {
-          summaryTexts.push(textualContent.summaryContent.summaryText);
+          SituationContent.appendTextsForLanguage(textualContent.summaryContent, 'summaryText', language, summaryTexts);
 
           textualContent.descriptionContent.forEach(item => {
             descriptionTexts.push(item.descriptionText);
@@ -83,15 +83,9 @@ export class SituationContent {
         return;
       }
 
-      if (summaryTexts.length > 1) {
-        console.log('SituationContent.initWithSituationSchema - WARNING: more than 1 summary found, using first');
-        console.log(publishingAction);
-      }
-
-      const firstSummary = summaryTexts[0];
       const safeDetails = SituationContent.computeSafeItems(sanitizer, detailTexts);
 
-      const situationContent = new SituationContent(situationNumber, firstSummary, descriptionTexts, safeDetails);
+      const situationContent = new SituationContent(situationNumber, summaryTexts, descriptionTexts, safeDetails);
       situationsContent.push(situationContent);
     });
 
@@ -123,7 +117,8 @@ export class SituationContent {
     const detailTexts = schema.detail ?? [];
     const safeDetails = SituationContent.computeSafeItems(sanitizer, detailTexts);
 
-    const situationContent = new SituationContent(situationNumber, summary, descriptionTexts, safeDetails);
+    // OJPv1 is using one sumamry
+    const situationContent = new SituationContent(situationNumber, [summary], descriptionTexts, safeDetails);
     const situationsContent = [situationContent];
     
     return situationsContent;
