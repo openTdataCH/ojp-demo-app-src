@@ -241,7 +241,8 @@ export class SearchFormComponent implements OnInit {
   }
 
   private async initLocationsFromMocks() {
-    const mockURL = '/path/to/mock';
+    const mockURL = 
+      'https://url.to/mock';
 
     const mockText = await (await fetch(mockURL)).text();
     this.initFromMockXML(mockText);
