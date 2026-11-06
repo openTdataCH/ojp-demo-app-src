@@ -5,16 +5,29 @@
         <div><a class="navbar-brand text-white" href="search">{{ this.appService.headerTitle }}</a></div>
         <div class="d-none d-md-block"><a class="navbar-brand text-white" href="search"><img src="assets/opentransportdata.swiss.header-icons.svg" height="23" /></a></div>
       </div>
-      <div class="d-none d-md-flex">
-        <div class="nav-item">
-          <a class="nav-link" href="https://github.com/openTdataCH/ojp-demo-app-src">Source Code</a>
+      <div class="d-flex flex-column align-items-end gap-1">
+        <div class="d-none d-md-flex gap-4">
+          <div class="nav-item px-0">
+            <a class="nav-link" href="https://github.com/openTdataCH/ojp-demo-app-src" target="_blank" rel="noopener noreferrer">Source Code</a>
+          </div>
+          <div class="nav-item px-0">
+            <a class="nav-link" href="https://github.com/openTdataCH/ojp-demo-app-src/blob/main/docs/README.md" target="_blank" rel="noopener noreferrer">Docs</a>
+          </div>
+          <div class="nav-item px-0">
+            <a class="nav-link" [href]="'https://opentransportdata.swiss/' + languageService.language + '/cookbook/open-journey-planner-ojp-landing-page/'" target="_blank" rel="noopener noreferrer">OJP
+              Cookbook</a>
+          </div>
         </div>
-        <div class="nav-item">
-          <a class="nav-link" href="https://github.com/openTdataCH/ojp-demo-app-src/blob/main/docs/README.md">Docs</a>
-        </div>
-        <div class="nav-item">
-          <a class="nav-link" href="https://opentransportdata.swiss/en/cookbook/open-journey-planner-ojp/">OJP
-            Cookbook</a>
+        <div class="d-flex gap-1 flex-wrap justify-content-end" role="group" aria-label="Language">
+          <button *ngFor="let language of languages"
+            type="button"
+            class="btn btn-sm btn-outline-light text-uppercase"
+            [class.active]="language.code === languageService.language"
+            [attr.aria-pressed]="language.code === languageService.language"
+            [attr.aria-label]="language.name"
+            [attr.lang]="language.code"
+            [title]="language.name"
+            (click)="changeLanguage(language.code)">{{ language.code }}</button>
         </div>
       </div>
     </div>
