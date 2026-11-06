@@ -531,6 +531,7 @@ export class UserTripService {
 
   private computeQueryParams(): URLSearchParams {
     const queryParams = new URLSearchParams();
+    queryParams.set('lang', this.languageService.language);
 
     const endpointTypes: JourneyPointType[] = ['From', 'To'];
     endpointTypes.forEach(endpointType => {
@@ -689,7 +690,7 @@ export class UserTripService {
     this.updateLinkedURLs(queryParams);
 
     const embedQueryParams = new URLSearchParams();
-    const keepKeys = ['from', 'to'];
+    const keepKeys = ['from', 'to', 'lang'];
     keepKeys.forEach(key => {
       const value = queryParams.get(key);
       if (value !== null) {
