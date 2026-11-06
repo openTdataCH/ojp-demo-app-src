@@ -17,6 +17,7 @@ import { OJPHelpers, ServiceAttributeRenderModel } from '../../../helpers/ojp-he
 
 import { MapService } from '../../../shared/services/map.service';
 import { UserTripService } from '../../../shared/services/user-trip.service';
+import { ShapeProviderService } from '../../../shared/services/shape-provider.service';
 import { LegStopPointData } from '../../../shared/components/service-stops.component';
 
 import { TripLegGeoController } from '../../../shared/controllers/trip-geo-controller';
@@ -327,6 +328,14 @@ export class ResultTripLegComponent implements OnInit {
   public onClickShowOtherProviderMapLeg(checked: boolean) {
     if (this.legData?.map) {
       this.legData.map.showOtherProvider = checked;
+    }
+
+    this.redrawTripLeg();
+  }
+
+  public onClickShowThirdProviderMapLeg(checked: boolean) {
+    if (this.legData?.map) {
+      this.legData.map.showThirdProvider = checked;
     }
 
     this.redrawTripLeg();
