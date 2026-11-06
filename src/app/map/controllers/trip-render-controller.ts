@@ -138,10 +138,17 @@ export class TripRenderController {
         }
       });
 
-      if (mapTripLegs[idx].map.showOtherProvider) {
+      const providerShapes = [
+        { show: mapTripLegs[idx].map.showOtherProvider, result: mapTripLegs[idx].map.legShapeResult },
+        { show: mapTripLegs[idx].map.showThirdProvider, result: mapTripLegs[idx].map.thirdLegShapeResult },
+      ];
+      providerShapes.forEach(providerShape => {
+        if (!providerShape.show) {
+          return;
+        }
         const legLinesFeature = legFeatures.find(el => el.geometry.type === 'LineString') ?? null;
         if (legLinesFeature && legLinesFeature.properties) {
-          const legShapeResultFeatures = mapTripLegs[idx].map.legShapeResult?.fc.features ?? [];
+          const legShapeResultFeatures = providerShape.result?.fc.features ?? [];
           legShapeResultFeatures.forEach(shapeProviderFeature => {
             shapeProviderFeature.properties = Object.assign({}, legLinesFeature.properties);
             const drawType: TripLegDrawType = shapeProviderFeature.properties[TripLegPropertiesEnum.DrawType];
@@ -158,7 +165,7 @@ export class TripRenderController {
             features.push(shapeProviderFeature);
           });
         }
-      }
+      });
 
       if (mapTripLegs[idx].map.show) {
         const labelFeature = this.computeLegLabelFeature(mapTripLegs[idx], legFeatures);
