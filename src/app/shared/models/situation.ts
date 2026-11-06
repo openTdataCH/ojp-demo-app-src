@@ -53,26 +53,48 @@ export class SituationContent {
         passengerInformationAction.textualContent.forEach(textualContent => {
           SituationContent.appendTextsForLanguage(textualContent.summaryContent, 'summaryText', language, summaryTexts);
 
-          textualContent.descriptionContent.forEach(item => {
-            descriptionTexts.push(item.descriptionText);
-          });
+          if (textualContent.descriptionContent) {
+            textualContent.descriptionContent.forEach(item => {
+              SituationContent.appendTextsForLanguage(item, 'descriptionText', language, descriptionTexts);
+            });
+          }
 
-          textualContent.consequenceContent.forEach(item => {
-            detailTexts.push(item.consequenceText);
-          });
-          const durationText = textualContent.durationContent?.durationText ?? null;
-          if (durationText !== null) {
-            detailTexts.push(durationText);
+          if (textualContent.consequenceContent) {
+            textualContent.consequenceContent.forEach(item => {
+              SituationContent.appendTextsForLanguage(item, 'consequenceText', language, detailTexts);
+            });
           }
-          const reasonText = textualContent.reasonContent?.reasonText ?? null;
-          if (reasonText !== null) {
-            detailTexts.push(reasonText);
+
+          if (textualContent.durationContent) {
+            SituationContent.appendTextsForLanguage(textualContent.durationContent, 'durationText', language, detailTexts);
           }
-          textualContent.recommendationContent.forEach(item => {
-            detailTexts.push(item.recommendationText);
-          });
-          textualContent.remarkContent.forEach(item => {
-            detailTexts.push(item.remark);
+
+          if (textualContent.reasonContent) {
+            SituationContent.appendTextsForLanguage(textualContent.reasonContent, 'reasonText', language, detailTexts);
+          }
+
+          if (textualContent.recommendationContent) {
+            textualContent.recommendationContent.forEach(item => {
+              SituationContent.appendTextsForLanguage(item, 'recommendationText', language, detailTexts);
+            });
+          }
+
+          if (textualContent.remarkContent) {
+            textualContent.remarkContent.forEach(item => {
+              SituationContent.appendTextsForLanguage(item, 'remark', language, detailTexts);
+            });
+          }
+          const infoLinks = textualContent.infoLink ?? [];
+          infoLinks.forEach(infoLink => {
+            // Some responses contain a single label despite the declared array type.
+            const labels = infoLink.label as string | string[] | undefined;
+            if (Array.isArray(labels) && labels.length > 0) {
+              SituationContent.appendTextsForLanguage(infoLink, 'label', language, detailTexts);
+            } else if (typeof labels === 'string' && labels.length > 0) {
+              SituationContent.appendTextsForLanguage(infoLink, 'label', language, detailTexts);
+            } else {
+              detailTexts.push(infoLink.uri);
+            }
           });
         });
       });
@@ -92,13 +114,40 @@ export class SituationContent {
     return situationsContent;
   }
 
+  private static appendTextsForLanguage(content: object, textKey: string, language: OJP.Language, target: string[]): void {
+    const contentWithAttributes = content as Record<string, unknown>;
+    const textValues = contentWithAttributes[textKey];
+    let texts: string[];
+    if (Array.isArray(textValues)) {
+      texts = textValues;
+    } else if (typeof textValues === 'string') {
+      texts = [textValues];
+    } else {
+      throw new Error('Missing or invalid situation text: ' + textKey);
+    }
+
+    // The SDK flattens XML language attributes into parallel arrays, e.g. summaryText.@_lang.
+    const textLanguages = contentWithAttributes[textKey + '.@_lang'];
+    texts.forEach((text, index) => {
+      let textLanguage = textLanguages;
+      if (Array.isArray(textLanguages)) {
+        textLanguage = textLanguages[index];
+      }
+
+      if (typeof textLanguage === 'string') {
+        const baseLanguage = textLanguage.toLowerCase().split('-')[0];
+        if (baseLanguage !== language) {
+          return;
+        }
+      }
+
+      target.push(text);
+    });
+  }
+
   private static computeSafeItems(sanitizer: DomSanitizer, items: string[]) {
     const safeItems = items.map(detailS => {
       // HACK: always open in a new tab/window
-      if (Array.isArray(detailS)) {
-        // HACK - wait until correct model is rolled
-        detailS = detailS[0];
-      }
       detailS = detailS.replace('<a href', '<a target="_blank" href');
 
       const textarea = document.createElement('textarea');
