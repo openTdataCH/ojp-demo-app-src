@@ -103,8 +103,11 @@ export class JourneyResultRowComponent implements OnInit {
         show: true,
         showPreciseLine: showPreciseLine,
         showOtherProvider: false,
+        showThirdProvider: false,
         legShapeResult: null,
         legShapeError: null,
+        thirdLegShapeResult: null,
+        thirdLegShapeError: null,
       };
     });
   }
@@ -127,6 +130,20 @@ export class JourneyResultRowComponent implements OnInit {
         }
       } catch (error) {
         legData.map.legShapeError = (error as Error).message;
+      }
+
+      if (this.userTripService.isAccessibleJourneysEnabled === true && ShapeProviderService.supportsThirdShape(legData.leg)) {
+        try {
+          const useAccesibilityParam = true;
+          const legShapeResult = await this.shapeProviderService.fetchLegShape(legData.leg, useAccesibilityParam);
+          legData.map.thirdLegShapeResult = legShapeResult;
+          legData.map.thirdLegShapeError = null;
+          if (legShapeResult.source === 'fetch') {
+            await DateHelpers.sleep(200);
+          }
+        } catch (error) {
+          legData.map.thirdLegShapeError = (error as Error).message;
+        }
       }
     }
   }
@@ -219,6 +236,12 @@ export class JourneyResultRowComponent implements OnInit {
     const ojpSDK = OJP.SDK.create(REQUESTOR_REF, stageConfig, this.languageService.language);
     const trrRequest = ojpSDK.requests.TripRefineRequest.initWithTrip(tripSchema);
 
+    if (this.userTripService.isAccessibleJourneysEnabled && trrRequest.payload.refineParams) {
+      trrRequest.payload.refineParams.noSingleStep = true;
+      trrRequest.payload.refineParams.noStairs = true;
+      trrRequest.payload.refineParams.noEscalator = true;
+    }
+
     const trrResponse = await trrRequest.fetchResponse(ojpSDK);
     if (!trrResponse.ok) {
       console.error('ERROR - fetchTripRefineRequestResponse');
@@ -286,6 +309,7 @@ export class JourneyResultRowComponent implements OnInit {
 
       legData.map.show = !useOtherProvider;
       legData.map.showOtherProvider = useOtherProvider;
+      legData.map.showThirdProvider = false;
     });
 
     this.redrawTripOnMap();

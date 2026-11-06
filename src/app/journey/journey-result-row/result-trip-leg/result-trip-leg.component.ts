@@ -17,6 +17,7 @@ import { OJPHelpers, ServiceAttributeRenderModel } from '../../../helpers/ojp-he
 
 import { MapService } from '../../../shared/services/map.service';
 import { UserTripService } from '../../../shared/services/user-trip.service';
+import { ShapeProviderService } from '../../../shared/services/shape-provider.service';
 import { LegStopPointData } from '../../../shared/components/service-stops.component';
 
 import { TripLegGeoController } from '../../../shared/controllers/trip-geo-controller';
@@ -90,6 +91,8 @@ interface LegInfoDataModel {
     
     useOtherProvider: boolean,
     showOtherProviderLineLabelId: string,
+    useThirdProvider: boolean,
+    showThirdProviderLineLabelId: string,
   }
 };
 
@@ -325,6 +328,14 @@ export class ResultTripLegComponent implements OnInit {
   public onClickShowOtherProviderMapLeg(checked: boolean) {
     if (this.legData?.map) {
       this.legData.map.showOtherProvider = checked;
+    }
+
+    this.redrawTripLeg();
+  }
+
+  public onClickShowThirdProviderMapLeg(checked: boolean) {
+    if (this.legData?.map) {
+      this.legData.map.showThirdProvider = checked;
     }
 
     this.redrawTripLeg();
@@ -663,6 +674,8 @@ export class ResultTripLegComponent implements OnInit {
 
       useOtherProvider: FLAG_USE_2nd_SHAPE_PROVIDER,
       showOtherProviderLineLabelId: 'show_provider2_line_' + legIdKey,
+      useThirdProvider: FLAG_USE_2nd_SHAPE_PROVIDER && this.userTripService.isAccessibleJourneysEnabled === true && ShapeProviderService.supportsThirdShape(leg),
+      showThirdProviderLineLabelId: 'show_provider3_line_' + legIdKey,
     };
   }
 

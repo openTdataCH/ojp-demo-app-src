@@ -7,6 +7,17 @@
   cursor: pointer;
 }
 
+.shape-option .form-check-input {
+  margin-top: 0;
+}
+
+.shape-option > div,
+.shape-option sbb-tooltip {
+  display: flex;
+  align-items: center;
+  line-height: 0;
+}
+
 .location-hover:hover {
   cursor: pointer;
 }

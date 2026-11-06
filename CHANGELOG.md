@@ -9,6 +9,9 @@ OJP-Demo URL: https://opentdatach.github.io/ojp-demo-app/
   - use new OJP SDKs to reflect new PTSituation TextualContent structure
   - ensure `TextualContent` texts follows the PtSituation element structure schema. Retain only the current language texts
   - removes prev hacks and refactor situation displaying, use a shared component
+- Adds support for accesibile journeys - [Feature: TR with barrierefrei mode #396](https://github.com/openTdataCH/ojp-demo-app-src/issues/396), [PR #428](https://github.com/openTdataCH/ojp-demo-app-src/pull/428)
+  - adds an “Accessible journeys” checkbox in the advanced menu and save its selection in the URL via `is_accesible=yes` param
+  - adds `Shape #3` for accessible transfer and walking legs, using the shape provider’s accessibility option
 
 5.November 2026
 - Fix via model - [Fix via param #417](https://github.com/openTdataCH/ojp-demo-app-src/issues/417), [PR #425](https://github.com/openTdataCH/ojp-demo-app-src/pull/425)

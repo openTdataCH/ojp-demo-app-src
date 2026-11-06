@@ -23,6 +23,7 @@ OJP-Demo URL: https://opentdatach.github.io/ojp-demo-app/
 | stage | `prod` or `test` | Specify the OJP API backend, see [src/app/config/app-config.ts](https://github.com/openTdataCH/ojp-demo-app-src/blob/main/src/app/config/app-config.ts) for possible stages |
 | do_search | `false` or `true` | If `true` the search will be performed after the endpoints information is init-ed. Default is `false` |
 | advanced | `yes`, `no` | For `true`, `yes` values it will expand the advanced search settings panel |
+| is_accesible | `yes` | Checks “Accessible journeys” in the advanced menu. Requires `advanced=yes`; disabled by default. Also accepts `true` or `1`. With `shapes=yes`, enables Shape #3 for transfer legs and continuous walking legs. |
 
 ## Examples
 
@@ -40,6 +41,7 @@ OJP-Demo URL: https://opentdatach.github.io/ojp-demo-app/
 | Own Car + ATZ train | N / A | [Spiez - Brig](https://opentdatach.github.io/ojp-demo-app/search?from=8507483&to=8501609&transport_modes=car&do_search=yes) |  |
 | Own Car + Water Ferry | N / A | [Horgen - Meilen](https://opentdatach.github.io/ojp-demo-app/search?from=8590653&to=8576083&transport_modes=car&do_search=yes) |  |
 | Long-Distance Bus (V2-TEST) | N / A | [CH🇨🇭 - DE🇩🇪](https://opentdatach.github.io/ojp-demo-app/search?from=ch:1:sloid:7483&to=bla:MUZ&stage=v2-test) |  |
+| PublicTransport, Accessible journeys | N / A | [Bern - Zürich](https://opentdatach.github.io/ojp-demo-app/search?from=8507000&to=8503000&advanced=yes&is_accesible=yes&shapes=yes&do_search=yes) | Enables accessible journeys and shape comparison. |
 
 ### Multi-modal
 
@@ -89,6 +91,7 @@ Examples
 ----
 
 CHANGELOG
+- Nov 2026 - added `is_accesible` param
 - Jul 2025 - added `time_type` param
 - Aug 2024 - added `lang` param
 - Oct 2022 - updated mono-, multi- modal journey examples

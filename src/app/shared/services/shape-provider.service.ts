@@ -14,6 +14,7 @@ import { APP_CONFIG } from 'src/app/config/app-config';
 import { JourneyPointType } from '../types/_all';
 import { AnyLeg } from '../models/trip/leg-builder';
 import { TimedLeg } from '../models/trip/leg/timed-leg';
+import { ContinuousLeg } from '../models/trip/leg/continuous-leg';
 import { MapStopsLevelsUnderground } from '../../config/stops-underground';
 import { StopPlace } from '../models/place/stop-place';
 
@@ -60,24 +61,14 @@ export class ShapeProviderService {
     // this.useCache = false;
   }
 
-  private getLegShape$(leg: AnyLeg): Observable<LegShapeResult> {
+  private getLegShape$(leg: AnyLeg, useAccesibilityParam: boolean): Observable<LegShapeResult> {
     const viaParts = this.computeLegViaParts(leg);
-
-    const viaKey = viaParts.map(el => {
-      if (el.stopId) {
-        const stopKey = '!' + el.stopId;
-        return stopKey;
-      }
-
-      const defaultKey = el.geoPosition.asLatLngString() + '_' + (el.platform ?? '');
-      return defaultKey;
-    }).join('__');
-
-    const requestData = this.computeRequestData(leg, viaParts);
+    const requestData = this.computeRequestData(leg, viaParts, useAccesibilityParam);
+    const cacheKey = requestData.url;
 
     // 🚀 Cache hit → NO delay
     if (this.useCache) {
-      const cached$ = this.cache.get(viaKey);
+      const cached$ = this.cache.get(cacheKey);
       if (cached$) {
         const legShapeResult = cached$.pipe(
             map(value => {
@@ -112,7 +103,7 @@ export class ShapeProviderService {
         shareReplay({ bufferSize: 1, refCount: false }),
 
         catchError(err => {
-          this.cache.delete(viaKey);
+          this.cache.delete(cacheKey);
           return throwError(() => err);
         })
       );
@@ -128,13 +119,13 @@ export class ShapeProviderService {
       })
     );
 
-    this.cache.set(viaKey, request$);
+    this.cache.set(cacheKey, request$);
 
     return legShapeResult;
   }
 
-  public async fetchLegShape(leg: AnyLeg): Promise<LegShapeResult> {
-    const response = await firstValueFrom(this.getLegShape$(leg))
+  public async fetchLegShape(leg: AnyLeg, useAccesibilityParam: boolean = false): Promise<LegShapeResult> {
+    const response = await firstValueFrom(this.getLegShape$(leg, useAccesibilityParam))
     return response;
   }
 
@@ -255,7 +246,7 @@ export class ShapeProviderService {
     return viaParts;
   }
 
-  private computeRequestData(leg: AnyLeg, viaParts: ViaPart[]): RequestData {
+  private computeRequestData(leg: AnyLeg, viaParts: ViaPart[], useAccesibilityParam: boolean): RequestData {
     const footLegTypes: TripLegLineType[] = ['Guidance', 'Transfer', 'Walk'];
     const railTypes: TripLegLineType[] = ['LongDistanceRail', 'SBahn', 'CogRailway'];
 
@@ -324,6 +315,10 @@ export class ShapeProviderService {
       url.searchParams.set('via', viaParam);
       url.searchParams.set('mot', motType);
 
+      if (useAccesibilityParam && ShapeProviderService.supportsThirdShape(leg)) {
+        url.searchParams.set('barrierefrei', 'true');
+      }
+
       if (useAtlas) {
         url.searchParams.set('atlas', 'true');
       }
@@ -390,6 +385,10 @@ export class ShapeProviderService {
       url.searchParams.set('resolve-hops', 'false');
       url.searchParams.set('via', viaParam);
 
+      if (useAccesibilityParam && ShapeProviderService.supportsThirdShape(leg)) {
+        url.searchParams.set('barrier-free', 'true');
+      }
+
       if (viaParts.length > 0) {
         const geoPosition = viaParts[0].geoPosition;
         const mapXY = MapHelpers.lngLatToWebMercator(geoPosition.longitude, geoPosition.latitude);
@@ -422,5 +421,16 @@ export class ShapeProviderService {
     };
     
     return requestData;
+  }
+
+  public static supportsThirdShape(leg: AnyLeg): boolean {
+    if (leg.type === 'TransferLeg') {
+      return true;
+    }
+    if (leg.type === 'ContinuousLeg') {
+      const continuousLeg = leg as ContinuousLeg;
+      return continuousLeg.isWalking();
+    }
+    return false;
   }
 }

@@ -1,4 +1,4 @@
-<div class="card card-trip-leg p-3 mb-2" (click)="zoomToLeg()">
+<div *ngIf="this.legData as legData" class="card card-trip-leg p-3 mb-2" (click)="zoomToLeg()">
   
   <!-- Leg Header -->
   <div class="d-flex align-items-center">
@@ -22,50 +22,50 @@
     </div>
     
     <div class="d-flex gap-2 align-items-center" *ngIf="this.isEmbed === false">
-      <div class="align-items-center">
-        <div class="d-flex gap-1">
+      <div class="d-flex flex-column">
+        <div class="shape-option d-flex gap-1 align-items-center">
           <ng-container *ngIf="this.legInfoDataModel.gui.useOtherProvider">
             <input class="form-check-input" type="checkbox" 
               [id]="this.legInfoDataModel.gui.showLineLabelId" [name]="this.legInfoDataModel.gui.showLineLabelId" 
-              [ngModel]="this.legData?.map?.show" 
+              [ngModel]="legData.map.show" 
               (ngModelChange)="this.onClickShowMapLeg($event)" stopClickPropagation />
             <label class="form-check-label" [for]="this.legInfoDataModel.gui.showLineLabelId" stopClickPropagation>Shape #1</label>
           </ng-container>
 
-          <ng-container *ngIf="this.legInfoDataModel.gui.showLinkProjectionToggle && this.legData?.leg?.type === 'TimedLeg'">
+          <ng-container *ngIf="this.legInfoDataModel.gui.showLinkProjectionToggle && legData.leg.type === 'TimedLeg'">
             <ng-container *ngIf="this.legInfoDataModel.gui.useOtherProvider">
               <div>•</div>
             </ng-container>
             <input class="form-check-input" type="checkbox" 
               [id]="this.legInfoDataModel.gui.showPreciseLineLabelId" [name]="this.legInfoDataModel.gui.showPreciseLineLabelId" 
-              [disabled]="!(this.legData?.map?.show ?? false)"
-              [ngModel]="this.legData?.map?.showPreciseLine" 
+              [disabled]="!legData.map.show"
+              [ngModel]="legData.map.showPreciseLine" 
               (ngModelChange)="this.onClickShowPreciseMapLeg($event)" stopClickPropagation />
             <label class="form-check-label" [for]="this.legInfoDataModel.gui.showPreciseLineLabelId" stopClickPropagation>LinkProjection</label>
           </ng-container>
         </div>
         
         <ng-container *ngIf="this.legInfoDataModel.gui.useOtherProvider">
-          <div class="d-flex gap-1">
+          <div class="shape-option d-flex gap-1 align-items-center">
             <input class="form-check-input" type="checkbox" 
               [id]="this.legInfoDataModel.gui.showOtherProviderLineLabelId" [name]="this.legInfoDataModel.gui.showOtherProviderLineLabelId" 
-              [disabled]="this.legData?.map?.legShapeResult === null"
-              [ngModel]="this.legData?.map?.showOtherProvider" 
+              [disabled]="legData.map.legShapeResult === null"
+              [ngModel]="legData.map.showOtherProvider" 
               (ngModelChange)="this.onClickShowOtherProviderMapLeg($event)" stopClickPropagation />
             <label class="form-check-label" [for]="this.legInfoDataModel.gui.showOtherProviderLineLabelId" stopClickPropagation>Shape #2</label>
             
-            <ng-container *ngIf="this.legData?.map?.legShapeResult">
+            <ng-container *ngIf="legData.map.legShapeResult as legShapeResult">
               <div stopClickPropagation>
                 <sbb-tooltip svgIcon="kom:circle-information-small-small">
                   <ul>
-                    <li>demo: <a [href]="this.legData?.map?.legShapeResult?.requestData?.demoURL" target="_blank">{{ this.legData?.map?.legShapeResult?.requestData?.demoURL }}</a></li>
-                    <li>API: <a [href]="this.legData?.map?.legShapeResult?.requestData?.url" target="_blank">{{ this.legData?.map?.legShapeResult?.requestData?.url }}</a></li>
-                    <li>mot: {{ this.legData?.map?.legShapeResult?.requestData?.mot }}</li>
-                    <li>atlas: {{ this.legData?.map?.legShapeResult?.requestData?.useAtlas }}</li>
+                    <li>demo: <a [href]="legShapeResult.requestData.demoURL" target="_blank">{{ legShapeResult.requestData.demoURL }}</a></li>
+                    <li>API: <a [href]="legShapeResult.requestData.url" target="_blank">{{ legShapeResult.requestData.url }}</a></li>
+                    <li>mot: {{ legShapeResult.requestData.mot }}</li>
+                    <li>atlas: {{ legShapeResult.requestData.useAtlas }}</li>
                     <li>
                       <div>via</div>
                       <ul>
-                        <ng-container *ngFor="let apiViaPart of this.legData?.map?.legShapeResult?.requestData?.apiViaParts">
+                        <ng-container *ngFor="let apiViaPart of legShapeResult.requestData.apiViaParts">
                           <li>{{ apiViaPart }}</li>
                         </ng-container>
                       </ul>
@@ -75,11 +75,11 @@
               </div>
             </ng-container>
             
-            <ng-container *ngIf="this.legData?.map?.legShapeError">
+            <ng-container *ngIf="legData.map.legShapeError as legShapeError">
               <div stopClickPropagation>
                 <sbb-tooltip svgIcon="kom:circle-question-mark-small" class="sbb-icon-fit">
                   <ul>
-                    <li>error: {{ this.legData?.map?.legShapeError }}</li>
+                    <li>error: {{ legShapeError }}</li>
                   </ul>
                 </sbb-tooltip>
               </div>
@@ -87,6 +87,42 @@
           
           </div>
         </ng-container>
+        <div class="shape-option d-flex gap-1 align-items-center" *ngIf="this.legInfoDataModel.gui.useThirdProvider">
+          <input class="form-check-input" type="checkbox"
+            [id]="this.legInfoDataModel.gui.showThirdProviderLineLabelId" [name]="this.legInfoDataModel.gui.showThirdProviderLineLabelId"
+            [disabled]="legData.map.thirdLegShapeResult === null"
+            [ngModel]="legData.map.showThirdProvider"
+            (ngModelChange)="this.onClickShowThirdProviderMapLeg($event)" stopClickPropagation />
+          <label class="form-check-label" [for]="this.legInfoDataModel.gui.showThirdProviderLineLabelId" stopClickPropagation>Shape #3</label>
+
+          <div *ngIf="legData.map.thirdLegShapeResult as thirdLegShapeResult" stopClickPropagation>
+            <sbb-tooltip svgIcon="kom:circle-information-small-small">
+              <ul>
+                <li>demo: <a [href]="thirdLegShapeResult.requestData.demoURL" target="_blank">{{ thirdLegShapeResult.requestData.demoURL }}</a></li>
+                <li>API: <a [href]="thirdLegShapeResult.requestData.url" target="_blank">{{ thirdLegShapeResult.requestData.url }}</a></li>
+                <li>mot: {{ thirdLegShapeResult.requestData.mot }}</li>
+                <li>atlas: {{ thirdLegShapeResult.requestData.useAtlas }}</li>
+                <li>
+                  <div>via</div>
+                  <ul>
+                    <ng-container *ngFor="let apiViaPart of thirdLegShapeResult.requestData.apiViaParts">
+                      <li>{{ apiViaPart }}</li>
+                    </ng-container>
+                  </ul>
+                </li>
+                <li>barrierefrei: true</li>
+              </ul>
+            </sbb-tooltip>
+          </div>
+
+          <div *ngIf="legData.map.thirdLegShapeError as thirdLegShapeError" stopClickPropagation>
+            <sbb-tooltip svgIcon="kom:circle-question-mark-small" class="sbb-icon-fit">
+              <ul>
+                <li>error: {{ thirdLegShapeError }}</li>
+              </ul>
+            </sbb-tooltip>
+          </div>
+        </div>
       </div>
       
       <ng-container *ngIf="this.enableTRR">
@@ -129,9 +165,9 @@
     </div>
   </div>
 
-  <ng-container *ngIf="this.legData?.info?.comments !== null">
+  <ng-container *ngIf="legData.info.comments !== null">
     <hr />
-    <div>Note: <span>{{ this.legData?.info?.comments }}</span></div>
+    <div>Note: <span>{{ legData.info.comments }}</span></div>
   </ng-container>
 </div>
 

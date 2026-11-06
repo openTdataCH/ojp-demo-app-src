@@ -338,8 +338,11 @@ export class OJPHelpers {
             show: true,
             showPreciseLine: !TripLegGeoController.shouldUseBeeline(leg),
             showOtherProvider: false,
+            showThirdProvider: false,
             legShapeResult: null,
             legShapeError: null,
+            thirdLegShapeResult: null,
+            thirdLegShapeError: null,
           }
         };
         return legData;
