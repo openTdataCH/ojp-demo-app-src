@@ -1,0 +1,28 @@
+<div class="d-flex gap-2">
+  <div *ngFor="let situationData of situations">
+    <sbb-tooltip [trigger]="trigger" svgIcon="fpl:info">
+      <p *ngFor="let summary of situationData.summaries">
+        <strong>{{ summary }}</strong>
+      </p>
+
+      <div *ngIf="situationData.descriptions.length === 1">
+        {{ situationData.descriptions[0] }}
+      </div>
+
+      <ng-container *ngIf="situationData.descriptions.length > 1">
+        <ul class="tooltip-list">
+          <li *ngFor="let descriptionText of situationData.descriptions">
+            {{ descriptionText }}
+          </li>
+        </ul>
+        <h6>Detail</h6>
+      </ng-container>
+
+      <ul class="tooltip-list">
+        <li *ngFor="let detailText of situationData.safeDetails">
+          <div [innerHTML]="detailText"></div>
+        </li>
+      </ul>
+    </sbb-tooltip>
+  </div>
+</div>

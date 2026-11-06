@@ -267,7 +267,7 @@ export class JourneyResultRowComponent implements OnInit {
     this.trrRequestInfo = trrRequest.requestInfo;
 
     const mapPlaces = OJPHelpers.parseAnyPlaceContext(OJP_VERSION, trrResponse.value.tripResponseContext);
-    const mapSituations = OJPHelpers.parseAnySituationsContext(this.sanitizer, OJP_VERSION, trrResponse.value.tripResponseContext);
+    const mapSituations = OJPHelpers.parseAnySituationsContext(this.sanitizer, OJP_VERSION, trrResponse.value.tripResponseContext, this.languageService.language);
     
     const updatedTrip = Trip.initWithTripResultSchema(OJP_VERSION, trrResponse.value.tripResult[0], mapPlaces, mapSituations);
     if (!updatedTrip) {

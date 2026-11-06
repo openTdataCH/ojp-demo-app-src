@@ -25,7 +25,7 @@ export class TripInfoResult {
     this.situations = [];
   }
 
-  public static initWithTripInfoResponse(sanitizer: DomSanitizer, ojpVersion: OJP.OJP_VERSION, response: AnyTripInfoRequestResponse | null): TripInfoResult | null {
+  public static initWithTripInfoResponse(sanitizer: DomSanitizer, ojpVersion: OJP.OJP_VERSION, response: AnyTripInfoRequestResponse | null, language: OJP.Language): TripInfoResult | null {
     if (response === null || !response.ok) {
       return null;
     }
@@ -52,7 +52,7 @@ export class TripInfoResult {
     }
 
     const mapPlaces = OJPHelpers.parseAnyPlaceContext(ojpVersion, response.value.tripInfoResponseContext);
-    const mapSituations = OJPHelpers.parseAnySituationsContext(sanitizer, OJP_VERSION, response.value.tripInfoResponseContext);
+    const mapSituations = OJPHelpers.parseAnySituationsContext(sanitizer, OJP_VERSION, response.value.tripInfoResponseContext, language);
 
     const calls: StopPointCall[] = [];
     const callsSchema = firstTripInfoResultSchema.previousCall.concat(firstTripInfoResultSchema.onwardCall);
