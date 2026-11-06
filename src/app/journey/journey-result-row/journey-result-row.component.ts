@@ -236,6 +236,12 @@ export class JourneyResultRowComponent implements OnInit {
     const ojpSDK = OJP.SDK.create(REQUESTOR_REF, stageConfig, this.languageService.language);
     const trrRequest = ojpSDK.requests.TripRefineRequest.initWithTrip(tripSchema);
 
+    if (this.userTripService.isAccessibleJourneysEnabled && trrRequest.payload.refineParams) {
+      trrRequest.payload.refineParams.noSingleStep = true;
+      trrRequest.payload.refineParams.noStairs = true;
+      trrRequest.payload.refineParams.noEscalator = true;
+    }
+
     const trrResponse = await trrRequest.fetchResponse(ojpSDK);
     if (!trrResponse.ok) {
       console.error('ERROR - fetchTripRefineRequestResponse');
