@@ -417,8 +417,8 @@
           <!-- trigger on click <sbb-tooltip svgIcon="fpl:info"> -->
           <!-- trigger="hover" -->
           <sbb-tooltip svgIcon="fpl:info">
-            <p>
-              <strong>{{ situationData.summary }}</strong>
+            <p *ngFor="let summary of situationData.summaries">
+              <strong>{{ summary }}</strong>
             </p>
 
             <!-- Handle situations with one-description -->

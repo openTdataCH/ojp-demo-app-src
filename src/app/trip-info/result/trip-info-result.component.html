@@ -28,8 +28,8 @@
       <div class="d-flex gap-2">
         <div *ngFor="let situationData of this.model.situations">
           <sbb-tooltip trigger="hover" svgIcon="fpl:info">
-            <p>
-              <strong>{{ situationData.summary }}</strong>
+            <p *ngFor="let summary of situationData.summaries">
+              <strong>{{ summary }}</strong>
             </p>
 
             <!-- Handle situations with one-description -->
