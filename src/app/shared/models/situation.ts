@@ -26,11 +26,15 @@ export class SituationContent {
   }
 
   public static initWithAnySituationSchema(sanitizer: DomSanitizer, version: OJP.OJP_VERSION, schema: AnyPtSituationElement, language: OJP.Language): SituationContent[] {
+    try {
       if (version === '2.0') {
         return SituationContent.initWithSituationSchema(sanitizer, schema as OJP_Types.PtSituationElement, language);
       } else {
         return SituationContent.initWithLegacySituationSchema(sanitizer, schema as OJP_Types.OJPv1_PtSituationElement);
       }
+    } catch (error) {
+      console.error('SituationContent.initWithAnySituationSchema - skipping malformed situation', error, schema);
+      return [];
     }
   }
 
