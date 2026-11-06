@@ -289,6 +289,7 @@ export class StationBoardSearchComponent implements OnInit {
 
   private computeQueryParams(): URLSearchParams {
     const queryParams = new URLSearchParams();
+    queryParams.set('lang', this.languageService.language);
 
     if (this.stationBoardType === 'Arrivals') {
       queryParams.set('type', 'arr');

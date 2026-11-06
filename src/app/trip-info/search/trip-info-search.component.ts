@@ -161,6 +161,7 @@ export class TripInfoSearchComponent implements OnInit {
 
   private computeQueryParams(): URLSearchParams {
     const queryParams = new URLSearchParams();
+    queryParams.set('lang', this.languageService.language);
     if (this.model.journeyRef !== '') {
       queryParams.set('ref', this.model.journeyRef);
     }

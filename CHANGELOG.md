@@ -12,6 +12,8 @@ OJP-Demo URL: https://opentdatach.github.io/ojp-demo-app/
 - Adds support for accesibile journeys - [Feature: TR with barrierefrei mode #396](https://github.com/openTdataCH/ojp-demo-app-src/issues/396), [PR #428](https://github.com/openTdataCH/ojp-demo-app-src/pull/428)
   - adds an “Accessible journeys” checkbox in the advanced menu and save its selection in the URL via `is_accesible=yes` param
   - adds `Shape #3` for accessible transfer and walking legs, using the shape provider’s accessibility option
+- Language Switcher - [GUI Language selector #423](https://github.com/openTdataCH/ojp-demo-app-src/issues/423), [PR #429](https://github.com/openTdataCH/ojp-demo-app-src/pull/429)
+  - adds language switcher in GUI
 
 5.November 2026
 - Fix via model - [Fix via param #417](https://github.com/openTdataCH/ojp-demo-app-src/issues/417), [PR #425](https://github.com/openTdataCH/ojp-demo-app-src/pull/425)
