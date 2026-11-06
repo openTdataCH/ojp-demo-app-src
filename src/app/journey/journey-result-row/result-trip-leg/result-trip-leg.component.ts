@@ -90,6 +90,8 @@ interface LegInfoDataModel {
     
     useOtherProvider: boolean,
     showOtherProviderLineLabelId: string,
+    useThirdProvider: boolean,
+    showThirdProviderLineLabelId: string,
   }
 };
 
@@ -663,6 +665,8 @@ export class ResultTripLegComponent implements OnInit {
 
       useOtherProvider: FLAG_USE_2nd_SHAPE_PROVIDER,
       showOtherProviderLineLabelId: 'show_provider2_line_' + legIdKey,
+      useThirdProvider: FLAG_USE_2nd_SHAPE_PROVIDER && this.userTripService.isAccessibleJourneysEnabled === true && ShapeProviderService.supportsThirdShape(leg),
+      showThirdProviderLineLabelId: 'show_provider3_line_' + legIdKey,
     };
   }
 
