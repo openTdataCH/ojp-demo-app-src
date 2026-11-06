@@ -4,6 +4,12 @@ OJP-Demo URL: https://opentdatach.github.io/ojp-demo-app/
 
 ----
 
+6.November 2026
+- Updates situations - [PR #426](https://github.com/openTdataCH/ojp-demo-app-src/pull/426)
+  - use new OJP SDKs to reflect new PTSituation TextualContent structure
+  - ensure `TextualContent` texts follows the PtSituation element structure schema. Retain only the current language texts
+  - removes prev hacks and refactor situation displaying, use a shared component
+
 5.November 2026
 - Fix via model - [Fix via param #417](https://github.com/openTdataCH/ojp-demo-app-src/issues/417), [PR #425](https://github.com/openTdataCH/ojp-demo-app-src/pull/425)
   - clears trip via locations when via stop is removed
