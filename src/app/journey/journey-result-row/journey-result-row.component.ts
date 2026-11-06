@@ -103,8 +103,11 @@ export class JourneyResultRowComponent implements OnInit {
         show: true,
         showPreciseLine: showPreciseLine,
         showOtherProvider: false,
+        showThirdProvider: false,
         legShapeResult: null,
         legShapeError: null,
+        thirdLegShapeResult: null,
+        thirdLegShapeError: null,
       };
     });
   }
@@ -286,6 +289,7 @@ export class JourneyResultRowComponent implements OnInit {
 
       legData.map.show = !useOtherProvider;
       legData.map.showOtherProvider = useOtherProvider;
+      legData.map.showThirdProvider = false;
     });
 
     this.redrawTripOnMap();
