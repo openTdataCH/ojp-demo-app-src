@@ -131,6 +131,20 @@ export class JourneyResultRowComponent implements OnInit {
       } catch (error) {
         legData.map.legShapeError = (error as Error).message;
       }
+
+      if (this.userTripService.isAccessibleJourneysEnabled === true && ShapeProviderService.supportsThirdShape(legData.leg)) {
+        try {
+          const useAccesibilityParam = true;
+          const legShapeResult = await this.shapeProviderService.fetchLegShape(legData.leg, useAccesibilityParam);
+          legData.map.thirdLegShapeResult = legShapeResult;
+          legData.map.thirdLegShapeError = null;
+          if (legShapeResult.source === 'fetch') {
+            await DateHelpers.sleep(200);
+          }
+        } catch (error) {
+          legData.map.thirdLegShapeError = (error as Error).message;
+        }
+      }
     }
   }
 
