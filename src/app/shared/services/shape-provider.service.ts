@@ -14,6 +14,7 @@ import { APP_CONFIG } from 'src/app/config/app-config';
 import { JourneyPointType } from '../types/_all';
 import { AnyLeg } from '../models/trip/leg-builder';
 import { TimedLeg } from '../models/trip/leg/timed-leg';
+import { ContinuousLeg } from '../models/trip/leg/continuous-leg';
 import { MapStopsLevelsUnderground } from '../../config/stops-underground';
 import { StopPlace } from '../models/place/stop-place';
 
@@ -422,5 +423,16 @@ export class ShapeProviderService {
     };
     
     return requestData;
+  }
+
+  public static supportsThirdShape(leg: AnyLeg): boolean {
+    if (leg.type === 'TransferLeg') {
+      return true;
+    }
+    if (leg.type === 'ContinuousLeg') {
+      const continuousLeg = leg as ContinuousLeg;
+      return continuousLeg.isWalking();
+    }
+    return false;
   }
 }
