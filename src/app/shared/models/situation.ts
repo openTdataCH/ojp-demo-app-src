@@ -25,15 +25,16 @@ export class SituationContent {
     return situationContent;
   }
 
-  public static initWithAnySituationSchema(sanitizer: DomSanitizer, version: OJP.OJP_VERSION, schema: AnyPtSituationElement): SituationContent[] {
-    if (version === '2.0') {
-      return SituationContent.initWithSituationSchema(sanitizer, schema as OJP_Types.PtSituationElement);
-    } else {
-      return SituationContent.initWithLegacySituationSchema(sanitizer, schema as OJP_Types.OJPv1_PtSituationElement);
+  public static initWithAnySituationSchema(sanitizer: DomSanitizer, version: OJP.OJP_VERSION, schema: AnyPtSituationElement, language: OJP.Language): SituationContent[] {
+      if (version === '2.0') {
+        return SituationContent.initWithSituationSchema(sanitizer, schema as OJP_Types.PtSituationElement, language);
+      } else {
+        return SituationContent.initWithLegacySituationSchema(sanitizer, schema as OJP_Types.OJPv1_PtSituationElement);
+      }
     }
   }
 
-  public static initWithSituationSchema(sanitizer: DomSanitizer, schema: OJP_Types.PtSituationElement): SituationContent[] {
+  public static initWithSituationSchema(sanitizer: DomSanitizer, schema: OJP_Types.PtSituationElement, language: OJP.Language): SituationContent[] {
     const publishingActions = schema.publishingActions?.publishingAction ?? [];
     const situationNumber = schema.situationNumber;
 

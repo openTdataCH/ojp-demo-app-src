@@ -296,7 +296,7 @@ export class TripRequestBuilder {
     return request;
   }
 
-  public static parseTrips(sanitizer: DomSanitizer, response: AnyTripRequestResponse): Trip[] {
+  public static parseTrips(sanitizer: DomSanitizer, response: AnyTripRequestResponse, language: OJP.Language): Trip[] {
     const trips: Trip[] = [];
 
     if (!response.ok) {
@@ -305,7 +305,7 @@ export class TripRequestBuilder {
 
     const tripResults = response.value.tripResult ?? [];
     const mapPlaces = OJPHelpers.parseAnyPlaceContext(OJP_VERSION, response.value.tripResponseContext);
-    const mapSituations = OJPHelpers.parseAnySituationsContext(sanitizer, OJP_VERSION, response.value.tripResponseContext);
+    const mapSituations = OJPHelpers.parseAnySituationsContext(sanitizer, OJP_VERSION, response.value.tripResponseContext, language);
     
     tripResults.forEach(tripResultSchema => {
       const trip = Trip.initWithTripResultSchema(OJP_VERSION, tripResultSchema, mapPlaces, mapSituations);

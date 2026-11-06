@@ -41,7 +41,7 @@ export class TripInfoResultPopoverComponent {
     this.model.isFetching = false;
 
     if (response.ok) {
-      const tripInfoResult = TripInfoResult.initWithTripInfoResponse(this.sanitizer, OJP_VERSION, response);
+      const tripInfoResult = TripInfoResult.initWithTripInfoResponse(this.sanitizer, OJP_VERSION, response, this.languageService.language);
       this.tripInfoService.tripInfoResultUpdated.emit(tripInfoResult);
     } else {
       console.error('fetchJourneyRef - error');

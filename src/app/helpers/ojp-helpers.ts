@@ -206,7 +206,7 @@ export class OJPHelpers {
     return mapPlaces;
   }
 
-  public static parseAnySituationsContext(sanitizer: DomSanitizer, version: OJP.OJP_VERSION, responseContextSchema: AnyResponseContextSchema | undefined): Record<string, SituationContent[]> {
+  public static parseAnySituationsContext(sanitizer: DomSanitizer, version: OJP.OJP_VERSION, responseContextSchema: AnyResponseContextSchema | undefined, language: OJP.Language): Record<string, SituationContent[]> {
     if (responseContextSchema === undefined) {
       return {};
     }
@@ -215,7 +215,7 @@ export class OJPHelpers {
 
     const situationsSchema: AnyPtSituationElement[] = responseContextSchema.situations?.ptSituation ?? [];
     situationsSchema.forEach(situationsSchema => {
-      const situationContentData = SituationContent.initWithAnySituationSchema(sanitizer, version, situationsSchema);
+      const situationContentData = SituationContent.initWithAnySituationSchema(sanitizer, version, situationsSchema, language);
       if (situationContentData.length > 0) {
         const situationNumber = situationContentData[0].situationNumber;
         mapSituations[situationNumber] = situationContentData;
