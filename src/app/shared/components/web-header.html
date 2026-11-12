@@ -21,7 +21,8 @@
         <div class="d-flex gap-1 flex-wrap justify-content-end" role="group" aria-label="Language">
           <button *ngFor="let language of languages"
             type="button"
-            class="btn btn-sm btn-outline-light text-uppercase"
+            class="btn btn-sm btn-outline-light text-uppercase px-2 py-0"
+            style="font-size: 0.75rem"
             [class.active]="language.code === languageService.language"
             [attr.aria-pressed]="language.code === languageService.language"
             [attr.aria-label]="language.name"
