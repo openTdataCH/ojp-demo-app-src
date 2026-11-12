@@ -7,3 +7,39 @@
   font-size: 20px;
   font-weight: bold;
 }
+
+.trip-info-section {
+  border-top: 1px solid #dce0e4;
+  padding: 16px 0;
+}
+
+.journey-details,
+.link-projection-controls {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.journey-detail-row {
+  display: grid;
+  grid-template-columns: 44px minmax(0, 1fr);
+  gap: 8px;
+}
+
+.journey-reference {
+  overflow-wrap: anywhere;
+}
+
+.link-projection-controls label {
+  margin: 0;
+  cursor: pointer;
+}
+
+.link-projection-controls input {
+  margin: 0;
+  flex-shrink: 0;
+}
+
+.trip-info-stops {
+  padding-top: 8px;
+}

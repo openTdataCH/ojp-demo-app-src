@@ -48,6 +48,22 @@
         <span class="journey-reference">{{ this.model.journeyRef }}</span>
       </div>
     </div>
+    <ng-container *ngIf="showLinkProjectionControls">
+      <div class="trip-info-section link-projection-controls">
+        <label class="d-flex align-items-center gap-2">
+          <input #defaultLinkProjection type="checkbox"
+            [checked]="tripInfoService.defaultLinkProjectionVisible"
+            (change)="onDefaultLinkProjectionChanged(defaultLinkProjection.checked)" />
+          Default LinkProjection
+        </label>
+        <label class="d-flex align-items-center gap-2">
+          <input #externalLinkProjection type="checkbox"
+            [checked]="tripInfoService.externalLinkProjectionVisible"
+            (change)="onExternalLinkProjectionChanged(externalLinkProjection.checked)" />
+          External LinkProjection
+        </label>
+      </div>
+    </ng-container>
     <div class="trip-info-section">Example Trip: <a [href]="this.model.journeyExampleURL" target="_blank">{{ this.model.journeyExampleCaption }}</a></div>
     <div class="trip-info-section trip-info-stops">
       <service-stops 
