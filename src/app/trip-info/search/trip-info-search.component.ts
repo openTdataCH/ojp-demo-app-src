@@ -249,7 +249,8 @@ export class TripInfoSearchComponent implements OnInit {
   }
 
   private async fetchTripInfoRequestFromMocks() {
-    const mockURL = 'http://localhost/path/to/mock';
+    const mockURL = 
+      'http://localhost/path/to/mock';
 
     const mockText = await (await fetch(mockURL)).text();
 
