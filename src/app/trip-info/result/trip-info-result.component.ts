@@ -193,5 +193,8 @@ export class TripInfoResultComponent implements OnInit, AfterViewInit {
 
   private updateURLs() {
     this.model.permalinkURL = './trip?ref=' + this.model.journeyRef + '&stage=' + this.userTripService.currentAppStage;
+    if (FLAG_USE_2nd_SHAPE_PROVIDER) {
+      this.model.permalinkURL += '&shapes=yes';
+    }
   }
 }
