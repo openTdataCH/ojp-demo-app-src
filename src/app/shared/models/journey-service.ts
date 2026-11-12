@@ -212,25 +212,27 @@ export class JourneyService implements OJP_Types.DatedJourneySchema  {
   public formatServiceLineName(): string {
     const nameParts: string[] = [];
 
-    // HACK adds '' suffix so we can have always strings
-    const publishedServiceName = this.publishedServiceName.text + '';
+    const prefixLine = (() => {
+      if (this.mode.ptMode === 'tram') {
+        return 'T';
+      }
 
-    const modeShortName = this.mode.shortName?.text ?? null;
-    if (modeShortName === null) {
-      const modeName = this.mode.name?.text ?? null;
-      if (modeName !== null) {
-        nameParts.push(modeName);
+      if (this.mode.ptMode === 'bus') {
+        return 'B';
       }
-    } else {
-      // Avoid EV EV1 or S S1
-      if (!publishedServiceName.startsWith(modeShortName)) {
-        nameParts.push(modeShortName);
-      }
+
+      return null;
+    })();
+
+    if (prefixLine !== null) {
+      nameParts.push(prefixLine);
     }
 
-    nameParts.push(this.publishedServiceName.text);
+    // HACK adds '' suffix so we can have always strings
+    const publishedServiceName = this.publishedServiceName.text + '';
+    nameParts.push(publishedServiceName);
 
-    return nameParts.join(' ');
+    return nameParts.join('');
   }
 
   private isDemandMode(): boolean {
