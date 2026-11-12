@@ -20,6 +20,7 @@ import { GeoPositionBBOX } from '../../shared/models/geo/geoposition-bbox';
 export class TripInfoMapComponent implements OnInit {
   public mapLoadingPromise: Promise<mapgl.Map> | null;
   private journeyServiceRenderer: JourneyServiceRenderer | null
+  private externalJourneyServiceRenderer: JourneyServiceRenderer | null;
 
   constructor(
     private userTripService: UserTripService,
@@ -30,6 +31,7 @@ export class TripInfoMapComponent implements OnInit {
   ) {
     this.mapLoadingPromise = null;
     this.journeyServiceRenderer = null;
+    this.externalJourneyServiceRenderer = null;
   }
 
   ngOnInit(): void {
@@ -46,12 +48,29 @@ export class TripInfoMapComponent implements OnInit {
       this.mapLoadingPromise?.then(map => {
         if (tripInfoResult === null) {
           this.journeyServiceRenderer?.resetStopEventLayers();
+          this.externalJourneyServiceRenderer?.resetStopEventLayers();
         } else {
           this.journeyServiceRenderer?.drawTripInfoResult(tripInfoResult);
           this.zoomToJourneyService();
         }
       });
     })
+
+    this.tripInfoService.externalTripInfoResultUpdated.subscribe(tripInfoResult => {
+      this.mapLoadingPromise?.then(map => {
+        if (tripInfoResult === null) {
+          this.externalJourneyServiceRenderer?.resetStopEventLayers();
+        } else {
+          this.externalJourneyServiceRenderer?.drawTripInfoResult(tripInfoResult);
+        }
+      });
+    });
+
+    this.tripInfoService.linkProjectionVisibilityUpdated.subscribe(() => {
+      this.mapLoadingPromise?.then(() => {
+        this.updateLinkProjectionVisibility();
+      });
+    });
 
     this.mapService.newMapBoundsRequested.subscribe(mapData => {
       this.mapLoadingPromise?.then(map => {
@@ -113,6 +132,13 @@ export class TripInfoMapComponent implements OnInit {
     this.mapService.addRasterLayers(map);
 
     this.journeyServiceRenderer = new JourneyServiceRenderer(map);
+    this.externalJourneyServiceRenderer = new JourneyServiceRenderer(map, 'external-trip-info-data', '#E87500');
+    this.updateLinkProjectionVisibility();
+  }
+
+  private updateLinkProjectionVisibility() {
+    this.journeyServiceRenderer?.setVisible(this.tripInfoService.defaultLinkProjectionVisible);
+    this.externalJourneyServiceRenderer?.setVisible(this.tripInfoService.externalLinkProjectionVisible);
   }
 
   private addMapListeners(map: mapgl.Map) {
