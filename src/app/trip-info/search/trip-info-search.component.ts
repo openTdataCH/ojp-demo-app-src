@@ -229,11 +229,25 @@ export class TripInfoSearchComponent implements OnInit {
     this.model.otherVersionURL = 'trip?' + otherVersionQueryParams.toString();
   }
 
+  private buildRequest(sdk: OJP.AnySDK, useExternalCoordinates = false) {
+    const request = sdk.requests.TripInfoRequest.initWithJourneyRef(this.model.journeyRef, this.model.journeyDateTime);
+    request.enableTrackProjection();
+
+    if (useExternalCoordinates) {
+      if (request.payload.params) {
+        const extension = request.payload.params.extension ?? {};
+        extension.useExternalCoordinates = true;
+
+        request.payload.params.extension = extension;
+      }
+    }
+
+    return request;
+  }
+
   private async fetchTripInfo() {
     const ojpSDK = this.userTripService.createOJP_SDK_Instance(this.languageService.language);
-
-    const request = ojpSDK.requests.TripInfoRequest.initWithJourneyRef(this.model.journeyRef, this.model.journeyDateTime);
-    request.enableTrackProjection();
+    const request = this.buildRequest(ojpSDK);
 
     this.model.isSearching = true;
     try {
