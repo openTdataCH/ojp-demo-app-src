@@ -250,6 +250,7 @@ export class TripInfoSearchComponent implements OnInit {
     const request = this.buildRequest(ojpSDK);
 
     this.model.isSearching = true;
+    this.tripInfoService.externalTripInfoResultUpdated.emit(null);
     try {
       const response = await request.fetchResponse(ojpSDK);
       const tripInfoResult = TripInfoResult.initWithTripInfoResponse(this.sanitizer, OJP_VERSION, response, this.languageService.language);
@@ -263,6 +264,20 @@ export class TripInfoSearchComponent implements OnInit {
       console.error('SDK response error:');
       console.log(err);
     }
+
+    if (FLAG_USE_2nd_SHAPE_PROVIDER) {
+      const useExternalCoordinates = true;
+      const request2 = this.buildRequest(ojpSDK, useExternalCoordinates);
+      try {
+        const response2 = await request2.fetchResponse(ojpSDK);
+        const tripInfoResult2 = TripInfoResult.initWithTripInfoResponse(this.sanitizer, OJP_VERSION, response2, this.languageService.language);
+        this.tripInfoService.externalTripInfoResultUpdated.emit(tripInfoResult2);
+      } catch (err: any) {
+        console.error('SDK response error for second request:');
+        console.log(err);
+      }
+    }
+
     this.model.isSearching = false;
   }
 
