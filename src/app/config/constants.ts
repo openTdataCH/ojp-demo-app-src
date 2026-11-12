@@ -31,17 +31,9 @@ export const OJP_VERSION: OJP.OJP_VERSION = (() => {
 })();
 
 export const FLAG_USE_2nd_SHAPE_PROVIDER = (() => {
-  const userShape2 = queryParams.get('shape2');
-  const userShape2Param2 = queryParams.get('shapes');
-  if ((userShape2 !== null) || (userShape2Param2 !== null)) {
-    return true;
-  }
-
-  if (window.location.pathname.includes('ojp-demo-shapes')) {
-    return true;
-  }
-
-  return false;
+  const shapeFlagValue = queryParams.get('shapes');
+  const hasFlagEnabled = shapeFlagValue === 'yes';
+  return hasFlagEnabled;
 })();
 
 export type APP_STAGE = 'PROD' | 'INT' | 'TEST' | 'DEV'
