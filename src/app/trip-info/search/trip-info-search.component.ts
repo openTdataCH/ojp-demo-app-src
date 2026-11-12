@@ -8,7 +8,7 @@ import { SbbNotificationToast } from '@sbb-esta/angular/notification-toast';
 
 import * as OJP from 'ojp-sdk';
 
-import { APP_STAGE, APP_STAGEs, DEFAULT_APP_STAGE, OJP_VERSION, REQUESTOR_REF } from '../../config/constants';
+import { APP_STAGE, APP_STAGEs, DEFAULT_APP_STAGE, FLAG_USE_2nd_SHAPE_PROVIDER, OJP_VERSION, REQUESTOR_REF } from '../../config/constants';
 
 import { UserTripService } from '../../shared/services/user-trip.service';
 import { TripInfoService } from '../trip-info.service';
@@ -179,6 +179,10 @@ export class TripInfoSearchComponent implements OnInit {
 
     if (OJP_VERSION === '1.0') {
       queryParams.append('v', '1');
+    }
+
+    if (FLAG_USE_2nd_SHAPE_PROVIDER) {
+      queryParams.append('shapes', 'yes');
     }
 
     return queryParams;
