@@ -3,11 +3,12 @@ import { Component, OnInit } from '@angular/core';
 import * as OJP_Types from 'ojp-shared-types';
 import * as OJP from 'ojp-sdk';
 
-import { DEBUG_LEVEL, MAP_RASTER_LAYERS, OJP_VERSION } from '../../config/constants';
+import { DEBUG_LEVEL, FLAG_USE_2nd_SHAPE_PROVIDER, MAP_RASTER_LAYERS, OJP_VERSION } from '../../config/constants';
 import { RasterLayerType } from '../types/_all';
 
 type PageModel = {
   lastUpdate: string,
+  shapesEnabled: boolean,
   isTopograhicPlaceMapLayerEnabled: boolean,
   rasterLayers: RasterLayerType[],
   mapSDK_Versions: {
@@ -34,6 +35,7 @@ export class WebFooterComponent implements OnInit {
 
     this.model = {
       lastUpdate: '6.Nov 2026',
+      shapesEnabled: FLAG_USE_2nd_SHAPE_PROVIDER,
       isTopograhicPlaceMapLayerEnabled: isTopograhicPlaceMapLayerEnabled,
       rasterLayers: MAP_RASTER_LAYERS,
       mapSDK_Versions: {
@@ -54,5 +56,16 @@ export class WebFooterComponent implements OnInit {
 
   ngOnInit() {
 
+  }
+
+  public onShapesChanged(enabled: boolean): void {
+    const url = new URL(window.location.href);
+    if (enabled) {
+      url.searchParams.set('shapes', 'yes');
+    } else {
+      url.searchParams.delete('shapes');
+    }
+
+    window.location.assign(url.toString());
   }
 }

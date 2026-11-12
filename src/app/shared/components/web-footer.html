@@ -181,7 +181,7 @@
     <div class="footer">
       <div>© <a href="https://opentransportdata.swiss/en/" target="_blank">Open-Data-Plattform Mobilität Schweiz</a> 2021 - 2026</div>
       <div class="d-none d-md-block">
-        <div class="d-flex gap-2">
+        <div class="d-flex flex-wrap gap-2 align-items-center">
           <div>Last Update:</div>
           <a class="text-decoration-underline" href="{{ this.model.mapChangelogURLs.ojpDemoApp }}" target="_blank">{{ this.model.lastUpdate }}</a>
           
@@ -192,6 +192,15 @@
           <a class="text-decoration-underline" href="{{ this.model.mapChangelogURLs.ojpSDK_SharedTypes }}" target="_blank">{{ this.model.mapSDK_Versions.ojpSharedTypes }}</a>
 
           <div>- OJP API: {{ this.model.mapSDK_Versions.ojpAPI }}</div>
+          <div class="d-flex gap-2 align-items-center">
+            <span>- Flags:</span>
+            <label class="d-flex gap-1 align-items-center mb-0">
+              <input #shapesFlag type="checkbox"
+                [checked]="this.model.shapesEnabled"
+                (change)="onShapesChanged(shapesFlag.checked)" />
+              <span>shapes</span>
+            </label>
+          </div>
       </div>
     </div>
   </div>
