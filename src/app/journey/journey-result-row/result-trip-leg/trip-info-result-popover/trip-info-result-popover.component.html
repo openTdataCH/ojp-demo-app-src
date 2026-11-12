@@ -11,7 +11,7 @@
     <div class="alert alert-danger" role="alert" *ngIf="this.model.errorMessage">
       {{ this.model.errorMessage }}
     </div>
-    <trip-info-result></trip-info-result>
+    <trip-info-result [showLinkProjectionControls]="false"></trip-info-result>
   </div>
 </div>
 <div sbbDialogActions>

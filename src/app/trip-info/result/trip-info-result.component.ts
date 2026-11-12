@@ -48,6 +48,7 @@ interface PageModel {
 })
 export class TripInfoResultComponent implements OnInit, AfterViewInit {
   public model: PageModel;
+  @Input() public showLinkProjectionControls = FLAG_USE_2nd_SHAPE_PROVIDER;
 
   constructor(
     private tripInfoService: TripInfoService, 
