@@ -242,6 +242,8 @@ export class TripInfoSearchComponent implements OnInit {
 
         return undefined;
       })();
+
+      request.payload.params.extension = extension;
     }
 
     return request;

@@ -251,6 +251,8 @@ export class JourneyResultRowComponent implements OnInit {
 
         return undefined;
       })();
+      
+      trrRequest.payload.refineParams.extension = extension;
     }
 
     const trrResponse = await trrRequest.fetchResponse(ojpSDK);
