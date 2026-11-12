@@ -233,13 +233,15 @@ export class TripInfoSearchComponent implements OnInit {
     const request = sdk.requests.TripInfoRequest.initWithJourneyRef(this.model.journeyRef, this.model.journeyDateTime);
     request.enableTrackProjection();
 
-    if (useExternalCoordinates) {
-      if (request.payload.params) {
-        const extension = request.payload.params.extension ?? {};
-        extension.useExternalCoordinates = true;
+    if (request.payload.params) {
+      const extension = request.payload.params.extension ?? {};
+      extension.useExternalCoordinates = (() => {
+        if (useExternalCoordinates) {
+          return true;
+        }
 
-        request.payload.params.extension = extension;
-      }
+        return undefined;
+      })();
     }
 
     return request;
