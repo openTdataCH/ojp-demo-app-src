@@ -43,3 +43,22 @@
 .trip-info-stops {
   padding-top: 8px;
 }
+
+.link-projection-symbol {
+  width: 32px;
+  height: 20px;
+  flex-shrink: 0;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 3;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.default-projection-symbol {
+  color: #3D69CA;
+}
+
+.external-projection-symbol {
+  color: #E87500;
+}
