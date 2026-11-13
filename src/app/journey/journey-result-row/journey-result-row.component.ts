@@ -242,6 +242,19 @@ export class JourneyResultRowComponent implements OnInit {
       trrRequest.payload.refineParams.noEscalator = true;
     }
 
+    if (trrRequest.payload.refineParams) {
+      const extension = trrRequest.payload.refineParams.extension ?? {};
+      extension.useExternalCoordinates = (() => {
+        if (FLAG_USE_2nd_SHAPE_PROVIDER) {
+          return true;
+        }
+
+        return undefined;
+      })();
+      
+      trrRequest.payload.refineParams.extension = extension;
+    }
+
     const trrResponse = await trrRequest.fetchResponse(ojpSDK);
     if (!trrResponse.ok) {
       console.error('ERROR - fetchTripRefineRequestResponse');

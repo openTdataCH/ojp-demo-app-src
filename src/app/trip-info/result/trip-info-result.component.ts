@@ -1,4 +1,4 @@
-import { AfterViewInit, ChangeDetectorRef, Component, OnInit } from '@angular/core';
+import { AfterViewInit, ChangeDetectorRef, Component, Input, OnInit } from '@angular/core';
 import { DomSanitizer } from '@angular/platform-browser';
 
 import { SbbIconRegistry } from '@sbb-esta/angular/icon';
@@ -9,7 +9,7 @@ import { TripInfoService } from '../trip-info.service';
 import { OJPHelpers, ServiceAttributeRenderModel } from '../../helpers/ojp-helpers';
 import { LegStopPointData } from '../../shared/components/service-stops.component';
 import { UserTripService } from '../../shared/services/user-trip.service';
-import { DEFAULT_APP_STAGE } from '../../config/constants';
+import { DEFAULT_APP_STAGE, FLAG_USE_2nd_SHAPE_PROVIDER } from '../../config/constants';
 import { TripInfoResult } from '../../shared/models/trip-info-result';
 import { JourneyService } from '../../shared/models/journey-service';
 import { StopPointHelpers } from '../../shared/models/stop-point-call';
@@ -48,9 +48,10 @@ interface PageModel {
 })
 export class TripInfoResultComponent implements OnInit, AfterViewInit {
   public model: PageModel;
+  @Input() public showLinkProjectionControls = FLAG_USE_2nd_SHAPE_PROVIDER;
 
   constructor(
-    private tripInfoService: TripInfoService, 
+    public tripInfoService: TripInfoService, 
     private userTripService: UserTripService, 
     private cdr: ChangeDetectorRef, 
     private iconRegistry: SbbIconRegistry, 
@@ -139,6 +140,16 @@ export class TripInfoResultComponent implements OnInit, AfterViewInit {
     this.model.hasDeviation = service.deviation ?? false;
   }
 
+  public onDefaultLinkProjectionChanged(visible: boolean) {
+    this.tripInfoService.defaultLinkProjectionVisible = visible;
+    this.tripInfoService.linkProjectionVisibilityUpdated.emit();
+  }
+
+  public onExternalLinkProjectionChanged(visible: boolean) {
+    this.tripInfoService.externalLinkProjectionVisible = visible;
+    this.tripInfoService.linkProjectionVisibilityUpdated.emit();
+  }
+
   public onLocationSelected(locationData: LegStopPointData) {
     this.tripInfoService.locationSelected.emit(locationData);
   }
@@ -192,5 +203,8 @@ export class TripInfoResultComponent implements OnInit, AfterViewInit {
 
   private updateURLs() {
     this.model.permalinkURL = './trip?ref=' + this.model.journeyRef + '&stage=' + this.userTripService.currentAppStage;
+    if (FLAG_USE_2nd_SHAPE_PROVIDER) {
+      this.model.permalinkURL += '&shapes=yes';
+    }
   }
 }

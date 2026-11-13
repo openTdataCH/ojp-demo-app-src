@@ -8,7 +8,7 @@ import { SbbNotificationToast } from '@sbb-esta/angular/notification-toast';
 
 import * as OJP from 'ojp-sdk';
 
-import { APP_STAGE, APP_STAGEs, DEFAULT_APP_STAGE, OJP_VERSION, REQUESTOR_REF } from '../../config/constants';
+import { APP_STAGE, APP_STAGEs, DEFAULT_APP_STAGE, FLAG_USE_2nd_SHAPE_PROVIDER, OJP_VERSION, REQUESTOR_REF } from '../../config/constants';
 
 import { UserTripService } from '../../shared/services/user-trip.service';
 import { TripInfoService } from '../trip-info.service';
@@ -181,6 +181,10 @@ export class TripInfoSearchComponent implements OnInit {
       queryParams.append('v', '1');
     }
 
+    if (FLAG_USE_2nd_SHAPE_PROVIDER) {
+      queryParams.append('shapes', 'yes');
+    }
+
     return queryParams;
   }
 
@@ -225,13 +229,32 @@ export class TripInfoSearchComponent implements OnInit {
     this.model.otherVersionURL = 'trip?' + otherVersionQueryParams.toString();
   }
 
-  private async fetchTripInfo() {
-    const ojpSDK = this.userTripService.createOJP_SDK_Instance(this.languageService.language);
-
-    const request = ojpSDK.requests.TripInfoRequest.initWithJourneyRef(this.model.journeyRef, this.model.journeyDateTime);
+  private buildRequest(sdk: OJP.AnySDK, useExternalCoordinates = false) {
+    const request = sdk.requests.TripInfoRequest.initWithJourneyRef(this.model.journeyRef, this.model.journeyDateTime);
     request.enableTrackProjection();
 
+    if (request.payload.params) {
+      const extension = request.payload.params.extension ?? {};
+      extension.useExternalCoordinates = (() => {
+        if (useExternalCoordinates) {
+          return true;
+        }
+
+        return undefined;
+      })();
+
+      request.payload.params.extension = extension;
+    }
+
+    return request;
+  }
+
+  private async fetchTripInfo() {
+    const ojpSDK = this.userTripService.createOJP_SDK_Instance(this.languageService.language);
+    const request = this.buildRequest(ojpSDK);
+
     this.model.isSearching = true;
+    this.tripInfoService.externalTripInfoResultUpdated.emit(null);
     try {
       const response = await request.fetchResponse(ojpSDK);
       const tripInfoResult = TripInfoResult.initWithTripInfoResponse(this.sanitizer, OJP_VERSION, response, this.languageService.language);
@@ -245,11 +268,26 @@ export class TripInfoSearchComponent implements OnInit {
       console.error('SDK response error:');
       console.log(err);
     }
+
+    if (FLAG_USE_2nd_SHAPE_PROVIDER) {
+      const useExternalCoordinates = true;
+      const request2 = this.buildRequest(ojpSDK, useExternalCoordinates);
+      try {
+        const response2 = await request2.fetchResponse(ojpSDK);
+        const tripInfoResult2 = TripInfoResult.initWithTripInfoResponse(this.sanitizer, OJP_VERSION, response2, this.languageService.language);
+        this.tripInfoService.externalTripInfoResultUpdated.emit(tripInfoResult2);
+      } catch (err: any) {
+        console.error('SDK response error for second request:');
+        console.log(err);
+      }
+    }
+
     this.model.isSearching = false;
   }
 
   private async fetchTripInfoRequestFromMocks() {
-    const mockURL = 'http://localhost/path/to/mock';
+    const mockURL = 
+      'http://localhost/path/to/mock';
 
     const mockText = await (await fetch(mockURL)).text();
 

@@ -14,17 +14,19 @@ type LinePointType = 'prev' | 'next';
 export class StopEventServiceRenderer {
     private map: mapgl.Map
     private sourceID: string;
+    private layerIDs: string[];
     public geojsonFeatures: GeoJSON.Feature[]
 
-    constructor(map: mapgl.Map) {
+    constructor(map: mapgl.Map, sourceID = 'stop-event-service-data', routeColor: string | null = null) {
         this.map = map
-        this.sourceID = 'stop-event-service-data';
+        this.sourceID = sourceID;
+        this.layerIDs = [];
         this.geojsonFeatures = [];
         
-        this.addMapLayers(map);
+        this.addMapLayers(map, routeColor);
     }
 
-    private addMapLayers(map: mapgl.Map) {
+    private addMapLayers(map: mapgl.Map, routeColor: string | null) {
         const source: mapgl.GeoJSONSourceSpecification = {
             type: 'geojson',
             data: <GeoJSON.FeatureCollection> {
@@ -34,13 +36,40 @@ export class StopEventServiceRenderer {
         };
         map.addSource(this.sourceID, source);
 
-        const serviceTrackLineLayer = serviceTrackLineLayerJSON as mapgl.LineLayerSpecification;
+        const serviceTrackLineLayer = Object.assign({}, serviceTrackLineLayerJSON) as mapgl.LineLayerSpecification;
+        serviceTrackLineLayer.paint = Object.assign({}, serviceTrackLineLayerJSON.paint) as mapgl.LineLayerSpecification['paint'];
         serviceTrackLineLayer.source = this.sourceID;
+        if (this.sourceID !== 'stop-event-service-data') {
+            serviceTrackLineLayer.id = this.sourceID + '-line';
+        }
+        if (routeColor !== null && serviceTrackLineLayer.paint) {
+            serviceTrackLineLayer.paint['line-color'] = routeColor;
+        }
         map.addLayer(serviceTrackLineLayer);
+        this.layerIDs.push(serviceTrackLineLayer.id);
 
-        const serviceTrackStopLayer = serviceTrackStopLayerJSON as mapgl.CircleLayerSpecification;
+        const serviceTrackStopLayer = Object.assign({}, serviceTrackStopLayerJSON) as mapgl.CircleLayerSpecification;
+        serviceTrackStopLayer.paint = Object.assign({}, serviceTrackStopLayerJSON.paint) as mapgl.CircleLayerSpecification['paint'];
         serviceTrackStopLayer.source = this.sourceID;
+        if (this.sourceID !== 'stop-event-service-data') {
+            serviceTrackStopLayer.id = this.sourceID + '-stop';
+        }
+        if (routeColor !== null && serviceTrackStopLayer.paint) {
+            serviceTrackStopLayer.paint['circle-color'] = routeColor;
+        }
         map.addLayer(serviceTrackStopLayer);
+        this.layerIDs.push(serviceTrackStopLayer.id);
+    }
+
+    public setVisible(visible: boolean) {
+        let visibility: 'visible' | 'none' = 'none';
+        if (visible) {
+            visibility = 'visible';
+        }
+
+        this.layerIDs.forEach(layerID => {
+            this.map.setLayoutProperty(layerID, 'visibility', visibility);
+        });
     }
 
     public drawStopEvent(stopEvent: StopEventResult) {
