@@ -7,6 +7,7 @@
         <ng-container *ngFor="let rasterLayerDef of this.model.rasterLayers">
           <option value="{{ rasterLayerDef.id }}">{{ rasterLayerDef.caption }}</option>
         </ng-container>
+        <option value="blank-white">No Map</option>
       </select>
     </div>
     <div class="d-flex gap-1">

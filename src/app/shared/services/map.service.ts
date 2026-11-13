@@ -54,6 +54,7 @@ export class MapService {
 
     map.on('load', () => {
       this.hideBaseLayers(map);
+      this.addBlankBackgroundLayer(map);
     });
 
     if (this.initialMapCenter) {
@@ -69,6 +70,20 @@ export class MapService {
     }
 
     return map;
+  }
+
+  private addBlankBackgroundLayer(map: mapgl.Map) {
+    map.addLayer({
+      id: 'blank-white-background',
+      type: 'background',
+      paint: {
+        'background-color': '#FFFFFF',
+        'background-opacity': 1,
+      },
+      layout: {
+        visibility: 'none',
+      },
+    });
   }
 
   private hideBaseLayers(map: mapgl.Map) {
@@ -217,6 +232,12 @@ export class MapService {
   }
 
   private mapTypeChanged(map: mapgl.Map, mapTypeS: string) {
+    let blankBackgroundVisibility: 'visible' | 'none' = 'none';
+    if (mapTypeS === 'blank-white') {
+      blankBackgroundVisibility = 'visible';
+    }
+    map.setLayoutProperty('blank-white-background', 'visibility', blankBackgroundVisibility);
+
     MAP_RASTER_LAYERS.forEach(rasterLayerDef => {
       if (map.getLayer(rasterLayerDef.id) === undefined) {
         console.error(
