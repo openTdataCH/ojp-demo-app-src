@@ -8,7 +8,8 @@ OJP-Demo URL: https://opentdatach.github.io/ojp-demo-app/
 - External LinkProjection in TIR, TRR - [PR #430](https://github.com/openTdataCH/ojp-demo-app-src/pull/430)
   - add optional external LinkProjection fetching for TripInfoRequest and TripInfoRequest requests
   - add checkboxes to show or hide each projection
-  - adds footer shapes flag toggle that updates the URL and reloads the page
+  - adds footer external shapes flag toggle
+  - adds no map background for easier comparison
 
 6.November 2026
 - Updates situations - [PR #426](https://github.com/openTdataCH/ojp-demo-app-src/pull/426)
