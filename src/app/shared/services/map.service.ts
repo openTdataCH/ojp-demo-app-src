@@ -50,6 +50,12 @@ export class MapService {
       container: elementID,
       style: mapStyleURL,
       bounds: mapBounds,
+      attributionControl: {
+        compact: true,
+        customAttribution: [
+          '<a href="https://developer.geops.io/?ref=ojp_demo_app" target="_blank" rel="noopener noreferrer">Maps by geOps</a>',
+        ]
+      },
     });
 
     map.on('load', () => {
