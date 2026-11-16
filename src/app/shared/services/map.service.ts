@@ -44,12 +44,18 @@ export class MapService {
     const mapBounds = new mapgl.LngLatBounds([[5.9559,45.818], [10.4921,47.8084]]);
 
     const geopsAPIKey = APP_CONFIG['stages']['SHAPE_PROVIDER'].authToken ?? '';
-    const mapStyleURL = `https://maps.geops.io/styles/base_bright_v2/style.json?key=${encodeURIComponent(geopsAPIKey)}`;
+    const mapStyleURL = `https://maps.geops.io/styles/basemap_bright/style.json?key=${encodeURIComponent(geopsAPIKey)}`;
 
     const map = new mapgl.Map({
       container: elementID,
       style: mapStyleURL,
       bounds: mapBounds,
+      attributionControl: {
+        compact: true,
+        customAttribution: [
+          '<a href="https://developer.geops.io/?ref=ojp_demo_app" target="_blank" rel="noopener noreferrer">Maps by geOps</a>',
+        ]
+      },
     });
 
     map.on('load', () => {
