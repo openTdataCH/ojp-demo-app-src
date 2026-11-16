@@ -4,6 +4,11 @@ OJP-Demo URL: https://opentdatach.github.io/ojp-demo-app/
 
 ----
 
+16.November 2026
+- Update basemaps - [PR #431](https://github.com/openTdataCH/ojp-demo-app-src/pull/431)
+  - use `basemap_bright` [geOps](https://developer.geops.io/apis/maps) map style
+  - updates map control attribution
+
 13.November 2026
 - External LinkProjection in TIR, TRR - [PR #430](https://github.com/openTdataCH/ojp-demo-app-src/pull/430)
   - add optional external LinkProjection fetching for TripInfoRequest and TripInfoRequest requests
