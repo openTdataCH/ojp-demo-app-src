@@ -249,7 +249,6 @@ export class PathGuidanceSection {
       trackSection: undefined, // updated below
       turnDescription: undefined, // updated below
       guidanceAdvice: this.guidanceAdvice ?? undefined,
-      turnAction: this.guidanceAdvice ?? undefined,
       roadName: undefined, // updated below
     };
 
@@ -277,7 +276,6 @@ export class PathGuidanceSection {
       trackSection: undefined, // updated below
       turnDescription: undefined, // updated below
       guidanceAdvice: this.guidanceAdvice ?? undefined,
-      turnAction: this.guidanceAdvice ?? undefined,
       roadName: undefined, // updated below
     };
 
