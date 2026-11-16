@@ -133,6 +133,7 @@ export class TrackSection {
       trackSectionStart: undefined,  // updated below
       trackSectionEnd: undefined,  // updated below
       linkProjection: undefined, // updated below
+      duration: this.duration.asOjpDurationText(),
     };
 
     if (this.fromPlaceRef) {
