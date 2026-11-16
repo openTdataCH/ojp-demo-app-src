@@ -133,6 +133,7 @@ export class TrackSection {
       trackSectionStart: undefined,  // updated below
       trackSectionEnd: undefined,  // updated below
       linkProjection: undefined, // updated below
+      duration: this.duration.asOjpDurationText(),
     };
 
     if (this.fromPlaceRef) {
@@ -248,7 +249,6 @@ export class PathGuidanceSection {
       trackSection: undefined, // updated below
       turnDescription: undefined, // updated below
       guidanceAdvice: this.guidanceAdvice ?? undefined,
-      turnAction: this.guidanceAdvice ?? undefined,
       roadName: undefined, // updated below
     };
 
@@ -276,7 +276,6 @@ export class PathGuidanceSection {
       trackSection: undefined, // updated below
       turnDescription: undefined, // updated below
       guidanceAdvice: this.guidanceAdvice ?? undefined,
-      turnAction: this.guidanceAdvice ?? undefined,
       roadName: undefined, // updated below
     };
 

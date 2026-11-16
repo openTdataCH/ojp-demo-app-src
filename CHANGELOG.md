@@ -5,6 +5,8 @@ OJP-Demo URL: https://opentdatach.github.io/ojp-demo-app/
 ----
 
 16.November 2026
+- Fix TRR requests - [PR #433](https://github.com/openTdataCH/ojp-demo-app-src/pull/431)
+  - updates OJP `Trip` required params by the server
 - Update basemaps - [PR #431](https://github.com/openTdataCH/ojp-demo-app-src/pull/431)
   - use `basemap_bright` [geOps](https://developer.geops.io/apis/maps) map style
   - updates map control attribution
