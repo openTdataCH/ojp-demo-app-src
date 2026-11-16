@@ -53,7 +53,7 @@ export class MapService {
       attributionControl: {
         compact: true,
         customAttribution: [
-          '<a href="https://developer.geops.io/?ref=ojp_demo_app" target="_blank" rel="noopener noreferrer">Maps by geOps</a>',
+          '<a href="https://geops.io" target="_blank">© Maps by geOps</a>',
         ]
       },
     });
