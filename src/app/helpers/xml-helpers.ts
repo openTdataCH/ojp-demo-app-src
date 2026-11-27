@@ -95,6 +95,7 @@ export class XML_Helpers {
       collapseContent: true,
       lineSeparator: '\n',
       strictMode: true,
+      // returns the original XML string if parsing or formatting throw
       throwOnFailure: false,
     });
 
